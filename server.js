@@ -12,7 +12,7 @@ app.post("/grade", async (req, res) => {
     const { studentAnswer } = req.body;
 
     const response = await client.responses.create({
-      model: "gpt-5.3",
+      model: "gpt-4o-mini",
       input: `
 You are an EMT instructor.
 
