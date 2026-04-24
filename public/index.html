@@ -2,170 +2,104 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>EMT Patient Simulation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EMT Patient Simulator</title>
 
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 40px;
+      background-color: #f4f7fb;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
     }
 
-    textarea {
-      width: 600px;
-      height: 100px;
+    h1 {
+      color: #1f3b57;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    }
+
+    select,
+    input,
+    button {
       padding: 10px;
-      margin-top: 10px;
+      margin: 8px;
+      font-size: 16px;
+      border-radius: 6px;
+    }
+
+    input {
+      width: 80%;
+      max-width: 600px;
+      border: 1px solid #ccc;
     }
 
     button {
-      padding: 10px 15px;
-      margin-top: 10px;
-      margin-right: 10px;
-      cursor: pointer;
-      background-color: green;
+      background-color: #1f7a3f;
       color: white;
       border: none;
-      border-radius: 5px;
+      cursor: pointer;
     }
 
     button:hover {
-      background-color: darkgreen;
+      background-color: #145c2e;
     }
 
-    #chatBox {
-      border: 1px solid #ccc;
-      padding: 10px;
-      width: 700px;
-      min-height: 200px;
-      background: #f9f9f9;
+    .box {
       margin-top: 20px;
-      overflow-y: auto;
-    }
-
-    .patient {
-      color: blue;
-      margin-bottom: 10px;
-    }
-
-    .student {
-      color: black;
-      margin-bottom: 10px;
-    }
-
-    select {
-      padding: 8px;
-      margin-top: 10px;
-    }
-
-    #feedback {
-      margin-top: 20px;
+      padding: 15px;
+      background: #eef3f8;
+      border-radius: 8px;
+      text-align: left;
+      min-height: 60px;
       white-space: pre-wrap;
     }
   </style>
 </head>
 
 <body>
+  <div class="container">
+    <h1>EMT Patient Simulator</h1>
 
-  <h1>EMT Patient Simulation</h1>
+    <label for="scenarioSelect"><strong>Choose Scenario:</strong></label>
+    <br />
 
-  <label><strong>Select Scenario:</strong></label><br>
-  <select id="scenario" onchange="resetScenario()">
-    <option value="chestPain">Chest Pain</option>
-    <option value="shortnessOfBreath">Shortness of Breath</option>
-    <option value="stroke">Stroke</option>
-    <option value="diabetic">Diabetic Emergency</option>
-  </select>
+    <select id="scenarioSelect">
+      <option value="chestPain">Chest Pain</option>
+      <option value="shortnessOfBreath">Shortness of Breath</option>
+      <option value="stroke">Stroke</option>
+      <option value="diabetic">Diabetic Emergency</option>
+    </select>
 
-  <!-- Chat -->
-  <div id="chatBox"></div>
+    <h2 id="scenarioTitle">Chest Pain Scenario</h2>
 
-  <!-- Input -->
-  <textarea id="question" placeholder="Ask the patient a question..."></textarea>
+    <input
+      type="text"
+      id="studentQuestion"
+      placeholder="Ask the patient a question..."
+    />
 
-  <br>
+    <br />
 
-  <button onclick="askPatient()">Ask Patient</button>
-  <button onclick="gradeScenario()">Submit for Grading</button>
+    <button onclick="askPatient()">Ask Patient</button>
+    <button onclick="gradeStudent()">Grade Student</button>
+    <button onclick="resetScenario()">Reset Scenario</button>
 
-  <!-- Feedback -->
-  <h2>Feedback:</h2>
-  <div id="feedback"></div>
+    <h3>Patient Response:</h3>
+    <div id="patientResponse" class="box"></div>
 
-  <script>
-    let history = "";
+    <h3>Instructor Feedback:</h3>
+    <div id="feedback" class="box"></div>
+  </div>
 
-    function resetScenario() {
-      history = "";
-      document.getElementById("chatBox").innerHTML = "";
-      document.getElementById("feedback").innerText = "";
-    }
-
-    async function askPatient() {
-      const questionBox = document.getElementById("question");
-      const question = questionBox.value.trim();
-      const scenario = document.getElementById("scenario").value;
-
-      if (!question) return;
-
-      appendMessage("You", question, "student");
-      history += `Student: ${question}\n`;
-
-      questionBox.value = "";
-
-      try {
-        const res = await fetch("/ask", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            studentQuestion: question,
-            history: history,
-            scenario: scenario
-          })
-        });
-
-        const data = await res.json();
-
-        appendMessage("Patient", data.reply, "patient");
-        history += `Patient: ${data.reply}\n`;
-
-      } catch (err) {
-        appendMessage("Patient", "Error getting patient response.", "patient");
-      }
-    }
-
-    function appendMessage(sender, text, className) {
-      const chatBox = document.getElementById("chatBox");
-
-      const msg = document.createElement("div");
-      msg.className = className;
-      msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
-
-      chatBox.appendChild(msg);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    async function gradeScenario() {
-      const scenario = document.getElementById("scenario").value;
-
-      try {
-        const res = await fetch("/grade", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            studentAnswer: history,
-            scenario: scenario
-          })
-        });
-
-        const data = await res.json();
-        document.getElementById("feedback").innerText = data.feedback;
-
-      } catch (err) {
-        document.getElementById("feedback").innerText = "Error getting feedback.";
-      }
-    }
-  </script>
-
+  <script src="script.js"></script>
 </body>
 </html>
