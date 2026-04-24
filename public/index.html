@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>EMT Patient Simulation</title>
 
   <style>
@@ -12,114 +12,160 @@
     }
 
     textarea {
-      width: 500px;
+      width: 600px;
       height: 100px;
-      padding: 8px;
-      display: block;
-      margin-bottom: 15px;
+      padding: 10px;
+      margin-top: 10px;
     }
 
     button {
-      padding: 8px 12px;
+      padding: 10px 15px;
+      margin-top: 10px;
       margin-right: 10px;
       cursor: pointer;
+      background-color: green;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: darkgreen;
     }
 
     #chatBox {
-      border: 1px solid #999;
+      border: 1px solid #ccc;
       padding: 10px;
       width: 700px;
-      min-height: 150px;
-      margin: 20px 0;
-      background-color: #f5f5f5;
+      min-height: 200px;
+      background: #f9f9f9;
+      margin-top: 20px;
+      overflow-y: auto;
+    }
+
+    .patient {
+      color: blue;
+      margin-bottom: 10px;
+    }
+
+    .student {
+      color: black;
+      margin-bottom: 10px;
+    }
+
+    select {
+      padding: 8px;
+      margin-top: 10px;
     }
 
     #feedback {
+      margin-top: 20px;
       white-space: pre-wrap;
-      margin-top: 15px;
     }
   </style>
 </head>
 
 <body>
+
   <h1>EMT Patient Simulation</h1>
 
-  <p>
-    <strong>Scenario:</strong> 58-year-old male with chest pain. Pale and sweaty.
-  </p>
+  <label><strong>Select Scenario:</strong></label><br>
+  <select id="scenario" onchange="resetScenario()">
+    <option value="chestPain">Chest Pain</option>
+    <option value="shortnessOfBreath">Shortness of Breath</option>
+    <option value="stroke">Stroke</option>
+    <option value="diabetic">Diabetic Emergency</option>
+  </select>
 
-  <div id="chatBox">
-    <strong>Patient:</strong> I don’t feel right. My chest hurts.
-  </div>
+  <!-- Chat -->
+  <div id="chatBox"></div>
 
+  <!-- Input -->
   <textarea id="question" placeholder="Ask the patient a question..."></textarea>
+
+  <br>
 
   <button onclick="askPatient()">Ask Patient</button>
   <button onclick="gradeScenario()">Submit for Grading</button>
 
+  <!-- Feedback -->
   <h2>Feedback:</h2>
   <div id="feedback"></div>
 
   <script>
-    let history = "Patient: I don’t feel right. My chest hurts.\n";
+    let history = "";
+
+    function resetScenario() {
+      history = "";
+      document.getElementById("chatBox").innerHTML = "";
+      document.getElementById("feedback").innerText = "";
+    }
 
     async function askPatient() {
       const questionBox = document.getElementById("question");
       const question = questionBox.value.trim();
+      const scenario = document.getElementById("scenario").value;
 
-      if (question === "") {
-        return;
-      }
+      if (!question) return;
 
-      const chatBox = document.getElementById("chatBox");
-
-      chatBox.innerHTML += "<br><br><strong>Student:</strong> " + question;
-
-      history += "Student: " + question + "\n";
+      appendMessage("You", question, "student");
+      history += `Student: ${question}\n`;
 
       questionBox.value = "";
 
       try {
-        const response = await fetch("/ask", {
+        const res = await fetch("/ask", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             studentQuestion: question,
-            history: history
+            history: history,
+            scenario: scenario
           })
         });
 
-        const data = await response.json();
+        const data = await res.json();
 
-        chatBox.innerHTML += "<br><strong>Patient:</strong> " + data.reply;
+        appendMessage("Patient", data.reply, "patient");
+        history += `Patient: ${data.reply}\n`;
 
-        history += "Patient: " + data.reply + "\n";
-      } catch (error) {
-        chatBox.innerHTML += "<br><strong>Patient:</strong> Error getting patient response.";
+      } catch (err) {
+        appendMessage("Patient", "Error getting patient response.", "patient");
       }
     }
 
+    function appendMessage(sender, text, className) {
+      const chatBox = document.getElementById("chatBox");
+
+      const msg = document.createElement("div");
+      msg.className = className;
+      msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
+
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
     async function gradeScenario() {
+      const scenario = document.getElementById("scenario").value;
+
       try {
-        const response = await fetch("/grade", {
+        const res = await fetch("/grade", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            studentAnswer: history
+            studentAnswer: history,
+            scenario: scenario
           })
         });
 
-        const data = await response.json();
-
+        const data = await res.json();
         document.getElementById("feedback").innerText = data.feedback;
-      } catch (error) {
+
+      } catch (err) {
         document.getElementById("feedback").innerText = "Error getting feedback.";
       }
     }
   </script>
+
 </body>
 </html>
