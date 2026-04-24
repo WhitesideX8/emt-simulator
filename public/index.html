@@ -3,95 +3,76 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EMT Patient Simulator</title>
+  <title>EMT Patient Simulation</title>
 
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f4f7fb;
-      text-align: center;
-      margin: 0;
-      padding: 20px;
+      margin: 50px;
     }
 
-    .container {
-      max-width: 800px;
-      margin: auto;
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-    }
-
-    select,
-    input,
-    button {
-      padding: 10px;
-      margin: 8px;
+    select, textarea, button {
       font-size: 16px;
-      border-radius: 6px;
+      padding: 10px;
+      margin-top: 10px;
     }
 
-    input {
-      width: 80%;
-      max-width: 600px;
+    textarea {
+      width: 800px;
+      height: 140px;
+      display: block;
     }
 
     button {
-      background-color: #1f7a3f;
+      background: green;
       color: white;
       border: none;
+      border-radius: 6px;
       cursor: pointer;
+      margin-right: 10px;
     }
 
     .box {
-      margin-top: 15px;
+      width: 900px;
+      min-height: 120px;
+      border: 1px solid #ccc;
+      background: #f7f7f7;
       padding: 15px;
-      background: #eef3f8;
-      border-radius: 8px;
-      text-align: left;
-      min-height: 60px;
+      margin-top: 20px;
       white-space: pre-wrap;
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <h1>EMT Patient Simulator</h1>
+  <h1>EMT Patient Simulation</h1>
 
-    <label for="scenarioSelect"><strong>Choose Scenario:</strong></label>
-    <br />
+  <label><strong>Select Scenario:</strong></label>
+  <br />
 
-    <select id="scenarioSelect" onchange="resetScenario()">
-      <option value="chestPain">Chest Pain</option>
-      <option value="shortnessOfBreath">Shortness of Breath</option>
-      <option value="stroke">Stroke</option>
-      <option value="diabetic">Diabetic Emergency</option>
-    </select>
+  <select id="scenarioSelect" onchange="resetScenario()">
+    <option value="chestPain">Chest Pain</option>
+    <option value="shortnessOfBreath">Shortness of Breath</option>
+    <option value="stroke">Stroke</option>
+    <option value="diabetic">Diabetic Emergency</option>
+  </select>
 
-    <h2 id="scenarioTitle">Chest Pain Scenario</h2>
+  <h2 id="scenarioTitle">Chest Pain Scenario</h2>
 
-    <h3>Scenario Information:</h3>
-    <div id="scenarioInfo" class="box"></div>
+  <h3>Scenario Information:</h3>
+  <div id="scenarioInfo" class="box"></div>
 
-    <input
-      type="text"
-      id="studentQuestion"
-      placeholder="Ask the patient a question..."
-    />
+  <textarea id="studentQuestion" placeholder="Ask the patient a question..."></textarea>
 
-    <br />
+  <button onclick="askPatient()">Ask Patient</button>
+  <button onclick="gradeStudent()">Submit for Grading</button>
+  <button onclick="resetScenario()">Reset Scenario</button>
 
-    <button onclick="askPatient()">Ask Patient</button>
-    <button onclick="gradeStudent()">Grade Student</button>
-    <button onclick="resetScenario()">Reset Scenario</button>
+  <h2>Patient Response:</h2>
+  <div id="patientResponse" class="box"></div>
 
-    <h3>Patient Response:</h3>
-    <div id="patientResponse" class="box"></div>
-
-    <h3>Instructor Feedback:</h3>
-    <div id="feedback" class="box"></div>
-  </div>
+  <h2>Feedback:</h2>
+  <div id="feedback" class="box"></div>
 
   <script src="script.js"></script>
 </body>
