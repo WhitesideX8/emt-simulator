@@ -14,17 +14,12 @@
       padding: 20px;
     }
 
-    h1 {
-      color: #1f3b57;
-    }
-
     .container {
       max-width: 800px;
       margin: auto;
       background: white;
       padding: 25px;
       border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.15);
     }
 
     select,
@@ -39,7 +34,6 @@
     input {
       width: 80%;
       max-width: 600px;
-      border: 1px solid #ccc;
     }
 
     button {
@@ -49,12 +43,8 @@
       cursor: pointer;
     }
 
-    button:hover {
-      background-color: #145c2e;
-    }
-
     .box {
-      margin-top: 20px;
+      margin-top: 15px;
       padding: 15px;
       background: #eef3f8;
       border-radius: 8px;
@@ -72,7 +62,7 @@
     <label for="scenarioSelect"><strong>Choose Scenario:</strong></label>
     <br />
 
-    <select id="scenarioSelect">
+    <select id="scenarioSelect" onchange="resetScenario()">
       <option value="chestPain">Chest Pain</option>
       <option value="shortnessOfBreath">Shortness of Breath</option>
       <option value="stroke">Stroke</option>
@@ -80,6 +70,9 @@
     </select>
 
     <h2 id="scenarioTitle">Chest Pain Scenario</h2>
+
+    <h3>Scenario Information:</h3>
+    <div id="scenarioInfo" class="box"></div>
 
     <input
       type="text"
