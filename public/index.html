@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>EMT Patient Simulation</h1>
+
+<p>58-year-old male with chest pain. Pale and sweaty.</p>
+
+<textarea id="answer" rows="6" cols="60">What would you ask or do?</textarea><br><br>
+
+<button onclick="send()">Get Feedback</button>
+
+<h2>Feedback:</h2>
+<div id="output"></div>
+
+<script>
+async function send() {
+  const answer = document.getElementById("answer").value;
+  document.getElementById("output").innerText = "Thinking...";
+
+  const res = await fetch("/grade", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ studentAnswer: answer })
+  });
+
+  const data = await res.json();
+  document.getElementById("output").innerText = data.feedback;
+}
+</script>
+</body>
+</html>
