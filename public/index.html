@@ -38,7 +38,7 @@
       border: 1px solid #ccc;
       background: #f7f7f7;
       padding: 15px;
-      margin-top: 20px;
+      margin-top: 15px;
       white-space: pre-wrap;
     }
   </style>
@@ -47,8 +47,7 @@
 <body>
   <h1>EMT Patient Simulation</h1>
 
-  <label><strong>Select Scenario:</strong></label>
-  <br />
+  <label><strong>Select Scenario:</strong></label><br>
 
   <select id="scenarioSelect" onchange="resetScenario()">
     <option value="chestPain">Chest Pain</option>
@@ -74,6 +73,95 @@
   <h2>Feedback:</h2>
   <div id="feedback" class="box"></div>
 
-  <script src="script.js"></script>
+  <script>
+    let history = "";
+
+    const scenarioDetails = {
+      chestPain: {
+        title: "Chest Pain Scenario",
+        info: "58-year-old male with chest pain. Pale and sweaty. Chest pressure started 30 minutes ago and radiates to the left arm."
+      },
+      shortnessOfBreath: {
+        title: "Shortness of Breath Scenario",
+        info: "67-year-old female having trouble breathing. Sitting upright and speaking in short sentences. History of COPD and uses an inhaler."
+      },
+      stroke: {
+        title: "Stroke Scenario",
+        info: "72-year-old male with sudden right-sided weakness and slurred speech. Symptoms started about 20 minutes ago."
+      },
+      diabetic: {
+        title: "Diabetic Emergency Scenario",
+        info: "45-year-old female who feels weak, shaky, sweaty, and confused. Took insulin this morning but skipped breakfast."
+      }
+    };
+
+    function resetScenario() {
+      history = "";
+
+      const scenario = document.getElementById("scenarioSelect").value;
+
+      document.getElementById("scenarioTitle").innerText = scenarioDetails[scenario].title;
+      document.getElementById("scenarioInfo").innerText = scenarioDetails[scenario].info;
+      document.getElementById("patientResponse").innerText = "";
+      document.getElementById("feedback").innerText = "";
+      document.getElementById("studentQuestion").value = "";
+    }
+
+    async function askPatient() {
+      const studentQuestion = document.getElementById("studentQuestion").value.trim();
+      const scenario = document.getElementById("scenarioSelect").value;
+
+      if (!studentQuestion) {
+        document.getElementById("patientResponse").innerText = "Please type a question first.";
+        return;
+      }
+
+      const response = await fetch("/ask", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          studentQuestion,
+          history,
+          scenario
+        })
+      });
+
+      const data = await response.json();
+
+      history += `Student: ${studentQuestion}\n`;
+      history += `Patient: ${data.reply}\n\n`;
+
+      document.getElementById("patientResponse").innerText = data.reply;
+      document.getElementById("studentQuestion").value = "";
+    }
+
+    async function gradeStudent() {
+      const scenario = document.getElementById("scenarioSelect").value;
+
+      if (!history) {
+        document.getElementById("feedback").innerText = "Ask the patient some questions first.";
+        return;
+      }
+
+      const response = await fetch("/grade", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          studentAnswer: history,
+          scenario
+        })
+      });
+
+      const data = await response.json();
+
+      document.getElementById("feedback").innerText = data.feedback;
+    }
+
+    window.onload = resetScenario;
+  </script>
 </body>
 </html>
