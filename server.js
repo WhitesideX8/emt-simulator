@@ -10,9 +10,53 @@ const client = new OpenAI({
 app.use(express.json());
 app.use(express.static("public"));
 
+const scenarios = {
+  chestPain: `
+You are a 58-year-old male with chest pain. You are pale and sweaty.
+Chest pain started about 30 minutes ago.
+Pain feels like pressure in the center of your chest.
+Pain radiates to your left arm.
+You feel short of breath and nauseated.
+History: high blood pressure and high cholesterol.
+Medication: blood pressure medication.
+Allergies: no known drug allergies.
+`,
+
+  shortnessOfBreath: `
+You are a 67-year-old female having trouble breathing.
+You are sitting upright and speaking in short sentences.
+Breathing got worse this morning.
+You have a history of COPD.
+You use an inhaler.
+You have a cough.
+You deny chest pain.
+Allergies: no known drug allergies.
+`,
+
+  stroke: `
+You are a 72-year-old male with sudden right-sided weakness.
+Your speech is slurred.
+Symptoms started about 20 minutes ago.
+You are confused and scared.
+History: high blood pressure.
+Medication: aspirin.
+Allergies: no known drug allergies.
+`,
+
+  diabetic: `
+You are a 45-year-old female who feels weak, shaky, sweaty, and confused.
+You are diabetic.
+You took insulin this morning but skipped breakfast.
+You feel lightheaded.
+You deny chest pain or trouble breathing.
+Allergies: no known drug allergies.
+`
+};
+
 app.post("/ask", async (req, res) => {
   try {
-    const { studentQuestion, history } = req.body;
+    const { studentQuestion, history, scenario } = req.body;
+    const selectedScenario = scenarios[scenario] || scenarios.chestPain;
 
     const response = await client.responses.create({
       model: "gpt-4.1-mini",
@@ -20,25 +64,15 @@ app.post("/ask", async (req, res) => {
 You are roleplaying as a patient in an EMT training scenario.
 
 Scenario:
-You are a 58-year-old male with chest pain. You are pale and sweaty.
-
-Patient details:
-- Chest pain started about 30 minutes ago
-- Pain feels like pressure
-- Pain is in the center of the chest
-- Pain radiates to the left arm
-- You feel short of breath
-- You feel nauseated
-- You have high blood pressure
-- You take blood pressure medication
-- You have no known drug allergies
+${selectedScenario}
 
 Rules:
-- Answer ONLY as the patient
-- Keep answers short and realistic
-- Do not teach
-- Do not give medical advice
-- Only answer what the student asks
+- Answer ONLY as the patient.
+- Keep answers short and realistic.
+- Do not teach.
+- Do not give medical advice.
+- Only answer what the student asks.
+- Stay consistent with the scenario and conversation.
 
 Conversation so far:
 ${history || "None"}
@@ -62,24 +96,38 @@ Patient response:
 
 app.post("/grade", async (req, res) => {
   try {
-    const { studentAnswer } = req.body;
+    const { studentAnswer, scenario } = req.body;
+    const selectedScenario = scenarios[scenario] || scenarios.chestPain;
 
     const response = await client.responses.create({
       model: "gpt-4.1-mini",
       input: `
-You are an EMT instructor.
+You are an EMT instructor evaluating a student.
 
 Scenario:
-58-year-old male with chest pain. Pale and sweaty.
+${selectedScenario}
 
 Student interaction:
 ${studentAnswer}
 
-Give feedback:
-- What they did right
-- What they missed
-- Correct treatment
-- Score /10
+Grade the student based on EMT patient assessment.
+
+Give feedback in this format:
+
+What they did right:
+-
+
+What they missed:
+-
+
+Correct treatment:
+1.
+2.
+3.
+4.
+5.
+
+Score: __/10
 `
     });
 
