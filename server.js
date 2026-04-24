@@ -2,6 +2,7 @@ import express from "express";
 import OpenAI from "openai";
 
 const app = express();
+
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
@@ -14,7 +15,7 @@ app.post("/ask", async (req, res) => {
     const { studentQuestion, history } = req.body;
 
     const response = await client.responses.create({
-      model: "gpt-5.3",
+      model: "gpt-4.1-mini",
       input: `
 You are roleplaying as a patient in an EMT training scenario.
 
@@ -26,17 +27,17 @@ Patient details:
 - Pain feels like pressure
 - Pain is in the center of the chest
 - Pain radiates to the left arm
-- Short of breath
-- Nauseated
-- History of high blood pressure
-- Takes blood pressure medication
-- No known drug allergies
+- You feel short of breath
+- You feel nauseated
+- You have high blood pressure
+- You take blood pressure medication
+- You have no known drug allergies
 
 Rules:
 - Answer ONLY as the patient
-- Keep answers short
+- Keep answers short and realistic
 - Do not teach
-- Do not explain treatment
+- Do not give medical advice
 - Only answer what the student asks
 
 Conversation so far:
@@ -52,7 +53,10 @@ Patient response:
     res.json({ reply: response.output_text });
   } catch (err) {
     console.error("ASK ERROR:", err);
-    res.status(500).json({ reply: "Error getting patient response." });
+
+    res.status(500).json({
+      reply: "Server error. Check Render logs."
+    });
   }
 });
 
@@ -61,7 +65,7 @@ app.post("/grade", async (req, res) => {
     const { studentAnswer } = req.body;
 
     const response = await client.responses.create({
-      model: "gpt-4.1-mini"
+      model: "gpt-4.1-mini",
       input: `
 You are an EMT instructor.
 
@@ -82,7 +86,10 @@ Give feedback:
     res.json({ feedback: response.output_text });
   } catch (err) {
     console.error("GRADE ERROR:", err);
-    res.status(500).json({ feedback: "Error getting response." });
+
+    res.status(500).json({
+      feedback: "Server error. Check Render logs."
+    });
   }
 });
 
