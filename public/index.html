@@ -21,20 +21,9 @@
       margin: 10px auto;
     }
 
-    h1 {
-      margin: 6px 0;
-      font-size: 26px;
-    }
-
-    h2 {
-      margin: 6px 0;
-      font-size: 19px;
-    }
-
-    h3 {
-      margin: 5px 0;
-      font-size: 15px;
-    }
+    h1 { margin: 6px 0; font-size: 26px; }
+    h2 { margin: 6px 0; font-size: 19px; }
+    h3 { margin: 5px 0; font-size: 15px; }
 
     select,
     textarea,
@@ -46,9 +35,15 @@
 
     textarea {
       width: 100%;
-      height: 70px;
+      height: 75px;
       box-sizing: border-box;
       resize: vertical;
+    }
+
+    #treatmentPlan {
+      height: 100px;
+      background-color: #eefbea;
+      border: 2px solid green;
     }
 
     button {
@@ -77,17 +72,12 @@
       text-align: left;
       box-sizing: border-box;
     }
-
-    #treatmentResponse {
-      border: 2px solid green;
-      background-color: #eefbea;
-    }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <h1>test page</h1>
+    <h1>EMT Patient Simulation</h1>
 
     <label><strong>Select Scenario:</strong></label><br />
 
@@ -103,12 +93,11 @@
     <h3>Scenario Information:</h3>
     <div id="scenarioInfo" class="box">Scenario information will appear here.</div>
 
-    <textarea id="studentQuestion" placeholder="Ask a question..."></textarea>
+    <textarea id="studentQuestion" placeholder="Ask the patient or instructor a question..."></textarea>
 
     <div>
       <button onclick="askPatient()">Ask Patient</button>
       <button onclick="askInstructor()">Ask Instructor</button>
-      <button onclick="getTreatment()">EMT Treatment</button>
       <button onclick="gradeStudent()">Submit for Grading</button>
       <button onclick="resetScenario()">Reset</button>
     </div>
@@ -119,8 +108,11 @@
     <h3>Instructor Response:</h3>
     <div id="instructorResponse" class="box">Instructor answer will appear here.</div>
 
-    <h3>EMT Treatment:</h3>
-    <div id="treatmentResponse" class="box">Treatment plan will appear here.</div>
+    <h3>EMT Treatment Plan:</h3>
+    <textarea
+      id="treatmentPlan"
+      placeholder="Student enters EMT treatment plan here..."
+    ></textarea>
 
     <h3>Feedback:</h3>
     <div id="feedback" class="box">Feedback will appear here.</div>
@@ -159,9 +151,10 @@
 
       document.getElementById("patientResponse").innerText = "Patient response will appear here.";
       document.getElementById("instructorResponse").innerText = "Instructor answer will appear here.";
-      document.getElementById("treatmentResponse").innerText = "Treatment plan will appear here.";
       document.getElementById("feedback").innerText = "Feedback will appear here.";
+
       document.getElementById("studentQuestion").value = "";
+      document.getElementById("treatmentPlan").value = "";
     }
 
     async function askPatient() {
@@ -223,31 +216,13 @@
       }
     }
 
-    async function getTreatment() {
-      const scenario = document.getElementById("scenarioSelect").value;
-
-      try {
-        const res = await fetch("/treatment", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            scenario: scenario
-          })
-        });
-
-        const data = await res.json();
-
-        document.getElementById("treatmentResponse").innerText = data.treatment;
-      } catch (err) {
-        document.getElementById("treatmentResponse").innerText = "Error getting treatment plan.";
-      }
-    }
-
     async function gradeStudent() {
       const scenario = document.getElementById("scenarioSelect").value;
+      const treatmentPlan = document.getElementById("treatmentPlan").value.trim();
 
-      if (!history) {
-        document.getElementById("feedback").innerText = "Ask patient questions first.";
+      if (!history && !treatmentPlan) {
+        document.getElementById("feedback").innerText =
+          "Ask patient questions or enter a treatment plan first.";
         return;
       }
 
@@ -257,6 +232,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             studentAnswer: history,
+            treatmentPlan: treatmentPlan,
             scenario: scenario
           })
         });
