@@ -119,12 +119,13 @@ Student question:
 "${studentQuestion}"
 
 STRICT RULES:
-- Answer ONLY what is asked.
-- Do NOT add extra information.
-- Do NOT explain beyond the question.
-- Keep answer under 2 sentences.
-- If the question is vague, ask for clarification instead.
+- Answer ONLY the question asked.
+- You may answer EMT assessment questions, including vitals, SAMPLE, OPQRST, primary assessment, secondary assessment, and treatment decisions.
+- Keep answers short and practical.
 - Do NOT roleplay as the patient.
+- If the question asks what to assess, give EMT assessment steps.
+- If the question asks about vitals, explain what vital signs to obtain and why.
+- If the question is vague, ask for clarification.
 
 Answer:
 `
