@@ -106,6 +106,42 @@ Patient response:
   }
 });
 
+app.post("/instructor", async (req, res) => {
+  try {
+    const { studentQuestion, scenario } = req.body;
+
+    const selectedScenario = scenarios[scenario] || scenarios.chestPain;
+
+    const response = await client.responses.create({
+      model: "gpt-4.1-mini",
+      input: `
+You are an EMT instructor helping a student.
+
+Scenario:
+${selectedScenario}
+
+Student question:
+${studentQuestion}
+
+Give a clear, short teaching answer.
+Explain what the student should do and why.
+Use EMT-level language.
+Do not roleplay as the patient.
+`
+    });
+
+    const reply = getText(response);
+
+    res.json({ reply });
+  } catch (err) {
+    console.error("INSTRUCTOR ERROR:", err);
+
+    res.status(500).json({
+      reply: "Instructor error. Check Render logs."
+    });
+  }
+});
+
 app.post("/grade", async (req, res) => {
   try {
     const { studentAnswer, scenario } = req.body;
