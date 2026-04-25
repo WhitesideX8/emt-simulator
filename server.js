@@ -156,44 +156,9 @@ Answer:
   }
 });
 
-app.post("/treatment", async (req, res) => {
-  try {
-    const { scenario } = req.body;
-    const selectedScenario = scenarios[scenario] || scenarios.chestPain;
-
-    const response = await client.responses.create({
-      model: "gpt-4.1-mini",
-      input: `
-You are an EMT instructor.
-
-Scenario:
-${selectedScenario}
-
-Give the appropriate EMT treatment plan.
-
-Rules:
-- EMT level only.
-- Use short numbered steps.
-- Include assessment, immediate care, transport, and reassessment.
-- Be direct and practical.
-- Do not include advanced ALS-only treatments.
-
-Treatment plan:
-`
-    });
-
-    res.json({ treatment: getText(response) });
-  } catch (err) {
-    console.error("TREATMENT ERROR:", err);
-    res.status(500).json({
-      treatment: "Treatment error. Check Render logs."
-    });
-  }
-});
-
 app.post("/grade", async (req, res) => {
   try {
-    const { studentAnswer, scenario } = req.body;
+    const { studentAnswer, treatmentPlan, scenario } = req.body;
     const selectedScenario = scenarios[scenario] || scenarios.chestPain;
 
     const response = await client.responses.create({
@@ -204,10 +169,13 @@ You are an EMT instructor evaluating a student.
 Scenario:
 ${selectedScenario}
 
-Student interaction:
-${studentAnswer}
+Student assessment questions/interactions:
+${studentAnswer || "None"}
 
-Grade the student based on EMT patient assessment.
+Student EMT treatment plan:
+${treatmentPlan || "None"}
+
+Grade the student based on EMT patient assessment and EMT treatment.
 
 Give feedback in this format:
 
@@ -217,7 +185,10 @@ What they did right:
 What they missed:
 -
 
-Correct treatment:
+Treatment plan feedback:
+-
+
+Correct EMT treatment:
 1.
 2.
 3.
