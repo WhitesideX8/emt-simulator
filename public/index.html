@@ -21,9 +21,20 @@
       margin: 10px auto;
     }
 
-    h1 { margin: 6px 0; font-size: 26px; }
-    h2 { margin: 6px 0; font-size: 19px; }
-    h3 { margin: 5px 0; font-size: 15px; }
+    h1 {
+      margin: 6px 0;
+      font-size: 26px;
+    }
+
+    h2 {
+      margin: 6px 0;
+      font-size: 19px;
+    }
+
+    h3 {
+      margin: 5px 0;
+      font-size: 15px;
+    }
 
     select,
     textarea,
@@ -35,7 +46,7 @@
 
     textarea {
       width: 100%;
-      height: 75px;
+      height: 70px;
       box-sizing: border-box;
       resize: vertical;
     }
@@ -56,7 +67,7 @@
     .box {
       width: 100%;
       min-height: 45px;
-      max-height: 95px;
+      max-height: 90px;
       overflow-y: auto;
       border: 1px solid #ccc;
       background: #f7f7f7;
@@ -65,6 +76,11 @@
       white-space: pre-wrap;
       text-align: left;
       box-sizing: border-box;
+    }
+
+    #treatmentResponse {
+      border: 2px solid green;
+      background-color: #eefbea;
     }
   </style>
 </head>
@@ -85,7 +101,7 @@
     <h2 id="scenarioTitle">Chest Pain Scenario</h2>
 
     <h3>Scenario Information:</h3>
-    <div id="scenarioInfo" class="box"></div>
+    <div id="scenarioInfo" class="box">Scenario information will appear here.</div>
 
     <textarea id="studentQuestion" placeholder="Ask a question..."></textarea>
 
@@ -98,16 +114,16 @@
     </div>
 
     <h3>Patient Response:</h3>
-    <div id="patientResponse" class="box"></div>
+    <div id="patientResponse" class="box">Patient response will appear here.</div>
 
     <h3>Instructor Response:</h3>
-    <div id="instructorResponse" class="box"></div>
+    <div id="instructorResponse" class="box">Instructor answer will appear here.</div>
 
     <h3>EMT Treatment:</h3>
-    <div id="treatmentResponse" class="box"></div>
+    <div id="treatmentResponse" class="box">Treatment plan will appear here.</div>
 
     <h3>Feedback:</h3>
-    <div id="feedback" class="box"></div>
+    <div id="feedback" class="box">Feedback will appear here.</div>
   </div>
 
   <script>
@@ -141,10 +157,10 @@
       document.getElementById("scenarioTitle").innerText = selected.title;
       document.getElementById("scenarioInfo").innerText = selected.info;
 
-      document.getElementById("patientResponse").innerText = "";
-      document.getElementById("instructorResponse").innerText = "";
-      document.getElementById("treatmentResponse").innerText = "";
-      document.getElementById("feedback").innerText = "";
+      document.getElementById("patientResponse").innerText = "Patient response will appear here.";
+      document.getElementById("instructorResponse").innerText = "Instructor answer will appear here.";
+      document.getElementById("treatmentResponse").innerText = "Treatment plan will appear here.";
+      document.getElementById("feedback").innerText = "Feedback will appear here.";
       document.getElementById("studentQuestion").value = "";
     }
 
