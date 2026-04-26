@@ -9,9 +9,22 @@
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      background-color: blue;
+
+      /* NEW BACKGROUND IMAGE */
+      background: url('https://raw.githubusercontent.com/WhitesideX8/emt-simulator/main/public/IMG_0989.jpg') no-repeat center center fixed;
+      background-size: cover;
+
       display: flex;
       justify-content: center;
+    }
+
+    /* OPTIONAL DARK OVERLAY FOR READABILITY */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 0;
     }
 
     .container {
@@ -19,11 +32,17 @@
       width: 95%;
       max-width: 900px;
       margin: 10px auto;
+      position: relative;
+      z-index: 1;
     }
 
-    h1 { margin: 6px 0; font-size: 26px; }
-    h2 { margin: 6px 0; font-size: 19px; }
-    h3 { margin: 5px 0; font-size: 15px; }
+    h1 { margin: 6px 0; font-size: 26px; color: white; }
+    h2 { margin: 6px 0; font-size: 19px; color: white; }
+    h3 { margin: 5px 0; font-size: 15px; color: white; }
+
+    label, strong {
+      color: white;
+    }
 
     select,
     textarea,
@@ -65,12 +84,13 @@
       max-height: 90px;
       overflow-y: auto;
       border: 1px solid #ccc;
-      background: #f7f7f7;
+      background: rgba(255,255,255,0.9);
       padding: 8px;
       margin-top: 5px;
       white-space: pre-wrap;
       text-align: left;
       box-sizing: border-box;
+      border-radius: 6px;
     }
   </style>
 </head>
