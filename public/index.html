@@ -1,43 +1,251 @@
-import express from "express";
-import OpenAI from "openai";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EMT Patient Simulation</title>
 
-const app = express();
-const client = new OpenAI();
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: blue;
+      display: flex;
+      justify-content: center;
+    }
 
-app.use(express.json());
-app.use(express.static("public"));
+    .container {
+      text-align: center;
+      width: 95%;
+      max-width: 900px;
+      margin: 10px auto;
+    }
 
-app.post("/grade", async (req, res) => {
-  try {
-    const { studentAnswer } = req.body;
+    h1 { margin: 6px 0; font-size: 26px; }
+    h2 { margin: 6px 0; font-size: 19px; }
+    h3 { margin: 5px 0; font-size: 15px; }
 
-    const response = await client.responses.create({
-      model: "gpt-5.3",
-      input: `
-You are an EMT instructor.
+    select,
+    textarea,
+    button {
+      font-size: 14px;
+      padding: 8px;
+      margin-top: 5px;
+    }
 
-Scenario:
-Chest pain patient, pale, sweaty.
+    textarea {
+      width: 100%;
+      height: 75px;
+      box-sizing: border-box;
+      resize: vertical;
+    }
 
-Student answer:
-${studentAnswer}
+    #treatmentPlan {
+      height: 100px;
+      background-color: #eefbea;
+      border: 2px solid green;
+    }
 
-Give feedback:
-- What they did right
-- What they missed
-- Correct treatment
-- Score /10
-`
-    });
+    button {
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 3px;
+    }
 
-    res.json({ feedback: response.output_text });
-  } catch (err) {
-    res.json({ feedback: "Error getting response." });
-  }
-});
+    button:hover {
+      background: darkgreen;
+    }
 
-const PORT = process.env.PORT || 3000;
+    .box {
+      width: 100%;
+      min-height: 45px;
+      max-height: 90px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      background: #f7f7f7;
+      padding: 8px;
+      margin-top: 5px;
+      white-space: pre-wrap;
+      text-align: left;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
 
-app.listen(PORT, () => {
-  console.log("Server running on port " + PORT);
-});
+<body>
+  <div class="container">
+    <h1>EMT Patient Simulation</h1>
+
+    <label><strong>Select Scenario:</strong></label><br />
+
+    <select id="scenarioSelect" onchange="resetScenario()">
+      <option value="chestPain">Chest Pain</option>
+      <option value="shortnessOfBreath">Shortness of Breath</option>
+      <option value="stroke">Stroke</option>
+      <option value="diabetic">Diabetic Emergency</option>
+    </select>
+
+    <h2 id="scenarioTitle">Chest Pain Scenario</h2>
+
+    <h3>Scenario Information:</h3>
+    <div id="scenarioInfo" class="box">Scenario information will appear here.</div>
+
+    <textarea id="studentQuestion" placeholder="Ask the patient or instructor a question..."></textarea>
+
+    <div>
+      <button onclick="askPatient()">Ask Patient</button>
+      <button onclick="askInstructor()">Ask Instructor</button>
+      <button onclick="gradeStudent()">Submit for Grading</button>
+      <button onclick="resetScenario()">Reset</button>
+    </div>
+
+    <h3>Patient Response:</h3>
+    <div id="patientResponse" class="box">Patient response will appear here.</div>
+
+    <h3>Instructor Response:</h3>
+    <div id="instructorResponse" class="box">Instructor answer will appear here.</div>
+
+    <h3>EMT Treatment Plan:</h3>
+    <textarea
+      id="treatmentPlan"
+      placeholder="Student enters EMT treatment plan here..."
+    ></textarea>
+
+    <h3>Feedback:</h3>
+    <div id="feedback" class="box">Feedback will appear here.</div>
+  </div>
+
+  <script>
+    let history = "";
+
+    const scenarioDetails = {
+      chestPain: {
+        title: "Chest Pain Scenario",
+        info: "58-year-old male with chest pain. Pale and sweaty. Pressure radiating to left arm."
+      },
+      shortnessOfBreath: {
+        title: "Shortness of Breath Scenario",
+        info: "67-year-old female with COPD. Difficulty breathing, speaking in short sentences."
+      },
+      stroke: {
+        title: "Stroke Scenario",
+        info: "72-year-old male with slurred speech and right-sided weakness."
+      },
+      diabetic: {
+        title: "Diabetic Emergency Scenario",
+        info: "45-year-old diabetic, shaky, sweaty, confused. Took insulin, skipped meal."
+      }
+    };
+
+    function resetScenario() {
+      history = "";
+
+      const scenario = document.getElementById("scenarioSelect").value;
+      const selected = scenarioDetails[scenario];
+
+      document.getElementById("scenarioTitle").innerText = selected.title;
+      document.getElementById("scenarioInfo").innerText = selected.info;
+
+      document.getElementById("patientResponse").innerText = "Patient response will appear here.";
+      document.getElementById("instructorResponse").innerText = "Instructor answer will appear here.";
+      document.getElementById("feedback").innerText = "Feedback will appear here.";
+
+      document.getElementById("studentQuestion").value = "";
+      document.getElementById("treatmentPlan").value = "";
+    }
+
+    async function askPatient() {
+      const question = document.getElementById("studentQuestion").value.trim();
+      const scenario = document.getElementById("scenarioSelect").value;
+
+      if (!question) {
+        document.getElementById("patientResponse").innerText = "Ask a question first.";
+        return;
+      }
+
+      try {
+        const res = await fetch("/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            studentQuestion: question,
+            history: history,
+            scenario: scenario
+          })
+        });
+
+        const data = await res.json();
+
+        history += `Student: ${question}\n`;
+        history += `Patient: ${data.reply}\n\n`;
+
+        document.getElementById("patientResponse").innerText = data.reply;
+        document.getElementById("studentQuestion").value = "";
+      } catch (err) {
+        document.getElementById("patientResponse").innerText = "Error contacting server.";
+      }
+    }
+
+    async function askInstructor() {
+      const question = document.getElementById("studentQuestion").value.trim();
+      const scenario = document.getElementById("scenarioSelect").value;
+
+      if (!question) {
+        document.getElementById("instructorResponse").innerText = "Ask a question first.";
+        return;
+      }
+
+      try {
+        const res = await fetch("/instructor", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            studentQuestion: question,
+            scenario: scenario
+          })
+        });
+
+        const data = await res.json();
+
+        document.getElementById("instructorResponse").innerText = data.reply;
+      } catch (err) {
+        document.getElementById("instructorResponse").innerText = "Error contacting instructor.";
+      }
+    }
+
+    async function gradeStudent() {
+      const scenario = document.getElementById("scenarioSelect").value;
+      const treatmentPlan = document.getElementById("treatmentPlan").value.trim();
+
+      if (!history && !treatmentPlan) {
+        document.getElementById("feedback").innerText =
+          "Ask patient questions or enter a treatment plan first.";
+        return;
+      }
+
+      try {
+        const res = await fetch("/grade", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            studentAnswer: history,
+            treatmentPlan: treatmentPlan,
+            scenario: scenario
+          })
+        });
+
+        const data = await res.json();
+
+        document.getElementById("feedback").innerText = data.feedback;
+      } catch (err) {
+        document.getElementById("feedback").innerText = "Error grading.";
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", resetScenario);
+  </script>
+</body>
+</html>
