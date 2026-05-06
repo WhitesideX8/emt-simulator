@@ -6,7 +6,6 @@
   <title>Chest Pain Scenario</title>
 
   <style>
-
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -57,14 +56,6 @@
       box-sizing: border-box;
     }
 
-    #treatmentPlan {
-      width: 60%;
-      height: 100px;
-      background: #e6ffe6;
-      border: 2px solid green;
-      font-weight: bold;
-    }
-
     button {
       background: green;
       color: white;
@@ -92,11 +83,9 @@
       width: 45%;
       height: 60px;
       margin: 8px auto;
-
       display: flex;
       justify-content: center;
       align-items: center;
-
       text-align: center;
     }
 
@@ -113,7 +102,8 @@
       min-width: 300px;
     }
 
-    #patientResponse {
+    #patientResponse,
+    #instructorResponse {
       width: 70%;
       min-height: 60px;
       max-height: 120px;
@@ -121,12 +111,16 @@
       text-align: left;
     }
 
-    #instructorResponse {
-      width: 70%;
-      min-height: 60px;
-      max-height: 120px;
-      margin: auto;
-      text-align: left;
+    #treatmentPlan {
+      width: 40%;
+      max-width: 600px;
+      min-height: 80px;
+      max-height: 180px;
+      background: #e6ffe6;
+      border: 2px solid green;
+      font-weight: bold;
+      margin: 10px auto;
+      display: block;
     }
 
     #feedback {
@@ -140,12 +134,10 @@
       margin: 10px auto;
       text-align: left;
     }
-
   </style>
 </head>
 
 <body>
-
   <div class="container">
 
     <h1>EMT Patient Simulation</h1>
@@ -163,34 +155,25 @@
 
     <div>
       <button onclick="askPatient()">Ask Patient</button>
-
       <button onclick="askInstructor()">Ask Instructor</button>
-
       <button onclick="gradeStudent()">Submit for Grading</button>
-
       <button onclick="resetScenario()">Reset</button>
     </div>
 
     <div class="response-row">
 
       <div class="response-column">
-
         <h3>Patient Response:</h3>
-
         <div id="patientResponse" class="box">
           Patient response will appear here.
         </div>
-
       </div>
 
       <div class="response-column">
-
         <h3>Instructor Response:</h3>
-
         <div id="instructorResponse" class="box">
           Instructor answer will appear here.
         </div>
-
       </div>
 
     </div>
@@ -211,13 +194,10 @@
   </div>
 
   <script>
-
     let history = "";
-
     const scenario = "chestPain";
 
     function resetScenario() {
-
       history = "";
 
       document.getElementById("patientResponse").innerText =
@@ -230,33 +210,24 @@
         "Feedback will appear here.";
 
       document.getElementById("studentQuestion").value = "";
-
       document.getElementById("treatmentPlan").value = "";
     }
 
     async function askPatient() {
-
-      const question =
-        document.getElementById("studentQuestion").value.trim();
+      const question = document.getElementById("studentQuestion").value.trim();
 
       if (!question) {
-
         document.getElementById("patientResponse").innerText =
           "Ask a question first.";
-
         return;
       }
 
       try {
-
         const res = await fetch("/ask", {
-
           method: "POST",
-
           headers: {
             "Content-Type": "application/json"
           },
-
           body: JSON.stringify({
             studentQuestion: question,
             history: history,
@@ -267,44 +238,32 @@
         const data = await res.json();
 
         history += `Student: ${question}\n`;
-
         history += `Patient: ${data.reply}\n\n`;
 
-        document.getElementById("patientResponse").innerText =
-          data.reply;
-
+        document.getElementById("patientResponse").innerText = data.reply;
         document.getElementById("studentQuestion").value = "";
 
       } catch {
-
         document.getElementById("patientResponse").innerText =
           "Error contacting server.";
       }
     }
 
     async function askInstructor() {
-
-      const question =
-        document.getElementById("studentQuestion").value.trim();
+      const question = document.getElementById("studentQuestion").value.trim();
 
       if (!question) {
-
         document.getElementById("instructorResponse").innerText =
           "Ask a question first.";
-
         return;
       }
 
       try {
-
         const res = await fetch("/instructor", {
-
           method: "POST",
-
           headers: {
             "Content-Type": "application/json"
           },
-
           body: JSON.stringify({
             studentQuestion: question,
             scenario: scenario
@@ -313,39 +272,30 @@
 
         const data = await res.json();
 
-        document.getElementById("instructorResponse").innerText =
-          data.reply;
+        document.getElementById("instructorResponse").innerText = data.reply;
 
       } catch {
-
         document.getElementById("instructorResponse").innerText =
           "Error contacting instructor.";
       }
     }
 
     async function gradeStudent() {
-
       const treatmentPlan =
         document.getElementById("treatmentPlan").value.trim();
 
       if (!history && !treatmentPlan) {
-
         document.getElementById("feedback").innerText =
           "Ask patient questions or enter a treatment plan first.";
-
         return;
       }
 
       try {
-
         const res = await fetch("/grade", {
-
           method: "POST",
-
           headers: {
             "Content-Type": "application/json"
           },
-
           body: JSON.stringify({
             studentAnswer: history,
             treatmentPlan: treatmentPlan,
@@ -355,19 +305,15 @@
 
         const data = await res.json();
 
-        document.getElementById("feedback").innerText =
-          data.feedback;
+        document.getElementById("feedback").innerText = data.feedback;
 
       } catch {
-
         document.getElementById("feedback").innerText =
           "Error grading.";
       }
     }
 
     window.addEventListener("DOMContentLoaded", resetScenario);
-
   </script>
-
 </body>
 </html>
