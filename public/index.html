@@ -1,6 +1,79 @@
-<h1>EMT Simulation Scenarios</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EMT Simulation Scenarios</title>
 
-<a href="chestpain.html"><button>Chest Pain</button></a>
-<a href="sob.html"><button>Shortness of Breath</button></a>
-<a href="stroke.html"><button>Stroke</button></a>
-<a href="diabetic.html"><button>Diabetic Emergency</button></a>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url('https://raw.githubusercontent.com/WhitesideX8/emt-simulator/main/public/IMG_0989.jpg') no-repeat center center fixed;
+      background-size: cover;
+      text-align: center;
+      color: white;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      padding-top: 40px;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+      font-size: 42px;
+    }
+
+    button {
+      display: block;
+      width: 300px;
+      margin: 15px auto;
+      padding: 15px;
+      font-size: 20px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: darkgreen;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <h1>EMT Simulation Scenarios</h1>
+
+    <a href="chestpain.html">
+      <button>Chest Pain</button>
+    </a>
+
+    <a href="sob.html">
+      <button>Shortness of Breath</button>
+    </a>
+
+    <a href="stroke.html">
+      <button>Stroke</button>
+    </a>
+
+    <a href="diabetic.html">
+      <button>Diabetic Emergency</button>
+    </a>
+
+  </div>
+</body>
+</html>
