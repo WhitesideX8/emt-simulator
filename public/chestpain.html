@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chest Pain Scenario</title>
 
   <style>
@@ -33,7 +33,8 @@
       z-index: 1;
     }
 
-    h1, h2, h3 {
+    h1,
+    h3 {
       color: white;
     }
 
@@ -148,8 +149,6 @@
 
     <h1>EMT Patient Simulation</h1>
 
-    <h2>Chest Pain Scenario</h2>
-
     <h3>Scenario Information:</h3>
 
     <div id="scenarioInfo" class="box">
@@ -163,8 +162,11 @@
 
     <div>
       <button onclick="askPatient()">Ask Patient</button>
+
       <button onclick="askInstructor()">Ask Instructor</button>
+
       <button onclick="gradeStudent()">Submit for Grading</button>
+
       <button onclick="resetScenario()">Reset</button>
     </div>
 
@@ -210,6 +212,7 @@
   <script>
 
     let history = "";
+
     const scenario = "chestPain";
 
     function resetScenario() {
@@ -226,6 +229,7 @@
         "Feedback will appear here.";
 
       document.getElementById("studentQuestion").value = "";
+
       document.getElementById("treatmentPlan").value = "";
     }
 
@@ -262,6 +266,7 @@
         const data = await res.json();
 
         history += `Student: ${question}\n`;
+
         history += `Patient: ${data.reply}\n\n`;
 
         document.getElementById("patientResponse").innerText =
