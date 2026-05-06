@@ -126,6 +126,8 @@
 
     #scenarioInfo {
       width: 45%;
+      height: 15px;
+      min-height: 15px;
       margin: 8px auto;
     }
 
@@ -144,38 +146,52 @@
 
 <body>
   <div class="container">
+
     <h1>EMT Patient Simulation</h1>
 
     <h2>Chest Pain Scenario</h2>
 
     <h3>Scenario Information:</h3>
+
     <div id="scenarioInfo" class="box">
       You are dispatched to a home for chest pain.
     </div>
 
-    <textarea id="studentQuestion" placeholder="Ask the patient or instructor a question..."></textarea>
+    <textarea
+      id="studentQuestion"
+      placeholder="Ask the patient or instructor a question..."
+    ></textarea>
 
     <div>
       <button onclick="askPatient()">Ask Patient</button>
+
       <button onclick="askInstructor()">Ask Instructor</button>
+
       <button onclick="gradeStudent()">Submit for Grading</button>
+
       <button onclick="resetScenario()">Reset</button>
     </div>
 
     <div class="response-row">
 
       <div class="response-column">
+
         <h3>Patient Response:</h3>
+
         <div id="patientResponse" class="box">
           Patient response will appear here.
         </div>
+
       </div>
 
       <div class="response-column">
+
         <h3>Instructor Response:</h3>
+
         <div id="instructorResponse" class="box">
           Instructor answer will appear here.
         </div>
+
       </div>
 
     </div>
@@ -192,13 +208,17 @@
     <div id="feedback" class="box">
       Feedback will appear here.
     </div>
+
   </div>
 
   <script>
+
     let history = "";
+
     const scenario = "chestPain";
 
     function resetScenario() {
+
       history = "";
 
       document.getElementById("patientResponse").innerText =
@@ -211,24 +231,33 @@
         "Feedback will appear here.";
 
       document.getElementById("studentQuestion").value = "";
+
       document.getElementById("treatmentPlan").value = "";
     }
 
     async function askPatient() {
-      const question = document.getElementById("studentQuestion").value.trim();
+
+      const question =
+        document.getElementById("studentQuestion").value.trim();
 
       if (!question) {
+
         document.getElementById("patientResponse").innerText =
           "Ask a question first.";
+
         return;
       }
 
       try {
+
         const res = await fetch("/ask", {
+
           method: "POST",
+
           headers: {
             "Content-Type": "application/json"
           },
+
           body: JSON.stringify({
             studentQuestion: question,
             history: history,
@@ -239,9 +268,11 @@
         const data = await res.json();
 
         history += `Student: ${question}\n`;
+
         history += `Patient: ${data.reply}\n\n`;
 
-        document.getElementById("patientResponse").innerText = data.reply;
+        document.getElementById("patientResponse").innerText =
+          data.reply;
 
         document.getElementById("studentQuestion").value = "";
 
@@ -254,7 +285,8 @@
 
     async function askInstructor() {
 
-      const question = document.getElementById("studentQuestion").value.trim();
+      const question =
+        document.getElementById("studentQuestion").value.trim();
 
       if (!question) {
 
@@ -267,6 +299,7 @@
       try {
 
         const res = await fetch("/instructor", {
+
           method: "POST",
 
           headers: {
@@ -334,6 +367,7 @@
     }
 
     window.addEventListener("DOMContentLoaded", resetScenario);
+
   </script>
 </body>
 </html>
