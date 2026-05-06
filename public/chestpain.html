@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Chest Pain Scenario</title>
 
   <style>
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -19,41 +20,21 @@
       content: "";
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.45);
+      background: rgba(0,0,0,0.45);
       z-index: 0;
     }
 
     .container {
-      text-align: center;
       width: 95%;
       max-width: 1200px;
       margin: 10px auto;
+      text-align: center;
       position: relative;
       z-index: 1;
     }
 
-    h1 {
-      margin: 15px 0 5px;
-      font-size: 30px;
+    h1, h2, h3 {
       color: white;
-    }
-
-    h2 {
-      margin: 8px 0;
-      font-size: 24px;
-      color: white;
-    }
-
-    h3 {
-      margin: 8px 0 5px;
-      font-size: 18px;
-      color: white;
-    }
-
-    label,
-    strong {
-      color: white;
-      font-size: 18px;
     }
 
     textarea,
@@ -68,17 +49,17 @@
       height: 60px;
       margin: 8px auto;
       display: block;
-      box-sizing: border-box;
-      resize: vertical;
       border-radius: 4px;
       border: 1px solid #ccc;
       background: #cfcfcf;
+      resize: vertical;
+      box-sizing: border-box;
     }
 
     #treatmentPlan {
       width: 60%;
       height: 100px;
-      background-color: #e6ffe6;
+      background: #e6ffe6;
       border: 2px solid green;
       font-weight: bold;
     }
@@ -97,18 +78,25 @@
     }
 
     .box {
-      width: 100%;
-      min-height: 40px;
-      max-height: 120px;
-      overflow-y: auto;
-      border: 1px solid #ccc;
       background: #cfcfcf;
-      padding: 8px;
-      white-space: pre-wrap;
-      text-align: left;
-      box-sizing: border-box;
+      border: 1px solid #ccc;
       border-radius: 6px;
+      padding: 8px;
       font-size: 16px;
+      overflow-y: auto;
+      box-sizing: border-box;
+    }
+
+    #scenarioInfo {
+      width: 45%;
+      height: 60px;
+      margin: 8px auto;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      text-align: center;
     }
 
     .response-row {
@@ -124,35 +112,44 @@
       min-width: 300px;
     }
 
-   #scenarioInfo {
-  width: 45%;
-  height: 60px;
-  margin: 8px auto;
+    #patientResponse {
+      width: 70%;
+      min-height: 60px;
+      max-height: 120px;
+      margin: auto;
+      text-align: left;
+    }
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    #instructorResponse {
+      width: 100%;
+      min-height: 60px;
+      max-height: 120px;
+      text-align: left;
+    }
 
-  text-align: center;
-}
     #feedback {
-  width: 40%;
-  max-width: 600px;
-  min-height: 80px;
-  max-height: 180px;
-  background: #f4f4f4;
-  border: 2px solid #333;
-  font-size: 17px;
-  margin: 10px auto;
-} 
+      width: 40%;
+      max-width: 600px;
+      min-height: 80px;
+      max-height: 180px;
+      background: #f4f4f4;
+      border: 2px solid #333;
+      font-size: 17px;
+      margin: 10px auto;
+      text-align: left;
+    }
+
   </style>
 </head>
 
 <body>
+
   <div class="container">
 
     <h1>EMT Patient Simulation</h1>
-    
+
+    <h2>Chest Pain Scenario</h2>
+
     <h3>Scenario Information:</h3>
 
     <div id="scenarioInfo" class="box">
@@ -166,11 +163,8 @@
 
     <div>
       <button onclick="askPatient()">Ask Patient</button>
-
       <button onclick="askInstructor()">Ask Instructor</button>
-
       <button onclick="gradeStudent()">Submit for Grading</button>
-
       <button onclick="resetScenario()">Reset</button>
     </div>
 
@@ -216,7 +210,6 @@
   <script>
 
     let history = "";
-
     const scenario = "chestPain";
 
     function resetScenario() {
@@ -233,7 +226,6 @@
         "Feedback will appear here.";
 
       document.getElementById("studentQuestion").value = "";
-
       document.getElementById("treatmentPlan").value = "";
     }
 
@@ -270,7 +262,6 @@
         const data = await res.json();
 
         history += `Student: ${question}\n`;
-
         history += `Patient: ${data.reply}\n\n`;
 
         document.getElementById("patientResponse").innerText =
@@ -278,7 +269,7 @@
 
         document.getElementById("studentQuestion").value = "";
 
-      } catch (err) {
+      } catch {
 
         document.getElementById("patientResponse").innerText =
           "Error contacting server.";
@@ -319,7 +310,7 @@
         document.getElementById("instructorResponse").innerText =
           data.reply;
 
-      } catch (err) {
+      } catch {
 
         document.getElementById("instructorResponse").innerText =
           "Error contacting instructor.";
@@ -361,7 +352,7 @@
         document.getElementById("feedback").innerText =
           data.feedback;
 
-      } catch (err) {
+      } catch {
 
         document.getElementById("feedback").innerText =
           "Error grading.";
@@ -371,5 +362,6 @@
     window.addEventListener("DOMContentLoaded", resetScenario);
 
   </script>
+
 </body>
 </html>
