@@ -27,22 +27,38 @@
       position: relative;
       z-index: 1;
       width: 90%;
-      max-width: 1000px;
+      max-width: 1100px;
       margin: auto;
       padding-top: 30px;
     }
 
     h1 {
-      margin-bottom: 25px;
+      margin-bottom: 20px;
     }
 
     .box {
       background: rgba(70,70,70,0.9);
       border: 2px solid white;
       border-radius: 10px;
-      padding: 20px;
-      margin: 15px auto;
+      padding: 18px;
+      margin: 12px auto;
       text-align: left;
+    }
+
+    .top-box {
+      width: 75%;
+    }
+
+    .row {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      align-items: stretch;
+      margin-top: 15px;
+    }
+
+    .half-box {
+      width: 45%;
     }
 
     input, textarea {
@@ -74,8 +90,20 @@
       background: darkgreen;
     }
 
-    #patientResponse, #feedback {
-      min-height: 90px;
+    #patientResponse,
+    #feedback {
+      min-height: 120px;
+    }
+
+    @media (max-width: 800px) {
+      .row {
+        flex-direction: column;
+      }
+
+      .half-box,
+      .top-box {
+        width: 90%;
+      }
     }
   </style>
 </head>
@@ -86,7 +114,7 @@
 
   <h1>Chest Pain Scenario</h1>
 
-  <div class="box">
+  <div class="box top-box">
     <h2>Dispatch Information</h2>
     <p>
       You are dispatched to a private residence for a 58-year-old male complaining of chest pain.
@@ -94,37 +122,44 @@
     </p>
   </div>
 
-  <div class="box">
-    <h2>Ask the Patient a Question</h2>
+  <div class="row">
 
-    <input 
-      type="text" 
-      id="questionInput" 
-      placeholder="Example: When did the pain start?"
-    />
+    <div class="box half-box">
+      <h2>Ask the Patient</h2>
 
-    <button onclick="askPatient()">Ask Patient</button>
+      <input 
+        type="text" 
+        id="questionInput" 
+        placeholder="Example: When did the pain start?"
+      />
+
+      <button onclick="askPatient()">Ask Patient</button>
+    </div>
+
+    <div class="box half-box" id="patientResponse">
+      <h2>Patient Response</h2>
+      <p id="responseText">Ask the patient a question to begin.</p>
+    </div>
+
   </div>
 
-  <div class="box" id="patientResponse">
-    <h2>Patient Response</h2>
-    <p id="responseText">Ask the patient a question to begin.</p>
-  </div>
+  <div class="row">
 
-  <div class="box">
-    <h2>EMT Treatment Plan</h2>
+    <div class="box half-box">
+      <h2>EMT Treatment Plan</h2>
 
-    <textarea 
-      id="treatmentInput" 
-      placeholder="Enter your treatment plan here...">
-    </textarea>
+      <textarea 
+        id="treatmentInput" 
+        placeholder="Enter your treatment plan here..."></textarea>
 
-    <button onclick="checkTreatment()">Submit Treatment</button>
-  </div>
+      <button onclick="checkTreatment()">Submit Treatment</button>
+    </div>
 
-  <div class="box" id="feedback">
-    <h2>Instructor Feedback</h2>
-    <p id="feedbackText">Awaiting treatment plan...</p>
+    <div class="box half-box" id="feedback">
+      <h2>Instructor Feedback</h2>
+      <p id="feedbackText">Awaiting treatment plan...</p>
+    </div>
+
   </div>
 
 </div>
@@ -133,7 +168,6 @@
   const patient = {
     name: "Robert Jenkins",
     age: 58,
-    complaint: "Chest pain",
     onset: "The pain started about 20 minutes ago while I was shoveling snow.",
     provocation: "It does not really get better when I rest. Moving around makes me feel worse.",
     quality: "It feels like heavy pressure, like an elephant is sitting on my chest.",
@@ -157,63 +191,25 @@
     let question = document.getElementById("questionInput").value.toLowerCase();
     let response = "";
 
-    if (question.includes("name")) {
-      response = "My name is " + patient.name + ".";
-    } 
-    else if (question.includes("age") || question.includes("old")) {
-      response = "I am " + patient.age + " years old.";
-    } 
-    else if (question.includes("onset") || question.includes("start") || question.includes("begin")) {
-      response = patient.onset;
-    } 
-    else if (question.includes("provoke") || question.includes("better") || question.includes("worse")) {
-      response = patient.provocation;
-    } 
-    else if (question.includes("quality") || question.includes("feel") || question.includes("describe")) {
-      response = patient.quality;
-    } 
-    else if (question.includes("radiate") || question.includes("travel") || question.includes("arm") || question.includes("jaw")) {
-      response = patient.radiation;
-    } 
-    else if (question.includes("severity") || question.includes("scale") || question.includes("pain level") || question.includes("1-10")) {
-      response = patient.severity;
-    } 
-    else if (question.includes("time") || question.includes("long")) {
-      response = patient.time;
-    } 
-    else if (question.includes("breath") || question.includes("short")) {
-      response = patient.breathing;
-    } 
-    else if (question.includes("nausea") || question.includes("vomit")) {
-      response = patient.nausea;
-    } 
-    else if (question.includes("allerg")) {
-      response = patient.allergies;
-    } 
-    else if (question.includes("medication") || question.includes("meds")) {
-      response = patient.medications;
-    } 
-    else if (question.includes("history") || question.includes("medical")) {
-      response = patient.history;
-    } 
-    else if (question.includes("eat") || question.includes("drink") || question.includes("intake")) {
-      response = patient.lastIntake;
-    } 
-    else if (question.includes("happen") || question.includes("doing") || question.includes("event")) {
-      response = patient.events;
-    } 
-    else if (question.includes("vital") || question.includes("blood pressure") || question.includes("pulse") || question.includes("oxygen")) {
-      response = patient.vitals;
-    } 
-    else if (question.includes("aspirin")) {
-      response = patient.aspirin;
-    } 
-    else if (question.includes("nitro")) {
-      response = patient.nitro;
-    } 
-    else {
-      response = patient.default;
-    }
+    if (question.includes("name")) response = "My name is " + patient.name + ".";
+    else if (question.includes("age") || question.includes("old")) response = "I am " + patient.age + " years old.";
+    else if (question.includes("start") || question.includes("begin") || question.includes("onset")) response = patient.onset;
+    else if (question.includes("better") || question.includes("worse") || question.includes("provoke")) response = patient.provocation;
+    else if (question.includes("feel") || question.includes("describe") || question.includes("quality")) response = patient.quality;
+    else if (question.includes("arm") || question.includes("jaw") || question.includes("radiate")) response = patient.radiation;
+    else if (question.includes("scale") || question.includes("severity") || question.includes("1-10")) response = patient.severity;
+    else if (question.includes("long") || question.includes("time")) response = patient.time;
+    else if (question.includes("breath") || question.includes("short")) response = patient.breathing;
+    else if (question.includes("nausea") || question.includes("vomit")) response = patient.nausea;
+    else if (question.includes("allerg")) response = patient.allergies;
+    else if (question.includes("medication") || question.includes("meds")) response = patient.medications;
+    else if (question.includes("history") || question.includes("medical")) response = patient.history;
+    else if (question.includes("eat") || question.includes("drink") || question.includes("intake")) response = patient.lastIntake;
+    else if (question.includes("happen") || question.includes("doing") || question.includes("event")) response = patient.events;
+    else if (question.includes("vital") || question.includes("blood pressure") || question.includes("pulse") || question.includes("oxygen")) response = patient.vitals;
+    else if (question.includes("aspirin")) response = patient.aspirin;
+    else if (question.includes("nitro")) response = patient.nitro;
+    else response = patient.default;
 
     document.getElementById("responseText").innerHTML = response;
   }
@@ -235,33 +231,27 @@
     }
 
     if (treatment.includes("oxygen") || treatment.includes("o2")) {
-      feedback += "✓ Oxygen considered due to SpO2 of 92% and shortness of breath.<br><br>";
+      feedback += "✓ Oxygen considered due to SpO2 of 92%.<br><br>";
     } else {
-      feedback += "✗ Consider oxygen because the patient is short of breath with SpO2 of 92%.<br><br>";
+      feedback += "✗ Consider oxygen due to shortness of breath and SpO2 of 92%.<br><br>";
     }
 
     if (treatment.includes("aspirin")) {
       feedback += "✓ Aspirin is appropriate if no contraindications are present.<br><br>";
     } else {
-      feedback += "✗ Consider aspirin for suspected cardiac chest pain if allowed by protocol.<br><br>";
+      feedback += "✗ Consider aspirin for suspected cardiac chest pain.<br><br>";
     }
 
     if (treatment.includes("nitro") || treatment.includes("nitroglycerin")) {
-      feedback += "✓ Nitroglycerin assistance may be appropriate if prescribed, blood pressure is adequate, and protocol allows.<br><br>";
+      feedback += "✓ Nitroglycerin assistance may be appropriate if prescribed and protocol allows.<br><br>";
     } else {
-      feedback += "✗ Evaluate for prescribed nitroglycerin and follow local protocol.<br><br>";
-    }
-
-    if (treatment.includes("vitals") || treatment.includes("reassess")) {
-      feedback += "✓ Reassessment and repeat vital signs included.<br><br>";
-    } else {
-      feedback += "✗ Reassess the patient and repeat vital signs frequently.<br><br>";
+      feedback += "✗ Evaluate for prescribed nitroglycerin.<br><br>";
     }
 
     if (treatment.includes("transport") || treatment.includes("hospital")) {
       feedback += "✓ Rapid transport recognized.<br><br>";
     } else {
-      feedback += "✗ Prompt transport to an appropriate hospital is important.<br><br>";
+      feedback += "✗ Prompt transport is important.<br><br>";
     }
 
     if (
@@ -269,9 +259,9 @@
       treatment.includes("transport") &&
       (treatment.includes("oxygen") || treatment.includes("o2"))
     ) {
-      feedback += "<b>Outcome:</b> Patient remains alert. Chest pain improves slightly during transport. You give a good report to the receiving facility.";
+      feedback += "<b>Outcome:</b> Patient remains alert and chest pain improves slightly during transport.";
     } else {
-      feedback += "<b>Outcome:</b> Patient continues to have severe chest pain and worsening shortness of breath. More complete treatment and reassessment are needed.";
+      feedback += "<b>Outcome:</b> Patient continues to have severe chest pain and worsening shortness of breath.";
     }
 
     document.getElementById("feedbackText").innerHTML = feedback;
