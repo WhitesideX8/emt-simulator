@@ -1,19 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Chest Pain Scenario</title>
 
   <style>
-
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
+      font-family: Arial, sans-serif;
       background: url('https://raw.githubusercontent.com/WhitesideX8/emt-simulator/main/public/IMG_0989.jpg') no-repeat center center fixed;
       background-size: cover;
-      display: flex;
-      justify-content: center;
+      color: white;
+      text-align: center;
     }
 
     body::before {
@@ -25,125 +24,54 @@
     }
 
     .container {
-      width: 95%;
-      max-width: 1200px;
-      margin: 10px auto;
-      text-align: center;
       position: relative;
       z-index: 1;
+      width: 90%;
+      max-width: 1000px;
+      margin: auto;
+      padding-top: 30px;
     }
 
-    h1,
-    h3 {
-      color: white;
+    h1 {
+      margin-bottom: 25px;
     }
 
-    textarea,
-    button {
-      font-size: 16px;
-      padding: 8px;
-      margin-top: 5px;
-    }
-
-    textarea {
-      width: 30%;
-      height: 60px;
-      margin: 8px auto;
-      display: block;
-      border-radius: 4px;
-      border: 1px solid #555;
-      background: #a3a3a3;
-      color: white;
-      resize: vertical;
-      box-sizing: border-box;
-    }
-
-    textarea::placeholder {
-      color: #f0f0f0;
+    .box {
+      background: rgba(70,70,70,0.9);
+      border: 2px solid white;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px auto;
+      text-align: left;
     }
 
     button {
+      padding: 12px 20px;
+      font-size: 18px;
       background: green;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
-      margin: 4px;
+      margin-top: 10px;
     }
 
     button:hover {
       background: darkgreen;
     }
 
-    .box {
-      background: #a3a3a3;
-      border: 1px solid #555;
-      border-radius: 6px;
-      padding: 8px;
+    textarea {
+      width: 100%;
+      height: 120px;
       font-size: 16px;
-      overflow-y: auto;
+      padding: 10px;
+      border-radius: 8px;
+      resize: none;
       box-sizing: border-box;
-      color: white;
-    }
-
-    #scenarioInfo {
-      width: 45%;
-      height: 60px;
-      margin: 8px auto;
-
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      text-align: center;
-    }
-
-    .response-row {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-
-    .response-column {
-      width: 45%;
-      min-width: 300px;
-    }
-
-    #patientResponse,
-    #instructorResponse {
-      width: 70%;
-      min-height: 60px;
-      max-height: 120px;
-      margin: auto;
-      text-align: left;
-    }
-
-    #treatmentPlan {
-      width: 70%;
-      max-width: 600px;
-      min-height: 80px;
-      max-height: 180px;
-      background: #969696;
-      color: white;
-      border: 2px solid #444;
-      font-weight: bold;
-      margin: 10px auto;
-      display: block;
     }
 
     #feedback {
-      width: 70%;
-      max-width: 600px;
-      min-height: 80px;
-      max-height: 180px;
-      background: #969696;
-      color: white;
-      border: 2px solid #444;
-      font-size: 17px;
-      margin: 10px auto;
-      text-align: left;
+      min-height: 100px;
     }
 
   </style>
@@ -151,237 +79,122 @@
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <h1>EMT Patient Simulation</h1>
+  <h1>Chest Pain Scenario</h1>
 
-    <h3>Scenario Information:</h3>
+  <!-- Patient Information -->
+  <div class="box" id="scenarioInfo">
+    <h2>Patient Information</h2>
 
-    <div id="scenarioInfo" class="box">
-      You are dispatched to a home for chest pain.
-    </div>
+    <p><b>Name:</b> Robert Jenkins</p>
+    <p><b>Age:</b> 58</p>
+    <p><b>Chief Complaint:</b> Chest Pain</p>
 
-    <textarea
-      id="studentQuestion"
-      placeholder="Ask the patient or instructor a question..."
-    ></textarea>
-
-    <div>
-      <button onclick="askPatient()">Ask Patient</button>
-      <button onclick="askInstructor()">Ask Instructor</button>
-      <button onclick="gradeStudent()">Submit for Grading</button>
-      <button onclick="resetScenario()">Reset</button>
-    </div>
-
-    <div class="response-row">
-
-      <div class="response-column">
-
-        <h3>Patient Response:</h3>
-
-        <div id="patientResponse" class="box">
-          Patient response will appear here.
-        </div>
-
-      </div>
-
-      <div class="response-column">
-
-        <h3>Instructor Response:</h3>
-
-        <div id="instructorResponse" class="box">
-          Instructor answer will appear here.
-        </div>
-
-      </div>
-
-    </div>
-
-    <div class="response-row">
-
-      <div class="response-column">
-
-        <h3>EMT Treatment Plan:</h3>
-
-        <textarea
-          id="treatmentPlan"
-          placeholder="Student enters EMT treatment plan here..."
-        ></textarea>
-
-      </div>
-
-      <div class="response-column">
-
-        <h3>Feedback (Grading Report):</h3>
-
-        <div id="feedback" class="box">
-          Feedback will appear here.
-        </div>
-
-      </div>
-
-    </div>
-
+    <p><b>Scenario:</b><br>
+    You arrive to find a 58-year-old male sitting on the couch holding his chest. 
+    He states the pain began suddenly while shoveling snow 20 minutes ago.
+    </p>
   </div>
 
-  <script>
+  <!-- Vitals -->
+  <div class="box">
+    <h2>Vital Signs</h2>
 
-    let history = "";
+    <p><b>Blood Pressure:</b> 168/96</p>
+    <p><b>Heart Rate:</b> 112</p>
+    <p><b>Respiratory Rate:</b> 24</p>
+    <p><b>SpO2:</b> 92%</p>
+    <p><b>Skin:</b> Pale, cool, diaphoretic</p>
+  </div>
 
-    const scenario = "chestPain";
+  <!-- Patient Dialogue -->
+  <div class="box">
+    <h2>Patient Dialogue</h2>
 
-    function resetScenario() {
+    <p>"It feels like an elephant is sitting on my chest."</p>
 
-      history = "";
+    <p>"The pain is going into my left arm."</p>
 
-      document.getElementById("patientResponse").innerText =
-        "Patient response will appear here.";
+    <p>"I'm getting short of breath."</p>
+  </div>
 
-      document.getElementById("instructorResponse").innerText =
-        "Instructor answer will appear here.";
+  <!-- Treatment Area -->
+  <div class="box">
+    <h2>EMT Treatment Plan</h2>
 
-      document.getElementById("feedback").innerText =
-        "Feedback will appear here.";
+    <textarea id="treatmentInput" placeholder="Enter your treatment plan here..."></textarea>
 
-      document.getElementById("studentQuestion").value = "";
+    <button onclick="checkTreatment()">Submit Treatment</button>
+  </div>
 
-      document.getElementById("treatmentPlan").value = "";
-    }
+  <!-- Feedback -->
+  <div class="box" id="feedback">
+    <h2>Instructor Feedback</h2>
 
-    async function askPatient() {
+    <p id="feedbackText">
+      Awaiting treatment plan...
+    </p>
+  </div>
 
-      const question =
-        document.getElementById("studentQuestion").value.trim();
+</div>
 
-      if (!question) {
+<script>
 
-        document.getElementById("patientResponse").innerText =
-          "Ask a question first.";
+function checkTreatment() {
 
-        return;
-      }
+  let treatment = document
+    .getElementById("treatmentInput")
+    .value
+    .toLowerCase();
 
-      try {
+  let feedback = "";
 
-        const res = await fetch("/ask", {
+  // Treatment Checks
 
-          method: "POST",
+  if (treatment.includes("oxygen")) {
+    feedback += "✓ Oxygen administered appropriately.<br><br>";
+  } else {
+    feedback += "✗ Oxygen should be considered due to low SpO2 and respiratory distress.<br><br>";
+  }
 
-          headers: {
-            "Content-Type": "application/json"
-          },
+  if (treatment.includes("aspirin")) {
+    feedback += "✓ Aspirin administration appropriate for suspected cardiac chest pain.<br><br>";
+  } else {
+    feedback += "✗ Consider administering aspirin if no contraindications exist.<br><br>";
+  }
 
-          body: JSON.stringify({
-            studentQuestion: question,
-            history: history,
-            scenario: scenario
-          })
-        });
+  if (treatment.includes("nitro")) {
+    feedback += "✓ Nitroglycerin assistance appropriate if prescribed and blood pressure adequate.<br><br>";
+  } else {
+    feedback += "✗ Nitroglycerin assistance should be evaluated.<br><br>";
+  }
 
-        const data = await res.json();
+  if (treatment.includes("transport")) {
+    feedback += "✓ Rapid transport recognized as important.<br><br>";
+  } else {
+    feedback += "✗ Prompt transport to appropriate cardiac facility is important.<br><br>";
+  }
 
-        history += `Student: ${question}\n`;
+  // Outcome
 
-        history += `Patient: ${data.reply}\n\n`;
+  if (
+    treatment.includes("oxygen") &&
+    treatment.includes("aspirin") &&
+    treatment.includes("transport")
+  ) {
 
-        document.getElementById("patientResponse").innerText =
-          data.reply;
+    feedback += "<b>Outcome:</b> Patient condition improves slightly during transport. Chest pain decreases and patient arrives stable at cardiac center.";
 
-        document.getElementById("studentQuestion").value = "";
+  } else {
 
-      } catch {
+    feedback += "<b>Outcome:</b> Patient condition worsens during transport with increasing chest pain and shortness of breath.";
+  }
 
-        document.getElementById("patientResponse").innerText =
-          "Error contacting server.";
-      }
-    }
+  document.getElementById("feedbackText").innerHTML = feedback;
+}
 
-    async function askInstructor() {
-
-      const question =
-        document.getElementById("studentQuestion").value.trim();
-
-      if (!question) {
-
-        document.getElementById("instructorResponse").innerText =
-          "Ask a question first.";
-
-        return;
-      }
-
-      try {
-
-        const res = await fetch("/instructor", {
-
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json"
-          },
-
-          body: JSON.stringify({
-            studentQuestion: question,
-            scenario: scenario
-          })
-        });
-
-        const data = await res.json();
-
-        document.getElementById("instructorResponse").innerText =
-          data.reply;
-
-      } catch {
-
-        document.getElementById("instructorResponse").innerText =
-          "Error contacting instructor.";
-      }
-    }
-
-    async function gradeStudent() {
-
-      const treatmentPlan =
-        document.getElementById("treatmentPlan").value.trim();
-
-      if (!history && !treatmentPlan) {
-
-        document.getElementById("feedback").innerText =
-          "Ask patient questions or enter a treatment plan first.";
-
-        return;
-      }
-
-      try {
-
-        const res = await fetch("/grade", {
-
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json"
-          },
-
-          body: JSON.stringify({
-            studentAnswer: history,
-            treatmentPlan: treatmentPlan,
-            scenario: scenario
-          })
-        });
-
-        const data = await res.json();
-
-        document.getElementById("feedback").innerText =
-          data.feedback;
-
-      } catch {
-
-        document.getElementById("feedback").innerText =
-          "Error grading.";
-      }
-    }
-
-    window.addEventListener("DOMContentLoaded", resetScenario);
-
-  </script>
+</script>
 
 </body>
 </html>
