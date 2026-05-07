@@ -45,6 +45,20 @@
       text-align: left;
     }
 
+    input, textarea {
+      width: 100%;
+      font-size: 16px;
+      padding: 10px;
+      border-radius: 8px;
+      box-sizing: border-box;
+      border: none;
+    }
+
+    textarea {
+      height: 120px;
+      resize: none;
+    }
+
     button {
       padding: 12px 20px;
       font-size: 18px;
@@ -60,20 +74,9 @@
       background: darkgreen;
     }
 
-    textarea {
-      width: 100%;
-      height: 120px;
-      font-size: 16px;
-      padding: 10px;
-      border-radius: 8px;
-      resize: none;
-      box-sizing: border-box;
+    #patientResponse, #feedback {
+      min-height: 90px;
     }
-
-    #feedback {
-      min-height: 100px;
-    }
-
   </style>
 </head>
 
@@ -83,117 +86,196 @@
 
   <h1>Chest Pain Scenario</h1>
 
-  <!-- Patient Information -->
-  <div class="box" id="scenarioInfo">
-    <h2>Patient Information</h2>
-
-    <p><b>Name:</b> Robert Jenkins</p>
-    <p><b>Age:</b> 58</p>
-    <p><b>Chief Complaint:</b> Chest Pain</p>
-
-    <p><b>Scenario:</b><br>
-    You arrive to find a 58-year-old male sitting on the couch holding his chest. 
-    He states the pain began suddenly while shoveling snow 20 minutes ago.
+  <div class="box">
+    <h2>Dispatch Information</h2>
+    <p>
+      You are dispatched to a private residence for a 58-year-old male complaining of chest pain.
+      The patient is sitting on the couch, alert, anxious, pale, cool, and diaphoretic.
     </p>
   </div>
 
-  <!-- Vitals -->
   <div class="box">
-    <h2>Vital Signs</h2>
+    <h2>Ask the Patient a Question</h2>
 
-    <p><b>Blood Pressure:</b> 168/96</p>
-    <p><b>Heart Rate:</b> 112</p>
-    <p><b>Respiratory Rate:</b> 24</p>
-    <p><b>SpO2:</b> 92%</p>
-    <p><b>Skin:</b> Pale, cool, diaphoretic</p>
+    <input 
+      type="text" 
+      id="questionInput" 
+      placeholder="Example: When did the pain start?"
+    />
+
+    <button onclick="askPatient()">Ask Patient</button>
   </div>
 
-  <!-- Patient Dialogue -->
-  <div class="box">
-    <h2>Patient Dialogue</h2>
-
-    <p>"It feels like an elephant is sitting on my chest."</p>
-
-    <p>"The pain is going into my left arm."</p>
-
-    <p>"I'm getting short of breath."</p>
+  <div class="box" id="patientResponse">
+    <h2>Patient Response</h2>
+    <p id="responseText">Ask the patient a question to begin.</p>
   </div>
 
-  <!-- Treatment Area -->
   <div class="box">
     <h2>EMT Treatment Plan</h2>
 
-    <textarea id="treatmentInput" placeholder="Enter your treatment plan here..."></textarea>
+    <textarea 
+      id="treatmentInput" 
+      placeholder="Enter your treatment plan here...">
+    </textarea>
 
     <button onclick="checkTreatment()">Submit Treatment</button>
   </div>
 
-  <!-- Feedback -->
   <div class="box" id="feedback">
     <h2>Instructor Feedback</h2>
-
-    <p id="feedbackText">
-      Awaiting treatment plan...
-    </p>
+    <p id="feedbackText">Awaiting treatment plan...</p>
   </div>
 
 </div>
 
 <script>
+  const patient = {
+    name: "Robert Jenkins",
+    age: 58,
+    complaint: "Chest pain",
+    onset: "The pain started about 20 minutes ago while I was shoveling snow.",
+    provocation: "It does not really get better when I rest. Moving around makes me feel worse.",
+    quality: "It feels like heavy pressure, like an elephant is sitting on my chest.",
+    radiation: "The pain goes into my left arm and up toward my jaw.",
+    severity: "The pain is about an 8 out of 10.",
+    time: "It has been going on for about 20 minutes.",
+    breathing: "I feel short of breath.",
+    nausea: "I feel nauseated, but I have not vomited.",
+    allergies: "I am not allergic to any medications.",
+    medications: "I take medication for high blood pressure and cholesterol. I also have nitroglycerin prescribed by my doctor.",
+    history: "I have high blood pressure, high cholesterol, and I had a heart attack five years ago.",
+    lastIntake: "I ate lunch about two hours ago.",
+    events: "I was outside shoveling snow when the pain started.",
+    vitals: "My blood pressure is 168 over 96, heart rate 112, respirations 24, oxygen saturation 92 percent.",
+    aspirin: "I have not taken aspirin today.",
+    nitro: "I have nitroglycerin, but I have not taken any yet.",
+    default: "I don't understand what you are asking. Can you ask me another way?"
+  };
 
-function checkTreatment() {
+  function askPatient() {
+    let question = document.getElementById("questionInput").value.toLowerCase();
+    let response = "";
 
-  let treatment = document
-    .getElementById("treatmentInput")
-    .value
-    .toLowerCase();
+    if (question.includes("name")) {
+      response = "My name is " + patient.name + ".";
+    } 
+    else if (question.includes("age") || question.includes("old")) {
+      response = "I am " + patient.age + " years old.";
+    } 
+    else if (question.includes("onset") || question.includes("start") || question.includes("begin")) {
+      response = patient.onset;
+    } 
+    else if (question.includes("provoke") || question.includes("better") || question.includes("worse")) {
+      response = patient.provocation;
+    } 
+    else if (question.includes("quality") || question.includes("feel") || question.includes("describe")) {
+      response = patient.quality;
+    } 
+    else if (question.includes("radiate") || question.includes("travel") || question.includes("arm") || question.includes("jaw")) {
+      response = patient.radiation;
+    } 
+    else if (question.includes("severity") || question.includes("scale") || question.includes("pain level") || question.includes("1-10")) {
+      response = patient.severity;
+    } 
+    else if (question.includes("time") || question.includes("long")) {
+      response = patient.time;
+    } 
+    else if (question.includes("breath") || question.includes("short")) {
+      response = patient.breathing;
+    } 
+    else if (question.includes("nausea") || question.includes("vomit")) {
+      response = patient.nausea;
+    } 
+    else if (question.includes("allerg")) {
+      response = patient.allergies;
+    } 
+    else if (question.includes("medication") || question.includes("meds")) {
+      response = patient.medications;
+    } 
+    else if (question.includes("history") || question.includes("medical")) {
+      response = patient.history;
+    } 
+    else if (question.includes("eat") || question.includes("drink") || question.includes("intake")) {
+      response = patient.lastIntake;
+    } 
+    else if (question.includes("happen") || question.includes("doing") || question.includes("event")) {
+      response = patient.events;
+    } 
+    else if (question.includes("vital") || question.includes("blood pressure") || question.includes("pulse") || question.includes("oxygen")) {
+      response = patient.vitals;
+    } 
+    else if (question.includes("aspirin")) {
+      response = patient.aspirin;
+    } 
+    else if (question.includes("nitro")) {
+      response = patient.nitro;
+    } 
+    else {
+      response = patient.default;
+    }
 
-  let feedback = "";
-
-  // Treatment Checks
-
-  if (treatment.includes("oxygen")) {
-    feedback += "✓ Oxygen administered appropriately.<br><br>";
-  } else {
-    feedback += "✗ Oxygen should be considered due to low SpO2 and respiratory distress.<br><br>";
+    document.getElementById("responseText").innerHTML = response;
   }
 
-  if (treatment.includes("aspirin")) {
-    feedback += "✓ Aspirin administration appropriate for suspected cardiac chest pain.<br><br>";
-  } else {
-    feedback += "✗ Consider administering aspirin if no contraindications exist.<br><br>";
+  function checkTreatment() {
+    let treatment = document.getElementById("treatmentInput").value.toLowerCase();
+    let feedback = "";
+
+    if (treatment.includes("scene safe") || treatment.includes("bsi") || treatment.includes("ppe")) {
+      feedback += "✓ Good scene safety and BSI/PPE mentioned.<br><br>";
+    } else {
+      feedback += "✗ Remember scene safety and BSI/PPE.<br><br>";
+    }
+
+    if (treatment.includes("abc") || treatment.includes("airway") || treatment.includes("breathing") || treatment.includes("circulation")) {
+      feedback += "✓ ABC assessment included.<br><br>";
+    } else {
+      feedback += "✗ Assess airway, breathing, and circulation.<br><br>";
+    }
+
+    if (treatment.includes("oxygen") || treatment.includes("o2")) {
+      feedback += "✓ Oxygen considered due to SpO2 of 92% and shortness of breath.<br><br>";
+    } else {
+      feedback += "✗ Consider oxygen because the patient is short of breath with SpO2 of 92%.<br><br>";
+    }
+
+    if (treatment.includes("aspirin")) {
+      feedback += "✓ Aspirin is appropriate if no contraindications are present.<br><br>";
+    } else {
+      feedback += "✗ Consider aspirin for suspected cardiac chest pain if allowed by protocol.<br><br>";
+    }
+
+    if (treatment.includes("nitro") || treatment.includes("nitroglycerin")) {
+      feedback += "✓ Nitroglycerin assistance may be appropriate if prescribed, blood pressure is adequate, and protocol allows.<br><br>";
+    } else {
+      feedback += "✗ Evaluate for prescribed nitroglycerin and follow local protocol.<br><br>";
+    }
+
+    if (treatment.includes("vitals") || treatment.includes("reassess")) {
+      feedback += "✓ Reassessment and repeat vital signs included.<br><br>";
+    } else {
+      feedback += "✗ Reassess the patient and repeat vital signs frequently.<br><br>";
+    }
+
+    if (treatment.includes("transport") || treatment.includes("hospital")) {
+      feedback += "✓ Rapid transport recognized.<br><br>";
+    } else {
+      feedback += "✗ Prompt transport to an appropriate hospital is important.<br><br>";
+    }
+
+    if (
+      treatment.includes("aspirin") &&
+      treatment.includes("transport") &&
+      (treatment.includes("oxygen") || treatment.includes("o2"))
+    ) {
+      feedback += "<b>Outcome:</b> Patient remains alert. Chest pain improves slightly during transport. You give a good report to the receiving facility.";
+    } else {
+      feedback += "<b>Outcome:</b> Patient continues to have severe chest pain and worsening shortness of breath. More complete treatment and reassessment are needed.";
+    }
+
+    document.getElementById("feedbackText").innerHTML = feedback;
   }
-
-  if (treatment.includes("nitro")) {
-    feedback += "✓ Nitroglycerin assistance appropriate if prescribed and blood pressure adequate.<br><br>";
-  } else {
-    feedback += "✗ Nitroglycerin assistance should be evaluated.<br><br>";
-  }
-
-  if (treatment.includes("transport")) {
-    feedback += "✓ Rapid transport recognized as important.<br><br>";
-  } else {
-    feedback += "✗ Prompt transport to appropriate cardiac facility is important.<br><br>";
-  }
-
-  // Outcome
-
-  if (
-    treatment.includes("oxygen") &&
-    treatment.includes("aspirin") &&
-    treatment.includes("transport")
-  ) {
-
-    feedback += "<b>Outcome:</b> Patient condition improves slightly during transport. Chest pain decreases and patient arrives stable at cardiac center.";
-
-  } else {
-
-    feedback += "<b>Outcome:</b> Patient condition worsens during transport with increasing chest pain and shortness of breath.";
-  }
-
-  document.getElementById("feedbackText").innerHTML = feedback;
-}
-
 </script>
 
 </body>
