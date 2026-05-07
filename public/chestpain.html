@@ -25,8 +25,8 @@
 
     .container {
       text-align: center;
-      width: 95%;
-      max-width: 700px;
+      width: 85%;
+      max-width: 600px;
       margin: 10px auto;
       position: relative;
       z-index: 1;
@@ -58,7 +58,7 @@
     }
 
     textarea {
-      width: 60%;
+      width: 50%;
       height: 80px;
       margin: 8px auto;
       display: block;
@@ -70,7 +70,7 @@
     }
 
     #treatmentPlan {
-      width: 60%;
+      width: 50%;
       height: 100px;
       background-color: #e6ffe6;
       border: 2px solid green;
@@ -91,7 +91,7 @@
     }
 
     .box {
-      width: 70%;
+      width: 55%;
       margin: 8px auto;
       min-height: 60px;
       max-height: 120px;
@@ -107,8 +107,8 @@
     }
 
     #feedback {
-      width: 95%;
-      max-width: 900px;
+      width: 70%;
+      max-width: 700px;
       min-height: 140px;
       max-height: 300px;
       background: #f4f4f4;
@@ -139,10 +139,14 @@
     </div>
 
     <h3>Patient Response:</h3>
-    <div id="patientResponse" class="box">Patient response will appear here.</div>
+    <div id="patientResponse" class="box">
+      Patient response will appear here.
+    </div>
 
     <h3>Instructor Response:</h3>
-    <div id="instructorResponse" class="box">Instructor answer will appear here.</div>
+    <div id="instructorResponse" class="box">
+      Instructor answer will appear here.
+    </div>
 
     <h3>EMT Treatment Plan:</h3>
     <textarea
@@ -151,7 +155,9 @@
     ></textarea>
 
     <h3>Feedback (Grading Report):</h3>
-    <div id="feedback" class="box">Feedback will appear here.</div>
+    <div id="feedback" class="box">
+      Feedback will appear here.
+    </div>
   </div>
 
   <script>
@@ -178,14 +184,17 @@
       const question = document.getElementById("studentQuestion").value.trim();
 
       if (!question) {
-        document.getElementById("patientResponse").innerText = "Ask a question first.";
+        document.getElementById("patientResponse").innerText =
+          "Ask a question first.";
         return;
       }
 
       try {
         const res = await fetch("/ask", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({
             studentQuestion: question,
             history: history,
@@ -200,8 +209,10 @@
 
         document.getElementById("patientResponse").innerText = data.reply;
         document.getElementById("studentQuestion").value = "";
+
       } catch (err) {
-        document.getElementById("patientResponse").innerText = "Error contacting server.";
+        document.getElementById("patientResponse").innerText =
+          "Error contacting server.";
       }
     }
 
@@ -209,14 +220,17 @@
       const question = document.getElementById("studentQuestion").value.trim();
 
       if (!question) {
-        document.getElementById("instructorResponse").innerText = "Ask a question first.";
+        document.getElementById("instructorResponse").innerText =
+          "Ask a question first.";
         return;
       }
 
       try {
         const res = await fetch("/instructor", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({
             studentQuestion: question,
             scenario: scenario
@@ -225,14 +239,18 @@
 
         const data = await res.json();
 
-        document.getElementById("instructorResponse").innerText = data.reply;
+        document.getElementById("instructorResponse").innerText =
+          data.reply;
+
       } catch (err) {
-        document.getElementById("instructorResponse").innerText = "Error contacting instructor.";
+        document.getElementById("instructorResponse").innerText =
+          "Error contacting instructor.";
       }
     }
 
     async function gradeStudent() {
-      const treatmentPlan = document.getElementById("treatmentPlan").value.trim();
+      const treatmentPlan =
+        document.getElementById("treatmentPlan").value.trim();
 
       if (!history && !treatmentPlan) {
         document.getElementById("feedback").innerText =
@@ -243,7 +261,9 @@
       try {
         const res = await fetch("/grade", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({
             studentAnswer: history,
             treatmentPlan: treatmentPlan,
@@ -253,9 +273,12 @@
 
         const data = await res.json();
 
-        document.getElementById("feedback").innerText = data.feedback;
+        document.getElementById("feedback").innerText =
+          data.feedback;
+
       } catch (err) {
-        document.getElementById("feedback").innerText = "Error grading.";
+        document.getElementById("feedback").innerText =
+          "Error grading.";
       }
     }
 
