@@ -2,265 +2,264 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chest Pain Scenario</title>
 
   <style>
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
+      margin: 0;
       background: url('https://raw.githubusercontent.com/WhitesideX8/emt-simulator/main/public/IMG_0989.jpg') no-repeat center center fixed;
       background-size: cover;
-      color: white;
-      text-align: center;
+      display: flex;
+      justify-content: center;
     }
 
     body::before {
       content: "";
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.45);
+      background: rgba(0, 0, 0, 0.45);
       z-index: 0;
     }
 
     .container {
+      text-align: center;
+      width: 95%;
+      max-width: 700px;
+      margin: 10px auto;
       position: relative;
       z-index: 1;
-      width: 90%;
-      max-width: 1000px;
-      margin: auto;
-      padding-top: 30px;
     }
 
     h1 {
-      margin-bottom: 25px;
+      margin: 15px 0 5px;
+      font-size: 30px;
+      color: white;
     }
 
-    .box {
-      background: rgba(70,70,70,0.9);
-      border: 2px solid white;
-      border-radius: 10px;
-      padding: 20px;
-      margin: 15px auto;
-      text-align: left;
+    h2 {
+      margin: 8px 0;
+      font-size: 24px;
+      color: white;
     }
 
-    .row {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      align-items: stretch;
+    h3 {
+      margin: 8px 0 5px;
+      font-size: 18px;
+      color: white;
     }
 
-    .half-box {
-      width: 50%;
-    }
-
-    input, textarea {
-      width: 100%;
+    textarea,
+    button {
       font-size: 16px;
-      padding: 10px;
-      border-radius: 8px;
-      box-sizing: border-box;
-      border: none;
+      padding: 8px;
+      margin-top: 5px;
     }
 
     textarea {
-      height: 120px;
-      resize: none;
+      width: 60%;
+      height: 80px;
+      margin: 8px auto;
+      display: block;
+      box-sizing: border-box;
+      resize: vertical;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      background: #cfcfcf;
+    }
+
+    #treatmentPlan {
+      width: 60%;
+      height: 100px;
+      background-color: #e6ffe6;
+      border: 2px solid green;
+      font-weight: bold;
     }
 
     button {
-      padding: 12px 20px;
-      font-size: 18px;
       background: green;
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
-      margin-top: 10px;
+      margin: 4px;
     }
 
     button:hover {
       background: darkgreen;
     }
 
-    #patientResponse,
-    #feedback {
-      min-height: 90px;
+    .box {
+      width: 70%;
+      margin: 8px auto;
+      min-height: 60px;
+      max-height: 120px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      background: #cfcfcf;
+      padding: 8px;
+      white-space: pre-wrap;
+      text-align: left;
+      box-sizing: border-box;
+      border-radius: 6px;
+      font-size: 16px;
     }
 
-    @media (max-width: 800px) {
-      .row {
-        flex-direction: column;
-      }
-
-      .half-box {
-        width: 100%;
-      }
+    #feedback {
+      width: 95%;
+      max-width: 900px;
+      min-height: 140px;
+      max-height: 300px;
+      background: #f4f4f4;
+      border: 2px solid #333;
+      font-size: 17px;
     }
   </style>
 </head>
 
 <body>
+  <div class="container">
+    <h1>EMT Patient Simulation</h1>
 
-<div class="container">
+    <h2>Chest Pain Scenario</h2>
 
-  <h1>Chest Pain Scenario</h1>
+    <h3>Scenario Information:</h3>
+    <div id="scenarioInfo" class="box">
+      You are dispatched to a home for chest pain.
+    </div>
 
-  <div class="box">
-    <h2>Dispatch Information</h2>
-    <p>
-      You are dispatched to a private residence for a 58-year-old male complaining of chest pain.
-      The patient is sitting on the couch, alert, anxious, pale, cool, and diaphoretic.
-    </p>
-  </div>
+    <textarea id="studentQuestion" placeholder="Ask the patient or instructor a question..."></textarea>
 
-  <div class="row">
-
-    <div class="box half-box">
-      <h2>Ask the Patient</h2>
-
-      <input 
-        type="text" 
-        id="questionInput" 
-        placeholder="Example: When did the pain start?"
-      />
-
+    <div>
       <button onclick="askPatient()">Ask Patient</button>
+      <button onclick="askInstructor()">Ask Instructor</button>
+      <button onclick="gradeStudent()">Submit for Grading</button>
+      <button onclick="resetScenario()">Reset</button>
     </div>
 
-    <div class="box half-box" id="patientResponse">
-      <h2>Patient Response</h2>
-      <p id="responseText">Ask the patient a question to begin.</p>
-    </div>
+    <h3>Patient Response:</h3>
+    <div id="patientResponse" class="box">Patient response will appear here.</div>
 
+    <h3>Instructor Response:</h3>
+    <div id="instructorResponse" class="box">Instructor answer will appear here.</div>
+
+    <h3>EMT Treatment Plan:</h3>
+    <textarea
+      id="treatmentPlan"
+      placeholder="Student enters EMT treatment plan here..."
+    ></textarea>
+
+    <h3>Feedback (Grading Report):</h3>
+    <div id="feedback" class="box">Feedback will appear here.</div>
   </div>
 
-  <div class="row">
+  <script>
+    let history = "";
+    const scenario = "chestPain";
 
-    <div class="box half-box">
-      <h2>EMT Treatment Plan</h2>
+    function resetScenario() {
+      history = "";
 
-      <textarea 
-        id="treatmentInput" 
-        placeholder="Enter your treatment plan here..."></textarea>
+      document.getElementById("patientResponse").innerText =
+        "Patient response will appear here.";
 
-      <button onclick="checkTreatment()">Submit Treatment</button>
-    </div>
+      document.getElementById("instructorResponse").innerText =
+        "Instructor answer will appear here.";
 
-    <div class="box half-box" id="feedback">
-      <h2>Instructor Feedback</h2>
-      <p id="feedbackText">Awaiting treatment plan...</p>
-    </div>
+      document.getElementById("feedback").innerText =
+        "Feedback will appear here.";
 
-  </div>
-
-</div>
-
-<script>
-  const patient = {
-    name: "Robert Jenkins",
-    age: 58,
-    onset: "The pain started about 20 minutes ago while I was shoveling snow.",
-    provocation: "It does not really get better when I rest. Moving around makes me feel worse.",
-    quality: "It feels like heavy pressure, like an elephant is sitting on my chest.",
-    radiation: "The pain goes into my left arm and up toward my jaw.",
-    severity: "The pain is about an 8 out of 10.",
-    time: "It has been going on for about 20 minutes.",
-    breathing: "I feel short of breath.",
-    nausea: "I feel nauseated, but I have not vomited.",
-    allergies: "I am not allergic to any medications.",
-    medications: "I take medication for high blood pressure and cholesterol. I also have nitroglycerin prescribed by my doctor.",
-    history: "I have high blood pressure, high cholesterol, and I had a heart attack five years ago.",
-    lastIntake: "I ate lunch about two hours ago.",
-    events: "I was outside shoveling snow when the pain started.",
-    vitals: "My blood pressure is 168 over 96, heart rate 112, respirations 24, oxygen saturation 92 percent.",
-    aspirin: "I have not taken aspirin today.",
-    nitro: "I have nitroglycerin, but I have not taken any yet.",
-    default: "I don't understand what you are asking. Can you ask me another way?"
-  };
-
-  function askPatient() {
-    let question = document.getElementById("questionInput").value.toLowerCase();
-    let response = "";
-
-    if (question.includes("name")) response = "My name is " + patient.name + ".";
-    else if (question.includes("age") || question.includes("old")) response = "I am " + patient.age + " years old.";
-    else if (question.includes("start") || question.includes("begin") || question.includes("onset")) response = patient.onset;
-    else if (question.includes("better") || question.includes("worse") || question.includes("provoke")) response = patient.provocation;
-    else if (question.includes("feel") || question.includes("describe") || question.includes("quality")) response = patient.quality;
-    else if (question.includes("arm") || question.includes("jaw") || question.includes("radiate")) response = patient.radiation;
-    else if (question.includes("scale") || question.includes("severity") || question.includes("1-10")) response = patient.severity;
-    else if (question.includes("long") || question.includes("time")) response = patient.time;
-    else if (question.includes("breath") || question.includes("short")) response = patient.breathing;
-    else if (question.includes("nausea") || question.includes("vomit")) response = patient.nausea;
-    else if (question.includes("allerg")) response = patient.allergies;
-    else if (question.includes("medication") || question.includes("meds")) response = patient.medications;
-    else if (question.includes("history") || question.includes("medical")) response = patient.history;
-    else if (question.includes("eat") || question.includes("drink") || question.includes("intake")) response = patient.lastIntake;
-    else if (question.includes("happen") || question.includes("doing") || question.includes("event")) response = patient.events;
-    else if (question.includes("vital") || question.includes("blood pressure") || question.includes("pulse") || question.includes("oxygen")) response = patient.vitals;
-    else if (question.includes("aspirin")) response = patient.aspirin;
-    else if (question.includes("nitro")) response = patient.nitro;
-    else response = patient.default;
-
-    document.getElementById("responseText").innerHTML = response;
-  }
-
-  function checkTreatment() {
-    let treatment = document.getElementById("treatmentInput").value.toLowerCase();
-    let feedback = "";
-
-    if (treatment.includes("scene safe") || treatment.includes("bsi") || treatment.includes("ppe")) {
-      feedback += "✓ Good scene safety and BSI/PPE mentioned.<br><br>";
-    } else {
-      feedback += "✗ Remember scene safety and BSI/PPE.<br><br>";
+      document.getElementById("studentQuestion").value = "";
+      document.getElementById("treatmentPlan").value = "";
     }
 
-    if (treatment.includes("abc") || treatment.includes("airway") || treatment.includes("breathing") || treatment.includes("circulation")) {
-      feedback += "✓ ABC assessment included.<br><br>";
-    } else {
-      feedback += "✗ Assess airway, breathing, and circulation.<br><br>";
+    async function askPatient() {
+      const question = document.getElementById("studentQuestion").value.trim();
+
+      if (!question) {
+        document.getElementById("patientResponse").innerText = "Ask a question first.";
+        return;
+      }
+
+      try {
+        const res = await fetch("/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            studentQuestion: question,
+            history: history,
+            scenario: scenario
+          })
+        });
+
+        const data = await res.json();
+
+        history += `Student: ${question}\n`;
+        history += `Patient: ${data.reply}\n\n`;
+
+        document.getElementById("patientResponse").innerText = data.reply;
+        document.getElementById("studentQuestion").value = "";
+      } catch (err) {
+        document.getElementById("patientResponse").innerText = "Error contacting server.";
+      }
     }
 
-    if (treatment.includes("oxygen") || treatment.includes("o2")) {
-      feedback += "✓ Oxygen considered due to SpO2 of 92%.<br><br>";
-    } else {
-      feedback += "✗ Consider oxygen due to shortness of breath and SpO2 of 92%.<br><br>";
+    async function askInstructor() {
+      const question = document.getElementById("studentQuestion").value.trim();
+
+      if (!question) {
+        document.getElementById("instructorResponse").innerText = "Ask a question first.";
+        return;
+      }
+
+      try {
+        const res = await fetch("/instructor", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            studentQuestion: question,
+            scenario: scenario
+          })
+        });
+
+        const data = await res.json();
+
+        document.getElementById("instructorResponse").innerText = data.reply;
+      } catch (err) {
+        document.getElementById("instructorResponse").innerText = "Error contacting instructor.";
+      }
     }
 
-    if (treatment.includes("aspirin")) {
-      feedback += "✓ Aspirin is appropriate if no contraindications are present.<br><br>";
-    } else {
-      feedback += "✗ Consider aspirin for suspected cardiac chest pain.<br><br>";
+    async function gradeStudent() {
+      const treatmentPlan = document.getElementById("treatmentPlan").value.trim();
+
+      if (!history && !treatmentPlan) {
+        document.getElementById("feedback").innerText =
+          "Ask patient questions or enter a treatment plan first.";
+        return;
+      }
+
+      try {
+        const res = await fetch("/grade", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            studentAnswer: history,
+            treatmentPlan: treatmentPlan,
+            scenario: scenario
+          })
+        });
+
+        const data = await res.json();
+
+        document.getElementById("feedback").innerText = data.feedback;
+      } catch (err) {
+        document.getElementById("feedback").innerText = "Error grading.";
+      }
     }
 
-    if (treatment.includes("nitro") || treatment.includes("nitroglycerin")) {
-      feedback += "✓ Nitroglycerin assistance may be appropriate if prescribed and protocol allows.<br><br>";
-    } else {
-      feedback += "✗ Evaluate for prescribed nitroglycerin.<br><br>";
-    }
-
-    if (treatment.includes("transport") || treatment.includes("hospital")) {
-      feedback += "✓ Rapid transport recognized.<br><br>";
-    } else {
-      feedback += "✗ Prompt transport is important.<br><br>";
-    }
-
-    if (
-      treatment.includes("aspirin") &&
-      treatment.includes("transport") &&
-      (treatment.includes("oxygen") || treatment.includes("o2"))
-    ) {
-      feedback += "<b>Outcome:</b> Patient remains alert and chest pain improves slightly during transport.";
-    } else {
-      feedback += "<b>Outcome:</b> Patient continues to have severe chest pain and worsening shortness of breath.";
-    }
-
-    document.getElementById("feedbackText").innerHTML = feedback;
-  }
-</script>
-
+    window.addEventListener("DOMContentLoaded", resetScenario);
+  </script>
 </body>
 </html>
