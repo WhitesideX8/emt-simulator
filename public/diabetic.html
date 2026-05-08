@@ -26,7 +26,7 @@
     .container {
       text-align: center;
       width: 95%;
-      max-width: 700px;
+      max-width: 1000px;
       margin: 10px auto;
       position: relative;
       z-index: 1;
@@ -91,8 +91,6 @@
     }
 
     .box {
-      width: 100%;
-      margin: 8px auto;
       min-height: 40px;
       max-height: 80px;
       overflow-y: auto;
@@ -112,15 +110,23 @@
       margin: 8px auto;
     }
 
-    /* Patient Response Container */
-    #patientResponse {
-      width: 70%;
-      margin: 8px auto;
+    /* Response Containers Side-by-Side */
+    .responseRow {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 10px;
+      flex-wrap: wrap;
     }
 
-    /* Instructor Response Container */
+    .responseColumn {
+      width: 40%;
+      min-width: 300px;
+    }
+
+    #patientResponse,
     #instructorResponse {
-      width: 70%;
+      width: 100%;
       margin: 8px auto;
     }
 
@@ -132,6 +138,7 @@
       background: #f4f4f4;
       border: 2px solid #333;
       font-size: 17px;
+      margin: 10px auto;
     }
   </style>
 </head>
@@ -158,16 +165,25 @@
       <button onclick="resetScenario()">Reset</button>
     </div>
 
-    <h3>Patient Response:</h3>
+    <!-- Response Containers -->
+    <div class="responseRow">
 
-    <div id="patientResponse" class="box">
-      Patient response will appear here.
-    </div>
+      <div class="responseColumn">
+        <h3>Patient Response:</h3>
 
-    <h3>Instructor Response:</h3>
+        <div id="patientResponse" class="box">
+          Patient response will appear here.
+        </div>
+      </div>
 
-    <div id="instructorResponse" class="box">
-      Instructor answer will appear here.
+      <div class="responseColumn">
+        <h3>Instructor Response:</h3>
+
+        <div id="instructorResponse" class="box">
+          Instructor answer will appear here.
+        </div>
+      </div>
+
     </div>
 
     <h3>EMT Treatment Plan:</h3>
