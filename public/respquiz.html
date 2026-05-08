@@ -114,14 +114,13 @@
 <body>
 
 <div class="container">
-  <h1> EMT Respiratory Exam</h1>
+  <h1>EMT Respiratory Exam</h1>
   <h2>Multiple Choice, Select-All-That-Apply, and Matching</h2>
 
   <div id="status"></div>
 
   <div class="question-box">
     <div id="question"></div>
-
     <div id="answers"></div>
 
     <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
@@ -176,16 +175,8 @@
       level: 1,
       type: "matching",
       question: "Match the respiratory term with its meaning.",
-      leftItems: [
-        "Tachypnea",
-        "Bradypnea",
-        "Apnea"
-      ],
-      rightItems: [
-        "Rapid breathing",
-        "Slow breathing",
-        "Absent breathing"
-      ],
+      leftItems: ["Tachypnea", "Bradypnea", "Apnea"],
+      rightItems: ["Rapid breathing", "Slow breathing", "Absent breathing"],
       correct: [0, 1, 2],
       feedback: "Tachypnea means rapid breathing, bradypnea means slow breathing, and apnea means absent breathing."
     },
@@ -236,16 +227,8 @@
       level: 2,
       type: "matching",
       question: "Match the oxygen delivery device with its usual use.",
-      leftItems: [
-        "Nasal cannula",
-        "Nonrebreather mask",
-        "BVM"
-      ],
-      rightItems: [
-        "Mild oxygen support",
-        "High-concentration oxygen",
-        "Assisted ventilations"
-      ],
+      leftItems: ["Nasal cannula", "Nonrebreather mask", "BVM"],
+      rightItems: ["Mild oxygen support", "High-concentration oxygen", "Assisted ventilations"],
       correct: [0, 1, 2],
       feedback: "A nasal cannula is used for mild oxygen support, a nonrebreather provides high-concentration oxygen, and a BVM is used for assisted ventilations."
     },
@@ -296,18 +279,8 @@
       level: 3,
       type: "matching",
       question: "Match each lung sound with the most likely finding.",
-      leftItems: [
-        "Wheezing",
-        "Crackles",
-        "Stridor",
-        "Absent breath sounds on one side"
-      ],
-      rightItems: [
-        "Asthma",
-        "Pulmonary edema",
-        "Upper airway obstruction",
-        "Pneumothorax"
-      ],
+      leftItems: ["Wheezing", "Crackles", "Stridor", "Absent breath sounds on one side"],
+      rightItems: ["Asthma", "Pulmonary edema", "Upper airway obstruction", "Pneumothorax"],
       correct: [0, 1, 2, 3],
       feedback: "Wheezing is commonly associated with asthma, crackles with pulmonary edema, stridor with upper airway obstruction, and unilateral absent breath sounds with pneumothorax."
     },
@@ -358,12 +331,7 @@
       level: 4,
       type: "matching",
       question: "Match the respiratory condition with the most likely clue.",
-      leftItems: [
-        "Asthma",
-        "CHF",
-        "Pneumothorax",
-        "Croup"
-      ],
+      leftItems: ["Asthma", "CHF", "Pneumothorax", "Croup"],
       rightItems: [
         "Wheezing and bronchospasm",
         "Crackles and pink frothy sputum",
@@ -449,6 +417,13 @@
   let currentQuestion;
   let usedQuestions = [];
 
+  function shuffleArray(array) {
+    return array
+      .map(value => ({ value, sort: Math.random() }))
+      .sort((a, b) => a.sort - b.sort)
+      .map(({ value }) => value);
+  }
+
   function getQuestionByLevel(level) {
     let available = questions.filter(q =>
       q.level === level && !usedQuestions.includes(q.question)
@@ -473,7 +448,6 @@
     }
 
     currentQuestion = getQuestionByLevel(currentLevel);
-
     if (!currentQuestion) return;
 
     usedQuestions.push(currentQuestion.question);
@@ -533,10 +507,21 @@
     const answersDiv = document.getElementById("answers");
 
     currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
+      const shuffledOptions = shuffleArray(
+        currentQuestion.rightItems.map((rightItem, rightIndex) => ({
+          text: rightItem,
+          originalIndex: rightIndex
+        }))
+      );
+
       let options = `<option value="">Choose match</option>`;
 
-      currentQuestion.rightItems.forEach((rightItem, rightIndex) => {
-        options += `<option value="${rightIndex}">${rightItem}</option>`;
+      shuffledOptions.forEach(option => {
+        options += `
+          <option value="${option.originalIndex}">
+            ${option.text}
+          </option>
+        `;
       });
 
       answersDiv.innerHTML += `
