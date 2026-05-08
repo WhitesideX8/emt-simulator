@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Adaptive EMT Respiratory Exam</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #222;
+      color: white;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #333;
+      padding: 25px;
+      border-radius: 10px;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .question-box {
+      background: #d9d9d9;
+      color: black;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      font-size: 16px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    button:hover {
+      background: darkgreen;
+    }
+
+    #feedback {
+      margin-top: 15px;
+      padding: 15px;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      display: none;
+    }
+
+    #nextBtn, #restartBtn {
+      background: #0066cc;
+      text-align: center;
+      display: none;
+    }
+
+    #status {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Adaptive EMT Respiratory Exam</h1>
+  <h2>Original NREMT-Style Practice Questions</h2>
+
+  <div id="status"></div>
+
+  <div class="question-box">
+    <div id="question"></div>
+
+    <button id="answer0" onclick="checkAnswer(0)"></button>
+    <button id="answer1" onclick="checkAnswer(1)"></button>
+    <button id="answer2" onclick="checkAnswer(2)"></button>
+    <button id="answer3" onclick="checkAnswer(3)"></button>
+
+    <div id="feedback"></div>
+
+    <button id="nextBtn" onclick="nextQuestion()">Next Question</button>
+    <button id="restartBtn" onclick="restartExam()">Restart Exam</button>
+  </div>
+</div>
+
+<script>
+  const questions = [
+    {
+      level: 1,
+      question: "An adult patient is breathing 30 times per minute. This should be considered:",
+      answers: ["Normal", "Slow", "Absent", "Rapid"],
+      correct: 3,
+      feedback: "A respiratory rate of 30 is rapid for an adult and may indicate respiratory distress."
+    },
+    {
+      level: 1,
+      question: "The best position for a conscious patient having trouble breathing is usually:",
+      answers: ["Supine", "Prone", "Position of comfort", "Trendelenburg"],
+      correct: 2,
+      feedback: "Most conscious respiratory patients should be allowed to remain upright or in a position of comfort."
+    },
+    {
+      level: 2,
+      question: "A COPD patient is breathing 8 times per minute with shallow respirations. What should you do?",
+      answers: [
+        "Apply a nasal cannula",
+        "Assist ventilations with a BVM and oxygen",
+        "Withhold oxygen",
+        "Have the patient lie flat"
+      ],
+      correct: 1,
+      feedback: "Slow, shallow breathing is inadequate. Assist ventilations with a BVM and oxygen."
+    },
+    {
+      level: 2,
+      question: "A patient with asthma has wheezing and difficulty speaking. After oxygen, what may an EMT assist with if prescribed?",
+      answers: ["Nitroglycerin", "Albuterol inhaler", "Oral glucose", "Aspirin"],
+      correct: 1,
+      feedback: "EMTs may assist with a prescribed metered-dose inhaler according to protocol."
+    },
+    {
+      level: 3,
+      question: "A patient with severe respiratory distress suddenly becomes quiet and less responsive. What should you suspect?",
+      answers: [
+        "The patient is improving",
+        "The patient is progressing toward respiratory failure",
+        "The oxygen is no longer needed",
+        "The patient is stable"
+      ],
+      correct: 1,
+      feedback: "A decreasing mental status can indicate hypoxia and impending respiratory failure."
+    },
+    {
+      level: 3,
+      question: "A patient has sudden sharp chest pain, severe shortness of breath, and absent breath sounds on one side. Suspect:",
+      answers: ["Pneumonia", "Pneumothorax", "Croup", "COPD exacerbation"],
+      correct: 1,
+      feedback: "Sudden dyspnea with unilateral absent breath sounds suggests pneumothorax."
+    },
+    {
+      level: 4,
+      question: "You are treating a severe asthma patient with poor air movement and minimal wheezing. What is most concerning?",
+      answers: [
+        "The patient is improving",
+        "The patient may not be moving enough air to wheeze",
+        "Asthma is no longer present",
+        "Oxygen should be discontinued"
+      ],
+      correct: 1,
+      feedback: "Minimal wheezing with poor air movement can indicate a very severe attack."
+    },
+    {
+      level: 4,
+      question: "A CHF patient has respiratory distress, crackles, and pink frothy sputum. What condition is most likely?",
+      answers: ["Pulmonary edema", "Asthma", "Croup", "Pneumothorax"],
+      correct: 0,
+      feedback: "Crackles and pink frothy sputum are classic findings of pulmonary edema."
+    },
+    {
+      level: 5,
+      question: "A respiratory distress patient is anxious, cyanotic, and unable to speak. What is the EMT's priority?",
+      answers: [
+        "Complete a full SAMPLE history",
+        "Obtain insurance information",
+        "Manage airway and breathing immediately",
+        "Wait for ALS before treating"
+      ],
+      correct: 2,
+      feedback: "Airway and breathing problems are immediate life threats."
+    },
+    {
+      level: 5,
+      question: "A patient with inadequate breathing is being ventilated by BVM. What confirms effective ventilations?",
+      answers: [
+        "The mask fogs up",
+        "Visible chest rise",
+        "The patient remains cyanotic",
+        "The reservoir bag stays full"
+      ],
+      correct: 1,
+      feedback: "Visible chest rise is a key sign of effective BVM ventilation."
+    }
+  ];
+
+  let currentLevel = 2;
+  let questionNumber = 0;
+  let score = 0;
+  let maxQuestions = 10;
+  let currentQuestion;
+  let usedQuestions = [];
+
+  function getQuestionByLevel(level) {
+    let available = questions.filter(q =>
+      q.level === level && !usedQuestions.includes(q.question)
+    );
+
+    if (available.length === 0) {
+      available = questions.filter(q => !usedQuestions.includes(q.question));
+    }
+
+    if (available.length === 0) {
+      finishExam();
+      return null;
+    }
+
+    return available[Math.floor(Math.random() * available.length)];
+  }
+
+  function loadQuestion() {
+    if (questionNumber >= maxQuestions) {
+      finishExam();
+      return;
+    }
+
+    currentQuestion = getQuestionByLevel(currentLevel);
+
+    if (!currentQuestion) return;
+
+    usedQuestions.push(currentQuestion.question);
+
+    document.getElementById("status").innerText =
+      "Question " + (questionNumber + 1) +
+      " of " + maxQuestions +
+      " | Current Difficulty Level: " + currentLevel +
+      " | Score: " + score;
+
+    document.getElementById("question").innerHTML =
+      "<strong>" + currentQuestion.question + "</strong>";
+
+    for (let i = 0; i < 4; i++) {
+      const btn = document.getElementById("answer" + i);
+      btn.innerText = currentQuestion.answers[i];
+      btn.disabled = false;
+      btn.style.background = "green";
+      btn.style.display = "block";
+    }
+
+    document.getElementById("feedback").style.display = "none";
+    document.getElementById("nextBtn").style.display = "none";
+    document.getElementById("restartBtn").style.display = "none";
+  }
+
+  function checkAnswer(selected) {
+    const feedback = document.getElementById("feedback");
+
+    for (let i = 0; i < 4; i++) {
+      document.getElementById("answer" + i).disabled = true;
+    }
+
+    if (selected === currentQuestion.correct) {
+      score++;
+      currentLevel++;
+      if (currentLevel > 5) currentLevel = 5;
+
+      document.getElementById("answer" + selected).style.background = "darkgreen";
+
+      feedback.innerHTML =
+        "<strong>Correct.</strong><br>" +
+        currentQuestion.feedback +
+        "<br><br>Difficulty will increase.";
+    } else {
+      currentLevel--;
+      if (currentLevel < 1) currentLevel = 1;
+
+      document.getElementById("answer" + selected).style.background = "darkred";
+      document.getElementById("answer" + currentQuestion.correct).style.background = "darkgreen";
+
+      feedback.innerHTML =
+        "<strong>Incorrect.</strong><br>" +
+        "Correct answer: <strong>" +
+        currentQuestion.answers[currentQuestion.correct] +
+        "</strong><br><br>" +
+        currentQuestion.feedback +
+        "<br><br>Difficulty will decrease.";
+    }
+
+    feedback.style.display = "block";
+    document.getElementById("nextBtn").style.display = "block";
+  }
+
+  function nextQuestion() {
+    questionNumber++;
+    loadQuestion();
+  }
+
+  function finishExam() {
+    document.getElementById("question").innerHTML =
+      "<h2>Exam Complete</h2>";
+
+    for (let i = 0; i < 4; i++) {
+      document.getElementById("answer" + i).style.display = "none";
+    }
+
+    let result = "";
+
+    if (score >= 8) {
+      result = "Strong performance. Continue with mixed NREMT-style review.";
+    } else if (score >= 6) {
+      result = "Borderline performance. Review respiratory assessment and treatment priorities.";
+    } else {
+      result = "Needs remediation. Focus on airway, breathing adequacy, oxygen therapy, and BVM use.";
+    }
+
+    document.getElementById("feedback").style.display = "block";
+    document.getElementById("feedback").innerHTML =
+      "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
+      "<br><br><strong>Final Difficulty Level:</strong> " + currentLevel +
+      "<br><br>" + result;
+
+    document.getElementById("status").innerText = "Adaptive Exam Finished";
+    document.getElementById("nextBtn").style.display = "none";
+    document.getElementById("restartBtn").style.display = "block";
+  }
+
+  function restartExam() {
+    currentLevel = 2;
+    questionNumber = 0;
+    score = 0;
+    usedQuestions = [];
+    loadQuestion();
+  }
+
+  loadQuestion();
+</script>
+
+</body>
+</html>
