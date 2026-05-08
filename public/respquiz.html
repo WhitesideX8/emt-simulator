@@ -50,6 +50,12 @@
       background: darkgreen;
     }
 
+    #submitBtn, #nextBtn, #restartBtn {
+      background: #0066cc;
+      text-align: center;
+      display: none;
+    }
+
     #feedback {
       margin-top: 15px;
       padding: 15px;
@@ -59,16 +65,48 @@
       display: none;
     }
 
-    #nextBtn, #restartBtn {
-      background: #0066cc;
-      text-align: center;
-      display: none;
-    }
-
     #status {
       text-align: center;
       margin-top: 15px;
       font-size: 18px;
+    }
+
+    .checkbox-answer {
+      display: block;
+      background: #eeeeee;
+      color: black;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .checkbox-answer input {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    .matching-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 12px 0;
+      background: #eeeeee;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .matching-left {
+      flex: 1;
+      font-weight: bold;
+    }
+
+    .matching-row select {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
     }
   </style>
 </head>
@@ -76,18 +114,17 @@
 <body>
 
 <div class="container">
-  <h1>Adaptive EMT Respiratory Exam</h1>
-  <h2>Original NREMT-Style Practice Questions</h2>
+  <h1> EMT Respiratory Exam</h1>
+  <h2>Multiple Choice, Select-All-That-Apply, and Matching</h2>
 
   <div id="status"></div>
 
   <div class="question-box">
     <div id="question"></div>
 
-    <button id="answer0" onclick="checkAnswer(0)"></button>
-    <button id="answer1" onclick="checkAnswer(1)"></button>
-    <button id="answer2" onclick="checkAnswer(2)"></button>
-    <button id="answer3" onclick="checkAnswer(3)"></button>
+    <div id="answers"></div>
+
+    <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
 
     <div id="feedback"></div>
 
@@ -100,6 +137,7 @@
   const questions = [
     {
       level: 1,
+      type: "single",
       question: "An adult patient is breathing 30 times per minute. This should be considered:",
       answers: ["Normal", "Slow", "Absent", "Rapid"],
       correct: 3,
@@ -107,13 +145,54 @@
     },
     {
       level: 1,
+      type: "single",
       question: "The best position for a conscious patient having trouble breathing is usually:",
       answers: ["Supine", "Prone", "Position of comfort", "Trendelenburg"],
       correct: 2,
       feedback: "Most conscious respiratory patients should be allowed to remain upright or in a position of comfort."
     },
     {
+      level: 1,
+      type: "single",
+      question: "What is the normal respiratory rate for an adult?",
+      answers: ["4-8", "8-12", "12-20", "24-30"],
+      correct: 2,
+      feedback: "A normal adult respiratory rate is 12-20 breaths per minute."
+    },
+    {
+      level: 1,
+      type: "multi",
+      question: "Which findings can suggest respiratory distress? Select all that apply.",
+      answers: [
+        "Increased work of breathing",
+        "Speaking in full sentences without difficulty",
+        "Cyanosis",
+        "Tripod positioning"
+      ],
+      correct: [0, 2, 3],
+      feedback: "Increased work of breathing, cyanosis, and tripod positioning can suggest respiratory distress."
+    },
+    {
+      level: 1,
+      type: "matching",
+      question: "Match the respiratory term with its meaning.",
+      leftItems: [
+        "Tachypnea",
+        "Bradypnea",
+        "Apnea"
+      ],
+      rightItems: [
+        "Rapid breathing",
+        "Slow breathing",
+        "Absent breathing"
+      ],
+      correct: [0, 1, 2],
+      feedback: "Tachypnea means rapid breathing, bradypnea means slow breathing, and apnea means absent breathing."
+    },
+
+    {
       level: 2,
+      type: "single",
       question: "A COPD patient is breathing 8 times per minute with shallow respirations. What should you do?",
       answers: [
         "Apply a nasal cannula",
@@ -126,13 +205,54 @@
     },
     {
       level: 2,
+      type: "single",
       question: "A patient with asthma has wheezing and difficulty speaking. After oxygen, what may an EMT assist with if prescribed?",
       answers: ["Nitroglycerin", "Albuterol inhaler", "Oral glucose", "Aspirin"],
       correct: 1,
       feedback: "EMTs may assist with a prescribed metered-dose inhaler according to protocol."
     },
     {
+      level: 2,
+      type: "single",
+      question: "Which device delivers the highest oxygen concentration?",
+      answers: ["Nasal cannula", "Nonrebreather mask", "Venturi mask", "Simple mask"],
+      correct: 1,
+      feedback: "A nonrebreather mask can deliver high concentrations of oxygen."
+    },
+    {
+      level: 2,
+      type: "multi",
+      question: "Which treatments may be appropriate for a patient with respiratory distress? Select all that apply.",
+      answers: [
+        "Position of comfort",
+        "Oxygen therapy when indicated",
+        "Airway support",
+        "Delaying treatment until transport is complete"
+      ],
+      correct: [0, 1, 2],
+      feedback: "Positioning, oxygen therapy when indicated, and airway support are common EMT treatments for respiratory distress."
+    },
+    {
+      level: 2,
+      type: "matching",
+      question: "Match the oxygen delivery device with its usual use.",
+      leftItems: [
+        "Nasal cannula",
+        "Nonrebreather mask",
+        "BVM"
+      ],
+      rightItems: [
+        "Mild oxygen support",
+        "High-concentration oxygen",
+        "Assisted ventilations"
+      ],
+      correct: [0, 1, 2],
+      feedback: "A nasal cannula is used for mild oxygen support, a nonrebreather provides high-concentration oxygen, and a BVM is used for assisted ventilations."
+    },
+
+    {
       level: 3,
+      type: "single",
       question: "A patient with severe respiratory distress suddenly becomes quiet and less responsive. What should you suspect?",
       answers: [
         "The patient is improving",
@@ -145,13 +265,56 @@
     },
     {
       level: 3,
+      type: "single",
       question: "A patient has sudden sharp chest pain, severe shortness of breath, and absent breath sounds on one side. Suspect:",
       answers: ["Pneumonia", "Pneumothorax", "Croup", "COPD exacerbation"],
       correct: 1,
       feedback: "Sudden dyspnea with unilateral absent breath sounds suggests pneumothorax."
     },
     {
+      level: 3,
+      type: "single",
+      question: "Stridor indicates obstruction of the:",
+      answers: ["Lower airway", "Upper airway", "Alveoli", "Pleura"],
+      correct: 1,
+      feedback: "Stridor is a high-pitched sound caused by upper airway obstruction."
+    },
+    {
+      level: 3,
+      type: "multi",
+      question: "Which assessment findings may indicate inadequate breathing? Select all that apply.",
+      answers: [
+        "Slow respiratory rate",
+        "Shallow chest rise",
+        "Altered mental status",
+        "Normal skin color and full sentences"
+      ],
+      correct: [0, 1, 2],
+      feedback: "Slow respirations, shallow chest rise, and altered mental status can indicate inadequate breathing."
+    },
+    {
+      level: 3,
+      type: "matching",
+      question: "Match each lung sound with the most likely finding.",
+      leftItems: [
+        "Wheezing",
+        "Crackles",
+        "Stridor",
+        "Absent breath sounds on one side"
+      ],
+      rightItems: [
+        "Asthma",
+        "Pulmonary edema",
+        "Upper airway obstruction",
+        "Pneumothorax"
+      ],
+      correct: [0, 1, 2, 3],
+      feedback: "Wheezing is commonly associated with asthma, crackles with pulmonary edema, stridor with upper airway obstruction, and unilateral absent breath sounds with pneumothorax."
+    },
+
+    {
       level: 4,
+      type: "single",
       question: "You are treating a severe asthma patient with poor air movement and minimal wheezing. What is most concerning?",
       answers: [
         "The patient is improving",
@@ -164,13 +327,56 @@
     },
     {
       level: 4,
+      type: "single",
       question: "A CHF patient has respiratory distress, crackles, and pink frothy sputum. What condition is most likely?",
       answers: ["Pulmonary edema", "Asthma", "Croup", "Pneumothorax"],
       correct: 0,
       feedback: "Crackles and pink frothy sputum are classic findings of pulmonary edema."
     },
     {
+      level: 4,
+      type: "single",
+      question: "What is the primary problem in emphysema?",
+      answers: ["Fluid in lungs", "Air trapping", "Upper airway swelling", "Blood clot"],
+      correct: 1,
+      feedback: "Emphysema causes destruction of alveoli and air trapping."
+    },
+    {
+      level: 4,
+      type: "multi",
+      question: "Which findings are commonly associated with severe asthma? Select all that apply.",
+      answers: [
+        "Wheezing",
+        "Accessory muscle use",
+        "Poor air movement",
+        "Pink, frothy sputum"
+      ],
+      correct: [0, 1, 2],
+      feedback: "Wheezing, accessory muscle use, and poor air movement are commonly associated with severe asthma."
+    },
+    {
+      level: 4,
+      type: "matching",
+      question: "Match the respiratory condition with the most likely clue.",
+      leftItems: [
+        "Asthma",
+        "CHF",
+        "Pneumothorax",
+        "Croup"
+      ],
+      rightItems: [
+        "Wheezing and bronchospasm",
+        "Crackles and pink frothy sputum",
+        "Sudden unilateral absent breath sounds",
+        "Barking cough and stridor"
+      ],
+      correct: [0, 1, 2, 3],
+      feedback: "Asthma commonly presents with wheezing, CHF with crackles and pink frothy sputum, pneumothorax with unilateral absent breath sounds, and croup with barking cough and stridor."
+    },
+
+    {
       level: 5,
+      type: "single",
       question: "A respiratory distress patient is anxious, cyanotic, and unable to speak. What is the EMT's priority?",
       answers: [
         "Complete a full SAMPLE history",
@@ -183,6 +389,7 @@
     },
     {
       level: 5,
+      type: "single",
       question: "A patient with inadequate breathing is being ventilated by BVM. What confirms effective ventilations?",
       answers: [
         "The mask fogs up",
@@ -192,13 +399,53 @@
       ],
       correct: 1,
       feedback: "Visible chest rise is a key sign of effective BVM ventilation."
+    },
+    {
+      level: 5,
+      type: "single",
+      question: "The most important treatment for inadequate breathing is:",
+      answers: ["Nitroglycerin", "Aspirin", "Ventilatory support", "Oral glucose"],
+      correct: 2,
+      feedback: "Patients with inadequate breathing require assisted ventilations."
+    },
+    {
+      level: 5,
+      type: "multi",
+      question: "Which signs may indicate respiratory failure? Select all that apply.",
+      answers: [
+        "Altered mental status",
+        "Cyanosis",
+        "Slow or irregular respirations",
+        "Clear speech with no distress"
+      ],
+      correct: [0, 1, 2],
+      feedback: "Altered mental status, cyanosis, and slow or irregular respirations may indicate respiratory failure."
+    },
+    {
+      level: 5,
+      type: "matching",
+      question: "Match the EMT action with the respiratory problem.",
+      leftItems: [
+        "Inadequate breathing",
+        "Severe respiratory distress",
+        "Prescribed asthma inhaler",
+        "Absent breathing"
+      ],
+      rightItems: [
+        "Assist ventilations with BVM",
+        "Manage airway and oxygenation immediately",
+        "Assist with medication per protocol",
+        "Begin ventilations and assess pulse"
+      ],
+      correct: [0, 1, 2, 3],
+      feedback: "Inadequate breathing requires assisted ventilations, severe distress requires immediate airway and breathing management, EMTs may assist with a prescribed inhaler per protocol, and absent breathing requires ventilations and pulse assessment."
     }
   ];
 
   let currentLevel = 2;
   let questionNumber = 0;
   let score = 0;
-  let maxQuestions = 10;
+  let maxQuestions = 25;
   let currentQuestion;
   let usedQuestions = [];
 
@@ -240,32 +487,85 @@
     document.getElementById("question").innerHTML =
       "<strong>" + currentQuestion.question + "</strong>";
 
-    for (let i = 0; i < 4; i++) {
-      const btn = document.getElementById("answer" + i);
-      btn.innerText = currentQuestion.answers[i];
-      btn.disabled = false;
-      btn.style.background = "green";
-      btn.style.display = "block";
-    }
-
+    document.getElementById("answers").innerHTML = "";
     document.getElementById("feedback").style.display = "none";
     document.getElementById("nextBtn").style.display = "none";
     document.getElementById("restartBtn").style.display = "none";
+    document.getElementById("submitBtn").style.display = "none";
+
+    if (currentQuestion.type === "single") {
+      loadSingleQuestion();
+    } else if (currentQuestion.type === "multi") {
+      loadMultiQuestion();
+    } else if (currentQuestion.type === "matching") {
+      loadMatchingQuestion();
+    }
   }
 
-  function checkAnswer(selected) {
-    const feedback = document.getElementById("feedback");
+  function loadSingleQuestion() {
+    const answersDiv = document.getElementById("answers");
 
-    for (let i = 0; i < 4; i++) {
-      document.getElementById("answer" + i).disabled = true;
-    }
+    currentQuestion.answers.forEach((answer, index) => {
+      answersDiv.innerHTML += `
+        <button onclick="checkSingleAnswer(${index})">
+          ${answer}
+        </button>
+      `;
+    });
+  }
+
+  function loadMultiQuestion() {
+    const answersDiv = document.getElementById("answers");
+
+    currentQuestion.answers.forEach((answer, index) => {
+      answersDiv.innerHTML += `
+        <label class="checkbox-answer">
+          <input type="checkbox" value="${index}">
+          ${answer}
+        </label>
+      `;
+    });
+
+    document.getElementById("submitBtn").style.display = "block";
+  }
+
+  function loadMatchingQuestion() {
+    const answersDiv = document.getElementById("answers");
+
+    currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
+      let options = `<option value="">Choose match</option>`;
+
+      currentQuestion.rightItems.forEach((rightItem, rightIndex) => {
+        options += `<option value="${rightIndex}">${rightItem}</option>`;
+      });
+
+      answersDiv.innerHTML += `
+        <div class="matching-row">
+          <div class="matching-left">${leftItem}</div>
+          <select data-left-index="${leftIndex}">
+            ${options}
+          </select>
+        </div>
+      `;
+    });
+
+    document.getElementById("submitBtn").style.display = "block";
+  }
+
+  function checkSingleAnswer(selected) {
+    const feedback = document.getElementById("feedback");
+    const buttons = document.querySelectorAll("#answers button");
+
+    buttons.forEach(button => {
+      button.disabled = true;
+    });
 
     if (selected === currentQuestion.correct) {
       score++;
       currentLevel++;
       if (currentLevel > 5) currentLevel = 5;
 
-      document.getElementById("answer" + selected).style.background = "darkgreen";
+      buttons[selected].style.background = "darkgreen";
 
       feedback.innerHTML =
         "<strong>Correct.</strong><br>" +
@@ -275,8 +575,8 @@
       currentLevel--;
       if (currentLevel < 1) currentLevel = 1;
 
-      document.getElementById("answer" + selected).style.background = "darkred";
-      document.getElementById("answer" + currentQuestion.correct).style.background = "darkgreen";
+      buttons[selected].style.background = "darkred";
+      buttons[currentQuestion.correct].style.background = "darkgreen";
 
       feedback.innerHTML =
         "<strong>Incorrect.</strong><br>" +
@@ -291,6 +591,115 @@
     document.getElementById("nextBtn").style.display = "block";
   }
 
+  function submitAnswer() {
+    if (currentQuestion.type === "multi") {
+      checkMultiAnswer();
+    } else if (currentQuestion.type === "matching") {
+      checkMatchingAnswer();
+    }
+  }
+
+  function checkMultiAnswer() {
+    const checked = Array.from(
+      document.querySelectorAll('#answers input[type="checkbox"]:checked')
+    ).map(cb => Number(cb.value));
+
+    const correct =
+      checked.length === currentQuestion.correct.length &&
+      checked.every(value => currentQuestion.correct.includes(value));
+
+    const feedback = document.getElementById("feedback");
+    const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
+
+    checkboxes.forEach(cb => {
+      cb.disabled = true;
+    });
+
+    if (correct) {
+      score++;
+      currentLevel++;
+      if (currentLevel > 5) currentLevel = 5;
+
+      feedback.innerHTML =
+        "<strong>Correct.</strong><br>" +
+        currentQuestion.feedback +
+        "<br><br>Difficulty will increase.";
+    } else {
+      currentLevel--;
+      if (currentLevel < 1) currentLevel = 1;
+
+      const correctAnswers = currentQuestion.correct
+        .map(index => currentQuestion.answers[index])
+        .join(", ");
+
+      feedback.innerHTML =
+        "<strong>Incorrect.</strong><br>" +
+        "Correct answers: <strong>" +
+        correctAnswers +
+        "</strong><br><br>" +
+        currentQuestion.feedback +
+        "<br><br>Difficulty will decrease.";
+    }
+
+    feedback.style.display = "block";
+    document.getElementById("submitBtn").style.display = "none";
+    document.getElementById("nextBtn").style.display = "block";
+  }
+
+  function checkMatchingAnswer() {
+    const selects = document.querySelectorAll("#answers select");
+    const selectedAnswers = Array.from(selects).map(select => Number(select.value));
+
+    const allAnswered = selectedAnswers.every(answer => !Number.isNaN(answer));
+
+    const correct =
+      allAnswered &&
+      selectedAnswers.length === currentQuestion.correct.length &&
+      selectedAnswers.every((value, index) => value === currentQuestion.correct[index]);
+
+    const feedback = document.getElementById("feedback");
+
+    selects.forEach(select => {
+      select.disabled = true;
+    });
+
+    if (correct) {
+      score++;
+      currentLevel++;
+      if (currentLevel > 5) currentLevel = 5;
+
+      feedback.innerHTML =
+        "<strong>Correct.</strong><br>" +
+        currentQuestion.feedback +
+        "<br><br>Difficulty will increase.";
+    } else {
+      currentLevel--;
+      if (currentLevel < 1) currentLevel = 1;
+
+      let correctText = "";
+
+      currentQuestion.leftItems.forEach((item, index) => {
+        correctText +=
+          item +
+          " = " +
+          currentQuestion.rightItems[currentQuestion.correct[index]] +
+          "<br>";
+      });
+
+      feedback.innerHTML =
+        "<strong>Incorrect.</strong><br>" +
+        "<br><strong>Correct matches:</strong><br>" +
+        correctText +
+        "<br>" +
+        currentQuestion.feedback +
+        "<br><br>Difficulty will decrease.";
+    }
+
+    feedback.style.display = "block";
+    document.getElementById("submitBtn").style.display = "none";
+    document.getElementById("nextBtn").style.display = "block";
+  }
+
   function nextQuestion() {
     questionNumber++;
     loadQuestion();
@@ -300,15 +709,13 @@
     document.getElementById("question").innerHTML =
       "<h2>Exam Complete</h2>";
 
-    for (let i = 0; i < 4; i++) {
-      document.getElementById("answer" + i).style.display = "none";
-    }
+    document.getElementById("answers").innerHTML = "";
 
     let result = "";
 
-    if (score >= 8) {
+    if (score >= 20) {
       result = "Strong performance. Continue with mixed NREMT-style review.";
-    } else if (score >= 6) {
+    } else if (score >= 15) {
       result = "Borderline performance. Review respiratory assessment and treatment priorities.";
     } else {
       result = "Needs remediation. Focus on airway, breathing adequacy, oxygen therapy, and BVM use.";
@@ -321,6 +728,7 @@
       "<br><br>" + result;
 
     document.getElementById("status").innerText = "Adaptive Exam Finished";
+    document.getElementById("submitBtn").style.display = "none";
     document.getElementById("nextBtn").style.display = "none";
     document.getElementById("restartBtn").style.display = "block";
   }
