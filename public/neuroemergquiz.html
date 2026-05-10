@@ -115,7 +115,7 @@
 
 <div class="container">
   <h1>EMT Neurological Emergencies Exam</h1>
-  <h2>Multiple Choice, Select-All-That-Apply, and Matching</h2>
+  <h2>Most-Correct EMT Style Questions</h2>
 
   <div id="status"></div>
 
@@ -138,312 +138,352 @@ const questions = [
 {
   level: 1,
   type: "single",
-  question: "Which organ is primarily responsible for controlling body function, movement, and consciousness?",
-  answers: ["Liver", "Brain", "Kidney", "Stomach"],
-  correct: 1,
-  feedback: "The brain controls consciousness, movement, sensation, and many body functions."
-},
-
-{
-  level: 1,
-  type: "single",
-  question: "What does altered mental status mean?",
-  answers: ["Normal alertness", "A change from normal level of awareness", "Only chest pain", "Only low blood pressure"],
-  correct: 1,
-  feedback: "Altered mental status means the patient is not acting or responding at their normal level."
-},
-
-{
-  level: 1,
-  type: "single",
-  question: "Which tool can help assess a patient's level of consciousness?",
-  answers: ["AVPU", "OPQRST only", "SAMPLE only", "DCAP-BTLS only"],
+  question: "A patient is awake but confused and not answering questions appropriately. What is the MOST accurate description of this finding?",
+  answers: [
+    "Altered mental status",
+    "Normal orientation",
+    "Cardiac arrest",
+    "Respiratory arrest"
+  ],
   correct: 0,
-  feedback: "AVPU assesses whether the patient is Alert, responds to Verbal stimuli, responds to Pain, or is Unresponsive."
+  feedback: "Altered mental status means the patient is not at their normal level of awareness or orientation."
+},
+
+{
+  level: 1,
+  type: "single",
+  question: "You are assessing a confused patient. Which tool is MOST appropriate for quickly checking level of consciousness?",
+  answers: [
+    "AVPU",
+    "OPQRST",
+    "APGAR",
+    "Rule of nines"
+  ],
+  correct: 0,
+  feedback: "AVPU is used to rapidly assess whether a patient is Alert, responsive to Verbal stimulus, responsive to Pain, or Unresponsive."
+},
+
+{
+  level: 1,
+  type: "single",
+  question: "A patient opens their eyes only when you speak loudly to them. Which AVPU category is MOST correct?",
+  answers: [
+    "Alert",
+    "Verbal",
+    "Pain",
+    "Unresponsive"
+  ],
+  correct: 1,
+  feedback: "A patient who responds to your voice is classified as responsive to Verbal stimulus."
 },
 
 {
   level: 1,
   type: "multi",
-  question: "Which findings may suggest a neurological emergency? Select all that apply.",
+  question: "Which findings are MOST concerning for a neurological emergency? Select all that apply.",
   answers: [
-    "Altered mental status",
+    "Sudden slurred speech",
+    "New confusion",
     "Seizure activity",
-    "Slurred speech",
-    "Normal speech and normal movement"
+    "Alert and oriented with no complaint"
   ],
-  correct: [0,1,2],
-  feedback: "Altered mental status, seizures, and speech problems can all indicate neurological emergencies."
+  correct: [0, 1, 2],
+  feedback: "Sudden speech problems, confusion, and seizure activity may indicate a neurological emergency."
 },
 
 {
   level: 1,
   type: "matching",
-  question: "Match the neurological term with its meaning.",
+  question: "Match the AVPU category with the MOST correct description.",
   leftItems: ["Alert", "Verbal", "Pain"],
   rightItems: [
-    "Awake and oriented",
+    "Awake and appropriately responsive",
     "Responds when spoken to",
     "Responds only to painful stimulus"
   ],
-  correct: [0,1,2],
-  feedback: "AVPU is a quick method for evaluating mental status."
+  correct: [0, 1, 2],
+  feedback: "AVPU helps quickly determine mental status."
 },
 
 {
   level: 2,
   type: "single",
-  question: "Which condition is caused by abnormal electrical activity in the brain?",
-  answers: ["Seizure", "Asthma", "Angina", "Fracture"],
-  correct: 0,
-  feedback: "A seizure is caused by abnormal electrical activity in the brain."
-},
-
-{
-  level: 2,
-  type: "single",
-  question: "During an active seizure, what should the EMT do first?",
+  question: "A patient is actively seizing on the floor. What is the MOST appropriate EMT action?",
   answers: [
-    "Hold the patient down",
-    "Place something in the mouth",
-    "Protect the patient from injury",
-    "Give the patient water"
+    "Protect the patient from injury and maintain the airway as able",
+    "Hold the patient down to stop the seizure",
+    "Place an object in the patient's mouth",
+    "Immediately give the patient water"
   ],
-  correct: 2,
-  feedback: "During a seizure, protect the patient from injury and do not restrain or place anything in the mouth."
+  correct: 0,
+  feedback: "During a seizure, protect the patient from injury, move hazards away, and manage the airway when possible."
 },
 
 {
   level: 2,
   type: "single",
-  question: "After a seizure, the patient is confused and sleepy. This period is called:",
-  answers: ["Postictal period", "Stroke alert", "Respiratory arrest", "Cardiac arrest"],
+  question: "A seizure has stopped and the patient is confused and sleepy. What is the MOST likely explanation?",
+  answers: [
+    "Postictal state",
+    "Normal baseline mental status",
+    "Cardiac arrest",
+    "Respiratory arrest"
+  ],
   correct: 0,
-  feedback: "The postictal period is the recovery phase after a seizure."
+  feedback: "The postictal state is the period of confusion or sleepiness after a seizure."
+},
+
+{
+  level: 2,
+  type: "single",
+  question: "A bystander says a patient had a seizure for about 30 seconds and is now breathing adequately but confused. What should the EMT do FIRST?",
+  answers: [
+    "Assess airway, breathing, circulation, and protect privacy",
+    "Give oral fluids immediately",
+    "Restrain the patient to prevent movement",
+    "Place a bite block in the mouth"
+  ],
+  correct: 0,
+  feedback: "After a seizure, reassess ABCs, protect the patient, and continue monitoring."
 },
 
 {
   level: 2,
   type: "multi",
-  question: "Which actions are appropriate during seizure care? Select all that apply.",
+  question: "Which actions are MOST appropriate during seizure care? Select all that apply.",
   answers: [
     "Protect the head",
-    "Move dangerous objects away",
+    "Move hazards away",
     "Time the seizure",
     "Force the mouth open"
   ],
-  correct: [0,1,2],
-  feedback: "Protect the patient, move hazards away, and time the seizure. Never force the mouth open."
+  correct: [0, 1, 2],
+  feedback: "The EMT should protect the patient, remove hazards, and time the seizure. Never force the mouth open."
 },
 
 {
   level: 2,
   type: "matching",
-  question: "Match the seizure term with the correct description.",
+  question: "Match the seizure term with the MOST correct description.",
   leftItems: ["Aura", "Tonic-clonic seizure", "Postictal"],
   rightItems: [
     "Warning before seizure",
     "Stiffening and jerking movements",
     "Confused recovery period"
   ],
-  correct: [0,1,2],
-  feedback: "Seizures may have an aura, active seizure phase, and postictal recovery."
+  correct: [0, 1, 2],
+  feedback: "Seizures may include warning signs, active seizure activity, and postictal recovery."
 },
 
 {
   level: 3,
   type: "single",
-  question: "Which condition is caused by blocked or bleeding blood vessels in the brain?",
-  answers: ["Stroke", "Asthma", "Hypothermia", "Abdominal pain"],
-  correct: 0,
-  feedback: "A stroke occurs when blood flow to part of the brain is blocked or when bleeding occurs in the brain."
-},
-
-{
-  level: 3,
-  type: "single",
-  question: "Which finding is most concerning for stroke?",
+  question: "A patient suddenly develops facial droop and slurred speech. What is the MOST appropriate EMT action?",
   answers: [
-    "Facial droop",
-    "Toe pain",
-    "Itchy rash",
-    "Mild ankle swelling"
+    "Perform a stroke assessment and determine last known well time",
+    "Wait to see if the symptoms resolve",
+    "Give the patient food or drink",
+    "Have the patient walk to test balance"
   ],
   correct: 0,
-  feedback: "Facial droop is a classic stroke warning sign."
+  feedback: "A stroke assessment and last known well time are critical for suspected stroke care."
 },
 
 {
   level: 3,
   type: "single",
-  question: "What is a key question when assessing a possible stroke patient?",
+  question: "A patient has sudden right arm weakness and trouble speaking. Which finding is MOST important to obtain from family?",
   answers: [
-    "When was the patient last known well?",
-    "What did the patient eat last month?",
-    "What is the patient's favorite color?",
-    "Does the patient own a car?"
+    "Last known well time",
+    "Favorite food",
+    "Shoe size",
+    "Past childhood illnesses only"
   ],
   correct: 0,
-  feedback: "Last known well time is critical for hospital stroke treatment decisions."
+  feedback: "Last known well time helps determine eligibility for hospital stroke treatment."
+},
+
+{
+  level: 3,
+  type: "single",
+  question: "A stroke patient is awake, breathing adequately, and has no airway compromise. What is the BEST next step?",
+  answers: [
+    "Perform a stroke screen and prepare for rapid transport",
+    "Delay transport until symptoms improve",
+    "Give oral glucose without assessment",
+    "Allow the patient to sleep without monitoring"
+  ],
+  correct: 0,
+  feedback: "Stroke care includes stroke screening, determining last known well, monitoring ABCs, and rapid transport."
 },
 
 {
   level: 3,
   type: "multi",
-  question: "Which are common stroke signs? Select all that apply.",
+  question: "Which findings are MOST consistent with a possible stroke? Select all that apply.",
   answers: [
+    "Facial droop",
     "Arm drift",
     "Slurred speech",
-    "Facial droop",
-    "Normal grip strength and clear speech"
+    "Equal grip strength and clear speech"
   ],
-  correct: [0,1,2],
-  feedback: "Facial droop, arm drift, and slurred speech are common stroke findings."
+  correct: [0, 1, 2],
+  feedback: "Facial droop, arm drift, and slurred speech are classic stroke screen findings."
 },
 
 {
   level: 3,
   type: "matching",
-  question: "Match the stroke assessment finding with what it tests.",
+  question: "Match the stroke assessment finding with what it MOST directly evaluates.",
   leftItems: ["Facial droop", "Arm drift", "Speech abnormality"],
   rightItems: [
     "Facial muscle weakness",
     "One-sided arm weakness",
     "Language or speech problem"
   ],
-  correct: [0,1,2],
-  feedback: "A stroke screen checks face, arm movement, and speech."
+  correct: [0, 1, 2],
+  feedback: "Stroke screens assess face, arm strength, and speech."
 },
 
 {
   level: 4,
   type: "single",
-  question: "A patient has sudden confusion, slurred speech, and right arm weakness. What should the EMT suspect?",
-  answers: ["Stroke", "Simple nausea", "Minor rash", "Ankle sprain"],
-  correct: 0,
-  feedback: "Sudden speech problems and one-sided weakness are highly concerning for stroke."
-},
-
-{
-  level: 4,
-  type: "single",
-  question: "A diabetic patient is confused and sweating. Which condition can mimic a stroke?",
-  answers: ["Hypoglycemia", "Fracture", "Sunburn", "Ear infection only"],
-  correct: 0,
-  feedback: "Hypoglycemia can cause altered mental status and stroke-like symptoms."
-},
-
-{
-  level: 4,
-  type: "single",
-  question: "What should the EMT do for a possible stroke patient with an altered mental status?",
+  question: "A diabetic patient is confused, sweaty, and has slurred speech. What is the MOST appropriate EMT consideration?",
   answers: [
-    "Assess airway, breathing, circulation, and transport promptly",
-    "Give food immediately",
-    "Delay transport until symptoms stop",
-    "Allow the patient to walk around"
+    "Hypoglycemia can mimic stroke and blood glucose should be checked if available",
+    "The patient should be allowed to sleep",
+    "Stroke can be ruled out immediately",
+    "The patient should walk around to improve circulation"
   ],
   correct: 0,
-  feedback: "Stroke care includes ABC assessment, oxygen if indicated, stroke screen, last known well time, and rapid transport."
+  feedback: "Hypoglycemia can mimic stroke. Blood glucose should be checked if available while continuing appropriate assessment."
+},
+
+{
+  level: 4,
+  type: "single",
+  question: "A suspected stroke patient suddenly becomes unable to control secretions. What is the EMT's priority?",
+  answers: [
+    "Manage the airway and suction as needed",
+    "Continue only with the stroke screen",
+    "Give oral fluids",
+    "Place the patient flat without monitoring"
+  ],
+  correct: 0,
+  feedback: "Airway management takes priority when the patient cannot protect their airway."
+},
+
+{
+  level: 4,
+  type: "single",
+  question: "A patient has a severe headache, vomiting, and decreasing mental status after a head injury. What is MOST concerning?",
+  answers: [
+    "Increasing intracranial pressure",
+    "Minor anxiety",
+    "Simple dehydration only",
+    "Normal recovery"
+  ],
+  correct: 0,
+  feedback: "Worsening mental status, vomiting, and severe headache after head injury may indicate increased intracranial pressure."
 },
 
 {
   level: 4,
   type: "multi",
-  question: "Which information is important for a suspected stroke patient? Select all that apply.",
+  question: "Which information is MOST important for a suspected stroke patient? Select all that apply.",
   answers: [
     "Last known well time",
     "Blood glucose if available",
-    "Medication history such as blood thinners",
-    "Shoe size"
+    "Use of blood thinners",
+    "Favorite television show"
   ],
-  correct: [0,1,2],
-  feedback: "Last known well time, glucose, and blood thinner use are important in stroke care."
+  correct: [0, 1, 2],
+  feedback: "Last known well time, glucose level, and blood thinner use are important for suspected stroke."
 },
 
 {
   level: 4,
   type: "matching",
-  question: "Match the condition with the likely presentation.",
+  question: "Match the condition with the MOST likely presentation.",
   leftItems: ["Stroke", "Hypoglycemia", "Seizure"],
   rightItems: [
     "Sudden one-sided weakness",
-    "Confusion and sweating",
-    "Postictal confusion"
+    "Confusion, sweating, possible stroke-like symptoms",
+    "Postictal confusion after abnormal movements"
   ],
-  correct: [0,1,2],
-  feedback: "Several conditions can cause altered mental status, so assessment is important."
+  correct: [0, 1, 2],
+  feedback: "Different neurological and metabolic emergencies can look similar and require careful assessment."
 },
 
 {
   level: 5,
   type: "single",
-  question: "A patient has a seizure lasting longer than 5 minutes. What is this concerning for?",
+  question: "A patient has been seizing continuously for more than 5 minutes. What is the MOST appropriate concern?",
   answers: [
     "Status epilepticus",
-    "Normal seizure recovery",
-    "Simple headache",
-    "Minor dizziness"
+    "Normal postictal period",
+    "Simple fainting episode",
+    "Resolved seizure"
   ],
   correct: 0,
-  feedback: "A prolonged seizure may indicate status epilepticus and is a serious emergency."
+  feedback: "A seizure lasting longer than 5 minutes is concerning for status epilepticus and requires urgent care."
 },
 
 {
   level: 5,
   type: "single",
-  question: "A patient with a suspected stroke becomes unable to maintain their airway. What is the priority?",
+  question: "A suspected stroke patient is becoming less responsive and breathing shallowly. What should the EMT do FIRST?",
   answers: [
-    "Airway management and ventilation support",
-    "Ask detailed billing questions",
-    "Give the patient food",
-    "Stand the patient upright"
+    "Support airway and breathing",
+    "Complete all paperwork before treatment",
+    "Give food or drink",
+    "Delay care until the patient becomes alert"
   ],
   correct: 0,
-  feedback: "Airway and breathing always take priority, even when stroke is suspected."
+  feedback: "Airway and breathing are the priority when a neurological patient deteriorates."
 },
 
 {
   level: 5,
   type: "single",
-  question: "Which finding may indicate increased intracranial pressure after a head injury?",
+  question: "A head injury patient has unequal pupils, vomiting, and worsening confusion. What is the MOST appropriate EMT action?",
   answers: [
-    "Worsening mental status",
-    "Improved alertness only",
-    "Itchy skin",
-    "Isolated toe pain"
+    "Maintain airway, support breathing, and transport rapidly",
+    "Allow the patient to sleep",
+    "Give oral fluids",
+    "Ignore the pupils if the patient can talk"
   ],
   correct: 0,
-  feedback: "Worsening mental status after head injury may indicate increased pressure or bleeding in the brain."
+  feedback: "Unequal pupils, vomiting, and worsening confusion may indicate serious brain injury."
 },
 
 {
   level: 5,
   type: "multi",
-  question: "Which findings are concerning in a neurological patient? Select all that apply.",
+  question: "Which findings are MOST concerning in a neurological patient? Select all that apply.",
   answers: [
     "Repeated seizures",
     "Unequal pupils",
     "Decreasing level of consciousness",
-    "Normal mental status with no complaint"
+    "Normal orientation and no complaint"
   ],
-  correct: [0,1,2],
-  feedback: "Repeated seizures, unequal pupils, and declining mental status are serious neurological findings."
+  correct: [0, 1, 2],
+  feedback: "Repeated seizures, unequal pupils, and decreasing mental status suggest serious neurological compromise."
 },
 
 {
   level: 5,
   type: "matching",
-  question: "Match the neurological emergency with the EMT priority.",
+  question: "Match the neurological emergency with the MOST appropriate EMT priority.",
   leftItems: ["Stroke", "Seizure", "Altered mental status", "Head injury"],
   rightItems: [
     "Determine last known well and transport rapidly",
     "Protect from injury and manage airway",
-    "Assess ABCs and check possible causes",
+    "Assess ABCs and consider reversible causes",
     "Monitor for worsening mental status"
   ],
-  correct: [0,1,2,3],
-  feedback: "Neurological emergencies require airway support, assessment of mental status, rapid recognition, and transport."
+  correct: [0, 1, 2, 3],
+  feedback: "Neurological emergencies require rapid assessment, airway support, recognition of time-sensitive conditions, and transport."
 }
 
 ];
@@ -611,7 +651,7 @@ function checkSingleAnswer(selected) {
 
     feedback.innerHTML =
       "<strong>Incorrect.</strong><br>" +
-      "Correct answer: <strong>" +
+      "Most correct answer: <strong>" +
       currentQuestion.answers[currentQuestion.correct] +
       "</strong><br><br>" +
       currentQuestion.feedback +
@@ -675,7 +715,7 @@ function checkMultiAnswer() {
 
     feedback.innerHTML =
       "<strong>Incorrect.</strong><br>" +
-      "Correct answers: <strong>" +
+      "Most correct answers: <strong>" +
       correctAnswers +
       "</strong><br><br>" +
       currentQuestion.feedback +
@@ -743,7 +783,7 @@ function checkMatchingAnswer() {
 
     feedback.innerHTML =
       "<strong>Incorrect.</strong><br>" +
-      "<br><strong>Correct matches:</strong><br>" +
+      "<br><strong>Most correct matches:</strong><br>" +
       correctText +
       "<br>" +
       currentQuestion.feedback +
@@ -774,11 +814,11 @@ function finishExam() {
   }
 
   else if (score >= 15) {
-    result = "Borderline performance. Review stroke assessment, seizure care, altered mental status, and neurological assessment.";
+    result = "Borderline performance. Review stroke assessment, seizure care, altered mental status, hypoglycemia, and airway priorities.";
   }
 
   else {
-    result = "Needs remediation. Focus on AVPU, stroke signs, seizure safety, hypoglycemia as a stroke mimic, and airway management in neurological patients.";
+    result = "Needs remediation. Focus on AVPU, stroke signs, last known well time, seizure safety, hypoglycemia as a stroke mimic, head injury warning signs, and airway management.";
   }
 
   document.getElementById("feedback").style.display = "block";
