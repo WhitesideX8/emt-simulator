@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Adaptive EMT Neurological Emergencies Exam</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #222;
+      color: white;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #333;
+      padding: 25px;
+      border-radius: 10px;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .question-box {
+      background: #d9d9d9;
+      color: black;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      font-size: 16px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    button:hover {
+      background: darkgreen;
+    }
+
+    #submitBtn, #nextBtn, #restartBtn {
+      background: #0066cc;
+      text-align: center;
+      display: none;
+    }
+
+    #feedback {
+      margin-top: 15px;
+      padding: 15px;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      display: none;
+    }
+
+    #status {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 18px;
+    }
+
+    .checkbox-answer {
+      display: block;
+      background: #eeeeee;
+      color: black;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .checkbox-answer input {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    .matching-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 12px 0;
+      background: #eeeeee;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .matching-left {
+      flex: 1;
+      font-weight: bold;
+    }
+
+    .matching-row select {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>EMT Neurological Emergencies Exam</h1>
+  <h2>Multiple Choice, Select-All-That-Apply, and Matching</h2>
+
+  <div id="status"></div>
+
+  <div class="question-box">
+    <div id="question"></div>
+    <div id="answers"></div>
+
+    <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
+
+    <div id="feedback"></div>
+
+    <button id="nextBtn" onclick="nextQuestion()">Next Question</button>
+    <button id="restartBtn" onclick="restartExam()">Restart Exam</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+
+{
+  level: 1,
+  type: "single",
+  question: "Which organ is primarily responsible for controlling body function, movement, and consciousness?",
+  answers: ["Liver", "Brain", "Kidney", "Stomach"],
+  correct: 1,
+  feedback: "The brain controls consciousness, movement, sensation, and many body functions."
+},
+
+{
+  level: 1,
+  type: "single",
+  question: "What does altered mental status mean?",
+  answers: ["Normal alertness", "A change from normal level of awareness", "Only chest pain", "Only low blood pressure"],
+  correct: 1,
+  feedback: "Altered mental status means the patient is not acting or responding at their normal level."
+},
+
+{
+  level: 1,
+  type: "single",
+  question: "Which tool can help assess a patient's level of consciousness?",
+  answers: ["AVPU", "OPQRST only", "SAMPLE only", "DCAP-BTLS only"],
+  correct: 0,
+  feedback: "AVPU assesses whether the patient is Alert, responds to Verbal stimuli, responds to Pain, or is Unresponsive."
+},
+
+{
+  level: 1,
+  type: "multi",
+  question: "Which findings may suggest a neurological emergency? Select all that apply.",
+  answers: [
+    "Altered mental status",
+    "Seizure activity",
+    "Slurred speech",
+    "Normal speech and normal movement"
+  ],
+  correct: [0,1,2],
+  feedback: "Altered mental status, seizures, and speech problems can all indicate neurological emergencies."
+},
+
+{
+  level: 1,
+  type: "matching",
+  question: "Match the neurological term with its meaning.",
+  leftItems: ["Alert", "Verbal", "Pain"],
+  rightItems: [
+    "Awake and oriented",
+    "Responds when spoken to",
+    "Responds only to painful stimulus"
+  ],
+  correct: [0,1,2],
+  feedback: "AVPU is a quick method for evaluating mental status."
+},
+
+{
+  level: 2,
+  type: "single",
+  question: "Which condition is caused by abnormal electrical activity in the brain?",
+  answers: ["Seizure", "Asthma", "Angina", "Fracture"],
+  correct: 0,
+  feedback: "A seizure is caused by abnormal electrical activity in the brain."
+},
+
+{
+  level: 2,
+  type: "single",
+  question: "During an active seizure, what should the EMT do first?",
+  answers: [
+    "Hold the patient down",
+    "Place something in the mouth",
+    "Protect the patient from injury",
+    "Give the patient water"
+  ],
+  correct: 2,
+  feedback: "During a seizure, protect the patient from injury and do not restrain or place anything in the mouth."
+},
+
+{
+  level: 2,
+  type: "single",
+  question: "After a seizure, the patient is confused and sleepy. This period is called:",
+  answers: ["Postictal period", "Stroke alert", "Respiratory arrest", "Cardiac arrest"],
+  correct: 0,
+  feedback: "The postictal period is the recovery phase after a seizure."
+},
+
+{
+  level: 2,
+  type: "multi",
+  question: "Which actions are appropriate during seizure care? Select all that apply.",
+  answers: [
+    "Protect the head",
+    "Move dangerous objects away",
+    "Time the seizure",
+    "Force the mouth open"
+  ],
+  correct: [0,1,2],
+  feedback: "Protect the patient, move hazards away, and time the seizure. Never force the mouth open."
+},
+
+{
+  level: 2,
+  type: "matching",
+  question: "Match the seizure term with the correct description.",
+  leftItems: ["Aura", "Tonic-clonic seizure", "Postictal"],
+  rightItems: [
+    "Warning before seizure",
+    "Stiffening and jerking movements",
+    "Confused recovery period"
+  ],
+  correct: [0,1,2],
+  feedback: "Seizures may have an aura, active seizure phase, and postictal recovery."
+},
+
+{
+  level: 3,
+  type: "single",
+  question: "Which condition is caused by blocked or bleeding blood vessels in the brain?",
+  answers: ["Stroke", "Asthma", "Hypothermia", "Abdominal pain"],
+  correct: 0,
+  feedback: "A stroke occurs when blood flow to part of the brain is blocked or when bleeding occurs in the brain."
+},
+
+{
+  level: 3,
+  type: "single",
+  question: "Which finding is most concerning for stroke?",
+  answers: [
+    "Facial droop",
+    "Toe pain",
+    "Itchy rash",
+    "Mild ankle swelling"
+  ],
+  correct: 0,
+  feedback: "Facial droop is a classic stroke warning sign."
+},
+
+{
+  level: 3,
+  type: "single",
+  question: "What is a key question when assessing a possible stroke patient?",
+  answers: [
+    "When was the patient last known well?",
+    "What did the patient eat last month?",
+    "What is the patient's favorite color?",
+    "Does the patient own a car?"
+  ],
+  correct: 0,
+  feedback: "Last known well time is critical for hospital stroke treatment decisions."
+},
+
+{
+  level: 3,
+  type: "multi",
+  question: "Which are common stroke signs? Select all that apply.",
+  answers: [
+    "Arm drift",
+    "Slurred speech",
+    "Facial droop",
+    "Normal grip strength and clear speech"
+  ],
+  correct: [0,1,2],
+  feedback: "Facial droop, arm drift, and slurred speech are common stroke findings."
+},
+
+{
+  level: 3,
+  type: "matching",
+  question: "Match the stroke assessment finding with what it tests.",
+  leftItems: ["Facial droop", "Arm drift", "Speech abnormality"],
+  rightItems: [
+    "Facial muscle weakness",
+    "One-sided arm weakness",
+    "Language or speech problem"
+  ],
+  correct: [0,1,2],
+  feedback: "A stroke screen checks face, arm movement, and speech."
+},
+
+{
+  level: 4,
+  type: "single",
+  question: "A patient has sudden confusion, slurred speech, and right arm weakness. What should the EMT suspect?",
+  answers: ["Stroke", "Simple nausea", "Minor rash", "Ankle sprain"],
+  correct: 0,
+  feedback: "Sudden speech problems and one-sided weakness are highly concerning for stroke."
+},
+
+{
+  level: 4,
+  type: "single",
+  question: "A diabetic patient is confused and sweating. Which condition can mimic a stroke?",
+  answers: ["Hypoglycemia", "Fracture", "Sunburn", "Ear infection only"],
+  correct: 0,
+  feedback: "Hypoglycemia can cause altered mental status and stroke-like symptoms."
+},
+
+{
+  level: 4,
+  type: "single",
+  question: "What should the EMT do for a possible stroke patient with an altered mental status?",
+  answers: [
+    "Assess airway, breathing, circulation, and transport promptly",
+    "Give food immediately",
+    "Delay transport until symptoms stop",
+    "Allow the patient to walk around"
+  ],
+  correct: 0,
+  feedback: "Stroke care includes ABC assessment, oxygen if indicated, stroke screen, last known well time, and rapid transport."
+},
+
+{
+  level: 4,
+  type: "multi",
+  question: "Which information is important for a suspected stroke patient? Select all that apply.",
+  answers: [
+    "Last known well time",
+    "Blood glucose if available",
+    "Medication history such as blood thinners",
+    "Shoe size"
+  ],
+  correct: [0,1,2],
+  feedback: "Last known well time, glucose, and blood thinner use are important in stroke care."
+},
+
+{
+  level: 4,
+  type: "matching",
+  question: "Match the condition with the likely presentation.",
+  leftItems: ["Stroke", "Hypoglycemia", "Seizure"],
+  rightItems: [
+    "Sudden one-sided weakness",
+    "Confusion and sweating",
+    "Postictal confusion"
+  ],
+  correct: [0,1,2],
+  feedback: "Several conditions can cause altered mental status, so assessment is important."
+},
+
+{
+  level: 5,
+  type: "single",
+  question: "A patient has a seizure lasting longer than 5 minutes. What is this concerning for?",
+  answers: [
+    "Status epilepticus",
+    "Normal seizure recovery",
+    "Simple headache",
+    "Minor dizziness"
+  ],
+  correct: 0,
+  feedback: "A prolonged seizure may indicate status epilepticus and is a serious emergency."
+},
+
+{
+  level: 5,
+  type: "single",
+  question: "A patient with a suspected stroke becomes unable to maintain their airway. What is the priority?",
+  answers: [
+    "Airway management and ventilation support",
+    "Ask detailed billing questions",
+    "Give the patient food",
+    "Stand the patient upright"
+  ],
+  correct: 0,
+  feedback: "Airway and breathing always take priority, even when stroke is suspected."
+},
+
+{
+  level: 5,
+  type: "single",
+  question: "Which finding may indicate increased intracranial pressure after a head injury?",
+  answers: [
+    "Worsening mental status",
+    "Improved alertness only",
+    "Itchy skin",
+    "Isolated toe pain"
+  ],
+  correct: 0,
+  feedback: "Worsening mental status after head injury may indicate increased pressure or bleeding in the brain."
+},
+
+{
+  level: 5,
+  type: "multi",
+  question: "Which findings are concerning in a neurological patient? Select all that apply.",
+  answers: [
+    "Repeated seizures",
+    "Unequal pupils",
+    "Decreasing level of consciousness",
+    "Normal mental status with no complaint"
+  ],
+  correct: [0,1,2],
+  feedback: "Repeated seizures, unequal pupils, and declining mental status are serious neurological findings."
+},
+
+{
+  level: 5,
+  type: "matching",
+  question: "Match the neurological emergency with the EMT priority.",
+  leftItems: ["Stroke", "Seizure", "Altered mental status", "Head injury"],
+  rightItems: [
+    "Determine last known well and transport rapidly",
+    "Protect from injury and manage airway",
+    "Assess ABCs and check possible causes",
+    "Monitor for worsening mental status"
+  ],
+  correct: [0,1,2,3],
+  feedback: "Neurological emergencies require airway support, assessment of mental status, rapid recognition, and transport."
+}
+
+];
+
+let currentLevel = 2;
+let questionNumber = 0;
+let score = 0;
+let maxQuestions = 25;
+let currentQuestion;
+let usedQuestions = [];
+
+function shuffleArray(array) {
+  return array
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+}
+
+function getQuestionByLevel(level) {
+  let available = questions.filter(q =>
+    q.level === level && !usedQuestions.includes(q.question)
+  );
+
+  if (available.length === 0) {
+    available = questions.filter(q => !usedQuestions.includes(q.question));
+  }
+
+  if (available.length === 0) {
+    finishExam();
+    return null;
+  }
+
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+function loadQuestion() {
+  if (questionNumber >= maxQuestions) {
+    finishExam();
+    return;
+  }
+
+  currentQuestion = getQuestionByLevel(currentLevel);
+
+  if (!currentQuestion) return;
+
+  usedQuestions.push(currentQuestion.question);
+
+  document.getElementById("status").innerText =
+    "Question " + (questionNumber + 1) +
+    " of " + maxQuestions +
+    " | Current Difficulty Level: " + currentLevel +
+    " | Score: " + score;
+
+  document.getElementById("question").innerHTML =
+    "<strong>" + currentQuestion.question + "</strong>";
+
+  document.getElementById("answers").innerHTML = "";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "none";
+  document.getElementById("submitBtn").style.display = "none";
+
+  if (currentQuestion.type === "single") {
+    loadSingleQuestion();
+  } else if (currentQuestion.type === "multi") {
+    loadMultiQuestion();
+  } else if (currentQuestion.type === "matching") {
+    loadMatchingQuestion();
+  }
+}
+
+function loadSingleQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.answers.forEach((answer, index) => {
+    answersDiv.innerHTML += `
+      <button onclick="checkSingleAnswer(${index})">
+        ${answer}
+      </button>
+    `;
+  });
+}
+
+function loadMultiQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.answers.forEach((answer, index) => {
+    answersDiv.innerHTML += `
+      <label class="checkbox-answer">
+        <input type="checkbox" value="${index}">
+        ${answer}
+      </label>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function loadMatchingQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
+
+    const shuffledOptions = shuffleArray(
+      currentQuestion.rightItems.map((rightItem, rightIndex) => ({
+        text: rightItem,
+        originalIndex: rightIndex
+      }))
+    );
+
+    let options = `<option value="">Choose match</option>`;
+
+    shuffledOptions.forEach(option => {
+      options += `
+        <option value="${option.originalIndex}">
+          ${option.text}
+        </option>
+      `;
+    });
+
+    answersDiv.innerHTML += `
+      <div class="matching-row">
+        <div class="matching-left">${leftItem}</div>
+        <select data-left-index="${leftIndex}">
+          ${options}
+        </select>
+      </div>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function checkSingleAnswer(selected) {
+
+  const feedback = document.getElementById("feedback");
+  const buttons = document.querySelectorAll("#answers button");
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+
+  if (selected === currentQuestion.correct) {
+
+    score++;
+    currentLevel++;
+
+    if (currentLevel > 5) currentLevel = 5;
+
+    buttons[selected].style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+
+  } else {
+
+    currentLevel--;
+
+    if (currentLevel < 1) currentLevel = 1;
+
+    buttons[selected].style.background = "darkred";
+    buttons[currentQuestion.correct].style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "Correct answer: <strong>" +
+      currentQuestion.answers[currentQuestion.correct] +
+      "</strong><br><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function submitAnswer() {
+
+  if (currentQuestion.type === "multi") {
+    checkMultiAnswer();
+  }
+
+  else if (currentQuestion.type === "matching") {
+    checkMatchingAnswer();
+  }
+}
+
+function checkMultiAnswer() {
+
+  const checked = Array.from(
+    document.querySelectorAll('#answers input[type="checkbox"]:checked')
+  ).map(cb => Number(cb.value));
+
+  const correct =
+    checked.length === currentQuestion.correct.length &&
+    checked.every(value => currentQuestion.correct.includes(value));
+
+  const feedback = document.getElementById("feedback");
+
+  const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
+
+  checkboxes.forEach(cb => {
+    cb.disabled = true;
+  });
+
+  if (correct) {
+
+    score++;
+    currentLevel++;
+
+    if (currentLevel > 5) currentLevel = 5;
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+
+  } else {
+
+    currentLevel--;
+
+    if (currentLevel < 1) currentLevel = 1;
+
+    const correctAnswers = currentQuestion.correct
+      .map(index => currentQuestion.answers[index])
+      .join(", ");
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "Correct answers: <strong>" +
+      correctAnswers +
+      "</strong><br><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function checkMatchingAnswer() {
+
+  const selects = document.querySelectorAll("#answers select");
+
+  const selectedAnswers = Array.from(selects).map(select =>
+    Number(select.value)
+  );
+
+  const allAnswered = selectedAnswers.every(answer =>
+    !Number.isNaN(answer)
+  );
+
+  const correct =
+    allAnswered &&
+    selectedAnswers.length === currentQuestion.correct.length &&
+    selectedAnswers.every((value, index) =>
+      value === currentQuestion.correct[index]
+    );
+
+  const feedback = document.getElementById("feedback");
+
+  selects.forEach(select => {
+    select.disabled = true;
+  });
+
+  if (correct) {
+
+    score++;
+    currentLevel++;
+
+    if (currentLevel > 5) currentLevel = 5;
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+
+  } else {
+
+    currentLevel--;
+
+    if (currentLevel < 1) currentLevel = 1;
+
+    let correctText = "";
+
+    currentQuestion.leftItems.forEach((item, index) => {
+
+      correctText +=
+        item +
+        " = " +
+        currentQuestion.rightItems[currentQuestion.correct[index]] +
+        "<br>";
+    });
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "<br><strong>Correct matches:</strong><br>" +
+      correctText +
+      "<br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function nextQuestion() {
+  questionNumber++;
+  loadQuestion();
+}
+
+function finishExam() {
+
+  document.getElementById("question").innerHTML =
+    "<h2>Exam Complete</h2>";
+
+  document.getElementById("answers").innerHTML = "";
+
+  let result = "";
+
+  if (score >= 20) {
+    result = "Strong neurological emergency performance.";
+  }
+
+  else if (score >= 15) {
+    result = "Borderline performance. Review stroke assessment, seizure care, altered mental status, and neurological assessment.";
+  }
+
+  else {
+    result = "Needs remediation. Focus on AVPU, stroke signs, seizure safety, hypoglycemia as a stroke mimic, and airway management in neurological patients.";
+  }
+
+  document.getElementById("feedback").style.display = "block";
+
+  document.getElementById("feedback").innerHTML =
+    "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
+    "<br><br><strong>Final Difficulty Level:</strong> " + currentLevel +
+    "<br><br>" + result;
+
+  document.getElementById("status").innerText =
+    "Adaptive Exam Finished";
+
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "block";
+}
+
+function restartExam() {
+  currentLevel = 2;
+  questionNumber = 0;
+  score = 0;
+  usedQuestions = [];
+  loadQuestion();
+}
+
+loadQuestion();
+
+</script>
+
+</body>
+</html>
