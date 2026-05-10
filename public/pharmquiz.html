@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Adaptive EMT Pharmacology Exam</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #222;
+      color: white;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #333;
+      padding: 25px;
+      border-radius: 10px;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .question-box {
+      background: #d9d9d9;
+      color: black;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      font-size: 16px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    button:hover {
+      background: darkgreen;
+    }
+
+    #submitBtn, #nextBtn, #restartBtn {
+      background: #0066cc;
+      text-align: center;
+      display: none;
+    }
+
+    #feedback {
+      margin-top: 15px;
+      padding: 15px;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      display: none;
+    }
+
+    #status {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 18px;
+    }
+
+    .checkbox-answer {
+      display: block;
+      background: #eeeeee;
+      color: black;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .checkbox-answer input {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    .matching-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 12px 0;
+      background: #eeeeee;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .matching-left {
+      flex: 1;
+      font-weight: bold;
+    }
+
+    .matching-row select {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>EMT Pharmacology Exam</h1>
+  <h2>Multiple Choice, Select-All-That-Apply, and Matching</h2>
+
+  <div id="status"></div>
+
+  <div class="question-box">
+    <div id="question"></div>
+    <div id="answers"></div>
+
+    <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
+
+    <div id="feedback"></div>
+
+    <button id="nextBtn" onclick="nextQuestion()">Next Question</button>
+    <button id="restartBtn" onclick="restartExam()">Restart Exam</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    level: 1,
+    type: "single",
+    question: "A medication that is placed under the tongue is given by which route?",
+    answers: ["Oral", "Sublingual", "Intramuscular", "Inhaled"],
+    correct: 1,
+    feedback: "Sublingual medications are placed under the tongue for absorption."
+  },
+  {
+    level: 1,
+    type: "single",
+    question: "Which medication is commonly given to a patient with suspected cardiac chest pain if not contraindicated?",
+    answers: ["Aspirin", "Oral glucose", "Albuterol", "Activated charcoal"],
+    correct: 0,
+    feedback: "Aspirin may be given for suspected cardiac chest pain according to protocol."
+  },
+  {
+    level: 1,
+    type: "single",
+    question: "Oral glucose is used for a patient with:",
+    answers: ["Hypoglycemia", "Hypertension", "Asthma", "Chest trauma"],
+    correct: 0,
+    feedback: "Oral glucose is used for suspected low blood sugar in a patient who can swallow."
+  },
+  {
+    level: 1,
+    type: "multi",
+    question: "Which are part of the medication rights? Select all that apply.",
+    answers: [
+      "Right patient",
+      "Right medication",
+      "Right dose",
+      "Right favorite color"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Medication rights include the right patient, medication, dose, route, time, and documentation."
+  },
+  {
+    level: 1,
+    type: "matching",
+    question: "Match the medication with its common EMT use.",
+    leftItems: ["Aspirin", "Oral glucose", "Albuterol"],
+    rightItems: ["Chest pain", "Low blood sugar", "Bronchospasm"],
+    correct: [0, 1, 2],
+    feedback: "These are common EMT medications and indications."
+  },
+
+  {
+    level: 2,
+    type: "single",
+    question: "Before assisting a patient with nitroglycerin, the EMT should first check:",
+    answers: ["Temperature", "Blood pressure", "Pupil size", "Skin color only"],
+    correct: 1,
+    feedback: "Nitroglycerin can lower blood pressure, so blood pressure should be checked first."
+  },
+  {
+    level: 2,
+    type: "single",
+    question: "A patient with asthma has a prescribed inhaler. The EMT may assist with it when:",
+    answers: [
+      "The patient has signs of respiratory distress and protocol allows",
+      "The patient has ankle pain",
+      "The patient is unconscious with no pulse",
+      "The medication is expired"
+    ],
+    correct: 0,
+    feedback: "EMTs may assist with a prescribed inhaler for respiratory distress according to protocol."
+  },
+  {
+    level: 2,
+    type: "single",
+    question: "Which medication may be given for a severe allergic reaction with respiratory distress?",
+    answers: ["Epinephrine", "Aspirin", "Nitroglycerin", "Oral glucose"],
+    correct: 0,
+    feedback: "Epinephrine is used for severe allergic reaction/anaphylaxis according to protocol."
+  },
+  {
+    level: 2,
+    type: "multi",
+    question: "Which findings may suggest anaphylaxis? Select all that apply.",
+    answers: [
+      "Wheezing",
+      "Hives",
+      "Hypotension",
+      "Isolated ankle pain"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Anaphylaxis may include respiratory distress, hives, swelling, and hypotension."
+  },
+  {
+    level: 2,
+    type: "matching",
+    question: "Match the medication with the route commonly used by EMTs.",
+    leftItems: ["Nitroglycerin", "Albuterol", "Epinephrine auto-injector"],
+    rightItems: ["Sublingual", "Inhaled", "Intramuscular"],
+    correct: [0, 1, 2],
+    feedback: "Nitroglycerin is sublingual, albuterol is inhaled, and epinephrine auto-injectors are intramuscular."
+  },
+
+  {
+    level: 3,
+    type: "single",
+    question: "A diabetic patient is confused but awake and able to swallow. Which medication may be appropriate?",
+    answers: ["Oral glucose", "Nitroglycerin", "Aspirin", "Activated charcoal"],
+    correct: 0,
+    feedback: "Oral glucose may be used for a suspected hypoglycemic patient who can swallow."
+  },
+  {
+    level: 3,
+    type: "single",
+    question: "Which is a contraindication to giving oral glucose?",
+    answers: [
+      "Patient can swallow",
+      "Patient is unconscious and unable to protect the airway",
+      "Patient has a history of diabetes",
+      "Patient is confused but awake"
+    ],
+    correct: 1,
+    feedback: "Oral glucose should not be given to an unconscious patient who cannot swallow safely."
+  },
+  {
+    level: 3,
+    type: "single",
+    question: "A patient took medication and now has hives, wheezing, and hypotension. What should the EMT suspect?",
+    answers: ["Anaphylaxis", "Stroke", "Fracture", "Simple nausea"],
+    correct: 0,
+    feedback: "Hives, wheezing, and hypotension after exposure suggest anaphylaxis."
+  },
+  {
+    level: 3,
+    type: "multi",
+    question: "Before administering or assisting with medication, which should the EMT consider? Select all that apply.",
+    answers: [
+      "Indications",
+      "Contraindications",
+      "Patient allergies",
+      "Whether the EMT likes the medication"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Medication decisions require checking indications, contraindications, allergies, and protocols."
+  },
+  {
+    level: 3,
+    type: "matching",
+    question: "Match the medication with the major caution.",
+    leftItems: ["Nitroglycerin", "Oral glucose", "Aspirin", "Albuterol"],
+    rightItems: [
+      "Low blood pressure",
+      "Unable to swallow",
+      "Allergy or active bleeding concern",
+      "Increased heart rate"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Each medication has important cautions the EMT must recognize."
+  },
+
+  {
+    level: 4,
+    type: "single",
+    question: "A chest pain patient has taken erectile dysfunction medication recently. Why is this important before nitroglycerin?",
+    answers: [
+      "It may cause dangerous hypotension",
+      "It makes aspirin ineffective",
+      "It causes hypoglycemia",
+      "It prevents oxygen from working"
+    ],
+    correct: 0,
+    feedback: "Nitroglycerin combined with certain erectile dysfunction medications can cause dangerous hypotension."
+  },
+  {
+    level: 4,
+    type: "single",
+    question: "After assisting with an albuterol inhaler, which finding would suggest improvement?",
+    answers: [
+      "Increased wheezing with worse distress",
+      "Improved breathing and ability to speak",
+      "Loss of consciousness",
+      "Absent pulse"
+    ],
+    correct: 1,
+    feedback: "Improved breathing and speaking ability suggest the bronchodilator is helping."
+  },
+  {
+    level: 4,
+    type: "single",
+    question: "A patient has severe allergic reaction symptoms. After epinephrine, what should the EMT do?",
+    answers: [
+      "Stop assessment because the patient is cured",
+      "Continue airway, breathing, circulation assessment and transport",
+      "Delay transport for one hour",
+      "Give nitroglycerin"
+    ],
+    correct: 1,
+    feedback: "Anaphylaxis can recur or worsen, so reassessment and transport remain important."
+  },
+  {
+    level: 4,
+    type: "multi",
+    question: "Which are appropriate medication documentation items? Select all that apply.",
+    answers: [
+      "Medication name",
+      "Dose and route",
+      "Time given",
+      "Patient response"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Medication documentation should include name, dose, route, time, and patient response."
+  },
+  {
+    level: 4,
+    type: "matching",
+    question: "Match the medication problem with the safest EMT action.",
+    leftItems: ["Expired medication", "Wrong patient", "Unknown medication", "Adverse reaction"],
+    rightItems: [
+      "Do not administer",
+      "Verify patient identity",
+      "Contact medical direction/poison control if appropriate",
+      "Reassess and manage ABCs"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Medication safety requires verification, reassessment, and following protocol."
+  }
+];
+
+let currentLevel = 2;
+let questionNumber = 0;
+let score = 0;
+let maxQuestions = 20;
+let currentQuestion;
+let usedQuestions = [];
+
+function shuffleArray(array) {
+  return array
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+}
+
+function getQuestionByLevel(level) {
+  let available = questions.filter(q =>
+    q.level === level && !usedQuestions.includes(q.question)
+  );
+
+  if (available.length === 0) {
+    available = questions.filter(q => !usedQuestions.includes(q.question));
+  }
+
+  if (available.length === 0) {
+    finishExam();
+    return null;
+  }
+
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+function loadQuestion() {
+  if (questionNumber >= maxQuestions) {
+    finishExam();
+    return;
+  }
+
+  currentQuestion = getQuestionByLevel(currentLevel);
+  if (!currentQuestion) return;
+
+  usedQuestions.push(currentQuestion.question);
+
+  document.getElementById("status").innerText =
+    "Question " + (questionNumber + 1) +
+    " of " + maxQuestions +
+    " | Current Difficulty Level: " + currentLevel +
+    " | Score: " + score;
+
+  document.getElementById("question").innerHTML =
+    "<strong>" + currentQuestion.question + "</strong>";
+
+  document.getElementById("answers").innerHTML = "";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "none";
+  document.getElementById("submitBtn").style.display = "none";
+
+  if (currentQuestion.type === "single") {
+    loadSingleQuestion();
+  } else if (currentQuestion.type === "multi") {
+    loadMultiQuestion();
+  } else if (currentQuestion.type === "matching") {
+    loadMatchingQuestion();
+  }
+}
+
+function loadSingleQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.answers.forEach((answer, index) => {
+    answersDiv.innerHTML += `
+      <button onclick="checkSingleAnswer(${index})">
+        ${answer}
+      </button>
+    `;
+  });
+}
+
+function loadMultiQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.answers.forEach((answer, index) => {
+    answersDiv.innerHTML += `
+      <label class="checkbox-answer">
+        <input type="checkbox" value="${index}">
+        ${answer}
+      </label>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function loadMatchingQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
+    const shuffledOptions = shuffleArray(
+      currentQuestion.rightItems.map((rightItem, rightIndex) => ({
+        text: rightItem,
+        originalIndex: rightIndex
+      }))
+    );
+
+    let options = `<option value="">Choose match</option>`;
+
+    shuffledOptions.forEach(option => {
+      options += `
+        <option value="${option.originalIndex}">
+          ${option.text}
+        </option>
+      `;
+    });
+
+    answersDiv.innerHTML += `
+      <div class="matching-row">
+        <div class="matching-left">${leftItem}</div>
+        <select data-left-index="${leftIndex}">
+          ${options}
+        </select>
+      </div>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function checkSingleAnswer(selected) {
+  const feedback = document.getElementById("feedback");
+  const buttons = document.querySelectorAll("#answers button");
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+
+  if (selected === currentQuestion.correct) {
+    score++;
+    currentLevel++;
+    if (currentLevel > 5) currentLevel = 5;
+
+    buttons[selected].style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+  } else {
+    currentLevel--;
+    if (currentLevel < 1) currentLevel = 1;
+
+    buttons[selected].style.background = "darkred";
+    buttons[currentQuestion.correct].style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "Correct answer: <strong>" +
+      currentQuestion.answers[currentQuestion.correct] +
+      "</strong><br><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function submitAnswer() {
+  if (currentQuestion.type === "multi") {
+    checkMultiAnswer();
+  } else if (currentQuestion.type === "matching") {
+    checkMatchingAnswer();
+  }
+}
+
+function checkMultiAnswer() {
+  const checked = Array.from(
+    document.querySelectorAll('#answers input[type="checkbox"]:checked')
+  ).map(cb => Number(cb.value));
+
+  const correct =
+    checked.length === currentQuestion.correct.length &&
+    checked.every(value => currentQuestion.correct.includes(value));
+
+  const feedback = document.getElementById("feedback");
+  const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
+
+  checkboxes.forEach(cb => {
+    cb.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+    currentLevel++;
+    if (currentLevel > 5) currentLevel = 5;
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+  } else {
+    currentLevel--;
+    if (currentLevel < 1) currentLevel = 1;
+
+    const correctAnswers = currentQuestion.correct
+      .map(index => currentQuestion.answers[index])
+      .join(", ");
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "Correct answers: <strong>" +
+      correctAnswers +
+      "</strong><br><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function checkMatchingAnswer() {
+  const selects = document.querySelectorAll("#answers select");
+  const selectedAnswers = Array.from(selects).map(select => Number(select.value));
+
+  const allAnswered = selectedAnswers.every(answer => !Number.isNaN(answer));
+
+  const correct =
+    allAnswered &&
+    selectedAnswers.length === currentQuestion.correct.length &&
+    selectedAnswers.every((value, index) => value === currentQuestion.correct[index]);
+
+  const feedback = document.getElementById("feedback");
+
+  selects.forEach(select => {
+    select.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+    currentLevel++;
+    if (currentLevel > 5) currentLevel = 5;
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+  } else {
+    currentLevel--;
+    if (currentLevel < 1) currentLevel = 1;
+
+    let correctText = "";
+
+    currentQuestion.leftItems.forEach((item, index) => {
+      correctText +=
+        item +
+        " = " +
+        currentQuestion.rightItems[currentQuestion.correct[index]] +
+        "<br>";
+    });
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "<br><strong>Correct matches:</strong><br>" +
+      correctText +
+      "<br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function nextQuestion() {
+  questionNumber++;
+  loadQuestion();
+}
+
+function finishExam() {
+  document.getElementById("question").innerHTML =
+    "<h2>Exam Complete</h2>";
+
+  document.getElementById("answers").innerHTML = "";
+
+  let result = "";
+
+  if (score >= 16) {
+    result = "Strong performance. Continue with EMT pharmacology review.";
+  } else if (score >= 12) {
+    result = "Borderline performance. Review indications, contraindications, routes, and medication safety.";
+  } else {
+    result = "Needs remediation. Focus on aspirin, nitroglycerin, epinephrine, oral glucose, albuterol, and the medication rights.";
+  }
+
+  document.getElementById("feedback").style.display = "block";
+  document.getElementById("feedback").innerHTML =
+    "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
+    "<br><br><strong>Final Difficulty Level:</strong> " + currentLevel +
+    "<br><br>" + result;
+
+  document.getElementById("status").innerText = "Adaptive Exam Finished";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "block";
+}
+
+function restartExam() {
+  currentLevel = 2;
+  questionNumber = 0;
+  score = 0;
+  usedQuestions = [];
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
