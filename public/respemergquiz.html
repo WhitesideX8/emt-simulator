@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Adaptive EMT Respiratory Emergencies Exam</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #222;
+      color: white;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #333;
+      padding: 25px;
+      border-radius: 10px;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .question-box {
+      background: #d9d9d9;
+      color: black;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      font-size: 16px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    button:hover {
+      background: darkgreen;
+    }
+
+    #submitBtn, #nextBtn, #restartBtn {
+      background: #0066cc;
+      text-align: center;
+      display: none;
+    }
+
+    #feedback {
+      margin-top: 15px;
+      padding: 15px;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      display: none;
+    }
+
+    #status {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 18px;
+    }
+
+    .checkbox-answer {
+      display: block;
+      background: #eeeeee;
+      color: black;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .checkbox-answer input {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    .matching-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 12px 0;
+      background: #eeeeee;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .matching-left {
+      flex: 1;
+      font-weight: bold;
+    }
+
+    .matching-row select {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>EMT Respiratory Emergencies Exam</h1>
+  <h2>Multiple Choice, Select-All-That-Apply, and Matching</h2>
+
+  <div id="status"></div>
+
+  <div class="question-box">
+    <div id="question"></div>
+    <div id="answers"></div>
+
+    <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
+
+    <div id="feedback"></div>
+
+    <button id="nextBtn" onclick="nextQuestion()">Next Question</button>
+    <button id="restartBtn" onclick="restartExam()">Restart Exam</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+
+{
+  level: 1,
+  type: "single",
+  question: "What is the normal adult respiratory rate?",
+  answers: ["4-8 breaths per minute", "8-10 breaths per minute", "12-20 breaths per minute", "24-40 breaths per minute"],
+  correct: 2,
+  feedback: "A normal adult respiratory rate is typically 12-20 breaths per minute."
+},
+
+{
+  level: 1,
+  type: "single",
+  question: "Which condition causes narrowing of the lower airways and wheezing?",
+  answers: ["Asthma", "Stroke", "Diabetes", "Seizure"],
+  correct: 0,
+  feedback: "Asthma causes bronchoconstriction, airway inflammation, and wheezing."
+},
+
+{
+  level: 1,
+  type: "single",
+  question: "Which sound is most commonly associated with lower airway narrowing?",
+  answers: ["Wheezing", "Snoring", "Gurgling", "Crowd noise"],
+  correct: 0,
+  feedback: "Wheezing is commonly heard when air moves through narrowed lower airways."
+},
+
+{
+  level: 1,
+  type: "multi",
+  question: "Which are signs of respiratory distress? Select all that apply.",
+  answers: [
+    "Shortness of breath",
+    "Accessory muscle use",
+    "Tripod position",
+    "Normal speech with no distress"
+  ],
+  correct: [0,1,2],
+  feedback: "Shortness of breath, accessory muscle use, and tripod positioning are common signs of respiratory distress."
+},
+
+{
+  level: 1,
+  type: "matching",
+  question: "Match the respiratory sound with the likely problem.",
+  leftItems: ["Wheezing", "Stridor", "Gurgling"],
+  rightItems: ["Lower airway narrowing", "Upper airway obstruction", "Fluid in the airway"],
+  correct: [0,1,2],
+  feedback: "Different breath sounds help identify the location and type of respiratory problem."
+},
+
+{
+  level: 2,
+  type: "single",
+  question: "A patient with asthma is short of breath and has prescribed albuterol. What may the EMT do if protocol allows?",
+  answers: ["Assist with the inhaler", "Give aspirin", "Give oral glucose", "Withhold oxygen"],
+  correct: 0,
+  feedback: "EMTs may assist with a prescribed bronchodilator inhaler when indicated and allowed by protocol."
+},
+
+{
+  level: 2,
+  type: "single",
+  question: "A patient with COPD may normally have:",
+  answers: ["Chronic difficulty breathing", "No respiratory history", "Only abdominal pain", "Sudden paralysis"],
+  correct: 0,
+  feedback: "COPD is a chronic respiratory disease that can cause ongoing breathing difficulty."
+},
+
+{
+  level: 2,
+  type: "single",
+  question: "A patient sitting upright, leaning forward, and using accessory muscles is likely showing:",
+  answers: ["Respiratory distress", "Normal breathing", "Cardiac arrest", "Minor fatigue only"],
+  correct: 0,
+  feedback: "Tripod positioning and accessory muscle use are signs of increased work of breathing."
+},
+
+{
+  level: 2,
+  type: "multi",
+  question: "Which findings may indicate inadequate breathing? Select all that apply.",
+  answers: [
+    "Slow respiratory rate",
+    "Shallow chest rise",
+    "Altered mental status",
+    "Speaking full sentences normally"
+  ],
+  correct: [0,1,2],
+  feedback: "Slow breathing, shallow chest rise, and altered mental status may indicate inadequate breathing."
+},
+
+{
+  level: 2,
+  type: "matching",
+  question: "Match the condition with the common presentation.",
+  leftItems: ["Asthma", "COPD", "Croup"],
+  rightItems: ["Wheezing and bronchospasm", "Chronic lung disease", "Barking cough"],
+  correct: [0,1,2],
+  feedback: "Recognizing respiratory patterns helps identify the likely emergency."
+},
+
+{
+  level: 3,
+  type: "single",
+  question: "A patient has severe shortness of breath and can only speak one or two words at a time. What does this suggest?",
+  answers: ["Mild distress", "Severe respiratory distress", "Normal breathing", "No emergency"],
+  correct: 1,
+  feedback: "Inability to speak full sentences suggests severe respiratory distress."
+},
+
+{
+  level: 3,
+  type: "single",
+  question: "Which device is best for assisting ventilations in a patient with inadequate breathing?",
+  answers: ["Nasal cannula", "Bag-valve mask", "Bandage", "Thermometer"],
+  correct: 1,
+  feedback: "A bag-valve mask is used to assist ventilations when breathing is inadequate."
+},
+
+{
+  level: 3,
+  type: "single",
+  question: "A patient with respiratory distress has an SpO2 of 86%. What should the EMT consider?",
+  answers: ["Oxygen therapy", "No treatment", "Oral glucose only", "Restrict breathing"],
+  correct: 0,
+  feedback: "Low oxygen saturation may require oxygen therapy based on assessment and protocol."
+},
+
+{
+  level: 3,
+  type: "multi",
+  question: "Which signs may suggest hypoxia? Select all that apply.",
+  answers: [
+    "Cyanosis",
+    "Restlessness",
+    "Altered mental status",
+    "Normal skin color and no complaint"
+  ],
+  correct: [0,1,2],
+  feedback: "Hypoxia can cause cyanosis, restlessness, confusion, and altered mental status."
+},
+
+{
+  level: 3,
+  type: "matching",
+  question: "Match the oxygen device with its typical use.",
+  leftItems: ["Nasal cannula", "Nonrebreather mask", "BVM"],
+  rightItems: ["Low-flow oxygen", "High-concentration oxygen", "Assisted ventilations"],
+  correct: [0,1,2],
+  feedback: "Different oxygen devices are chosen based on the patient’s breathing and oxygen needs."
+},
+
+{
+  level: 4,
+  type: "single",
+  question: "A patient with asthma has wheezing, severe distress, and poor air movement. What is this concerning for?",
+  answers: ["Improving condition", "Impending respiratory failure", "Normal asthma", "Minor cough"],
+  correct: 1,
+  feedback: "Severe distress with poor air movement may indicate impending respiratory failure."
+},
+
+{
+  level: 4,
+  type: "single",
+  question: "A patient has pink frothy sputum and severe shortness of breath. What should the EMT suspect?",
+  answers: ["Pulmonary edema", "Simple cold", "Fractured ankle", "Heat cramps"],
+  correct: 0,
+  feedback: "Pink frothy sputum can be associated with pulmonary edema."
+},
+
+{
+  level: 4,
+  type: "single",
+  question: "What is a major concern with epiglottitis?",
+  answers: ["Airway obstruction", "Low blood sugar", "Broken bone", "Minor rash"],
+  correct: 0,
+  feedback: "Epiglottitis can cause severe upper airway swelling and obstruction."
+},
+
+{
+  level: 4,
+  type: "multi",
+  question: "Which findings are concerning in a pediatric respiratory emergency? Select all that apply.",
+  answers: [
+    "Retractions",
+    "Nasal flaring",
+    "Grunting",
+    "Calm breathing with normal color"
+  ],
+  correct: [0,1,2],
+  feedback: "Retractions, nasal flaring, and grunting are signs of significant respiratory distress in children."
+},
+
+{
+  level: 4,
+  type: "matching",
+  question: "Match the disease with the likely sign.",
+  leftItems: ["Croup", "Epiglottitis", "Pneumonia"],
+  rightItems: ["Barking cough", "Drooling and tripod position", "Fever and productive cough"],
+  correct: [0,1,2],
+  feedback: "Pediatric and infectious respiratory illnesses often have recognizable presentations."
+},
+
+{
+  level: 5,
+  type: "single",
+  question: "A patient with severe respiratory distress becomes drowsy and breathing slows. What should the EMT suspect?",
+  answers: ["Improvement", "Respiratory failure", "Normal fatigue", "Minor anxiety"],
+  correct: 1,
+  feedback: "Decreasing mental status and slowing respirations are signs of possible respiratory failure."
+},
+
+{
+  level: 5,
+  type: "single",
+  question: "A COPD patient is cyanotic, confused, and breathing inadequately. What is the priority?",
+  answers: ["Assist ventilations with BVM and oxygen", "Have the patient walk", "Delay treatment", "Give water"],
+  correct: 0,
+  feedback: "Inadequate breathing requires assisted ventilations with oxygen."
+},
+
+{
+  level: 5,
+  type: "single",
+  question: "Which respiratory condition is most associated with sudden pleuritic chest pain and shortness of breath?",
+  answers: ["Pulmonary embolism", "Simple sore throat", "Hypoglycemia", "Minor sprain"],
+  correct: 0,
+  feedback: "Pulmonary embolism may cause sudden shortness of breath and sharp chest pain."
+},
+
+{
+  level: 5,
+  type: "multi",
+  question: "Which findings may indicate respiratory failure? Select all that apply.",
+  answers: [
+    "Altered mental status",
+    "Slow or irregular respirations",
+    "Poor chest rise",
+    "Normal breathing and alertness"
+  ],
+  correct: [0,1,2],
+  feedback: "Respiratory failure may present with altered mental status, poor chest rise, and slow or irregular breathing."
+},
+
+{
+  level: 5,
+  type: "matching",
+  question: "Match the respiratory emergency with the EMT priority.",
+  leftItems: ["Respiratory arrest", "Asthma attack", "Pulmonary edema", "Upper airway swelling"],
+  rightItems: ["BVM ventilations", "Assist inhaler if allowed", "Oxygen and rapid transport", "Maintain airway and rapid transport"],
+  correct: [0,1,2,3],
+  feedback: "Respiratory emergencies require airway support, oxygenation, ventilation, and rapid transport when severe."
+}
+
+];
+
+let currentLevel = 2;
+let questionNumber = 0;
+let score = 0;
+let maxQuestions = 25;
+let currentQuestion;
+let usedQuestions = [];
+
+function shuffleArray(array) {
+  return array
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+}
+
+function getQuestionByLevel(level) {
+  let available = questions.filter(q =>
+    q.level === level && !usedQuestions.includes(q.question)
+  );
+
+  if (available.length === 0) {
+    available = questions.filter(q => !usedQuestions.includes(q.question));
+  }
+
+  if (available.length === 0) {
+    finishExam();
+    return null;
+  }
+
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+function loadQuestion() {
+  if (questionNumber >= maxQuestions) {
+    finishExam();
+    return;
+  }
+
+  currentQuestion = getQuestionByLevel(currentLevel);
+
+  if (!currentQuestion) return;
+
+  usedQuestions.push(currentQuestion.question);
+
+  document.getElementById("status").innerText =
+    "Question " + (questionNumber + 1) +
+    " of " + maxQuestions +
+    " | Current Difficulty Level: " + currentLevel +
+    " | Score: " + score;
+
+  document.getElementById("question").innerHTML =
+    "<strong>" + currentQuestion.question + "</strong>";
+
+  document.getElementById("answers").innerHTML = "";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "none";
+  document.getElementById("submitBtn").style.display = "none";
+
+  if (currentQuestion.type === "single") {
+    loadSingleQuestion();
+  } else if (currentQuestion.type === "multi") {
+    loadMultiQuestion();
+  } else if (currentQuestion.type === "matching") {
+    loadMatchingQuestion();
+  }
+}
+
+function loadSingleQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.answers.forEach((answer, index) => {
+    answersDiv.innerHTML += `
+      <button onclick="checkSingleAnswer(${index})">
+        ${answer}
+      </button>
+    `;
+  });
+}
+
+function loadMultiQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.answers.forEach((answer, index) => {
+    answersDiv.innerHTML += `
+      <label class="checkbox-answer">
+        <input type="checkbox" value="${index}">
+        ${answer}
+      </label>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function loadMatchingQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
+
+    const shuffledOptions = shuffleArray(
+      currentQuestion.rightItems.map((rightItem, rightIndex) => ({
+        text: rightItem,
+        originalIndex: rightIndex
+      }))
+    );
+
+    let options = `<option value="">Choose match</option>`;
+
+    shuffledOptions.forEach(option => {
+      options += `
+        <option value="${option.originalIndex}">
+          ${option.text}
+        </option>
+      `;
+    });
+
+    answersDiv.innerHTML += `
+      <div class="matching-row">
+        <div class="matching-left">${leftItem}</div>
+        <select data-left-index="${leftIndex}">
+          ${options}
+        </select>
+      </div>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function checkSingleAnswer(selected) {
+
+  const feedback = document.getElementById("feedback");
+  const buttons = document.querySelectorAll("#answers button");
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+
+  if (selected === currentQuestion.correct) {
+
+    score++;
+    currentLevel++;
+
+    if (currentLevel > 5) currentLevel = 5;
+
+    buttons[selected].style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+
+  } else {
+
+    currentLevel--;
+
+    if (currentLevel < 1) currentLevel = 1;
+
+    buttons[selected].style.background = "darkred";
+    buttons[currentQuestion.correct].style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "Correct answer: <strong>" +
+      currentQuestion.answers[currentQuestion.correct] +
+      "</strong><br><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function submitAnswer() {
+
+  if (currentQuestion.type === "multi") {
+    checkMultiAnswer();
+  }
+
+  else if (currentQuestion.type === "matching") {
+    checkMatchingAnswer();
+  }
+}
+
+function checkMultiAnswer() {
+
+  const checked = Array.from(
+    document.querySelectorAll('#answers input[type="checkbox"]:checked')
+  ).map(cb => Number(cb.value));
+
+  const correct =
+    checked.length === currentQuestion.correct.length &&
+    checked.every(value => currentQuestion.correct.includes(value));
+
+  const feedback = document.getElementById("feedback");
+
+  const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
+
+  checkboxes.forEach(cb => {
+    cb.disabled = true;
+  });
+
+  if (correct) {
+
+    score++;
+    currentLevel++;
+
+    if (currentLevel > 5) currentLevel = 5;
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+
+  } else {
+
+    currentLevel--;
+
+    if (currentLevel < 1) currentLevel = 1;
+
+    const correctAnswers = currentQuestion.correct
+      .map(index => currentQuestion.answers[index])
+      .join(", ");
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "Correct answers: <strong>" +
+      correctAnswers +
+      "</strong><br><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function checkMatchingAnswer() {
+
+  const selects = document.querySelectorAll("#answers select");
+
+  const selectedAnswers = Array.from(selects).map(select =>
+    Number(select.value)
+  );
+
+  const allAnswered = selectedAnswers.every(answer =>
+    !Number.isNaN(answer)
+  );
+
+  const correct =
+    allAnswered &&
+    selectedAnswers.length === currentQuestion.correct.length &&
+    selectedAnswers.every((value, index) =>
+      value === currentQuestion.correct[index]
+    );
+
+  const feedback = document.getElementById("feedback");
+
+  selects.forEach(select => {
+    select.disabled = true;
+  });
+
+  if (correct) {
+
+    score++;
+    currentLevel++;
+
+    if (currentLevel > 5) currentLevel = 5;
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+
+  } else {
+
+    currentLevel--;
+
+    if (currentLevel < 1) currentLevel = 1;
+
+    let correctText = "";
+
+    currentQuestion.leftItems.forEach((item, index) => {
+
+      correctText +=
+        item +
+        " = " +
+        currentQuestion.rightItems[currentQuestion.correct[index]] +
+        "<br>";
+    });
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "<br><strong>Correct matches:</strong><br>" +
+      correctText +
+      "<br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function nextQuestion() {
+  questionNumber++;
+  loadQuestion();
+}
+
+function finishExam() {
+
+  document.getElementById("question").innerHTML =
+    "<h2>Exam Complete</h2>";
+
+  document.getElementById("answers").innerHTML = "";
+
+  let result = "";
+
+  if (score >= 20) {
+    result = "Strong respiratory emergency performance.";
+  }
+
+  else if (score >= 15) {
+    result = "Borderline performance. Review respiratory distress, oxygen therapy, inhalers, COPD, asthma, and assisted ventilations.";
+  }
+
+  else {
+    result = "Needs remediation. Focus on respiratory assessment, airway sounds, oxygen devices, asthma, COPD, respiratory failure, and BVM ventilation.";
+  }
+
+  document.getElementById("feedback").style.display = "block";
+
+  document.getElementById("feedback").innerHTML =
+    "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
+    "<br><br><strong>Final Difficulty Level:</strong> " + currentLevel +
+    "<br><br>" + result;
+
+  document.getElementById("status").innerText =
+    "Adaptive Exam Finished";
+
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "block";
+}
+
+function restartExam() {
+  currentLevel = 2;
+  questionNumber = 0;
+  score = 0;
+  usedQuestions = [];
+  loadQuestion();
+}
+
+loadQuestion();
+
+</script>
+
+</body>
+</html>
