@@ -115,7 +115,7 @@
 
 <div class="container">
   <h1>EMT Airway Management Exam</h1>
-  <h2>Multiple Choice, Select-All-That-Apply, and Matching</h2>
+  <h2>Most-Correct EMT Style Questions</h2>
 
   <div id="status"></div>
 
@@ -137,167 +137,265 @@ const questions = [
   {
     level: 1,
     type: "single",
-    question: "What is the first priority when managing any patient’s airway?",
-    answers: ["Insert an airway adjunct", "Ensure the airway is open", "Apply a bandage", "Obtain a blood pressure"],
-    correct: 1,
-    feedback: "The airway must be opened and assessed before other airway interventions are effective."
+    question: "You arrive to find an unresponsive patient lying supine. What is the MOST appropriate first airway action?",
+    answers: [
+      "Open and assess the airway",
+      "Insert an airway adjunct immediately",
+      "Begin asking SAMPLE history questions",
+      "Apply a blood pressure cuff first"
+    ],
+    correct: 0,
+    feedback: "The airway must be opened and assessed before other airway interventions can be effective."
   },
   {
     level: 1,
     type: "single",
-    question: "Which manual maneuver is preferred to open the airway of a medical patient with no suspected trauma?",
-    answers: ["Jaw-thrust", "Head-tilt/chin-lift", "Sellick maneuver", "Trendelenburg positioning"],
+    question: "A medical patient is unresponsive with no suspected trauma. Which airway maneuver is MOST appropriate?",
+    answers: [
+      "Jaw-thrust maneuver",
+      "Head-tilt/chin-lift maneuver",
+      "Abdominal thrust maneuver",
+      "Trendelenburg positioning"
+    ],
     correct: 1,
-    feedback: "The head-tilt/chin-lift is used when spinal injury is not suspected."
+    feedback: "The head-tilt/chin-lift is preferred when spinal injury is not suspected."
   },
   {
     level: 1,
     type: "single",
-    question: "Which airway maneuver is preferred when spinal trauma is suspected?",
-    answers: ["Head-tilt/chin-lift", "Jaw-thrust", "Abdominal thrust", "Recovery position only"],
+    question: "A patient is unresponsive after a fall from a ladder. Which airway maneuver is MOST appropriate?",
+    answers: [
+      "Head-tilt/chin-lift",
+      "Jaw-thrust",
+      "Abdominal thrusts",
+      "Recovery position only"
+    ],
     correct: 1,
-    feedback: "The jaw-thrust helps open the airway while minimizing movement of the cervical spine."
+    feedback: "The jaw-thrust is preferred when spinal trauma is suspected because it minimizes cervical spine movement."
   },
   {
     level: 1,
     type: "multi",
-    question: "Which signs may indicate an airway problem? Select all that apply.",
-    answers: ["Snoring respirations", "Gurgling sounds", "Stridor", "Clear speech without distress"],
+    question: "Which findings are MOST concerning for airway compromise? Select all that apply.",
+    answers: [
+      "Snoring respirations",
+      "Gurgling sounds",
+      "Stridor",
+      "Clear speech without distress"
+    ],
     correct: [0, 1, 2],
-    feedback: "Snoring, gurgling, and stridor can indicate airway obstruction or compromise."
+    feedback: "Snoring, gurgling, and stridor may indicate airway obstruction or compromise."
   },
   {
     level: 1,
     type: "matching",
-    question: "Match the airway sound with its likely cause.",
+    question: "Match the airway sound with the MOST likely cause.",
     leftItems: ["Snoring", "Gurgling", "Stridor"],
-    rightItems: ["Tongue obstruction", "Fluid in the airway", "Upper airway narrowing"],
+    rightItems: [
+      "Tongue obstruction",
+      "Fluid in the airway",
+      "Upper airway narrowing"
+    ],
     correct: [0, 1, 2],
-    feedback: "Recognizing airway sounds helps identify the cause of airway compromise."
+    feedback: "Recognizing airway sounds helps identify the airway problem."
   },
 
   {
     level: 2,
     type: "single",
-    question: "An unresponsive patient has noisy gurgling respirations. What should the EMT do first?",
-    answers: ["Insert an OPA immediately", "Suction the airway", "Give oral glucose", "Place the patient flat and wait"],
-    correct: 1,
-    feedback: "Gurgling suggests fluid in the airway. Suction should be performed before inserting adjuncts or ventilating."
+    question: "An unresponsive patient has noisy gurgling respirations. What should the EMT do FIRST?",
+    answers: [
+      "Suction the airway",
+      "Insert an OPA immediately",
+      "Begin oral glucose administration",
+      "Place the patient flat and wait"
+    ],
+    correct: 0,
+    feedback: "Gurgling suggests fluid in the airway. Suction should be performed before ventilating or placing an adjunct."
   },
   {
     level: 2,
     type: "single",
-    question: "Which patient is most appropriate for an oropharyngeal airway?",
-    answers: ["Alert patient with gag reflex", "Unresponsive patient without a gag reflex", "Conscious patient with nausea", "Patient refusing care"],
+    question: "Which patient is the BEST candidate for an oropharyngeal airway?",
+    answers: [
+      "Alert patient with an intact gag reflex",
+      "Unresponsive patient without a gag reflex",
+      "Conscious patient complaining of nausea",
+      "Patient who is refusing airway care"
+    ],
     correct: 1,
     feedback: "An OPA is used for an unresponsive patient without a gag reflex."
   },
   {
     level: 2,
     type: "single",
-    question: "Which patient is most appropriate for a nasopharyngeal airway?",
-    answers: ["Responsive patient with an intact gag reflex", "Patient with severe facial trauma", "Patient with suspected basilar skull fracture", "Patient with complete airway obstruction"],
+    question: "Which patient is the BEST candidate for a nasopharyngeal airway?",
+    answers: [
+      "Responsive patient with an intact gag reflex and no facial trauma",
+      "Patient with severe facial trauma",
+      "Patient with suspected basilar skull fracture",
+      "Patient with complete airway obstruction"
+    ],
     correct: 0,
     feedback: "An NPA may be used in a responsive patient who cannot tolerate an OPA, if no contraindications exist."
   },
   {
     level: 2,
     type: "multi",
-    question: "Which are contraindications or cautions for an NPA? Select all that apply.",
-    answers: ["Severe facial trauma", "Suspected basilar skull fracture", "Clear nasal passage", "Blood or CSF from the nose"],
+    question: "Which findings are MOST important contraindications or cautions for NPA placement? Select all that apply.",
+    answers: [
+      "Severe facial trauma",
+      "Suspected basilar skull fracture",
+      "Clear nasal passage",
+      "Blood or CSF from the nose"
+    ],
     correct: [0, 1, 3],
-    feedback: "Facial trauma, suspected skull fracture, or fluid from the nose are important cautions for NPA placement."
+    feedback: "Severe facial trauma, suspected skull fracture, and blood or CSF from the nose are important concerns with NPA use."
   },
   {
     level: 2,
     type: "matching",
-    question: "Match the airway device with the best use.",
+    question: "Match the airway device with the MOST appropriate use.",
     leftItems: ["OPA", "NPA", "Suction"],
-    rightItems: ["Unresponsive without gag reflex", "Responsive with gag reflex", "Remove fluid from airway"],
+    rightItems: [
+      "Unresponsive without gag reflex",
+      "Responsive with gag reflex",
+      "Remove fluid from airway"
+    ],
     correct: [0, 1, 2],
-    feedback: "Each airway tool has a specific role in basic airway management."
+    feedback: "Each airway device has a specific use based on patient condition."
   },
 
   {
     level: 3,
     type: "single",
-    question: "You insert an OPA and the patient begins gagging. What should you do?",
-    answers: ["Push it in farther", "Remove it immediately", "Tape it in place", "Begin chest compressions"],
-    correct: 1,
+    question: "You insert an OPA and the patient begins gagging. What is the MOST appropriate action?",
+    answers: [
+      "Remove the OPA immediately",
+      "Push the OPA in farther",
+      "Tape the OPA in place",
+      "Begin chest compressions"
+    ],
+    correct: 0,
     feedback: "If the patient gags, the OPA should be removed because the gag reflex is present."
   },
   {
     level: 3,
     type: "single",
-    question: "When ventilating with a BVM, what is the best indicator that air is entering the lungs?",
-    answers: ["The bag refills", "The mask fogs", "Visible chest rise", "The patient’s eyes open"],
+    question: "While ventilating with a BVM, which finding BEST confirms air is entering the lungs?",
+    answers: [
+      "The bag refills after each squeeze",
+      "The mask fogs during ventilation",
+      "Visible chest rise",
+      "The patient’s eyes open"
+    ],
     correct: 2,
-    feedback: "Visible chest rise is the key sign of effective ventilation."
+    feedback: "Visible chest rise is the best indicator of effective ventilation."
   },
   {
     level: 3,
     type: "single",
-    question: "A patient is breathing 6 times per minute with shallow chest rise. What is the best intervention?",
-    answers: ["Nasal cannula only", "Assist ventilations with BVM and oxygen", "Place in recovery position only", "Withhold oxygen"],
+    question: "A patient is breathing 6 times per minute with shallow chest rise. What is the MOST appropriate intervention?",
+    answers: [
+      "Apply a nasal cannula only",
+      "Assist ventilations with a BVM and oxygen",
+      "Place the patient in recovery position only",
+      "Withhold oxygen until ALS arrives"
+    ],
     correct: 1,
     feedback: "Slow, shallow respirations are inadequate and require assisted ventilations."
   },
   {
     level: 3,
     type: "multi",
-    question: "Which signs suggest inadequate ventilations? Select all that apply.",
-    answers: ["Poor chest rise", "Slow respiratory rate", "Altered mental status", "Speaking full sentences clearly"],
+    question: "Which findings MOST strongly suggest inadequate ventilation? Select all that apply.",
+    answers: [
+      "Poor chest rise",
+      "Slow respiratory rate",
+      "Altered mental status",
+      "Speaking full sentences clearly"
+    ],
     correct: [0, 1, 2],
-    feedback: "Poor chest rise, slow rate, and altered mental status may indicate inadequate breathing."
+    feedback: "Poor chest rise, slow breathing, and altered mental status can indicate inadequate ventilation."
   },
   {
     level: 3,
     type: "matching",
-    question: "Match the problem with the appropriate EMT action.",
+    question: "Match the airway or breathing problem with the MOST appropriate EMT action.",
     leftItems: ["Tongue obstruction", "Fluid in airway", "Inadequate breathing", "No gag reflex"],
-    rightItems: ["Open airway/consider OPA", "Suction", "BVM ventilations", "OPA may be appropriate"],
+    rightItems: [
+      "Open airway and consider OPA",
+      "Suction",
+      "Assist ventilations with BVM",
+      "OPA may be appropriate"
+    ],
     correct: [0, 1, 2, 3],
-    feedback: "Airway care depends on identifying and correcting the specific problem."
+    feedback: "The best airway action depends on the problem found during assessment."
   },
 
   {
     level: 4,
     type: "single",
-    question: "While ventilating a patient with a BVM, you feel strong resistance and see poor chest rise. What should you do first?",
-    answers: ["Ventilate faster", "Reposition the airway and improve mask seal", "Stop ventilating", "Give aspirin"],
-    correct: 1,
+    question: "While ventilating a patient with a BVM, you feel resistance and see poor chest rise. What should you do FIRST?",
+    answers: [
+      "Reposition the airway and improve the mask seal",
+      "Ventilate faster",
+      "Stop ventilating completely",
+      "Give aspirin"
+    ],
+    correct: 0,
     feedback: "Poor chest rise often means the airway position or mask seal needs correction."
   },
   {
     level: 4,
     type: "single",
-    question: "A patient vomits during BVM ventilation. What should the EMT do immediately?",
-    answers: ["Continue ventilating through the vomit", "Turn/suction the airway", "Insert oral glucose", "Remove oxygen permanently"],
-    correct: 1,
-    feedback: "Vomitus must be cleared quickly to reduce airway obstruction and aspiration risk."
+    question: "A patient vomits during BVM ventilation. What is the MOST appropriate immediate action?",
+    answers: [
+      "Turn the patient as appropriate and suction the airway",
+      "Continue ventilating through the vomit",
+      "Insert oral glucose",
+      "Remove oxygen permanently"
+    ],
+    correct: 0,
+    feedback: "Vomitus must be cleared quickly to reduce obstruction and aspiration risk."
   },
   {
     level: 4,
     type: "single",
-    question: "What is a major risk of ventilating too forcefully or too quickly with a BVM?",
-    answers: ["Hypoglycemia", "Gastric inflation", "Decreased body temperature", "Improved perfusion"],
-    correct: 1,
-    feedback: "Excessive force or rate can cause gastric inflation and increase aspiration risk."
+    question: "What is the MOST important reason to avoid ventilating too forcefully or too quickly with a BVM?",
+    answers: [
+      "It may cause gastric inflation and increase aspiration risk",
+      "It causes hypoglycemia",
+      "It always decreases body temperature",
+      "It improves perfusion too quickly"
+    ],
+    correct: 0,
+    feedback: "Excessive ventilation can cause gastric inflation and increase aspiration risk."
   },
   {
     level: 4,
     type: "multi",
-    question: "Which techniques improve BVM ventilation? Select all that apply.",
-    answers: ["Good mask seal", "Proper airway positioning", "Watching for chest rise", "Rapid squeezing as hard as possible"],
+    question: "Which techniques are MOST likely to improve BVM ventilation? Select all that apply.",
+    answers: [
+      "Good mask seal",
+      "Proper airway positioning",
+      "Watching for chest rise",
+      "Squeezing the bag as hard and fast as possible"
+    ],
     correct: [0, 1, 2],
-    feedback: "Effective BVM ventilation requires seal, positioning, and controlled ventilation with visible chest rise."
+    feedback: "Effective BVM ventilation requires a good seal, proper positioning, and controlled ventilations with visible chest rise."
   },
   {
     level: 4,
     type: "matching",
-    question: "Match each BVM problem with a likely correction.",
+    question: "Match each BVM problem with the MOST appropriate correction.",
     leftItems: ["Poor mask seal", "Tongue obstruction", "Fluid in airway", "Ventilating too fast"],
-    rightItems: ["Reposition mask/use two-person technique", "Open airway/add adjunct", "Suction", "Slow controlled ventilations"],
+    rightItems: [
+      "Reposition mask/use two-person technique",
+      "Open airway/add adjunct",
+      "Suction",
+      "Slow controlled ventilations"
+    ],
     correct: [0, 1, 2, 3],
     feedback: "Troubleshooting BVM problems improves oxygenation and ventilation."
   },
@@ -306,40 +404,65 @@ const questions = [
     level: 5,
     type: "single",
     question: "An unresponsive trauma patient has snoring respirations and poor chest rise. What is the EMT’s priority?",
-    answers: ["Obtain a full SAMPLE history", "Open airway with jaw-thrust and support ventilations", "Give nitroglycerin", "Wait for ALS before treating"],
-    correct: 1,
+    answers: [
+      "Open the airway with a jaw-thrust and support ventilations",
+      "Obtain a full SAMPLE history",
+      "Give nitroglycerin",
+      "Wait for ALS before treating"
+    ],
+    correct: 0,
     feedback: "Airway and breathing problems are immediate life threats, especially in trauma patients."
   },
   {
     level: 5,
     type: "single",
-    question: "A choking adult becomes unresponsive. What should the EMT do?",
-    answers: ["Begin CPR and check the airway when opening it", "Continue abdominal thrusts while standing", "Give water", "Insert an NPA first"],
+    question: "A choking adult becomes unresponsive. What is the MOST appropriate action?",
+    answers: [
+      "Begin CPR and check the airway when opening it",
+      "Continue abdominal thrusts while standing",
+      "Give water",
+      "Insert an NPA first"
+    ],
     correct: 0,
-    feedback: "If a choking adult becomes unresponsive, begin CPR and check for visible obstruction when opening the airway."
+    feedback: "If a choking adult becomes unresponsive, begin CPR and check for a visible obstruction when opening the airway."
   },
   {
     level: 5,
     type: "single",
-    question: "A patient has severe upper airway swelling with stridor and increasing fatigue. What should the EMT suspect?",
-    answers: ["Improving airway", "Impending airway failure", "Normal breathing", "Mild anxiety only"],
-    correct: 1,
+    question: "A patient has severe upper airway swelling, stridor, and increasing fatigue. What should the EMT MOST strongly suspect?",
+    answers: [
+      "Impending airway failure",
+      "Improving airway status",
+      "Normal breathing",
+      "Mild anxiety only"
+    ],
+    correct: 0,
     feedback: "Stridor with fatigue is a serious sign of worsening upper airway obstruction and possible airway failure."
   },
   {
     level: 5,
     type: "multi",
-    question: "Which findings may indicate the need for immediate airway and ventilatory support? Select all that apply.",
-    answers: ["Unresponsiveness", "Agonal respirations", "Cyanosis", "Normal speech and pink skin"],
+    question: "Which findings MOST strongly indicate the need for immediate airway and ventilatory support? Select all that apply.",
+    answers: [
+      "Unresponsiveness",
+      "Agonal respirations",
+      "Cyanosis",
+      "Normal speech and pink skin"
+    ],
     correct: [0, 1, 2],
     feedback: "Unresponsiveness, agonal respirations, and cyanosis are signs of severe airway or breathing compromise."
   },
   {
     level: 5,
     type: "matching",
-    question: "Match the airway emergency with the best priority action.",
+    question: "Match the airway emergency with the MOST appropriate priority action.",
     leftItems: ["Apnea", "Gurgling airway", "Severe choking", "Snoring unresponsive patient"],
-    rightItems: ["Ventilate with BVM", "Suction", "Airway obstruction sequence/CPR if unresponsive", "Open airway and consider adjunct"],
+    rightItems: [
+      "Ventilate with BVM",
+      "Suction",
+      "Airway obstruction sequence/CPR if unresponsive",
+      "Open airway and consider adjunct"
+    ],
     correct: [0, 1, 2, 3],
     feedback: "Airway emergencies require rapid identification and immediate corrective action."
   }
@@ -500,7 +623,7 @@ function checkSingleAnswer(selected) {
 
     feedback.innerHTML =
       "<strong>Incorrect.</strong><br>" +
-      "Correct answer: <strong>" +
+      "Most correct answer: <strong>" +
       currentQuestion.answers[currentQuestion.correct] +
       "</strong><br><br>" +
       currentQuestion.feedback +
@@ -554,7 +677,7 @@ function checkMultiAnswer() {
 
     feedback.innerHTML =
       "<strong>Incorrect.</strong><br>" +
-      "Correct answers: <strong>" +
+      "Most correct answers: <strong>" +
       correctAnswers +
       "</strong><br><br>" +
       currentQuestion.feedback +
@@ -608,7 +731,7 @@ function checkMatchingAnswer() {
 
     feedback.innerHTML =
       "<strong>Incorrect.</strong><br>" +
-      "<br><strong>Correct matches:</strong><br>" +
+      "<br><strong>Most correct matches:</strong><br>" +
       correctText +
       "<br>" +
       currentQuestion.feedback +
