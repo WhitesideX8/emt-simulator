@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Adaptive EMT GI/GU Emergencies Exam</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #222;
+      color: white;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #333;
+      padding: 25px;
+      border-radius: 10px;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .question-box {
+      background: #d9d9d9;
+      color: black;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      font-size: 16px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    button:hover {
+      background: darkgreen;
+    }
+
+    #submitBtn, #nextBtn, #restartBtn {
+      background: #0066cc;
+      text-align: center;
+      display: none;
+    }
+
+    #feedback {
+      margin-top: 15px;
+      padding: 15px;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      display: none;
+    }
+
+    #status {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 18px;
+    }
+
+    .checkbox-answer {
+      display: block;
+      background: #eeeeee;
+      color: black;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .checkbox-answer input {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    .matching-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 12px 0;
+      background: #eeeeee;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .matching-left {
+      flex: 1;
+      font-weight: bold;
+    }
+
+    .matching-row select {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>EMT GI/GU Emergencies Exam</h1>
+  <h2>Most-Correct EMT Style Questions</h2>
+
+  <div id="status"></div>
+
+  <div class="question-box">
+    <div id="question"></div>
+    <div id="answers"></div>
+
+    <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
+
+    <div id="feedback"></div>
+
+    <button id="nextBtn" onclick="nextQuestion()">Next Question</button>
+    <button id="restartBtn" onclick="restartExam()">Restart Exam</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    level: 1,
+    type: "single",
+    question: "A patient complains of abdominal pain. What is the MOST appropriate initial EMT action?",
+    answers: [
+      "Assess airway, breathing, circulation, and overall patient stability",
+      "Give the patient food to settle the stomach",
+      "Tell the patient abdominal pain is usually minor",
+      "Massage the abdomen firmly"
+    ],
+    correct: 0,
+    feedback: "Initial care begins with assessing ABCs and determining whether the patient is stable or unstable."
+  },
+  {
+    level: 1,
+    type: "single",
+    question: "A patient reports nausea, vomiting, and abdominal cramping. Which body system is MOST likely involved?",
+    answers: [
+      "Gastrointestinal system",
+      "Respiratory system",
+      "Skeletal system",
+      "Integumentary system"
+    ],
+    correct: 0,
+    feedback: "Nausea, vomiting, and abdominal cramping are commonly associated with the gastrointestinal system."
+  },
+  {
+    level: 1,
+    type: "single",
+    question: "Which finding is MOST concerning in a patient with abdominal pain?",
+    answers: [
+      "Cool, clammy skin and weakness",
+      "Mild pain after eating",
+      "Normal breathing and normal skin signs",
+      "Pain that resolved completely yesterday"
+    ],
+    correct: 0,
+    feedback: "Cool, clammy skin and weakness may indicate shock or internal bleeding."
+  },
+  {
+    level: 1,
+    type: "multi",
+    question: "Which findings may suggest a GI/GU emergency? Select all that apply.",
+    answers: [
+      "Severe abdominal pain",
+      "Vomiting blood",
+      "Blood in urine",
+      "Normal appetite with no complaint"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Severe abdominal pain, vomiting blood, and blood in urine may indicate serious GI/GU problems."
+  },
+  {
+    level: 1,
+    type: "matching",
+    question: "Match the term with the MOST correct meaning.",
+    leftItems: ["Hematemesis", "Hematuria", "Melena"],
+    rightItems: [
+      "Vomiting blood",
+      "Blood in urine",
+      "Black, tarry stool"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Recognizing these terms helps identify possible bleeding or urinary problems."
+  },
+
+  {
+    level: 2,
+    type: "single",
+    question: "A patient has abdominal pain and has vomited bright red blood. What is the MOST appropriate EMT concern?",
+    answers: [
+      "Possible upper GI bleeding",
+      "Simple motion sickness",
+      "Minor muscle strain",
+      "Normal digestion"
+    ],
+    correct: 0,
+    feedback: "Vomiting bright red blood may indicate serious upper GI bleeding."
+  },
+  {
+    level: 2,
+    type: "single",
+    question: "A patient reports black, tarry stools and weakness. What should the EMT MOST strongly suspect?",
+    answers: [
+      "Possible gastrointestinal bleeding",
+      "Normal bowel function",
+      "Simple dehydration only",
+      "Urinary retention"
+    ],
+    correct: 0,
+    feedback: "Black, tarry stool can indicate digested blood from GI bleeding."
+  },
+  {
+    level: 2,
+    type: "single",
+    question: "A patient with severe abdominal pain wants to eat before transport. What is the BEST EMT response?",
+    answers: [
+      "Do not give food or drink and continue assessment",
+      "Give the patient food if they request it",
+      "Encourage large amounts of water",
+      "Delay transport until the patient eats"
+    ],
+    correct: 0,
+    feedback: "Patients with abdominal emergencies should generally not receive food or drink because surgery or worsening illness may be possible."
+  },
+  {
+    level: 2,
+    type: "multi",
+    question: "Which questions are MOST useful for abdominal pain assessment? Select all that apply.",
+    answers: [
+      "When did the pain begin?",
+      "Where is the pain located?",
+      "Has there been vomiting, diarrhea, or bleeding?",
+      "What is your favorite color?"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Onset, location, associated symptoms, and bleeding are important in abdominal pain assessment."
+  },
+  {
+    level: 2,
+    type: "matching",
+    question: "Match the complaint with the MOST likely concern.",
+    leftItems: ["Vomiting blood", "Black tarry stool", "Blood in urine"],
+    rightItems: [
+      "Upper GI bleeding",
+      "GI bleeding",
+      "GU problem or kidney/urinary bleeding"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Blood from the GI or GU tract can indicate potentially serious disease."
+  },
+
+  {
+    level: 3,
+    type: "single",
+    question: "A patient has right lower quadrant abdominal pain, nausea, and fever. What condition should the EMT MOST suspect?",
+    answers: [
+      "Appendicitis",
+      "Asthma",
+      "Stroke",
+      "Simple ankle sprain"
+    ],
+    correct: 0,
+    feedback: "Right lower quadrant pain with nausea and fever is concerning for appendicitis."
+  },
+  {
+    level: 3,
+    type: "single",
+    question: "A patient complains of severe flank pain radiating toward the groin and has blood in the urine. What is the MOST likely concern?",
+    answers: [
+      "Kidney stone",
+      "Pneumonia",
+      "Cardiac arrest",
+      "Simple headache"
+    ],
+    correct: 0,
+    feedback: "Flank pain radiating to the groin with hematuria is commonly associated with kidney stones."
+  },
+  {
+    level: 3,
+    type: "single",
+    question: "A patient with abdominal pain is pale, weak, and has a rapid pulse. What should the EMT do FIRST?",
+    answers: [
+      "Treat for shock and prepare for prompt transport",
+      "Give the patient a meal",
+      "Have the patient walk around",
+      "Apply heat directly to the abdomen"
+    ],
+    correct: 0,
+    feedback: "Signs of shock require supportive care and prompt transport."
+  },
+  {
+    level: 3,
+    type: "multi",
+    question: "Which findings may indicate shock from a GI/GU emergency? Select all that apply.",
+    answers: [
+      "Rapid weak pulse",
+      "Pale cool skin",
+      "Altered mental status",
+      "Normal skin and no weakness"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Shock may present with rapid weak pulse, pale cool skin, and altered mental status."
+  },
+  {
+    level: 3,
+    type: "matching",
+    question: "Match the condition with the MOST likely presentation.",
+    leftItems: ["Appendicitis", "Kidney stone", "GI bleed"],
+    rightItems: [
+      "Right lower quadrant abdominal pain",
+      "Flank pain radiating to groin",
+      "Vomiting blood or black tarry stool"
+    ],
+    correct: [0, 1, 2],
+    feedback: "These common presentations help guide EMT suspicion and transport decisions."
+  },
+
+  {
+    level: 4,
+    type: "single",
+    question: "A patient has sudden severe abdominal pain and a rigid abdomen. What is the MOST appropriate concern?",
+    answers: [
+      "Possible serious abdominal emergency",
+      "Mild indigestion only",
+      "Normal digestion",
+      "Simple anxiety"
+    ],
+    correct: 0,
+    feedback: "Sudden severe pain with rigidity may indicate a serious abdominal condition requiring rapid transport."
+  },
+  {
+    level: 4,
+    type: "single",
+    question: "A dialysis patient complains of weakness and shortness of breath. What should the EMT MOST carefully assess?",
+    answers: [
+      "Airway, breathing, circulation, and signs of fluid overload or electrolyte problems",
+      "Only the dialysis access site",
+      "Only the patient's temperature",
+      "Only whether the patient is hungry"
+    ],
+    correct: 0,
+    feedback: "Dialysis patients can develop fluid overload, electrolyte problems, and serious cardiovascular or respiratory complications."
+  },
+  {
+    level: 4,
+    type: "single",
+    question: "A patient with liver disease vomits a large amount of blood. What should the EMT MOST strongly suspect?",
+    answers: [
+      "Possible esophageal varices or major GI bleeding",
+      "Simple nausea",
+      "Normal liver function",
+      "Minor sore throat"
+    ],
+    correct: 0,
+    feedback: "Patients with liver disease may develop esophageal varices that can bleed severely."
+  },
+  {
+    level: 4,
+    type: "multi",
+    question: "Which findings are MOST concerning in a GI/GU patient? Select all that apply.",
+    answers: [
+      "Vomiting blood",
+      "Rigid abdomen",
+      "Signs of shock",
+      "Mild nausea after eating with normal vitals"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Bleeding, abdominal rigidity, and shock signs suggest a potentially life-threatening emergency."
+  },
+  {
+    level: 4,
+    type: "matching",
+    question: "Match the GI/GU finding with the MOST appropriate EMT priority.",
+    leftItems: ["Vomiting blood", "Rigid abdomen", "Dialysis patient with dyspnea"],
+    rightItems: [
+      "Treat for shock and transport",
+      "Suspect serious abdominal emergency",
+      "Assess breathing and possible fluid overload"
+    ],
+    correct: [0, 1, 2],
+    feedback: "GI/GU patients may need shock care, respiratory support, and rapid transport."
+  },
+
+  {
+    level: 5,
+    type: "single",
+    question: "A patient with abdominal pain becomes confused, pale, and hypotensive. What is the EMT’s priority?",
+    answers: [
+      "Support ABCs, treat for shock, and transport rapidly",
+      "Allow the patient to drink fluids",
+      "Delay care until pain improves",
+      "Have the patient stand and walk"
+    ],
+    correct: 0,
+    feedback: "Confusion, pallor, and hypotension indicate poor perfusion and require shock care and rapid transport."
+  },
+  {
+    level: 5,
+    type: "single",
+    question: "A patient has severe abdominal pain after trauma and signs of shock. What should the EMT MOST strongly suspect?",
+    answers: [
+      "Internal bleeding",
+      "Simple indigestion",
+      "Mild dehydration only",
+      "Normal post-injury discomfort"
+    ],
+    correct: 0,
+    feedback: "Abdominal trauma with shock signs is highly concerning for internal bleeding."
+  },
+  {
+    level: 5,
+    type: "single",
+    question: "A dialysis patient missed treatment and now has difficulty breathing and swelling. What is the MOST appropriate EMT action?",
+    answers: [
+      "Provide oxygen if indicated, assess for fluid overload, and transport",
+      "Give the patient large amounts of water",
+      "Massage the dialysis fistula",
+      "Delay transport until the next dialysis appointment"
+    ],
+    correct: 0,
+    feedback: "Missed dialysis can lead to fluid overload and serious complications requiring prompt care."
+  },
+  {
+    level: 5,
+    type: "multi",
+    question: "Which findings MOST strongly suggest an unstable GI/GU patient? Select all that apply.",
+    answers: [
+      "Hypotension",
+      "Altered mental status",
+      "Severe bleeding",
+      "Normal vitals with mild discomfort"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Hypotension, altered mental status, and severe bleeding suggest instability."
+  },
+  {
+    level: 5,
+    type: "matching",
+    question: "Match the GI/GU emergency with the MOST appropriate EMT priority.",
+    leftItems: ["GI bleeding with shock", "Kidney stone pain", "Missed dialysis with dyspnea", "Abdominal trauma"],
+    rightItems: [
+      "Treat for shock and rapid transport",
+      "Position of comfort and pain assessment",
+      "Support breathing and transport",
+      "Suspect internal bleeding"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "GI/GU emergencies require supportive care based on severity, perfusion, breathing, and transport priority."
+  }
+];
+
+let currentLevel = 2;
+let questionNumber = 0;
+let score = 0;
+let maxQuestions = 25;
+let currentQuestion;
+let usedQuestions = [];
+
+function shuffleArray(array) {
+  return array
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+}
+
+function getQuestionByLevel(level) {
+  let available = questions.filter(q =>
+    q.level === level && !usedQuestions.includes(q.question)
+  );
+
+  if (available.length === 0) {
+    available = questions.filter(q => !usedQuestions.includes(q.question));
+  }
+
+  if (available.length === 0) {
+    finishExam();
+    return null;
+  }
+
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+function loadQuestion() {
+  if (questionNumber >= maxQuestions) {
+    finishExam();
+    return;
+  }
+
+  currentQuestion = getQuestionByLevel(currentLevel);
+  if (!currentQuestion) return;
+
+  usedQuestions.push(currentQuestion.question);
+
+  document.getElementById("status").innerText =
+    "Question " + (questionNumber + 1) +
+    " of " + maxQuestions +
+    " | Current Difficulty Level: " + currentLevel +
+    " | Score: " + score;
+
+  document.getElementById("question").innerHTML =
+    "<strong>" + currentQuestion.question + "</strong>";
+
+  document.getElementById("answers").innerHTML = "";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "none";
+  document.getElementById("submitBtn").style.display = "none";
+
+  if (currentQuestion.type === "single") {
+    loadSingleQuestion();
+  } else if (currentQuestion.type === "multi") {
+    loadMultiQuestion();
+  } else if (currentQuestion.type === "matching") {
+    loadMatchingQuestion();
+  }
+}
+
+function loadSingleQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.answers.forEach((answer, index) => {
+    answersDiv.innerHTML += `
+      <button onclick="checkSingleAnswer(${index})">
+        ${answer}
+      </button>
+    `;
+  });
+}
+
+function loadMultiQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.answers.forEach((answer, index) => {
+    answersDiv.innerHTML += `
+      <label class="checkbox-answer">
+        <input type="checkbox" value="${index}">
+        ${answer}
+      </label>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function loadMatchingQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
+    const shuffledOptions = shuffleArray(
+      currentQuestion.rightItems.map((rightItem, rightIndex) => ({
+        text: rightItem,
+        originalIndex: rightIndex
+      }))
+    );
+
+    let options = `<option value="">Choose match</option>`;
+
+    shuffledOptions.forEach(option => {
+      options += `
+        <option value="${option.originalIndex}">
+          ${option.text}
+        </option>
+      `;
+    });
+
+    answersDiv.innerHTML += `
+      <div class="matching-row">
+        <div class="matching-left">${leftItem}</div>
+        <select data-left-index="${leftIndex}">
+          ${options}
+        </select>
+      </div>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function checkSingleAnswer(selected) {
+  const feedback = document.getElementById("feedback");
+  const buttons = document.querySelectorAll("#answers button");
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+
+  if (selected === currentQuestion.correct) {
+    score++;
+    currentLevel++;
+    if (currentLevel > 5) currentLevel = 5;
+
+    buttons[selected].style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+  } else {
+    currentLevel--;
+    if (currentLevel < 1) currentLevel = 1;
+
+    buttons[selected].style.background = "darkred";
+    buttons[currentQuestion.correct].style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "Most correct answer: <strong>" +
+      currentQuestion.answers[currentQuestion.correct] +
+      "</strong><br><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function submitAnswer() {
+  if (currentQuestion.type === "multi") {
+    checkMultiAnswer();
+  } else if (currentQuestion.type === "matching") {
+    checkMatchingAnswer();
+  }
+}
+
+function checkMultiAnswer() {
+  const checked = Array.from(
+    document.querySelectorAll('#answers input[type="checkbox"]:checked')
+  ).map(cb => Number(cb.value));
+
+  const correct =
+    checked.length === currentQuestion.correct.length &&
+    checked.every(value => currentQuestion.correct.includes(value));
+
+  const feedback = document.getElementById("feedback");
+  const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
+
+  checkboxes.forEach(cb => {
+    cb.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+    currentLevel++;
+    if (currentLevel > 5) currentLevel = 5;
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+  } else {
+    currentLevel--;
+    if (currentLevel < 1) currentLevel = 1;
+
+    const correctAnswers = currentQuestion.correct
+      .map(index => currentQuestion.answers[index])
+      .join(", ");
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "Most correct answers: <strong>" +
+      correctAnswers +
+      "</strong><br><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function checkMatchingAnswer() {
+  const selects = document.querySelectorAll("#answers select");
+  const selectedAnswers = Array.from(selects).map(select => Number(select.value));
+
+  const allAnswered = selectedAnswers.every(answer => !Number.isNaN(answer));
+
+  const correct =
+    allAnswered &&
+    selectedAnswers.length === currentQuestion.correct.length &&
+    selectedAnswers.every((value, index) => value === currentQuestion.correct[index]);
+
+  const feedback = document.getElementById("feedback");
+
+  selects.forEach(select => {
+    select.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+    currentLevel++;
+    if (currentLevel > 5) currentLevel = 5;
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+  } else {
+    currentLevel--;
+    if (currentLevel < 1) currentLevel = 1;
+
+    let correctText = "";
+
+    currentQuestion.leftItems.forEach((item, index) => {
+      correctText +=
+        item +
+        " = " +
+        currentQuestion.rightItems[currentQuestion.correct[index]] +
+        "<br>";
+    });
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "<br><strong>Most correct matches:</strong><br>" +
+      correctText +
+      "<br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function nextQuestion() {
+  questionNumber++;
+  loadQuestion();
+}
+
+function finishExam() {
+  document.getElementById("question").innerHTML =
+    "<h2>Exam Complete</h2>";
+
+  document.getElementById("answers").innerHTML = "";
+
+  let result = "";
+
+  if (score >= 20) {
+    result = "Strong performance. Continue with advanced GI/GU emergency review.";
+  } else if (score >= 15) {
+    result = "Borderline performance. Review abdominal pain assessment, GI bleeding, kidney stones, dialysis complications, and shock.";
+  } else {
+    result = "Needs remediation. Focus on GI bleeding, abdominal pain assessment, GU complaints, dialysis emergencies, internal bleeding, and shock care.";
+  }
+
+  document.getElementById("feedback").style.display = "block";
+  document.getElementById("feedback").innerHTML =
+    "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
+    "<br><br><strong>Final Difficulty Level:</strong> " + currentLevel +
+    "<br><br>" + result;
+
+  document.getElementById("status").innerText = "Adaptive Exam Finished";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "block";
+}
+
+function restartExam() {
+  currentLevel = 2;
+  questionNumber = 0;
+  score = 0;
+  usedQuestions = [];
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
