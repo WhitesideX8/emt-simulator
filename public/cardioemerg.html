@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Adaptive EMT Cardiovascular Emergencies Exam</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #222;
+      color: white;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #333;
+      padding: 25px;
+      border-radius: 10px;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .question-box {
+      background: #d9d9d9;
+      color: black;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      font-size: 16px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    button:hover {
+      background: darkgreen;
+    }
+
+    #submitBtn, #nextBtn, #restartBtn {
+      background: #0066cc;
+      text-align: center;
+      display: none;
+    }
+
+    #feedback {
+      margin-top: 15px;
+      padding: 15px;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      display: none;
+    }
+
+    #status {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 18px;
+    }
+
+    .checkbox-answer {
+      display: block;
+      background: #eeeeee;
+      color: black;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .checkbox-answer input {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    .matching-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 12px 0;
+      background: #eeeeee;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .matching-left {
+      flex: 1;
+      font-weight: bold;
+    }
+
+    .matching-row select {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>EMT Cardiovascular Emergencies Exam</h1>
+  <h2>Multiple Choice, Select-All-That-Apply, and Matching</h2>
+
+  <div id="status"></div>
+
+  <div class="question-box">
+    <div id="question"></div>
+    <div id="answers"></div>
+
+    <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
+
+    <div id="feedback"></div>
+
+    <button id="nextBtn" onclick="nextQuestion()">Next Question</button>
+    <button id="restartBtn" onclick="restartExam()">Restart Exam</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    level: 1,
+    type: "single",
+    question: "What is the primary function of the cardiovascular system?",
+    answers: ["Digest food", "Transport oxygen and nutrients", "Produce insulin", "Control body temperature only"],
+    correct: 1,
+    feedback: "The cardiovascular system circulates blood to deliver oxygen and nutrients and remove waste products."
+  },
+  {
+    level: 1,
+    type: "single",
+    question: "Which organ pumps blood throughout the body?",
+    answers: ["Lungs", "Heart", "Liver", "Kidneys"],
+    correct: 1,
+    feedback: "The heart is the muscular pump that circulates blood through the body."
+  },
+  {
+    level: 1,
+    type: "single",
+    question: "Which blood vessels carry blood away from the heart?",
+    answers: ["Veins", "Arteries", "Capillaries", "Venules"],
+    correct: 1,
+    feedback: "Arteries carry blood away from the heart."
+  },
+  {
+    level: 1,
+    type: "multi",
+    question: "Which signs may suggest a cardiovascular emergency? Select all that apply.",
+    answers: ["Chest pain", "Shortness of breath", "Pale or cool skin", "Normal breathing with no complaint"],
+    correct: [0, 1, 2],
+    feedback: "Chest pain, shortness of breath, and pale or cool skin can all indicate a cardiovascular problem."
+  },
+  {
+    level: 1,
+    type: "matching",
+    question: "Match the cardiovascular term with its meaning.",
+    leftItems: ["Pulse", "Blood pressure", "Perfusion"],
+    rightItems: ["Pressure of blood against artery walls", "Circulation of blood through tissues", "Wave of blood felt in an artery"],
+    correct: [2, 0, 1],
+    feedback: "Pulse, blood pressure, and perfusion are key cardiovascular assessment findings."
+  },
+
+  {
+    level: 2,
+    type: "single",
+    question: "A patient reports crushing chest pressure. What should the EMT do first?",
+    answers: ["Ignore it if the patient is young", "Perform an assessment and provide oxygen if indicated", "Have the patient walk around", "Give oral glucose immediately"],
+    correct: 1,
+    feedback: "Chest pain should be assessed carefully, and oxygen should be provided if the patient is hypoxic, short of breath, or showing signs of poor perfusion."
+  },
+  {
+    level: 2,
+    type: "single",
+    question: "Which symptom is commonly associated with a heart attack?",
+    answers: ["Chest pressure", "Isolated ankle pain", "Improved pain with deep breathing only", "Itchy rash only"],
+    correct: 0,
+    feedback: "Chest pressure, pain, or discomfort can be a classic sign of myocardial infarction."
+  },
+  {
+    level: 2,
+    type: "single",
+    question: "Which medication may an EMT assist with for a patient having chest pain if prescribed and protocols allow?",
+    answers: ["Epinephrine auto-injector", "Nitroglycerin", "Albuterol", "Activated charcoal"],
+    correct: 1,
+    feedback: "EMTs may assist with prescribed nitroglycerin if the patient meets criteria and local protocol allows."
+  },
+  {
+    level: 2,
+    type: "multi",
+    question: "Which findings should be assessed before assisting with nitroglycerin? Select all that apply.",
+    answers: ["Blood pressure", "Patient prescription", "Recent erectile dysfunction medication use", "Hair color"],
+    correct: [0, 1, 2],
+    feedback: "Blood pressure, prescription status, and recent erectile dysfunction medication use are important before nitroglycerin."
+  },
+  {
+    level: 2,
+    type: "matching",
+    question: "Match the finding with the concern.",
+    leftItems: ["Chest pressure", "Low blood pressure", "Shortness of breath"],
+    rightItems: ["Possible cardiac ischemia", "Possible poor perfusion", "Possible oxygenation problem"],
+    correct: [0, 1, 2],
+    feedback: "Cardiac patients often present with chest discomfort, poor perfusion, and breathing difficulty."
+  },
+
+  {
+    level: 3,
+    type: "single",
+    question: "A patient with chest pain is pale, cool, and diaphoretic. What does this suggest?",
+    answers: ["Adequate perfusion", "Possible shock or poor perfusion", "Normal finding", "Minor muscle strain only"],
+    correct: 1,
+    feedback: "Pale, cool, diaphoretic skin may indicate poor perfusion or shock."
+  },
+  {
+    level: 3,
+    type: "single",
+    question: "Which question is most important for chest pain assessment?",
+    answers: ["What did you eat last week?", "Does the pain radiate anywhere?", "What is your favorite food?", "Do you own a car?"],
+    correct: 1,
+    feedback: "Radiation of pain can help identify possible cardiac-related chest discomfort."
+  },
+  {
+    level: 3,
+    type: "single",
+    question: "A patient has chest pain and took nitroglycerin with no relief. What should the EMT suspect?",
+    answers: ["The problem is definitely minor", "A potentially serious cardiac emergency", "The patient is cured", "No further assessment is needed"],
+    correct: 1,
+    feedback: "Chest pain not relieved by nitroglycerin may indicate a serious cardiac event."
+  },
+  {
+    level: 3,
+    type: "multi",
+    question: "Which are common signs or symptoms of acute coronary syndrome? Select all that apply.",
+    answers: ["Chest discomfort", "Nausea", "Sweating", "Sudden improved exercise ability"],
+    correct: [0, 1, 2],
+    feedback: "ACS may cause chest discomfort, nausea, sweating, weakness, shortness of breath, or pain radiation."
+  },
+  {
+    level: 3,
+    type: "matching",
+    question: "Match the assessment tool with the information gathered.",
+    leftItems: ["O", "P", "Q", "R"],
+    rightItems: ["Onset", "Provocation", "Quality", "Radiation"],
+    correct: [0, 1, 2, 3],
+    feedback: "OPQRST helps the EMT assess pain characteristics."
+  },
+
+  {
+    level: 4,
+    type: "single",
+    question: "A cardiac patient suddenly becomes unresponsive and is not breathing normally. What should the EMT do?",
+    answers: ["Check pulse and begin CPR if pulseless", "Give nitroglycerin", "Place patient in a chair", "Wait for family"],
+    correct: 0,
+    feedback: "Unresponsiveness with absent or abnormal breathing requires immediate pulse check and CPR if pulseless."
+  },
+  {
+    level: 4,
+    type: "single",
+    question: "What is the priority treatment for ventricular fibrillation in cardiac arrest?",
+    answers: ["Defibrillation", "Oral glucose", "Aspirin only", "Bandaging"],
+    correct: 0,
+    feedback: "Ventricular fibrillation is treated with early defibrillation and high-quality CPR."
+  },
+  {
+    level: 4,
+    type: "single",
+    question: "What should be done immediately after an AED delivers a shock?",
+    answers: ["Check blood pressure", "Resume CPR", "Remove the AED pads", "Give the patient water"],
+    correct: 1,
+    feedback: "After a shock, CPR should be resumed immediately unless the AED gives other instructions."
+  },
+  {
+    level: 4,
+    type: "multi",
+    question: "Which actions are part of high-quality CPR? Select all that apply.",
+    answers: ["Correct compression depth", "Full chest recoil", "Minimizing interruptions", "Slow shallow compressions"],
+    correct: [0, 1, 2],
+    feedback: "High-quality CPR requires proper depth, full recoil, correct rate, and minimal interruptions."
+  },
+  {
+    level: 4,
+    type: "matching",
+    question: "Match the cardiac arrest action with its purpose.",
+    leftItems: ["Chest compressions", "AED", "Ventilations", "Early recognition"],
+    rightItems: ["Circulate blood", "Analyze rhythm and shock if needed", "Provide oxygen", "Activate emergency response"],
+    correct: [0, 1, 2, 3],
+    feedback: "Cardiac arrest care depends on early recognition, CPR, defibrillation, and ventilation."
+  },
+
+  {
+    level: 5,
+    type: "single",
+    question: "A patient has chest pressure, shortness of breath, nausea, and pain radiating to the jaw. What should the EMT suspect?",
+    answers: ["Possible myocardial infarction", "Simple ankle sprain", "Food poisoning only", "Normal aging"],
+    correct: 0,
+    feedback: "Chest pressure with shortness of breath, nausea, and jaw pain is concerning for myocardial infarction."
+  },
+  {
+    level: 5,
+    type: "single",
+    question: "A patient with chest pain has a systolic blood pressure of 82 mmHg. What is the concern with nitroglycerin?",
+    answers: ["It may dangerously lower blood pressure further", "It will always raise blood pressure", "It has no effect on circulation", "It treats hypoglycemia"],
+    correct: 0,
+    feedback: "Nitroglycerin can lower blood pressure and may be contraindicated in hypotensive patients."
+  },
+  {
+    level: 5,
+    type: "single",
+    question: "A patient becomes pulseless while you are applying the AED pads. What should you do?",
+    answers: ["Continue AED use and begin CPR", "Remove the pads", "Place patient in recovery position", "Give aspirin by mouth"],
+    correct: 0,
+    feedback: "In cardiac arrest, begin CPR and use the AED as soon as possible."
+  },
+  {
+    level: 5,
+    type: "multi",
+    question: "Which findings may indicate cardiogenic shock? Select all that apply.",
+    answers: ["Hypotension", "Altered mental status", "Cool clammy skin", "Strong perfusion with no symptoms"],
+    correct: [0, 1, 2],
+    feedback: "Cardiogenic shock may cause hypotension, altered mental status, cool clammy skin, and respiratory distress."
+  },
+  {
+    level: 5,
+    type: "matching",
+    question: "Match the cardiovascular emergency with the EMT priority.",
+    leftItems: ["Suspected MI", "Cardiac arrest", "Hypotension", "Poor perfusion"],
+    rightItems: ["Assessment, aspirin if allowed, rapid transport", "CPR and AED", "Avoid unsafe nitroglycerin use", "Support airway, breathing, circulation"],
+    correct: [0, 1, 2, 3],
+    feedback: "Cardiovascular emergencies require rapid assessment and treatment based on the patient’s presentation."
+  },
+
+  {
+    level: 3,
+    type: "single",
+    question: "What medication may be given by EMTs for suspected cardiac chest pain if allowed by protocol?",
+    answers: ["Aspirin", "Insulin", "Activated charcoal", "Naloxone only"],
+    correct: 0,
+    feedback: "Aspirin may be given for suspected cardiac chest pain if the patient is eligible and protocols allow."
+  },
+  {
+    level: 4,
+    type: "multi",
+    question: "Which are reasons not to give aspirin? Select all that apply.",
+    answers: ["Allergy to aspirin", "Active serious bleeding", "Inability to swallow safely", "Chest pain complaint"],
+    correct: [0, 1, 2],
+    feedback: "Aspirin should be avoided with allergy, active serious bleeding, or inability to swallow safely."
+  },
+  {
+    level: 5,
+    type: "matching",
+    question: "Match the medication with the major EMT concern.",
+    leftItems: ["Nitroglycerin", "Aspirin", "Oxygen"],
+    rightItems: ["Can lower blood pressure", "Avoid with allergy or active bleeding", "Use when indicated by oxygenation or distress"],
+    correct: [0, 1, 2],
+    feedback: "Medication use should follow patient condition, contraindications, and local protocol."
+  },
+  {
+    level: 4,
+    type: "single",
+    question: "A patient with chest pain denies shortness of breath and has an SpO2 of 98%. What should guide oxygen use?",
+    answers: ["Give oxygen to every patient no matter what", "Follow assessment findings and local protocol", "Never give oxygen", "Only give oxygen after cardiac arrest"],
+    correct: 1,
+    feedback: "Oxygen use should be based on assessment findings, oxygen saturation, respiratory distress, and local protocol."
+  },
+  {
+    level: 5,
+    type: "multi",
+    question: "Which findings make a chest pain patient high priority? Select all that apply.",
+    answers: ["Altered mental status", "Hypotension", "Severe respiratory distress", "Mild pain that fully resolved days ago"],
+    correct: [0, 1, 2],
+    feedback: "Altered mental status, hypotension, and respiratory distress indicate a potentially unstable cardiovascular patient."
+  }
+];
+
+let currentLevel = 2;
+let questionNumber = 0;
+let score = 0;
+let maxQuestions = 30;
+let currentQuestion;
+let usedQuestions = [];
+
+function shuffleArray(array) {
+  return array
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+}
+
+function getQuestionByLevel(level) {
+  let available = questions.filter(q =>
+    q.level === level && !usedQuestions.includes(q.question)
+  );
+
+  if (available.length === 0) {
+    available = questions.filter(q => !usedQuestions.includes(q.question));
+  }
+
+  if (available.length === 0) {
+    finishExam();
+    return null;
+  }
+
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+function loadQuestion() {
+  if (questionNumber >= maxQuestions) {
+    finishExam();
+    return;
+  }
+
+  currentQuestion = getQuestionByLevel(currentLevel);
+  if (!currentQuestion) return;
+
+  usedQuestions.push(currentQuestion.question);
+
+  document.getElementById("status").innerText =
+    "Question " + (questionNumber + 1) +
+    " of " + maxQuestions +
+    " | Current Difficulty Level: " + currentLevel +
+    " | Score: " + score;
+
+  document.getElementById("question").innerHTML =
+    "<strong>" + currentQuestion.question + "</strong>";
+
+  document.getElementById("answers").innerHTML = "";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "none";
+  document.getElementById("submitBtn").style.display = "none";
+
+  if (currentQuestion.type === "single") {
+    loadSingleQuestion();
+  } else if (currentQuestion.type === "multi") {
+    loadMultiQuestion();
+  } else if (currentQuestion.type === "matching") {
+    loadMatchingQuestion();
+  }
+}
+
+function loadSingleQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.answers.forEach((answer, index) => {
+    answersDiv.innerHTML += `
+      <button onclick="checkSingleAnswer(${index})">
+        ${answer}
+      </button>
+    `;
+  });
+}
+
+function loadMultiQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.answers.forEach((answer, index) => {
+    answersDiv.innerHTML += `
+      <label class="checkbox-answer">
+        <input type="checkbox" value="${index}">
+        ${answer}
+      </label>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function loadMatchingQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
+    const shuffledOptions = shuffleArray(
+      currentQuestion.rightItems.map((rightItem, rightIndex) => ({
+        text: rightItem,
+        originalIndex: rightIndex
+      }))
+    );
+
+    let options = `<option value="">Choose match</option>`;
+
+    shuffledOptions.forEach(option => {
+      options += `
+        <option value="${option.originalIndex}">
+          ${option.text}
+        </option>
+      `;
+    });
+
+    answersDiv.innerHTML += `
+      <div class="matching-row">
+        <div class="matching-left">${leftItem}</div>
+        <select data-left-index="${leftIndex}">
+          ${options}
+        </select>
+      </div>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function checkSingleAnswer(selected) {
+  const feedback = document.getElementById("feedback");
+  const buttons = document.querySelectorAll("#answers button");
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+
+  if (selected === currentQuestion.correct) {
+    score++;
+    currentLevel++;
+    if (currentLevel > 5) currentLevel = 5;
+
+    buttons[selected].style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+  } else {
+    currentLevel--;
+    if (currentLevel < 1) currentLevel = 1;
+
+    buttons[selected].style.background = "darkred";
+    buttons[currentQuestion.correct].style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "Correct answer: <strong>" +
+      currentQuestion.answers[currentQuestion.correct] +
+      "</strong><br><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function submitAnswer() {
+  if (currentQuestion.type === "multi") {
+    checkMultiAnswer();
+  } else if (currentQuestion.type === "matching") {
+    checkMatchingAnswer();
+  }
+}
+
+function checkMultiAnswer() {
+  const checked = Array.from(
+    document.querySelectorAll('#answers input[type="checkbox"]:checked')
+  ).map(cb => Number(cb.value));
+
+  const correct =
+    checked.length === currentQuestion.correct.length &&
+    checked.every(value => currentQuestion.correct.includes(value));
+
+  const feedback = document.getElementById("feedback");
+  const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
+
+  checkboxes.forEach(cb => {
+    cb.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+    currentLevel++;
+    if (currentLevel > 5) currentLevel = 5;
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+  } else {
+    currentLevel--;
+    if (currentLevel < 1) currentLevel = 1;
+
+    const correctAnswers = currentQuestion.correct
+      .map(index => currentQuestion.answers[index])
+      .join(", ");
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "Correct answers: <strong>" +
+      correctAnswers +
+      "</strong><br><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function checkMatchingAnswer() {
+  const selects = document.querySelectorAll("#answers select");
+  const selectedAnswers = Array.from(selects).map(select => Number(select.value));
+
+  const allAnswered = selectedAnswers.every(answer => !Number.isNaN(answer));
+
+  const correct =
+    allAnswered &&
+    selectedAnswers.length === currentQuestion.correct.length &&
+    selectedAnswers.every((value, index) => value === currentQuestion.correct[index]);
+
+  const feedback = document.getElementById("feedback");
+
+  selects.forEach(select => {
+    select.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+    currentLevel++;
+    if (currentLevel > 5) currentLevel = 5;
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+  } else {
+    currentLevel--;
+    if (currentLevel < 1) currentLevel = 1;
+
+    let correctText = "";
+
+    currentQuestion.leftItems.forEach((item, index) => {
+      correctText +=
+        item +
+        " = " +
+        currentQuestion.rightItems[currentQuestion.correct[index]] +
+        "<br>";
+    });
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "<br><strong>Correct matches:</strong><br>" +
+      correctText +
+      "<br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function nextQuestion() {
+  questionNumber++;
+  loadQuestion();
+}
+
+function finishExam() {
+  document.getElementById("question").innerHTML =
+    "<h2>Exam Complete</h2>";
+
+  document.getElementById("answers").innerHTML = "";
+
+  let result = "";
+
+  if (score >= 24) {
+    result = "Strong performance. Continue with advanced cardiovascular emergency review.";
+  } else if (score >= 18) {
+    result = "Borderline performance. Review chest pain assessment, aspirin, nitroglycerin, shock, CPR, and AED use.";
+  } else {
+    result = "Needs remediation. Focus on cardiovascular assessment, acute coronary syndrome, cardiac arrest care, AED use, and perfusion.";
+  }
+
+  document.getElementById("feedback").style.display = "block";
+  document.getElementById("feedback").innerHTML =
+    "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
+    "<br><br><strong>Final Difficulty Level:</strong> " + currentLevel +
+    "<br><br>" + result;
+
+  document.getElementById("status").innerText = "Adaptive Exam Finished";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "block";
+}
+
+function restartExam() {
+  currentLevel = 2;
+  questionNumber = 0;
+  score = 0;
+  usedQuestions = [];
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
