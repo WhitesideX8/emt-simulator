@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Adaptive EMT Cardiovascular Exam</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #222;
+      color: white;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #333;
+      padding: 25px;
+      border-radius: 10px;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .question-box {
+      background: #d9d9d9;
+      color: black;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      font-size: 16px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    button:hover {
+      background: darkgreen;
+    }
+
+    #submitBtn, #nextBtn, #restartBtn {
+      background: #0066cc;
+      text-align: center;
+      display: none;
+    }
+
+    #feedback {
+      margin-top: 15px;
+      padding: 15px;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      display: none;
+    }
+
+    #status {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 18px;
+    }
+
+    .checkbox-answer {
+      display: block;
+      background: #eeeeee;
+      color: black;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .checkbox-answer input {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    .matching-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 12px 0;
+      background: #eeeeee;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .matching-left {
+      flex: 1;
+      font-weight: bold;
+    }
+
+    .matching-row select {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>EMT Cardiovascular Exam</h1>
+  <h2>Multiple Choice, Select-All-That-Apply, and Matching</h2>
+
+  <div id="status"></div>
+
+  <div class="question-box">
+    <div id="question"></div>
+    <div id="answers"></div>
+
+    <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
+
+    <div id="feedback"></div>
+
+    <button id="nextBtn" onclick="nextQuestion()">Next Question</button>
+    <button id="restartBtn" onclick="restartExam()">Restart Exam</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+
+{
+  level: 1,
+  type: "single",
+  question: "What is the normal adult pulse rate?",
+  answers: ["20-40", "40-60", "60-100", "100-140"],
+  correct: 2,
+  feedback: "A normal adult pulse rate is typically 60-100 beats per minute."
+},
+
+{
+  level: 1,
+  type: "single",
+  question: "Chest pain caused by inadequate blood flow to the heart is called:",
+  answers: ["Angina", "Asthma", "Stroke", "COPD"],
+  correct: 0,
+  feedback: "Angina occurs when the heart muscle does not receive enough oxygen-rich blood."
+},
+
+{
+  level: 1,
+  type: "single",
+  question: "Which artery is commonly checked for a pulse in an unconscious adult?",
+  answers: ["Radial", "Brachial", "Carotid", "Pedal"],
+  correct: 2,
+  feedback: "The carotid artery is the preferred pulse site in unconscious adults."
+},
+
+{
+  level: 1,
+  type: "multi",
+  question: "Which are common signs of cardiac chest pain? Select all that apply.",
+  answers: [
+    "Pressure in the chest",
+    "Pain radiating to jaw or arm",
+    "Pink frothy sputum",
+    "Shortness of breath"
+  ],
+  correct: [0,1,3],
+  feedback: "Cardiac chest pain often includes chest pressure, radiation, and shortness of breath."
+},
+
+{
+  level: 1,
+  type: "matching",
+  question: "Match the pulse term with its meaning.",
+  leftItems: ["Bradycardia", "Tachycardia", "Normal sinus rhythm"],
+  rightItems: ["Slow heart rate", "Fast heart rate", "Normal heart rhythm"],
+  correct: [0,1,2],
+  feedback: "Bradycardia is slow, tachycardia is fast, and sinus rhythm is normal."
+},
+
+{
+  level: 2,
+  type: "single",
+  question: "A patient with chest pain has prescribed nitroglycerin. Before assisting, you should:",
+  answers: [
+    "Check blood pressure",
+    "Give aspirin first",
+    "Have patient stand up",
+    "Delay treatment"
+  ],
+  correct: 0,
+  feedback: "Nitroglycerin can lower blood pressure, so it must be checked first."
+},
+
+{
+  level: 2,
+  type: "single",
+  question: "What medication may EMTs assist with for suspected cardiac chest pain?",
+  answers: ["Albuterol", "Oral glucose", "Nitroglycerin", "Epinephrine"],
+  correct: 2,
+  feedback: "EMTs may assist with prescribed nitroglycerin according to protocol."
+},
+
+{
+  level: 2,
+  type: "single",
+  question: "Which symptom is most associated with shock?",
+  answers: [
+    "Warm dry skin",
+    "Slow strong pulse",
+    "Cool clammy skin",
+    "Bounding pulse"
+  ],
+  correct: 2,
+  feedback: "Shock commonly presents with cool, pale, clammy skin."
+},
+
+{
+  level: 2,
+  type: "multi",
+  question: "Which may indicate poor perfusion? Select all that apply.",
+  answers: [
+    "Altered mental status",
+    "Cool clammy skin",
+    "Normal capillary refill",
+    "Weak pulse"
+  ],
+  correct: [0,1,3],
+  feedback: "Poor perfusion often causes AMS, weak pulses, and cool clammy skin."
+},
+
+{
+  level: 2,
+  type: "matching",
+  question: "Match the cardiovascular condition with the likely symptom.",
+  leftItems: ["Angina", "Shock", "Cardiac arrest"],
+  rightItems: ["Chest pressure", "Poor perfusion", "Pulselessness"],
+  correct: [0,1,2],
+  feedback: "Angina causes chest pain, shock causes perfusion problems, and arrest causes pulselessness."
+},
+
+{
+  level: 3,
+  type: "single",
+  question: "A patient suddenly collapses and is pulseless. Your priority is:",
+  answers: [
+    "Give oral glucose",
+    "Begin CPR",
+    "Obtain SAMPLE history",
+    "Apply splint"
+  ],
+  correct: 1,
+  feedback: "Immediate CPR is critical for pulseless patients."
+},
+
+{
+  level: 3,
+  type: "single",
+  question: "What does an AED primarily do?",
+  answers: [
+    "Provide oxygen",
+    "Restart breathing",
+    "Analyze and shock certain rhythms",
+    "Measure blood sugar"
+  ],
+  correct: 2,
+  feedback: "AEDs analyze heart rhythms and deliver shocks when indicated."
+},
+
+{
+  level: 3,
+  type: "single",
+  question: "A patient with chest pain becomes pale, diaphoretic, and hypotensive. Suspect:",
+  answers: [
+    "Heart attack",
+    "Asthma",
+    "Stroke",
+    "COPD"
+  ],
+  correct: 0,
+  feedback: "These are concerning signs of myocardial infarction."
+},
+
+{
+  level: 3,
+  type: "multi",
+  question: "Which findings may indicate shock? Select all that apply.",
+  answers: [
+    "Weak pulse",
+    "Cool clammy skin",
+    "Normal mentation",
+    "Rapid breathing"
+  ],
+  correct: [0,1,3],
+  feedback: "Shock commonly causes weak pulses, cool skin, and tachypnea."
+},
+
+{
+  level: 3,
+  type: "matching",
+  question: "Match the EMT action with the cardiovascular emergency.",
+  leftItems: ["Cardiac arrest", "Chest pain", "Shock"],
+  rightItems: [
+    "CPR and AED",
+    "Assist with nitroglycerin",
+    "Treat for hypoperfusion"
+  ],
+  correct: [0,1,2],
+  feedback: "Each emergency requires specific EMT priorities."
+},
+
+{
+  level: 4,
+  type: "single",
+  question: "Which finding is most concerning in a chest pain patient?",
+  answers: [
+    "Pain relieved by rest",
+    "Normal skin signs",
+    "Hypotension and diaphoresis",
+    "Mild anxiety"
+  ],
+  correct: 2,
+  feedback: "Hypotension and diaphoresis may indicate severe cardiac compromise."
+},
+
+{
+  level: 4,
+  type: "single",
+  question: "What is the purpose of aspirin in suspected heart attack?",
+  answers: [
+    "Increase heart rate",
+    "Reduce clot formation",
+    "Lower blood sugar",
+    "Open the airway"
+  ],
+  correct: 1,
+  feedback: "Aspirin helps inhibit platelet aggregation."
+},
+
+{
+  level: 4,
+  type: "single",
+  question: "A patient in cardiogenic shock may present with:",
+  answers: [
+    "Warm dry skin",
+    "Strong bounding pulse",
+    "Pulmonary edema",
+    "Slow respirations"
+  ],
+  correct: 2,
+  feedback: "Cardiogenic shock may cause pulmonary edema and severe perfusion problems."
+},
+
+{
+  level: 4,
+  type: "multi",
+  question: "Which are signs of poor cardiac output? Select all that apply.",
+  answers: [
+    "Hypotension",
+    "Weak pulse",
+    "Altered mental status",
+    "Warm flushed skin"
+  ],
+  correct: [0,1,2],
+  feedback: "Poor cardiac output reduces perfusion to the brain and tissues."
+},
+
+{
+  level: 4,
+  type: "matching",
+  question: "Match the medication with its cardiovascular purpose.",
+  leftItems: ["Nitroglycerin", "Aspirin", "Oxygen"],
+  rightItems: [
+    "Vasodilation",
+    "Reduce clotting",
+    "Improve oxygen delivery"
+  ],
+  correct: [0,1,2],
+  feedback: "These are common EMT cardiovascular interventions."
+},
+
+{
+  level: 5,
+  type: "single",
+  question: "An unresponsive patient has agonal respirations and no pulse. What should you do first?",
+  answers: [
+    "Check blood glucose",
+    "Begin CPR",
+    "Administer nitroglycerin",
+    "Apply cold packs"
+  ],
+  correct: 1,
+  feedback: "Agonal respirations are not effective breathing. CPR should begin immediately."
+},
+
+{
+  level: 5,
+  type: "single",
+  question: "What confirms effective CPR compressions?",
+  answers: [
+    "Visible chest rise",
+    "Pulse during compressions",
+    "Adequate depth and recoil",
+    "Patient movement"
+  ],
+  correct: 2,
+  feedback: "Proper compression depth and recoil are essential for effective CPR."
+},
+
+{
+  level: 5,
+  type: "single",
+  question: "The most important intervention for ventricular fibrillation is:",
+  answers: [
+    "Nitroglycerin",
+    "Aspirin",
+    "Defibrillation",
+    "Oral glucose"
+  ],
+  correct: 2,
+  feedback: "Early defibrillation is critical for ventricular fibrillation."
+},
+
+{
+  level: 5,
+  type: "multi",
+  question: "Which findings may indicate cardiac arrest? Select all that apply.",
+  answers: [
+    "Unresponsiveness",
+    "No pulse",
+    "Apnea or agonal breathing",
+    "Normal speech"
+  ],
+  correct: [0,1,2],
+  feedback: "Cardiac arrest commonly presents with unresponsiveness, apnea, and pulselessness."
+},
+
+{
+  level: 5,
+  type: "matching",
+  question: "Match the cardiovascular emergency with the EMT priority.",
+  leftItems: [
+    "Cardiac arrest",
+    "Shock",
+    "Chest pain",
+    "Pulmonary edema"
+  ],
+  rightItems: [
+    "CPR and AED",
+    "Support perfusion",
+    "Oxygen and cardiac care",
+    "Assist breathing and oxygenation"
+  ],
+  correct: [0,1,2,3],
+  feedback: "Each cardiovascular emergency requires rapid EMT intervention."
+}
+
+];
+
+let currentLevel = 2;
+let questionNumber = 0;
+let score = 0;
+let maxQuestions = 25;
+let currentQuestion;
+let usedQuestions = [];
+
+function shuffleArray(array) {
+  return array
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+}
+
+function getQuestionByLevel(level) {
+  let available = questions.filter(q =>
+    q.level === level && !usedQuestions.includes(q.question)
+  );
+
+  if (available.length === 0) {
+    available = questions.filter(q => !usedQuestions.includes(q.question));
+  }
+
+  if (available.length === 0) {
+    finishExam();
+    return null;
+  }
+
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+function loadQuestion() {
+  if (questionNumber >= maxQuestions) {
+    finishExam();
+    return;
+  }
+
+  currentQuestion = getQuestionByLevel(currentLevel);
+
+  if (!currentQuestion) return;
+
+  usedQuestions.push(currentQuestion.question);
+
+  document.getElementById("status").innerText =
+    "Question " + (questionNumber + 1) +
+    " of " + maxQuestions +
+    " | Current Difficulty Level: " + currentLevel +
+    " | Score: " + score;
+
+  document.getElementById("question").innerHTML =
+    "<strong>" + currentQuestion.question + "</strong>";
+
+  document.getElementById("answers").innerHTML = "";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "none";
+  document.getElementById("submitBtn").style.display = "none";
+
+  if (currentQuestion.type === "single") {
+    loadSingleQuestion();
+  } else if (currentQuestion.type === "multi") {
+    loadMultiQuestion();
+  } else if (currentQuestion.type === "matching") {
+    loadMatchingQuestion();
+  }
+}
+
+function loadSingleQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.answers.forEach((answer, index) => {
+    answersDiv.innerHTML += `
+      <button onclick="checkSingleAnswer(${index})">
+        ${answer}
+      </button>
+    `;
+  });
+}
+
+function loadMultiQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.answers.forEach((answer, index) => {
+    answersDiv.innerHTML += `
+      <label class="checkbox-answer">
+        <input type="checkbox" value="${index}">
+        ${answer}
+      </label>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function loadMatchingQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
+
+    const shuffledOptions = shuffleArray(
+      currentQuestion.rightItems.map((rightItem, rightIndex) => ({
+        text: rightItem,
+        originalIndex: rightIndex
+      }))
+    );
+
+    let options = `<option value="">Choose match</option>`;
+
+    shuffledOptions.forEach(option => {
+      options += `
+        <option value="${option.originalIndex}">
+          ${option.text}
+        </option>
+      `;
+    });
+
+    answersDiv.innerHTML += `
+      <div class="matching-row">
+        <div class="matching-left">${leftItem}</div>
+        <select data-left-index="${leftIndex}">
+          ${options}
+        </select>
+      </div>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function checkSingleAnswer(selected) {
+
+  const feedback = document.getElementById("feedback");
+  const buttons = document.querySelectorAll("#answers button");
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+
+  if (selected === currentQuestion.correct) {
+
+    score++;
+    currentLevel++;
+
+    if (currentLevel > 5) currentLevel = 5;
+
+    buttons[selected].style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+
+  } else {
+
+    currentLevel--;
+
+    if (currentLevel < 1) currentLevel = 1;
+
+    buttons[selected].style.background = "darkred";
+    buttons[currentQuestion.correct].style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "Correct answer: <strong>" +
+      currentQuestion.answers[currentQuestion.correct] +
+      "</strong><br><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function submitAnswer() {
+
+  if (currentQuestion.type === "multi") {
+    checkMultiAnswer();
+  }
+
+  else if (currentQuestion.type === "matching") {
+    checkMatchingAnswer();
+  }
+}
+
+function checkMultiAnswer() {
+
+  const checked = Array.from(
+    document.querySelectorAll('#answers input[type="checkbox"]:checked')
+  ).map(cb => Number(cb.value));
+
+  const correct =
+    checked.length === currentQuestion.correct.length &&
+    checked.every(value => currentQuestion.correct.includes(value));
+
+  const feedback = document.getElementById("feedback");
+
+  const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
+
+  checkboxes.forEach(cb => {
+    cb.disabled = true;
+  });
+
+  if (correct) {
+
+    score++;
+    currentLevel++;
+
+    if (currentLevel > 5) currentLevel = 5;
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+
+  } else {
+
+    currentLevel--;
+
+    if (currentLevel < 1) currentLevel = 1;
+
+    const correctAnswers = currentQuestion.correct
+      .map(index => currentQuestion.answers[index])
+      .join(", ");
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "Correct answers: <strong>" +
+      correctAnswers +
+      "</strong><br><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function checkMatchingAnswer() {
+
+  const selects = document.querySelectorAll("#answers select");
+
+  const selectedAnswers = Array.from(selects).map(select =>
+    Number(select.value)
+  );
+
+  const allAnswered = selectedAnswers.every(answer =>
+    !Number.isNaN(answer)
+  );
+
+  const correct =
+    allAnswered &&
+    selectedAnswers.length === currentQuestion.correct.length &&
+    selectedAnswers.every((value, index) =>
+      value === currentQuestion.correct[index]
+    );
+
+  const feedback = document.getElementById("feedback");
+
+  selects.forEach(select => {
+    select.disabled = true;
+  });
+
+  if (correct) {
+
+    score++;
+    currentLevel++;
+
+    if (currentLevel > 5) currentLevel = 5;
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+
+  } else {
+
+    currentLevel--;
+
+    if (currentLevel < 1) currentLevel = 1;
+
+    let correctText = "";
+
+    currentQuestion.leftItems.forEach((item, index) => {
+
+      correctText +=
+        item +
+        " = " +
+        currentQuestion.rightItems[currentQuestion.correct[index]] +
+        "<br>";
+    });
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "<br><strong>Correct matches:</strong><br>" +
+      correctText +
+      "<br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function nextQuestion() {
+  questionNumber++;
+  loadQuestion();
+}
+
+function finishExam() {
+
+  document.getElementById("question").innerHTML =
+    "<h2>Exam Complete</h2>";
+
+  document.getElementById("answers").innerHTML = "";
+
+  let result = "";
+
+  if (score >= 20) {
+    result = "Strong cardiovascular performance.";
+  }
+
+  else if (score >= 15) {
+    result = "Borderline performance. Review cardiovascular emergencies and shock.";
+  }
+
+  else {
+    result = "Needs remediation. Focus on CPR, AED use, chest pain care, shock, and perfusion.";
+  }
+
+  document.getElementById("feedback").style.display = "block";
+
+  document.getElementById("feedback").innerHTML =
+    "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
+    "<br><br><strong>Final Difficulty Level:</strong> " + currentLevel +
+    "<br><br>" + result;
+
+  document.getElementById("status").innerText =
+    "Adaptive Exam Finished";
+
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "block";
+}
+
+function restartExam() {
+  currentLevel = 2;
+  questionNumber = 0;
+  score = 0;
+  usedQuestions = [];
+  loadQuestion();
+}
+
+loadQuestion();
+
+</script>
+
+</body>
+</html>
