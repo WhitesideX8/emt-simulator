@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Adaptive EMT Legal and Communications Exam</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #222;
+      color: white;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #333;
+      padding: 25px;
+      border-radius: 10px;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .question-box {
+      background: #d9d9d9;
+      color: black;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      font-size: 16px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    button:hover {
+      background: darkgreen;
+    }
+
+    #submitBtn, #nextBtn, #restartBtn {
+      background: #0066cc;
+      text-align: center;
+      display: none;
+    }
+
+    #feedback {
+      margin-top: 15px;
+      padding: 15px;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      display: none;
+    }
+
+    #status {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 18px;
+    }
+
+    .checkbox-answer {
+      display: block;
+      background: #eeeeee;
+      color: black;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .checkbox-answer input {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    .matching-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 12px 0;
+      background: #eeeeee;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .matching-left {
+      flex: 1;
+      font-weight: bold;
+    }
+
+    .matching-row select {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>EMT Legal and Communications Exam</h1>
+  <h2>Multiple Choice, Select-All-That-Apply, and Matching</h2>
+
+  <div id="status"></div>
+
+  <div class="question-box">
+    <div id="question"></div>
+    <div id="answers"></div>
+
+    <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
+
+    <div id="feedback"></div>
+
+    <button id="nextBtn" onclick="nextQuestion()">Next Question</button>
+    <button id="restartBtn" onclick="restartExam()">Restart Exam</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    level: 1,
+    type: "single",
+    question: "Permission from a patient before providing care is called:",
+    answers: ["Refusal", "Consent", "Negligence", "Abandonment"],
+    correct: 1,
+    feedback: "Consent means the patient gives permission for assessment and treatment."
+  },
+  {
+    level: 1,
+    type: "single",
+    question: "Which type of consent applies when an unconscious patient needs emergency care?",
+    answers: ["Expressed consent", "Implied consent", "Informed refusal", "Assault"],
+    correct: 1,
+    feedback: "Implied consent applies when a patient cannot speak for themselves but needs emergency care."
+  },
+  {
+    level: 1,
+    type: "single",
+    question: "Information about a patient should be shared only with:",
+    answers: ["Anyone who asks", "The media", "People directly involved in patient care", "Neighbors"],
+    correct: 2,
+    feedback: "Patient information is confidential and should only be shared with those involved in care."
+  },
+  {
+    level: 1,
+    type: "multi",
+    question: "Which are examples of good communication with a patient? Select all that apply.",
+    answers: [
+      "Speak clearly",
+      "Use respectful language",
+      "Ignore patient concerns",
+      "Explain what you are doing"
+    ],
+    correct: [0, 1, 3],
+    feedback: "Clear, respectful explanations help build trust with patients."
+  },
+  {
+    level: 1,
+    type: "matching",
+    question: "Match the legal term with its meaning.",
+    leftItems: ["Consent", "Refusal", "Confidentiality"],
+    rightItems: ["Permission to treat", "Declining care", "Protecting patient information"],
+    correct: [0, 1, 2],
+    feedback: "Consent means permission, refusal means declining care, and confidentiality protects patient information."
+  },
+
+  {
+    level: 2,
+    type: "single",
+    question: "A competent adult patient refuses care. What should the EMT do?",
+    answers: [
+      "Force treatment",
+      "Ignore the patient",
+      "Explain risks and document the refusal",
+      "Transport without permission"
+    ],
+    correct: 2,
+    feedback: "A competent adult may refuse care, but the EMT should explain risks and document carefully."
+  },
+  {
+    level: 2,
+    type: "single",
+    question: "Failure to provide the expected standard of care may be called:",
+    answers: ["Consent", "Negligence", "Confidentiality", "Refusal"],
+    correct: 1,
+    feedback: "Negligence may occur when a provider fails to meet the expected standard of care."
+  },
+  {
+    level: 2,
+    type: "single",
+    question: "Leaving a patient after care has begun without proper transfer is called:",
+    answers: ["Abandonment", "Consent", "Defamation", "Battery"],
+    correct: 0,
+    feedback: "Abandonment occurs when care is ended without proper transfer to equal or higher-level care."
+  },
+  {
+    level: 2,
+    type: "multi",
+    question: "Which should be included in a patient care report? Select all that apply.",
+    answers: [
+      "Assessment findings",
+      "Treatments provided",
+      "Patient statements",
+      "Personal opinions about the patient"
+    ],
+    correct: [0, 1, 2],
+    feedback: "A PCR should include objective findings, treatments, and important patient statements."
+  },
+  {
+    level: 2,
+    type: "matching",
+    question: "Match the communication tool with its use.",
+    leftItems: ["Radio report", "PCR", "Verbal handoff"],
+    rightItems: ["Notify receiving facility", "Written medical/legal record", "Transfer patient information"],
+    correct: [0, 1, 2],
+    feedback: "Radio reports, PCRs, and verbal handoffs all support continuity of care."
+  },
+
+  {
+    level: 3,
+    type: "single",
+    question: "An EMT touches a patient without consent when no emergency exists. This may be considered:",
+    answers: ["Battery", "Refusal", "Confidentiality", "Documentation"],
+    correct: 0,
+    feedback: "Battery may involve touching a patient without consent."
+  },
+  {
+    level: 3,
+    type: "single",
+    question: "Which is the best example of therapeutic communication?",
+    answers: [
+      "Calmly explaining procedures",
+      "Arguing with the patient",
+      "Using medical jargon only",
+      "Making promises about outcome"
+    ],
+    correct: 0,
+    feedback: "Therapeutic communication uses calm, clear, supportive language."
+  },
+  {
+    level: 3,
+    type: "single",
+    question: "When communicating over the radio, the EMT should:",
+    answers: [
+      "Use clear, brief language",
+      "Use patient names whenever possible",
+      "Speak over other units",
+      "Give unnecessary details"
+    ],
+    correct: 0,
+    feedback: "Radio communication should be clear, brief, and professional."
+  },
+  {
+    level: 3,
+    type: "multi",
+    question: "Which patients may need special consideration for consent? Select all that apply.",
+    answers: [
+      "Minor patient",
+      "Unconscious patient",
+      "Confused patient",
+      "Alert adult with decision-making capacity"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Minors, unconscious patients, and confused patients may require special consent considerations."
+  },
+  {
+    level: 3,
+    type: "matching",
+    question: "Match the situation with the correct EMT concern.",
+    leftItems: ["Competent refusal", "Unconscious patient", "Patient information shared publicly"],
+    rightItems: ["Informed refusal", "Implied consent", "Confidentiality violation"],
+    correct: [0, 1, 2],
+    feedback: "Each situation has a specific legal or ethical concern."
+  },
+
+  {
+    level: 4,
+    type: "single",
+    question: "Which is most important when documenting a refusal of care?",
+    answers: [
+      "Only write that the patient refused",
+      "Document risks explained and patient understanding",
+      "Do not involve medical direction",
+      "Avoid witness signatures"
+    ],
+    correct: 1,
+    feedback: "Refusals should include risks explained, patient understanding, and appropriate signatures when possible."
+  },
+  {
+    level: 4,
+    type: "single",
+    question: "A clear verbal report to hospital staff should include:",
+    answers: [
+      "Only the patient's age",
+      "Chief complaint, assessment, treatment, and response",
+      "Only the patient’s address",
+      "Personal guesses not based on findings"
+    ],
+    correct: 1,
+    feedback: "A handoff report should summarize the complaint, findings, care, and patient response."
+  },
+  {
+    level: 4,
+    type: "multi",
+    question: "Which actions help reduce legal risk? Select all that apply.",
+    answers: [
+      "Follow protocols",
+      "Document accurately",
+      "Maintain confidentiality",
+      "Guess vital signs if not obtained"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Following protocols, accurate documentation, and confidentiality reduce legal risk."
+  },
+  {
+    level: 4,
+    type: "matching",
+    question: "Match the report section with the correct information.",
+    leftItems: ["Chief complaint", "Assessment", "Treatment", "Response"],
+    rightItems: ["Why EMS was called", "Findings and vital signs", "Care provided", "How the patient changed"],
+    correct: [0, 1, 2, 3],
+    feedback: "A good report follows a logical order from complaint to response."
+  },
+
+  {
+    level: 5,
+    type: "single",
+    question: "A patient refuses transport after signs of a possible stroke. What is the EMT's best action?",
+    answers: [
+      "Accept refusal without discussion",
+      "Explain risks, involve medical direction if needed, and document",
+      "Leave immediately",
+      "Tell the patient they have no choice"
+    ],
+    correct: 1,
+    feedback: "High-risk refusals require clear risk explanation, possible medical direction, and careful documentation."
+  }
+];
+
+let currentLevel = 2;
+let questionNumber = 0;
+let score = 0;
+let maxQuestions = 20;
+let currentQuestion;
+let usedQuestions = [];
+
+function shuffleArray(array) {
+  return array
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+}
+
+function getQuestionByLevel(level) {
+  let available = questions.filter(q =>
+    q.level === level && !usedQuestions.includes(q.question)
+  );
+
+  if (available.length === 0) {
+    available = questions.filter(q => !usedQuestions.includes(q.question));
+  }
+
+  if (available.length === 0) {
+    finishExam();
+    return null;
+  }
+
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+function loadQuestion() {
+  if (questionNumber >= maxQuestions) {
+    finishExam();
+    return;
+  }
+
+  currentQuestion = getQuestionByLevel(currentLevel);
+
+  if (!currentQuestion) return;
+
+  usedQuestions.push(currentQuestion.question);
+
+  document.getElementById("status").innerText =
+    "Question " + (questionNumber + 1) +
+    " of " + maxQuestions +
+    " | Current Difficulty Level: " + currentLevel +
+    " | Score: " + score;
+
+  document.getElementById("question").innerHTML =
+    "<strong>" + currentQuestion.question + "</strong>";
+
+  document.getElementById("answers").innerHTML = "";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "none";
+  document.getElementById("submitBtn").style.display = "none";
+
+  if (currentQuestion.type === "single") {
+    loadSingleQuestion();
+  } else if (currentQuestion.type === "multi") {
+    loadMultiQuestion();
+  } else if (currentQuestion.type === "matching") {
+    loadMatchingQuestion();
+  }
+}
+
+function loadSingleQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.answers.forEach((answer, index) => {
+    answersDiv.innerHTML += `
+      <button onclick="checkSingleAnswer(${index})">
+        ${answer}
+      </button>
+    `;
+  });
+}
+
+function loadMultiQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.answers.forEach((answer, index) => {
+    answersDiv.innerHTML += `
+      <label class="checkbox-answer">
+        <input type="checkbox" value="${index}">
+        ${answer}
+      </label>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function loadMatchingQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
+    const shuffledOptions = shuffleArray(
+      currentQuestion.rightItems.map((rightItem, rightIndex) => ({
+        text: rightItem,
+        originalIndex: rightIndex
+      }))
+    );
+
+    let options = `<option value="">Choose match</option>`;
+
+    shuffledOptions.forEach(option => {
+      options += `
+        <option value="${option.originalIndex}">
+          ${option.text}
+        </option>
+      `;
+    });
+
+    answersDiv.innerHTML += `
+      <div class="matching-row">
+        <div class="matching-left">${leftItem}</div>
+        <select data-left-index="${leftIndex}">
+          ${options}
+        </select>
+      </div>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function checkSingleAnswer(selected) {
+  const feedback = document.getElementById("feedback");
+  const buttons = document.querySelectorAll("#answers button");
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+
+  if (selected === currentQuestion.correct) {
+    score++;
+    currentLevel++;
+    if (currentLevel > 5) currentLevel = 5;
+
+    buttons[selected].style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+  } else {
+    currentLevel--;
+    if (currentLevel < 1) currentLevel = 1;
+
+    buttons[selected].style.background = "darkred";
+    buttons[currentQuestion.correct].style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "Correct answer: <strong>" +
+      currentQuestion.answers[currentQuestion.correct] +
+      "</strong><br><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function submitAnswer() {
+  if (currentQuestion.type === "multi") {
+    checkMultiAnswer();
+  } else if (currentQuestion.type === "matching") {
+    checkMatchingAnswer();
+  }
+}
+
+function checkMultiAnswer() {
+  const checked = Array.from(
+    document.querySelectorAll('#answers input[type="checkbox"]:checked')
+  ).map(cb => Number(cb.value));
+
+  const correct =
+    checked.length === currentQuestion.correct.length &&
+    checked.every(value => currentQuestion.correct.includes(value));
+
+  const feedback = document.getElementById("feedback");
+  const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
+
+  checkboxes.forEach(cb => {
+    cb.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+    currentLevel++;
+    if (currentLevel > 5) currentLevel = 5;
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+  } else {
+    currentLevel--;
+    if (currentLevel < 1) currentLevel = 1;
+
+    const correctAnswers = currentQuestion.correct
+      .map(index => currentQuestion.answers[index])
+      .join(", ");
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "Correct answers: <strong>" +
+      correctAnswers +
+      "</strong><br><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function checkMatchingAnswer() {
+  const selects = document.querySelectorAll("#answers select");
+  const selectedAnswers = Array.from(selects).map(select => Number(select.value));
+
+  const allAnswered = selectedAnswers.every(answer => !Number.isNaN(answer));
+
+  const correct =
+    allAnswered &&
+    selectedAnswers.length === currentQuestion.correct.length &&
+    selectedAnswers.every((value, index) => value === currentQuestion.correct[index]);
+
+  const feedback = document.getElementById("feedback");
+
+  selects.forEach(select => {
+    select.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+    currentLevel++;
+    if (currentLevel > 5) currentLevel = 5;
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+  } else {
+    currentLevel--;
+    if (currentLevel < 1) currentLevel = 1;
+
+    let correctText = "";
+
+    currentQuestion.leftItems.forEach((item, index) => {
+      correctText +=
+        item +
+        " = " +
+        currentQuestion.rightItems[currentQuestion.correct[index]] +
+        "<br>";
+    });
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "<br><strong>Correct matches:</strong><br>" +
+      correctText +
+      "<br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function nextQuestion() {
+  questionNumber++;
+  loadQuestion();
+}
+
+function finishExam() {
+  document.getElementById("question").innerHTML =
+    "<h2>Exam Complete</h2>";
+
+  document.getElementById("answers").innerHTML = "";
+
+  let result = "";
+
+  if (score >= 16) {
+    result = "Strong performance. Continue with legal, documentation, and communication review.";
+  } else if (score >= 12) {
+    result = "Borderline performance. Review consent, refusals, confidentiality, and radio reports.";
+  } else {
+    result = "Needs remediation. Focus on consent, abandonment, negligence, documentation, and patient communication.";
+  }
+
+  document.getElementById("feedback").style.display = "block";
+
+  document.getElementById("feedback").innerHTML =
+    "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
+    "<br><br><strong>Final Difficulty Level:</strong> " + currentLevel +
+    "<br><br>" + result;
+
+  document.getElementById("status").innerText =
+    "Adaptive Exam Finished";
+
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "block";
+}
+
+function restartExam() {
+  currentLevel = 2;
+  questionNumber = 0;
+  score = 0;
+  usedQuestions = [];
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
