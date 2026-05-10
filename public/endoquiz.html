@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Adaptive EMT Endocrine Emergencies Exam</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #222;
+      color: white;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #333;
+      padding: 25px;
+      border-radius: 10px;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .question-box {
+      background: #d9d9d9;
+      color: black;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      font-size: 16px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    button:hover {
+      background: darkgreen;
+    }
+
+    #submitBtn, #nextBtn, #restartBtn {
+      background: #0066cc;
+      text-align: center;
+      display: none;
+    }
+
+    #feedback {
+      margin-top: 15px;
+      padding: 15px;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      display: none;
+    }
+
+    #status {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 18px;
+    }
+
+    .checkbox-answer {
+      display: block;
+      background: #eeeeee;
+      color: black;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .checkbox-answer input {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    .matching-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 12px 0;
+      background: #eeeeee;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .matching-left {
+      flex: 1;
+      font-weight: bold;
+    }
+
+    .matching-row select {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>EMT Endocrine Emergencies Exam</h1>
+  <h2>Most-Correct EMT Style Questions</h2>
+
+  <div id="status"></div>
+
+  <div class="question-box">
+    <div id="question"></div>
+    <div id="answers"></div>
+
+    <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
+
+    <div id="feedback"></div>
+
+    <button id="nextBtn" onclick="nextQuestion()">Next Question</button>
+    <button id="restartBtn" onclick="restartExam()">Restart Exam</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    level: 1,
+    type: "single",
+    question: "Which endocrine condition is MOST commonly encountered by EMTs?",
+    answers: [
+      "Diabetic emergency",
+      "Broken bone",
+      "Stroke only",
+      "Asthma attack"
+    ],
+    correct: 0,
+    feedback: "Diabetic emergencies are among the most common endocrine-related emergencies EMTs encounter."
+  },
+  {
+    level: 1,
+    type: "single",
+    question: "A patient with diabetes becomes confused and sweaty. What should the EMT MOST strongly suspect?",
+    answers: [
+      "Possible hypoglycemia",
+      "Simple anxiety only",
+      "Normal blood sugar",
+      "Isolated muscle strain"
+    ],
+    correct: 0,
+    feedback: "Confusion and sweating are common signs of low blood sugar."
+  },
+  {
+    level: 1,
+    type: "single",
+    question: "What does insulin primarily help the body do?",
+    answers: [
+      "Move glucose from the blood into cells",
+      "Increase oxygen in the lungs",
+      "Stop bleeding",
+      "Digest protein only"
+    ],
+    correct: 0,
+    feedback: "Insulin helps glucose move from the bloodstream into the cells for energy."
+  },
+  {
+    level: 1,
+    type: "multi",
+    question: "Which findings may suggest a diabetic emergency? Select all that apply.",
+    answers: [
+      "Altered mental status",
+      "Sweating",
+      "Weakness",
+      "Normal alertness with no complaint"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Diabetic emergencies may cause altered mental status, sweating, weakness, hunger, or abnormal behavior."
+  },
+  {
+    level: 1,
+    type: "matching",
+    question: "Match the endocrine term with the MOST correct meaning.",
+    leftItems: ["Hypoglycemia", "Hyperglycemia", "Insulin"],
+    rightItems: [
+      "Low blood sugar",
+      "High blood sugar",
+      "Hormone that helps move glucose into cells"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Understanding these terms helps guide assessment of diabetic emergencies."
+  },
+
+  {
+    level: 2,
+    type: "single",
+    question: "A diabetic patient is awake, able to swallow, confused, and has a low blood glucose reading. What is the MOST appropriate EMT action?",
+    answers: [
+      "Administer oral glucose if allowed by protocol",
+      "Give nothing because the patient is confused",
+      "Force water into the patient's mouth",
+      "Have the patient walk around"
+    ],
+    correct: 0,
+    feedback: "Oral glucose may be given to a diabetic patient with suspected hypoglycemia who is awake and able to swallow."
+  },
+  {
+    level: 2,
+    type: "single",
+    question: "A diabetic patient is unconscious and cannot swallow. What is the MOST appropriate EMT action?",
+    answers: [
+      "Do not give anything by mouth and support ABCs",
+      "Place oral glucose deep in the throat",
+      "Give the patient food",
+      "Sit the patient upright and make them drink"
+    ],
+    correct: 0,
+    feedback: "Never give anything by mouth to an unconscious patient. Support airway, breathing, and circulation."
+  },
+  {
+    level: 2,
+    type: "single",
+    question: "Which finding is MOST associated with hypoglycemia?",
+    answers: [
+      "Sudden onset of confusion and sweating",
+      "Slow onset of dry skin and excessive thirst only",
+      "Isolated ankle pain",
+      "Normal mental status"
+    ],
+    correct: 0,
+    feedback: "Hypoglycemia often has a sudden onset and may cause sweating, confusion, weakness, and behavior changes."
+  },
+  {
+    level: 2,
+    type: "multi",
+    question: "Which conditions should be met before giving oral glucose? Select all that apply.",
+    answers: [
+      "Patient can swallow",
+      "Patient can protect their airway",
+      "Protocol allows it",
+      "Patient is unresponsive with no gag reflex"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Oral glucose is used only when the patient can swallow and protect the airway, and when allowed by protocol."
+  },
+  {
+    level: 2,
+    type: "matching",
+    question: "Match the patient presentation with the MOST appropriate EMT concern.",
+    leftItems: ["Confused and sweaty", "Unconscious diabetic", "Thirst and frequent urination"],
+    rightItems: [
+      "Possible hypoglycemia",
+      "Airway risk",
+      "Possible hyperglycemia"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Diabetic emergencies require careful mental status and airway assessment."
+  },
+
+  {
+    level: 3,
+    type: "single",
+    question: "A diabetic patient has warm dry skin, deep rapid breathing, fruity breath odor, and severe thirst. What should the EMT MOST suspect?",
+    answers: [
+      "Hyperglycemia or diabetic ketoacidosis",
+      "Simple fainting",
+      "Isolated anxiety",
+      "Hypothermia"
+    ],
+    correct: 0,
+    feedback: "Hyperglycemia and diabetic ketoacidosis may cause dehydration, fruity breath, thirst, and deep rapid breathing."
+  },
+  {
+    level: 3,
+    type: "single",
+    question: "A confused patient has slurred speech and one-sided weakness, but also has a history of diabetes. What should the EMT do?",
+    answers: [
+      "Assess for stroke and check blood glucose if available",
+      "Assume it is only diabetes",
+      "Assume it is only stroke and ignore glucose",
+      "Give food regardless of airway status"
+    ],
+    correct: 0,
+    feedback: "Hypoglycemia can mimic stroke, but stroke must still be considered. Check glucose if available and continue appropriate stroke assessment."
+  },
+  {
+    level: 3,
+    type: "single",
+    question: "A diabetic patient took insulin but skipped breakfast. Which emergency is MOST likely?",
+    answers: [
+      "Hypoglycemia",
+      "Hyperglycemia only",
+      "Heat stroke",
+      "Pulmonary edema"
+    ],
+    correct: 0,
+    feedback: "Taking insulin without eating can cause low blood sugar."
+  },
+  {
+    level: 3,
+    type: "multi",
+    question: "Which findings are MOST consistent with hyperglycemia? Select all that apply.",
+    answers: [
+      "Excessive thirst",
+      "Frequent urination",
+      "Warm dry skin",
+      "Sudden sweating and hunger"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Hyperglycemia often develops gradually and may cause thirst, frequent urination, dehydration, and warm dry skin."
+  },
+  {
+    level: 3,
+    type: "matching",
+    question: "Match the diabetic emergency with the MOST likely presentation.",
+    leftItems: ["Hypoglycemia", "Hyperglycemia", "DKA"],
+    rightItems: [
+      "Sudden confusion and sweating",
+      "Gradual thirst and frequent urination",
+      "Fruity breath and deep rapid breathing"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Hypoglycemia tends to be sudden, while hyperglycemia and DKA often develop more gradually."
+  },
+
+  {
+    level: 4,
+    type: "single",
+    question: "A patient with suspected hypoglycemia becomes increasingly less responsive. What is the EMT’s priority?",
+    answers: [
+      "Manage airway and breathing and request ALS if appropriate",
+      "Continue trying to force oral glucose",
+      "Delay transport until the patient wakes up",
+      "Have the patient stand"
+    ],
+    correct: 0,
+    feedback: "If mental status worsens, airway and breathing become the priority. Do not force oral glucose into an unsafe airway."
+  },
+  {
+    level: 4,
+    type: "single",
+    question: "A patient with diabetes is confused but combative and refuses oral glucose. What is the MOST appropriate EMT action?",
+    answers: [
+      "Continue assessment, protect safety, and follow local protocol",
+      "Force the glucose into the mouth",
+      "Leave the patient alone",
+      "Ignore the altered mental status"
+    ],
+    correct: 0,
+    feedback: "Combative altered patients require safety, continued assessment, possible ALS, and protocol-based care."
+  },
+  {
+    level: 4,
+    type: "single",
+    question: "A patient with DKA may breathe deeply and rapidly. What is this breathing pattern MOST likely attempting to correct?",
+    answers: [
+      "Acidosis",
+      "A broken bone",
+      "External bleeding",
+      "Low body temperature only"
+    ],
+    correct: 0,
+    feedback: "Deep rapid breathing in DKA is the body's attempt to compensate for metabolic acidosis."
+  },
+  {
+    level: 4,
+    type: "multi",
+    question: "Which findings are MOST concerning in an endocrine emergency? Select all that apply.",
+    answers: [
+      "Decreasing level of consciousness",
+      "Inability to protect airway",
+      "Seizure activity",
+      "Alert and oriented with no symptoms"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Decreasing mental status, airway risk, and seizures are serious findings in diabetic and endocrine emergencies."
+  },
+  {
+    level: 4,
+    type: "matching",
+    question: "Match the finding with the MOST appropriate EMT priority.",
+    leftItems: ["Unable to swallow", "Low glucose and awake", "Seizure in diabetic patient"],
+    rightItems: [
+      "Do not give anything by mouth",
+      "Oral glucose if allowed",
+      "Protect from injury and manage airway"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Treatment depends on mental status, airway safety, and ability to swallow."
+  },
+
+  {
+    level: 5,
+    type: "single",
+    question: "A diabetic patient is unresponsive with slow, shallow breathing. What is the EMT’s priority?",
+    answers: [
+      "Open the airway and assist ventilations as needed",
+      "Give oral glucose immediately",
+      "Ask family for a full medication list before treatment",
+      "Place food in the patient’s mouth"
+    ],
+    correct: 0,
+    feedback: "Airway and breathing are the priority in an unresponsive patient with inadequate respirations."
+  },
+  {
+    level: 5,
+    type: "single",
+    question: "A patient has a diabetic emergency and is showing signs of shock. What is the MOST appropriate EMT action?",
+    answers: [
+      "Support ABCs, treat for shock, and transport promptly",
+      "Give food and delay transport",
+      "Have the patient walk to the ambulance",
+      "Ignore vital signs if glucose is abnormal"
+    ],
+    correct: 0,
+    feedback: "Shock signs require ABC support, shock care, and prompt transport regardless of the suspected cause."
+  },
+  {
+    level: 5,
+    type: "single",
+    question: "A diabetic patient has a seizure. What is the MOST appropriate initial EMT action?",
+    answers: [
+      "Protect the patient from injury and manage the airway when able",
+      "Hold the patient down",
+      "Place oral glucose in the mouth during the seizure",
+      "Put a bite block between the teeth"
+    ],
+    correct: 0,
+    feedback: "During a seizure, protect the patient from injury and manage the airway when possible. Do not place anything in the mouth."
+  },
+  {
+    level: 5,
+    type: "multi",
+    question: "Which findings MOST strongly suggest an unstable endocrine emergency? Select all that apply.",
+    answers: [
+      "Unresponsiveness",
+      "Inadequate breathing",
+      "Seizure activity",
+      "Mild hunger with normal mental status"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Unresponsiveness, inadequate breathing, and seizures are high-priority findings."
+  },
+  {
+    level: 5,
+    type: "matching",
+    question: "Match the endocrine emergency with the MOST appropriate EMT priority.",
+    leftItems: ["Hypoglycemia, awake and able to swallow", "Unresponsive diabetic", "DKA signs", "Diabetic seizure"],
+    rightItems: [
+      "Oral glucose if allowed",
+      "Airway and breathing support",
+      "Assess hydration, breathing, and transport",
+      "Protect from injury and manage airway"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Endocrine emergencies are managed by prioritizing airway, breathing, glucose status, safety, and transport."
+  }
+];
+
+let currentLevel = 2;
+let questionNumber = 0;
+let score = 0;
+let maxQuestions = 25;
+let currentQuestion;
+let usedQuestions = [];
+
+function shuffleArray(array) {
+  return array
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+}
+
+function getQuestionByLevel(level) {
+  let available = questions.filter(q =>
+    q.level === level && !usedQuestions.includes(q.question)
+  );
+
+  if (available.length === 0) {
+    available = questions.filter(q => !usedQuestions.includes(q.question));
+  }
+
+  if (available.length === 0) {
+    finishExam();
+    return null;
+  }
+
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+function loadQuestion() {
+  if (questionNumber >= maxQuestions) {
+    finishExam();
+    return;
+  }
+
+  currentQuestion = getQuestionByLevel(currentLevel);
+  if (!currentQuestion) return;
+
+  usedQuestions.push(currentQuestion.question);
+
+  document.getElementById("status").innerText =
+    "Question " + (questionNumber + 1) +
+    " of " + maxQuestions +
+    " | Current Difficulty Level: " + currentLevel +
+    " | Score: " + score;
+
+  document.getElementById("question").innerHTML =
+    "<strong>" + currentQuestion.question + "</strong>";
+
+  document.getElementById("answers").innerHTML = "";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "none";
+  document.getElementById("submitBtn").style.display = "none";
+
+  if (currentQuestion.type === "single") {
+    loadSingleQuestion();
+  } else if (currentQuestion.type === "multi") {
+    loadMultiQuestion();
+  } else if (currentQuestion.type === "matching") {
+    loadMatchingQuestion();
+  }
+}
+
+function loadSingleQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.answers.forEach((answer, index) => {
+    answersDiv.innerHTML += `
+      <button onclick="checkSingleAnswer(${index})">
+        ${answer}
+      </button>
+    `;
+  });
+}
+
+function loadMultiQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.answers.forEach((answer, index) => {
+    answersDiv.innerHTML += `
+      <label class="checkbox-answer">
+        <input type="checkbox" value="${index}">
+        ${answer}
+      </label>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function loadMatchingQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
+    const shuffledOptions = shuffleArray(
+      currentQuestion.rightItems.map((rightItem, rightIndex) => ({
+        text: rightItem,
+        originalIndex: rightIndex
+      }))
+    );
+
+    let options = `<option value="">Choose match</option>`;
+
+    shuffledOptions.forEach(option => {
+      options += `
+        <option value="${option.originalIndex}">
+          ${option.text}
+        </option>
+      `;
+    });
+
+    answersDiv.innerHTML += `
+      <div class="matching-row">
+        <div class="matching-left">${leftItem}</div>
+        <select data-left-index="${leftIndex}">
+          ${options}
+        </select>
+      </div>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function checkSingleAnswer(selected) {
+  const feedback = document.getElementById("feedback");
+  const buttons = document.querySelectorAll("#answers button");
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+
+  if (selected === currentQuestion.correct) {
+    score++;
+    currentLevel++;
+    if (currentLevel > 5) currentLevel = 5;
+
+    buttons[selected].style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+  } else {
+    currentLevel--;
+    if (currentLevel < 1) currentLevel = 1;
+
+    buttons[selected].style.background = "darkred";
+    buttons[currentQuestion.correct].style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "Most correct answer: <strong>" +
+      currentQuestion.answers[currentQuestion.correct] +
+      "</strong><br><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function submitAnswer() {
+  if (currentQuestion.type === "multi") {
+    checkMultiAnswer();
+  } else if (currentQuestion.type === "matching") {
+    checkMatchingAnswer();
+  }
+}
+
+function checkMultiAnswer() {
+  const checked = Array.from(
+    document.querySelectorAll('#answers input[type="checkbox"]:checked')
+  ).map(cb => Number(cb.value));
+
+  const correct =
+    checked.length === currentQuestion.correct.length &&
+    checked.every(value => currentQuestion.correct.includes(value));
+
+  const feedback = document.getElementById("feedback");
+  const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
+
+  checkboxes.forEach(cb => {
+    cb.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+    currentLevel++;
+    if (currentLevel > 5) currentLevel = 5;
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+  } else {
+    currentLevel--;
+    if (currentLevel < 1) currentLevel = 1;
+
+    const correctAnswers = currentQuestion.correct
+      .map(index => currentQuestion.answers[index])
+      .join(", ");
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "Most correct answers: <strong>" +
+      correctAnswers +
+      "</strong><br><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function checkMatchingAnswer() {
+  const selects = document.querySelectorAll("#answers select");
+  const selectedAnswers = Array.from(selects).map(select => Number(select.value));
+
+  const allAnswered = selectedAnswers.every(answer => !Number.isNaN(answer));
+
+  const correct =
+    allAnswered &&
+    selectedAnswers.length === currentQuestion.correct.length &&
+    selectedAnswers.every((value, index) => value === currentQuestion.correct[index]);
+
+  const feedback = document.getElementById("feedback");
+
+  selects.forEach(select => {
+    select.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+    currentLevel++;
+    if (currentLevel > 5) currentLevel = 5;
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+  } else {
+    currentLevel--;
+    if (currentLevel < 1) currentLevel = 1;
+
+    let correctText = "";
+
+    currentQuestion.leftItems.forEach((item, index) => {
+      correctText +=
+        item +
+        " = " +
+        currentQuestion.rightItems[currentQuestion.correct[index]] +
+        "<br>";
+    });
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "<br><strong>Most correct matches:</strong><br>" +
+      correctText +
+      "<br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function nextQuestion() {
+  questionNumber++;
+  loadQuestion();
+}
+
+function finishExam() {
+  document.getElementById("question").innerHTML =
+    "<h2>Exam Complete</h2>";
+
+  document.getElementById("answers").innerHTML = "";
+
+  let result = "";
+
+  if (score >= 20) {
+    result = "Strong performance. Continue with advanced endocrine and diabetic emergency review.";
+  } else if (score >= 15) {
+    result = "Borderline performance. Review hypoglycemia, hyperglycemia, DKA, oral glucose rules, airway safety, and altered mental status.";
+  } else {
+    result = "Needs remediation. Focus on diabetic emergencies, glucose assessment, oral glucose indications, airway management, seizures, and shock care.";
+  }
+
+  document.getElementById("feedback").style.display = "block";
+  document.getElementById("feedback").innerHTML =
+    "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
+    "<br><br><strong>Final Difficulty Level:</strong> " + currentLevel +
+    "<br><br>" + result;
+
+  document.getElementById("status").innerText = "Adaptive Exam Finished";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "block";
+}
+
+function restartExam() {
+  currentLevel = 2;
+  questionNumber = 0;
+  score = 0;
+  usedQuestions = [];
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
