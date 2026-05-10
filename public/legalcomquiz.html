@@ -115,7 +115,7 @@
 
 <div class="container">
   <h1>EMT Legal and Communications Exam</h1>
-  <h2>Multiple Choice, Select-All-That-Apply, and Matching</h2>
+  <h2>Scenario-Based Multiple Choice, Select-All-That-Apply, Matching, and Radio Questions</h2>
 
   <div id="status"></div>
 
@@ -137,227 +137,336 @@ const questions = [
   {
     level: 1,
     type: "single",
-    question: "Permission from a patient before providing care is called:",
-    answers: ["Refusal", "Consent", "Negligence", "Abandonment"],
+    question: "A conscious adult patient with chest pain says, 'I do not want to go to the hospital.' Before accepting the refusal, what must the EMT first determine?",
+    answers: [
+      "Whether the patient has insurance",
+      "Whether the patient has decision-making capacity",
+      "Whether the family agrees",
+      "Whether the hospital is busy"
+    ],
     correct: 1,
-    feedback: "Consent means the patient gives permission for assessment and treatment."
+    feedback: "A refusal is only valid if the patient has decision-making capacity and understands the risks."
   },
   {
     level: 1,
     type: "single",
-    question: "Which type of consent applies when an unconscious patient needs emergency care?",
-    answers: ["Expressed consent", "Implied consent", "Informed refusal", "Assault"],
+    question: "An unconscious adult is found after a fall and needs emergency care. What type of consent allows treatment?",
+    answers: ["Expressed consent", "Implied consent", "Informed refusal", "Written consent"],
     correct: 1,
-    feedback: "Implied consent applies when a patient cannot speak for themselves but needs emergency care."
+    feedback: "Implied consent applies when an unconscious patient needs emergency care."
   },
   {
     level: 1,
     type: "single",
-    question: "Information about a patient should be shared only with:",
-    answers: ["Anyone who asks", "The media", "People directly involved in patient care", "Neighbors"],
+    question: "Which radio report is most appropriate?",
+    answers: [
+      "We are bringing in a sick person.",
+      "Patient has chest pain and looks bad.",
+      "Adult male, chest pain, pale and diaphoretic, BP 88/60, aspirin given, ETA 6 minutes.",
+      "Tell the doctor we are coming."
+    ],
     correct: 2,
-    feedback: "Patient information is confidential and should only be shared with those involved in care."
+    feedback: "A good radio report is clear, concise, objective, and includes key assessment and treatment information."
   },
   {
     level: 1,
     type: "multi",
-    question: "Which are examples of good communication with a patient? Select all that apply.",
+    question: "Which statements should be documented in a refusal? Select all that apply.",
     answers: [
-      "Speak clearly",
-      "Use respectful language",
-      "Ignore patient concerns",
-      "Explain what you are doing"
+      "Patient was advised of risks",
+      "Patient verbalized understanding",
+      "Patient signature if obtained",
+      "EMT opinion that the patient was annoying"
     ],
-    correct: [0, 1, 3],
-    feedback: "Clear, respectful explanations help build trust with patients."
+    correct: [0, 1, 2],
+    feedback: "Refusal documentation should include risks explained, patient understanding, and signatures when possible."
   },
   {
     level: 1,
     type: "matching",
-    question: "Match the legal term with its meaning.",
-    leftItems: ["Consent", "Refusal", "Confidentiality"],
-    rightItems: ["Permission to treat", "Declining care", "Protecting patient information"],
+    question: "Match the legal concept with the best example.",
+    leftItems: ["Implied consent", "Expressed consent", "Confidentiality"],
+    rightItems: [
+      "Unconscious patient treated in emergency",
+      "Patient says yes to treatment",
+      "Protecting patient medical information"
+    ],
     correct: [0, 1, 2],
-    feedback: "Consent means permission, refusal means declining care, and confidentiality protects patient information."
+    feedback: "These are common legal principles used during EMS care."
   },
 
   {
     level: 2,
     type: "single",
-    question: "A competent adult patient refuses care. What should the EMT do?",
+    question: "A patient refuses transport after syncope. He is alert, oriented, and understands the risks. What is the EMT’s best action?",
     answers: [
-      "Force treatment",
-      "Ignore the patient",
-      "Explain risks and document the refusal",
-      "Transport without permission"
+      "Force transport because syncope is serious",
+      "Leave immediately without documentation",
+      "Explain risks, contact medical direction if required, and document refusal",
+      "Ask police to arrest the patient"
     ],
     correct: 2,
-    feedback: "A competent adult may refuse care, but the EMT should explain risks and document carefully."
+    feedback: "A competent patient may refuse care, but high-risk refusals require careful explanation and documentation."
   },
   {
     level: 2,
     type: "single",
-    question: "Failure to provide the expected standard of care may be called:",
-    answers: ["Consent", "Negligence", "Confidentiality", "Refusal"],
+    question: "You begin treating a patient, then leave before another qualified provider takes over. This is known as:",
+    answers: ["Negligence", "Abandonment", "Assault", "Libel"],
     correct: 1,
-    feedback: "Negligence may occur when a provider fails to meet the expected standard of care."
+    feedback: "Abandonment occurs when care is stopped without proper transfer."
   },
   {
     level: 2,
     type: "single",
-    question: "Leaving a patient after care has begun without proper transfer is called:",
-    answers: ["Abandonment", "Consent", "Defamation", "Battery"],
-    correct: 0,
-    feedback: "Abandonment occurs when care is ended without proper transfer to equal or higher-level care."
+    question: "Which documentation statement is most objective?",
+    answers: [
+      "Patient was drunk and rude.",
+      "Patient appeared lazy.",
+      "Patient had slurred speech and odor of alcohol on breath.",
+      "Patient was pretending to be sick."
+    ],
+    correct: 2,
+    feedback: "Documentation should be objective and based on observable facts."
   },
   {
     level: 2,
     type: "multi",
-    question: "Which should be included in a patient care report? Select all that apply.",
+    question: "Which actions help protect patient confidentiality? Select all that apply.",
     answers: [
-      "Assessment findings",
-      "Treatments provided",
-      "Patient statements",
+      "Only discuss patient information with providers involved in care",
+      "Avoid posting call details on social media",
+      "Use patient information only for care and documentation",
+      "Share patient details with friends after the call"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Patient information must be protected and only shared for legitimate care-related reasons."
+  },
+  {
+    level: 2,
+    type: "matching",
+    question: "Match each documentation problem with the concern.",
+    leftItems: ["Missing vitals", "Personal opinion", "Late entry not marked"],
+    rightItems: [
+      "Incomplete patient assessment record",
+      "Subjective and inappropriate charting",
+      "Could appear dishonest or altered"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Good documentation must be accurate, complete, objective, and honest."
+  },
+
+  {
+    level: 2,
+    type: "single",
+    question: "What is the primary purpose of an EMS radio report to the hospital?",
+    answers: [
+      "To entertain the receiving staff",
+      "To allow the hospital to prepare for the patient",
+      "To provide billing information",
+      "To replace written documentation"
+    ],
+    correct: 1,
+    feedback: "Radio reports help the receiving facility prepare personnel and equipment before patient arrival."
+  },
+  {
+    level: 2,
+    type: "single",
+    question: "Which radio transmission is most appropriate?",
+    answers: [
+      "We have a really sick patient coming in.",
+      "62-year-old male with chest pain, BP 88/60, aspirin given, ETA 5 minutes.",
+      "Patient is annoying and will not stop talking.",
+      "Guess what happened on this call?"
+    ],
+    correct: 1,
+    feedback: "Professional radio reports should be concise, objective, and clinically relevant."
+  },
+
+  {
+    level: 3,
+    type: "single",
+    question: "A confused elderly patient refuses transport after a head injury. What is the EMT’s main concern?",
+    answers: [
+      "The patient may not have decision-making capacity",
+      "The patient has the right to refuse no matter what",
+      "The EMT must immediately leave",
+      "The refusal does not need documentation"
+    ],
+    correct: 0,
+    feedback: "Confusion after injury may affect capacity, making refusal more complex."
+  },
+  {
+    level: 3,
+    type: "single",
+    question: "A patient says, 'I understand I could die, but I still do not want transport.' This statement is important because it shows:",
+    answers: [
+      "The patient is automatically incompetent",
+      "The patient may understand the risk of refusal",
+      "The EMT can stop documenting",
+      "The patient must be transported anyway"
+    ],
+    correct: 1,
+    feedback: "Understanding the risk is an important part of informed refusal."
+  },
+  {
+    level: 3,
+    type: "single",
+    question: "During handoff, which information is most important to include?",
+    answers: [
+      "Your opinion of the patient’s personality",
+      "The patient’s chief complaint, findings, treatments, and response",
+      "Only the patient’s name",
+      "Only the destination hospital"
+    ],
+    correct: 1,
+    feedback: "A good handoff includes complaint, assessment, care provided, and patient response."
+  },
+  {
+    level: 3,
+    type: "multi",
+    question: "Which factors may affect a patient’s ability to refuse care? Select all that apply.",
+    answers: [
+      "Altered mental status",
+      "Intoxication",
+      "Hypoxia",
+      "Being calm and fully oriented"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Mental status, intoxication, and hypoxia may impair decision-making capacity."
+  },
+  {
+    level: 3,
+    type: "multi",
+    question: "Which information should usually be included in a radio report? Select all that apply.",
+    answers: [
+      "Patient age and sex",
+      "Chief complaint",
+      "Vital signs",
       "Personal opinions about the patient"
     ],
     correct: [0, 1, 2],
-    feedback: "A PCR should include objective findings, treatments, and important patient statements."
-  },
-  {
-    level: 2,
-    type: "matching",
-    question: "Match the communication tool with its use.",
-    leftItems: ["Radio report", "PCR", "Verbal handoff"],
-    rightItems: ["Notify receiving facility", "Written medical/legal record", "Transfer patient information"],
-    correct: [0, 1, 2],
-    feedback: "Radio reports, PCRs, and verbal handoffs all support continuity of care."
-  },
-
-  {
-    level: 3,
-    type: "single",
-    question: "An EMT touches a patient without consent when no emergency exists. This may be considered:",
-    answers: ["Battery", "Refusal", "Confidentiality", "Documentation"],
-    correct: 0,
-    feedback: "Battery may involve touching a patient without consent."
-  },
-  {
-    level: 3,
-    type: "single",
-    question: "Which is the best example of therapeutic communication?",
-    answers: [
-      "Calmly explaining procedures",
-      "Arguing with the patient",
-      "Using medical jargon only",
-      "Making promises about outcome"
-    ],
-    correct: 0,
-    feedback: "Therapeutic communication uses calm, clear, supportive language."
-  },
-  {
-    level: 3,
-    type: "single",
-    question: "When communicating over the radio, the EMT should:",
-    answers: [
-      "Use clear, brief language",
-      "Use patient names whenever possible",
-      "Speak over other units",
-      "Give unnecessary details"
-    ],
-    correct: 0,
-    feedback: "Radio communication should be clear, brief, and professional."
-  },
-  {
-    level: 3,
-    type: "multi",
-    question: "Which patients may need special consideration for consent? Select all that apply.",
-    answers: [
-      "Minor patient",
-      "Unconscious patient",
-      "Confused patient",
-      "Alert adult with decision-making capacity"
-    ],
-    correct: [0, 1, 2],
-    feedback: "Minors, unconscious patients, and confused patients may require special consent considerations."
+    feedback: "A radio report should include important patient information, assessment findings, and treatments."
   },
   {
     level: 3,
     type: "matching",
-    question: "Match the situation with the correct EMT concern.",
-    leftItems: ["Competent refusal", "Unconscious patient", "Patient information shared publicly"],
-    rightItems: ["Informed refusal", "Implied consent", "Confidentiality violation"],
-    correct: [0, 1, 2],
-    feedback: "Each situation has a specific legal or ethical concern."
-  },
-
-  {
-    level: 4,
-    type: "single",
-    question: "Which is most important when documenting a refusal of care?",
-    answers: [
-      "Only write that the patient refused",
-      "Document risks explained and patient understanding",
-      "Do not involve medical direction",
-      "Avoid witness signatures"
-    ],
-    correct: 1,
-    feedback: "Refusals should include risks explained, patient understanding, and appropriate signatures when possible."
-  },
-  {
-    level: 4,
-    type: "single",
-    question: "A clear verbal report to hospital staff should include:",
-    answers: [
-      "Only the patient's age",
-      "Chief complaint, assessment, treatment, and response",
-      "Only the patient’s address",
-      "Personal guesses not based on findings"
-    ],
-    correct: 1,
-    feedback: "A handoff report should summarize the complaint, findings, care, and patient response."
-  },
-  {
-    level: 4,
-    type: "multi",
-    question: "Which actions help reduce legal risk? Select all that apply.",
-    answers: [
-      "Follow protocols",
-      "Document accurately",
-      "Maintain confidentiality",
-      "Guess vital signs if not obtained"
+    question: "Match the EMS communication situation with the best action.",
+    leftItems: ["Angry patient", "Language barrier", "Hospital handoff"],
+    rightItems: [
+      "Remain calm and avoid arguing",
+      "Use interpreter resources when available",
+      "Give concise report with findings and treatment"
     ],
     correct: [0, 1, 2],
-    feedback: "Following protocols, accurate documentation, and confidentiality reduce legal risk."
+    feedback: "Communication should be calm, clear, respectful, and appropriate to the situation."
   },
   {
-    level: 4,
+    level: 3,
     type: "matching",
-    question: "Match the report section with the correct information.",
-    leftItems: ["Chief complaint", "Assessment", "Treatment", "Response"],
-    rightItems: ["Why EMS was called", "Findings and vital signs", "Care provided", "How the patient changed"],
+    question: "Match the radio communication term with its meaning.",
+    leftItems: [
+      "ETA",
+      "Repeat traffic",
+      "Affirmative",
+      "Stand by"
+    ],
+    rightItems: [
+      "Estimated time of arrival",
+      "Repeat the message",
+      "Yes/confirmed",
+      "Wait for further communication"
+    ],
     correct: [0, 1, 2, 3],
-    feedback: "A good report follows a logical order from complaint to response."
+    feedback: "These are common EMS radio communication terms."
+  },
+
+  {
+    level: 4,
+    type: "single",
+    question: "You document that the patient 'was fine' after treatment. Why is this weak documentation?",
+    answers: [
+      "It is too objective",
+      "It does not describe specific patient findings or response",
+      "It includes too many vital signs",
+      "It protects the EMT legally"
+    ],
+    correct: 1,
+    feedback: "Documentation should describe specific findings, not vague conclusions."
+  },
+  {
+    level: 4,
+    type: "single",
+    question: "A competent adult refuses spinal motion restriction after a fall. Which is the best documentation?",
+    answers: [
+      "Patient refused. No further details.",
+      "Patient was difficult and refused everything.",
+      "Risks including worsening spinal injury explained; patient verbalized understanding and refused care.",
+      "Patient did not want help."
+    ],
+    correct: 2,
+    feedback: "The best refusal documentation includes risks explained, understanding, and the care refused."
+  },
+  {
+    level: 4,
+    type: "single",
+    question: "During a radio report, another unit interrupts with emergency traffic. What should you do?",
+    answers: [
+      "Continue speaking over them",
+      "Stop transmitting and allow emergency traffic",
+      "Ignore the interruption",
+      "Turn off the radio"
+    ],
+    correct: 1,
+    feedback: "Emergency traffic takes priority over routine radio communication."
+  },
+  {
+    level: 4,
+    type: "multi",
+    question: "Which elements are part of negligence? Select all that apply.",
+    answers: [
+      "Duty to act",
+      "Breach of duty",
+      "Damages or harm",
+      "A perfect patient outcome"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Negligence generally involves duty, breach, damages, and causation."
+  },
+  {
+    level: 4,
+    type: "matching",
+    question: "Match the legal risk with the example.",
+    leftItems: ["Battery", "Abandonment", "Confidentiality breach", "Negligence"],
+    rightItems: [
+      "Touching without consent",
+      "Leaving without proper transfer",
+      "Posting call details online",
+      "Failing to meet standard of care"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "These examples represent common EMS legal risks."
   },
 
   {
     level: 5,
     type: "single",
-    question: "A patient refuses transport after signs of a possible stroke. What is the EMT's best action?",
+    question: "A patient with possible stroke refuses transport. Family wants EMS to force transport, but the patient is alert, oriented, and clearly explains the risks. What should the EMT do?",
     answers: [
-      "Accept refusal without discussion",
-      "Explain risks, involve medical direction if needed, and document",
-      "Leave immediately",
-      "Tell the patient they have no choice"
+      "Force transport because family requests it",
+      "Accept refusal immediately without explanation",
+      "Follow refusal procedure, explain risks, involve medical direction if required, and document carefully",
+      "Ignore the patient and ask police to decide"
     ],
-    correct: 1,
-    feedback: "High-risk refusals require clear risk explanation, possible medical direction, and careful documentation."
+    correct: 2,
+    feedback: "High-risk refusals require careful assessment, risk explanation, possible medical direction, and detailed documentation."
   }
 ];
 
 let currentLevel = 2;
 let questionNumber = 0;
 let score = 0;
-let maxQuestions = 20;
+let maxQuestions = 25;
 let currentQuestion;
 let usedQuestions = [];
 
@@ -643,12 +752,12 @@ function finishExam() {
 
   let result = "";
 
-  if (score >= 16) {
-    result = "Strong performance. Continue with legal, documentation, and communication review.";
-  } else if (score >= 12) {
-    result = "Borderline performance. Review consent, refusals, confidentiality, and radio reports.";
+  if (score >= 20) {
+    result = "Strong performance. Continue with advanced legal, documentation, refusal, and radio communication review.";
+  } else if (score >= 15) {
+    result = "Borderline performance. Review refusals, documentation, consent, confidentiality, handoff reports, and radio reports.";
   } else {
-    result = "Needs remediation. Focus on consent, abandonment, negligence, documentation, and patient communication.";
+    result = "Needs remediation. Focus on informed refusal, decision-making capacity, abandonment, negligence, documentation, radio reports, and patient handoff.";
   }
 
   document.getElementById("feedback").style.display = "block";
