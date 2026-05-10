@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Adaptive EMT Airway Management Exam</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #222;
+      color: white;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #333;
+      padding: 25px;
+      border-radius: 10px;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .question-box {
+      background: #d9d9d9;
+      color: black;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      font-size: 16px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    button:hover {
+      background: darkgreen;
+    }
+
+    #submitBtn, #nextBtn, #restartBtn {
+      background: #0066cc;
+      text-align: center;
+      display: none;
+    }
+
+    #feedback {
+      margin-top: 15px;
+      padding: 15px;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      display: none;
+    }
+
+    #status {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 18px;
+    }
+
+    .checkbox-answer {
+      display: block;
+      background: #eeeeee;
+      color: black;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .checkbox-answer input {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    .matching-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 12px 0;
+      background: #eeeeee;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .matching-left {
+      flex: 1;
+      font-weight: bold;
+    }
+
+    .matching-row select {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>EMT Airway Management Exam</h1>
+  <h2>Multiple Choice, Select-All-That-Apply, and Matching</h2>
+
+  <div id="status"></div>
+
+  <div class="question-box">
+    <div id="question"></div>
+    <div id="answers"></div>
+
+    <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
+
+    <div id="feedback"></div>
+
+    <button id="nextBtn" onclick="nextQuestion()">Next Question</button>
+    <button id="restartBtn" onclick="restartExam()">Restart Exam</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    level: 1,
+    type: "single",
+    question: "What is the first priority when managing any patient’s airway?",
+    answers: ["Insert an airway adjunct", "Ensure the airway is open", "Apply a bandage", "Obtain a blood pressure"],
+    correct: 1,
+    feedback: "The airway must be opened and assessed before other airway interventions are effective."
+  },
+  {
+    level: 1,
+    type: "single",
+    question: "Which manual maneuver is preferred to open the airway of a medical patient with no suspected trauma?",
+    answers: ["Jaw-thrust", "Head-tilt/chin-lift", "Sellick maneuver", "Trendelenburg positioning"],
+    correct: 1,
+    feedback: "The head-tilt/chin-lift is used when spinal injury is not suspected."
+  },
+  {
+    level: 1,
+    type: "single",
+    question: "Which airway maneuver is preferred when spinal trauma is suspected?",
+    answers: ["Head-tilt/chin-lift", "Jaw-thrust", "Abdominal thrust", "Recovery position only"],
+    correct: 1,
+    feedback: "The jaw-thrust helps open the airway while minimizing movement of the cervical spine."
+  },
+  {
+    level: 1,
+    type: "multi",
+    question: "Which signs may indicate an airway problem? Select all that apply.",
+    answers: ["Snoring respirations", "Gurgling sounds", "Stridor", "Clear speech without distress"],
+    correct: [0, 1, 2],
+    feedback: "Snoring, gurgling, and stridor can indicate airway obstruction or compromise."
+  },
+  {
+    level: 1,
+    type: "matching",
+    question: "Match the airway sound with its likely cause.",
+    leftItems: ["Snoring", "Gurgling", "Stridor"],
+    rightItems: ["Tongue obstruction", "Fluid in the airway", "Upper airway narrowing"],
+    correct: [0, 1, 2],
+    feedback: "Recognizing airway sounds helps identify the cause of airway compromise."
+  },
+
+  {
+    level: 2,
+    type: "single",
+    question: "An unresponsive patient has noisy gurgling respirations. What should the EMT do first?",
+    answers: ["Insert an OPA immediately", "Suction the airway", "Give oral glucose", "Place the patient flat and wait"],
+    correct: 1,
+    feedback: "Gurgling suggests fluid in the airway. Suction should be performed before inserting adjuncts or ventilating."
+  },
+  {
+    level: 2,
+    type: "single",
+    question: "Which patient is most appropriate for an oropharyngeal airway?",
+    answers: ["Alert patient with gag reflex", "Unresponsive patient without a gag reflex", "Conscious patient with nausea", "Patient refusing care"],
+    correct: 1,
+    feedback: "An OPA is used for an unresponsive patient without a gag reflex."
+  },
+  {
+    level: 2,
+    type: "single",
+    question: "Which patient is most appropriate for a nasopharyngeal airway?",
+    answers: ["Responsive patient with an intact gag reflex", "Patient with severe facial trauma", "Patient with suspected basilar skull fracture", "Patient with complete airway obstruction"],
+    correct: 0,
+    feedback: "An NPA may be used in a responsive patient who cannot tolerate an OPA, if no contraindications exist."
+  },
+  {
+    level: 2,
+    type: "multi",
+    question: "Which are contraindications or cautions for an NPA? Select all that apply.",
+    answers: ["Severe facial trauma", "Suspected basilar skull fracture", "Clear nasal passage", "Blood or CSF from the nose"],
+    correct: [0, 1, 3],
+    feedback: "Facial trauma, suspected skull fracture, or fluid from the nose are important cautions for NPA placement."
+  },
+  {
+    level: 2,
+    type: "matching",
+    question: "Match the airway device with the best use.",
+    leftItems: ["OPA", "NPA", "Suction"],
+    rightItems: ["Unresponsive without gag reflex", "Responsive with gag reflex", "Remove fluid from airway"],
+    correct: [0, 1, 2],
+    feedback: "Each airway tool has a specific role in basic airway management."
+  },
+
+  {
+    level: 3,
+    type: "single",
+    question: "You insert an OPA and the patient begins gagging. What should you do?",
+    answers: ["Push it in farther", "Remove it immediately", "Tape it in place", "Begin chest compressions"],
+    correct: 1,
+    feedback: "If the patient gags, the OPA should be removed because the gag reflex is present."
+  },
+  {
+    level: 3,
+    type: "single",
+    question: "When ventilating with a BVM, what is the best indicator that air is entering the lungs?",
+    answers: ["The bag refills", "The mask fogs", "Visible chest rise", "The patient’s eyes open"],
+    correct: 2,
+    feedback: "Visible chest rise is the key sign of effective ventilation."
+  },
+  {
+    level: 3,
+    type: "single",
+    question: "A patient is breathing 6 times per minute with shallow chest rise. What is the best intervention?",
+    answers: ["Nasal cannula only", "Assist ventilations with BVM and oxygen", "Place in recovery position only", "Withhold oxygen"],
+    correct: 1,
+    feedback: "Slow, shallow respirations are inadequate and require assisted ventilations."
+  },
+  {
+    level: 3,
+    type: "multi",
+    question: "Which signs suggest inadequate ventilations? Select all that apply.",
+    answers: ["Poor chest rise", "Slow respiratory rate", "Altered mental status", "Speaking full sentences clearly"],
+    correct: [0, 1, 2],
+    feedback: "Poor chest rise, slow rate, and altered mental status may indicate inadequate breathing."
+  },
+  {
+    level: 3,
+    type: "matching",
+    question: "Match the problem with the appropriate EMT action.",
+    leftItems: ["Tongue obstruction", "Fluid in airway", "Inadequate breathing", "No gag reflex"],
+    rightItems: ["Open airway/consider OPA", "Suction", "BVM ventilations", "OPA may be appropriate"],
+    correct: [0, 1, 2, 3],
+    feedback: "Airway care depends on identifying and correcting the specific problem."
+  },
+
+  {
+    level: 4,
+    type: "single",
+    question: "While ventilating a patient with a BVM, you feel strong resistance and see poor chest rise. What should you do first?",
+    answers: ["Ventilate faster", "Reposition the airway and improve mask seal", "Stop ventilating", "Give aspirin"],
+    correct: 1,
+    feedback: "Poor chest rise often means the airway position or mask seal needs correction."
+  },
+  {
+    level: 4,
+    type: "single",
+    question: "A patient vomits during BVM ventilation. What should the EMT do immediately?",
+    answers: ["Continue ventilating through the vomit", "Turn/suction the airway", "Insert oral glucose", "Remove oxygen permanently"],
+    correct: 1,
+    feedback: "Vomitus must be cleared quickly to reduce airway obstruction and aspiration risk."
+  },
+  {
+    level: 4,
+    type: "single",
+    question: "What is a major risk of ventilating too forcefully or too quickly with a BVM?",
+    answers: ["Hypoglycemia", "Gastric inflation", "Decreased body temperature", "Improved perfusion"],
+    correct: 1,
+    feedback: "Excessive force or rate can cause gastric inflation and increase aspiration risk."
+  },
+  {
+    level: 4,
+    type: "multi",
+    question: "Which techniques improve BVM ventilation? Select all that apply.",
+    answers: ["Good mask seal", "Proper airway positioning", "Watching for chest rise", "Rapid squeezing as hard as possible"],
+    correct: [0, 1, 2],
+    feedback: "Effective BVM ventilation requires seal, positioning, and controlled ventilation with visible chest rise."
+  },
+  {
+    level: 4,
+    type: "matching",
+    question: "Match each BVM problem with a likely correction.",
+    leftItems: ["Poor mask seal", "Tongue obstruction", "Fluid in airway", "Ventilating too fast"],
+    rightItems: ["Reposition mask/use two-person technique", "Open airway/add adjunct", "Suction", "Slow controlled ventilations"],
+    correct: [0, 1, 2, 3],
+    feedback: "Troubleshooting BVM problems improves oxygenation and ventilation."
+  },
+
+  {
+    level: 5,
+    type: "single",
+    question: "An unresponsive trauma patient has snoring respirations and poor chest rise. What is the EMT’s priority?",
+    answers: ["Obtain a full SAMPLE history", "Open airway with jaw-thrust and support ventilations", "Give nitroglycerin", "Wait for ALS before treating"],
+    correct: 1,
+    feedback: "Airway and breathing problems are immediate life threats, especially in trauma patients."
+  },
+  {
+    level: 5,
+    type: "single",
+    question: "A choking adult becomes unresponsive. What should the EMT do?",
+    answers: ["Begin CPR and check the airway when opening it", "Continue abdominal thrusts while standing", "Give water", "Insert an NPA first"],
+    correct: 0,
+    feedback: "If a choking adult becomes unresponsive, begin CPR and check for visible obstruction when opening the airway."
+  },
+  {
+    level: 5,
+    type: "single",
+    question: "A patient has severe upper airway swelling with stridor and increasing fatigue. What should the EMT suspect?",
+    answers: ["Improving airway", "Impending airway failure", "Normal breathing", "Mild anxiety only"],
+    correct: 1,
+    feedback: "Stridor with fatigue is a serious sign of worsening upper airway obstruction and possible airway failure."
+  },
+  {
+    level: 5,
+    type: "multi",
+    question: "Which findings may indicate the need for immediate airway and ventilatory support? Select all that apply.",
+    answers: ["Unresponsiveness", "Agonal respirations", "Cyanosis", "Normal speech and pink skin"],
+    correct: [0, 1, 2],
+    feedback: "Unresponsiveness, agonal respirations, and cyanosis are signs of severe airway or breathing compromise."
+  },
+  {
+    level: 5,
+    type: "matching",
+    question: "Match the airway emergency with the best priority action.",
+    leftItems: ["Apnea", "Gurgling airway", "Severe choking", "Snoring unresponsive patient"],
+    rightItems: ["Ventilate with BVM", "Suction", "Airway obstruction sequence/CPR if unresponsive", "Open airway and consider adjunct"],
+    correct: [0, 1, 2, 3],
+    feedback: "Airway emergencies require rapid identification and immediate corrective action."
+  }
+];
+
+let currentLevel = 2;
+let questionNumber = 0;
+let score = 0;
+let maxQuestions = 25;
+let currentQuestion;
+let usedQuestions = [];
+
+function shuffleArray(array) {
+  return array
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+}
+
+function getQuestionByLevel(level) {
+  let available = questions.filter(q =>
+    q.level === level && !usedQuestions.includes(q.question)
+  );
+
+  if (available.length === 0) {
+    available = questions.filter(q => !usedQuestions.includes(q.question));
+  }
+
+  if (available.length === 0) {
+    finishExam();
+    return null;
+  }
+
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+function loadQuestion() {
+  if (questionNumber >= maxQuestions) {
+    finishExam();
+    return;
+  }
+
+  currentQuestion = getQuestionByLevel(currentLevel);
+  if (!currentQuestion) return;
+
+  usedQuestions.push(currentQuestion.question);
+
+  document.getElementById("status").innerText =
+    "Question " + (questionNumber + 1) +
+    " of " + maxQuestions +
+    " | Current Difficulty Level: " + currentLevel +
+    " | Score: " + score;
+
+  document.getElementById("question").innerHTML =
+    "<strong>" + currentQuestion.question + "</strong>";
+
+  document.getElementById("answers").innerHTML = "";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "none";
+  document.getElementById("submitBtn").style.display = "none";
+
+  if (currentQuestion.type === "single") {
+    loadSingleQuestion();
+  } else if (currentQuestion.type === "multi") {
+    loadMultiQuestion();
+  } else if (currentQuestion.type === "matching") {
+    loadMatchingQuestion();
+  }
+}
+
+function loadSingleQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.answers.forEach((answer, index) => {
+    answersDiv.innerHTML += `
+      <button onclick="checkSingleAnswer(${index})">
+        ${answer}
+      </button>
+    `;
+  });
+}
+
+function loadMultiQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.answers.forEach((answer, index) => {
+    answersDiv.innerHTML += `
+      <label class="checkbox-answer">
+        <input type="checkbox" value="${index}">
+        ${answer}
+      </label>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function loadMatchingQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
+    const shuffledOptions = shuffleArray(
+      currentQuestion.rightItems.map((rightItem, rightIndex) => ({
+        text: rightItem,
+        originalIndex: rightIndex
+      }))
+    );
+
+    let options = `<option value="">Choose match</option>`;
+
+    shuffledOptions.forEach(option => {
+      options += `
+        <option value="${option.originalIndex}">
+          ${option.text}
+        </option>
+      `;
+    });
+
+    answersDiv.innerHTML += `
+      <div class="matching-row">
+        <div class="matching-left">${leftItem}</div>
+        <select data-left-index="${leftIndex}">
+          ${options}
+        </select>
+      </div>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function checkSingleAnswer(selected) {
+  const feedback = document.getElementById("feedback");
+  const buttons = document.querySelectorAll("#answers button");
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+
+  if (selected === currentQuestion.correct) {
+    score++;
+    currentLevel++;
+    if (currentLevel > 5) currentLevel = 5;
+
+    buttons[selected].style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+  } else {
+    currentLevel--;
+    if (currentLevel < 1) currentLevel = 1;
+
+    buttons[selected].style.background = "darkred";
+    buttons[currentQuestion.correct].style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "Correct answer: <strong>" +
+      currentQuestion.answers[currentQuestion.correct] +
+      "</strong><br><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function submitAnswer() {
+  if (currentQuestion.type === "multi") {
+    checkMultiAnswer();
+  } else if (currentQuestion.type === "matching") {
+    checkMatchingAnswer();
+  }
+}
+
+function checkMultiAnswer() {
+  const checked = Array.from(
+    document.querySelectorAll('#answers input[type="checkbox"]:checked')
+  ).map(cb => Number(cb.value));
+
+  const correct =
+    checked.length === currentQuestion.correct.length &&
+    checked.every(value => currentQuestion.correct.includes(value));
+
+  const feedback = document.getElementById("feedback");
+  const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
+
+  checkboxes.forEach(cb => {
+    cb.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+    currentLevel++;
+    if (currentLevel > 5) currentLevel = 5;
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+  } else {
+    currentLevel--;
+    if (currentLevel < 1) currentLevel = 1;
+
+    const correctAnswers = currentQuestion.correct
+      .map(index => currentQuestion.answers[index])
+      .join(", ");
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "Correct answers: <strong>" +
+      correctAnswers +
+      "</strong><br><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function checkMatchingAnswer() {
+  const selects = document.querySelectorAll("#answers select");
+  const selectedAnswers = Array.from(selects).map(select => Number(select.value));
+
+  const allAnswered = selectedAnswers.every(answer => !Number.isNaN(answer));
+
+  const correct =
+    allAnswered &&
+    selectedAnswers.length === currentQuestion.correct.length &&
+    selectedAnswers.every((value, index) => value === currentQuestion.correct[index]);
+
+  const feedback = document.getElementById("feedback");
+
+  selects.forEach(select => {
+    select.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+    currentLevel++;
+    if (currentLevel > 5) currentLevel = 5;
+
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will increase.";
+  } else {
+    currentLevel--;
+    if (currentLevel < 1) currentLevel = 1;
+
+    let correctText = "";
+
+    currentQuestion.leftItems.forEach((item, index) => {
+      correctText +=
+        item +
+        " = " +
+        currentQuestion.rightItems[currentQuestion.correct[index]] +
+        "<br>";
+    });
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br>" +
+      "<br><strong>Correct matches:</strong><br>" +
+      correctText +
+      "<br>" +
+      currentQuestion.feedback +
+      "<br><br>Difficulty will decrease.";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function nextQuestion() {
+  questionNumber++;
+  loadQuestion();
+}
+
+function finishExam() {
+  document.getElementById("question").innerHTML =
+    "<h2>Exam Complete</h2>";
+
+  document.getElementById("answers").innerHTML = "";
+
+  let result = "";
+
+  if (score >= 20) {
+    result = "Strong performance. Continue with advanced airway and ventilation review.";
+  } else if (score >= 15) {
+    result = "Borderline performance. Review airway positioning, suctioning, airway adjuncts, and BVM ventilation.";
+  } else {
+    result = "Needs remediation. Focus on opening the airway, suctioning, OPA/NPA use, choking care, and assisted ventilations.";
+  }
+
+  document.getElementById("feedback").style.display = "block";
+  document.getElementById("feedback").innerHTML =
+    "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
+    "<br><br><strong>Final Difficulty Level:</strong> " + currentLevel +
+    "<br><br>" + result;
+
+  document.getElementById("status").innerText = "Adaptive Exam Finished";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "block";
+}
+
+function restartExam() {
+  currentLevel = 2;
+  questionNumber = 0;
+  score = 0;
+  usedQuestions = [];
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
