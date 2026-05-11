@@ -492,20 +492,26 @@
     }
 
     function loadMultiQuestion() {
-      const answersDiv = document.getElementById("answers");
+  const answersDiv = document.getElementById("answers");
 
-      currentQuestion.answers.forEach((answer, index) => {
-        answersDiv.innerHTML += `
-          <label class="checkbox-answer">
-            <input type="checkbox" value="${index}">
-            ${answer}
-          </label>
-        `;
-      });
+  const shuffledAnswers = shuffleArray(
+    currentQuestion.answers.map((answer, index) => ({
+      text: answer,
+      originalIndex: index
+    }))
+  );
 
-      document.getElementById("submitBtn").style.display = "block";
-    }
+  shuffledAnswers.forEach(answerObj => {
+    answersDiv.innerHTML += `
+      <label class="checkbox-answer">
+        <input type="checkbox" value="${answerObj.originalIndex}">
+        ${answerObj.text}
+      </label>
+    `;
+  });
 
+  document.getElementById("submitBtn").style.display = "block";
+}
     function loadMatchingQuestion() {
       const answersDiv = document.getElementById("answers");
 
