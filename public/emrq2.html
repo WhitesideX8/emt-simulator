@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>NREMT EMR Legal, Documentation, and Communications Exam</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #222;
+      color: white;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #333;
+      padding: 25px;
+      border-radius: 10px;
+    }
+
+    h1,
+    h2 {
+      text-align: center;
+    }
+
+    .question-box {
+      background: #d9d9d9;
+      color: black;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      font-size: 16px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    button:hover {
+      background: darkgreen;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.85;
+    }
+
+    #submitBtn,
+    #nextBtn,
+    #restartBtn {
+      background: #0066cc;
+      text-align: center;
+      display: none;
+    }
+
+    #submitBtn:hover,
+    #nextBtn:hover,
+    #restartBtn:hover {
+      background: #004c99;
+    }
+
+    #feedback {
+      margin-top: 15px;
+      padding: 15px;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      display: none;
+    }
+
+    #status {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 18px;
+    }
+
+    .checkbox-answer {
+      display: block;
+      background: #eeeeee;
+      color: black;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .checkbox-answer input {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    .matching-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 12px 0;
+      background: #eeeeee;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .matching-left {
+      flex: 1;
+      font-weight: bold;
+    }
+
+    .matching-row select {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>NREMT EMR Legal, Documentation, and Communications Exam</h1>
+    <h2>Most-Correct EMR Style Questions</h2>
+
+    <div id="status"></div>
+
+    <div class="question-box">
+      <div id="question"></div>
+      <div id="answers"></div>
+
+      <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
+
+      <div id="feedback"></div>
+
+      <button id="nextBtn" onclick="nextQuestion()">Next Question</button>
+      <button id="restartBtn" onclick="restartExam()">Restart Exam</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        level: 1,
+        type: "single",
+        question: "What is consent?",
+        answers: [
+          "Permission from the patient to provide care",
+          "A refusal of treatment",
+          "A hospital transfer form",
+          "A radio report"
+        ],
+        correct: 0,
+        feedback: "Consent means the patient gives permission for care or treatment."
+      },
+      {
+        level: 1,
+        type: "single",
+        question: "Which patient can usually give expressed consent?",
+        answers: [
+          "An alert adult who understands the situation",
+          "An unconscious adult",
+          "A confused child alone",
+          "A patient who is not breathing"
+        ],
+        correct: 0,
+        feedback: "Expressed consent is given by a patient who is alert, competent, and understands what is happening."
+      },
+      {
+        level: 1,
+        type: "single",
+        question: "What should an EMR do before touching an alert patient?",
+        answers: [
+          "Introduce themselves and ask permission to help",
+          "Begin care without speaking",
+          "Document before assessing",
+          "Wait for police"
+        ],
+        correct: 0,
+        feedback: "The EMR should identify themselves, explain what they are doing, and ask for permission."
+      },
+      {
+        level: 1,
+        type: "multi",
+        question: "Which are examples of good communication? Select all that apply.",
+        answers: [
+          "Speaking clearly",
+          "Listening to the patient",
+          "Using respectful language",
+          "Arguing with family members"
+        ],
+        correct: [0, 1, 2],
+        feedback: "Good communication includes clear speech, active listening, and respectful language."
+      },
+      {
+        level: 1,
+        type: "matching",
+        question: "Match the term with the correct meaning.",
+        leftItems: ["Consent", "Refusal", "Confidentiality"],
+        rightItems: [
+          "Permission to provide care",
+          "Patient declines care",
+          "Protecting private patient information"
+        ],
+        correct: [0, 1, 2],
+        feedback: "Consent is permission, refusal means declining care, and confidentiality protects patient information."
+      },
+
+      {
+        level: 2,
+        type: "single",
+        question: "A patient is unconscious and needs emergency care. What type of consent usually applies?",
+        answers: [
+          "Implied consent",
+          "Expressed refusal",
+          "Written refusal only",
+          "No consent is possible"
+        ],
+        correct: 0,
+        feedback: "Implied consent assumes an unconscious or seriously ill patient would want lifesaving care."
+      },
+      {
+        level: 2,
+        type: "single",
+        question: "What is the BEST reason to document patient care accurately?",
+        answers: [
+          "It creates a legal record of assessment and care",
+          "It replaces the need for patient assessment",
+          "It prevents all lawsuits",
+          "It is only used for billing"
+        ],
+        correct: 0,
+        feedback: "Documentation is a legal medical record of what was found, done, and reported."
+      },
+      {
+        level: 2,
+        type: "single",
+        question: "What does confidentiality mean in EMS?",
+        answers: [
+          "Keeping patient information private except when properly shared for care",
+          "Never speaking to hospital staff",
+          "Only telling family members",
+          "Posting information without names"
+        ],
+        correct: 0,
+        feedback: "Confidentiality means protecting patient information and sharing it only with appropriate personnel."
+      },
+      {
+        level: 2,
+        type: "multi",
+        question: "Which information should be included in patient documentation? Select all that apply.",
+        answers: [
+          "Patient complaints",
+          "Vital signs if obtained",
+          "Care provided",
+          "Personal opinions about the patient"
+        ],
+        correct: [0, 1, 2],
+        feedback: "Documentation should include facts such as complaints, findings, vital signs, and care provided."
+      },
+      {
+        level: 2,
+        type: "matching",
+        question: "Match the documentation item with the correct example.",
+        leftItems: ["Subjective", "Objective", "Treatment"],
+        rightItems: [
+          "Patient states they feel dizzy",
+          "Skin is pale and cool",
+          "Oxygen was applied"
+        ],
+        correct: [0, 1, 2],
+        feedback: "Subjective is what the patient says, objective is what you observe, and treatment is care provided."
+      },
+
+      {
+        level: 3,
+        type: "single",
+        question: "A competent adult patient refuses care after being informed of the risks. What should the EMR do?",
+        answers: [
+          "Respect the refusal and document the situation",
+          "Force the patient to accept care",
+          "Leave without notifying anyone",
+          "Ignore the refusal and continue treatment"
+        ],
+        correct: 0,
+        feedback: "A competent adult generally has the right to refuse care after risks are explained."
+      },
+      {
+        level: 3,
+        type: "single",
+        question: "Which action is MOST appropriate when communicating with a frightened patient?",
+        answers: [
+          "Use a calm voice and explain what you are doing",
+          "Speak loudly to gain control",
+          "Ignore the patient’s concerns",
+          "Tell the patient nothing is wrong"
+        ],
+        correct: 0,
+        feedback: "A calm voice, reassurance, and clear explanations help reduce fear and improve cooperation."
+      },
+      {
+        level: 3,
+        type: "single",
+        question: "What is abandonment?",
+        answers: [
+          "Ending care without ensuring equal or higher-level care continues",
+          "Asking for patient consent",
+          "Calling for additional help",
+          "Documenting a refusal"
+        ],
+        correct: 0,
+        feedback: "Abandonment occurs when care is stopped without proper transfer to appropriate care."
+      },
+      {
+        level: 3,
+        type: "multi",
+        question: "Which are appropriate radio communication practices? Select all that apply.",
+        answers: [
+          "Speak clearly and calmly",
+          "Use standard terminology",
+          "Keep the message brief",
+          "Include unnecessary patient names"
+        ],
+        correct: [0, 1, 2],
+        feedback: "Radio reports should be clear, calm, brief, and use standard EMS terminology."
+      },
+      {
+        level: 3,
+        type: "matching",
+        question: "Match the communication type with the correct example.",
+        leftItems: ["Verbal report", "Written report", "Nonverbal communication"],
+        rightItems: [
+          "Telling the EMT what happened",
+          "Patient care documentation",
+          "Facial expression or body language"
+        ],
+        correct: [0, 1, 2],
+        feedback: "Communication may be verbal, written, or nonverbal."
+      },
+
+      {
+        level: 4,
+        type: "single",
+        question: "An EMR forgets to document that oxygen was given. Why is this a problem?",
+        answers: [
+          "The patient care record may be incomplete and legally inaccurate",
+          "Oxygen does not need to be documented",
+          "Only medications are documented",
+          "Documentation is optional for EMRs"
+        ],
+        correct: 0,
+        feedback: "Care that is provided should be documented because the report is a legal record."
+      },
+      {
+        level: 4,
+        type: "single",
+        question: "A bystander asks for the patient’s medical condition. What is the BEST response?",
+        answers: [
+          "Politely avoid sharing private patient information",
+          "Give the full patient report",
+          "Tell them the diagnosis",
+          "Allow them to read the care report"
+        ],
+        correct: 0,
+        feedback: "Patient information should only be shared with appropriate healthcare personnel or as legally permitted."
+      },
+      {
+        level: 4,
+        type: "single",
+        question: "Which statement is MOST appropriate for documentation?",
+        answers: [
+          "Patient states, “I have chest pain,” and appears pale",
+          "Patient is obviously faking",
+          "Patient was annoying and uncooperative",
+          "Patient probably has a heart attack"
+        ],
+        correct: 0,
+        feedback: "Documentation should be factual, objective, and avoid unsupported opinions."
+      },
+      {
+        level: 4,
+        type: "multi",
+        question: "Which actions help reduce legal risk? Select all that apply.",
+        answers: [
+          "Follow protocols",
+          "Document accurately",
+          "Respect patient rights",
+          "Make unsupported diagnoses"
+        ],
+        correct: [0, 1, 2],
+        feedback: "Following protocols, documenting accurately, and respecting patient rights help reduce legal risk."
+      },
+      {
+        level: 4,
+        type: "matching",
+        question: "Match the legal or ethical concept with the correct action.",
+        leftItems: ["Duty to act", "Standard of care", "Ethical behavior"],
+        rightItems: [
+          "Responding when assigned or required",
+          "Providing care expected of similarly trained providers",
+          "Doing what is right for the patient"
+        ],
+        correct: [0, 1, 2],
+        feedback: "Duty to act, standard of care, and ethical behavior guide EMS care and decision-making."
+      }
+    ];
+
+    let currentLevel = 2;
+    let questionNumber = 0;
+    let score = 0;
+    let maxQuestions = 20;
+    let currentQuestion;
+    let usedQuestions = [];
+
+    function shuffleArray(array) {
+      return array
+        .map(value => ({ value, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ value }) => value);
+    }
+
+    function getQuestionByLevel(level) {
+      let available = questions.filter(q =>
+        q.level === level && !usedQuestions.includes(q.question)
+      );
+
+      if (available.length === 0) {
+        available = questions.filter(q => !usedQuestions.includes(q.question));
+      }
+
+      if (available.length === 0) {
+        finishExam();
+        return null;
+      }
+
+      return available[Math.floor(Math.random() * available.length)];
+    }
+
+    function loadQuestion() {
+      if (questionNumber >= maxQuestions) {
+        finishExam();
+        return;
+      }
+
+      currentQuestion = getQuestionByLevel(currentLevel);
+      if (!currentQuestion) return;
+
+      usedQuestions.push(currentQuestion.question);
+
+      document.getElementById("status").innerText =
+        "Question " + (questionNumber + 1) +
+        " of " + maxQuestions +
+        " | Current Difficulty Level: " + currentLevel +
+        " | Score: " + score;
+
+      document.getElementById("question").innerHTML =
+        "<strong>" + currentQuestion.question + "</strong>";
+
+      document.getElementById("answers").innerHTML = "";
+      document.getElementById("feedback").style.display = "none";
+      document.getElementById("nextBtn").style.display = "none";
+      document.getElementById("restartBtn").style.display = "none";
+      document.getElementById("submitBtn").style.display = "none";
+
+      if (currentQuestion.type === "single") {
+        loadSingleQuestion();
+      } else if (currentQuestion.type === "multi") {
+        loadMultiQuestion();
+      } else if (currentQuestion.type === "matching") {
+        loadMatchingQuestion();
+      }
+    }
+
+    function loadSingleQuestion() {
+      const answersDiv = document.getElementById("answers");
+
+      const shuffledAnswers = shuffleArray(
+        currentQuestion.answers.map((answer, index) => ({
+          text: answer,
+          originalIndex: index
+        }))
+      );
+
+      shuffledAnswers.forEach(answerObj => {
+        answersDiv.innerHTML += `
+          <button onclick="checkSingleAnswer(${answerObj.originalIndex})">
+            ${answerObj.text}
+          </button>
+        `;
+      });
+    }
+
+    function loadMultiQuestion() {
+      const answersDiv = document.getElementById("answers");
+
+      const shuffledAnswers = shuffleArray(
+        currentQuestion.answers.map((answer, index) => ({
+          text: answer,
+          originalIndex: index
+        }))
+      );
+
+      shuffledAnswers.forEach(answerObj => {
+        answersDiv.innerHTML += `
+          <label class="checkbox-answer">
+            <input type="checkbox" value="${answerObj.originalIndex}">
+            ${answerObj.text}
+          </label>
+        `;
+      });
+
+      document.getElementById("submitBtn").style.display = "block";
+    }
+
+    function loadMatchingQuestion() {
+      const answersDiv = document.getElementById("answers");
+
+      const shuffledOptions = shuffleArray(
+        currentQuestion.rightItems.map((rightItem, rightIndex) => ({
+          text: rightItem,
+          originalIndex: rightIndex
+        }))
+      );
+
+      currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
+        let options = `<option value="">Choose match</option>`;
+
+        shuffledOptions.forEach(option => {
+          options += `
+            <option value="${option.originalIndex}">
+              ${option.text}
+            </option>
+          `;
+        });
+
+        answersDiv.innerHTML += `
+          <div class="matching-row">
+            <div class="matching-left">${leftItem}</div>
+            <select data-left-index="${leftIndex}">
+              ${options}
+            </select>
+          </div>
+        `;
+      });
+
+      document.getElementById("submitBtn").style.display = "block";
+    }
+
+    function checkSingleAnswer(selected) {
+      const feedback = document.getElementById("feedback");
+      const buttons = document.querySelectorAll("#answers button");
+
+      buttons.forEach(button => {
+        button.disabled = true;
+      });
+
+      if (selected === currentQuestion.correct) {
+        score++;
+        currentLevel++;
+        if (currentLevel > 4) currentLevel = 4;
+
+        feedback.innerHTML =
+          "<strong>Correct.</strong><br>" +
+          currentQuestion.feedback +
+          "<br><br>Difficulty will increase.";
+      } else {
+        currentLevel--;
+        if (currentLevel < 1) currentLevel = 1;
+
+        feedback.innerHTML =
+          "<strong>Incorrect.</strong><br>" +
+          "Most correct answer: <strong>" +
+          currentQuestion.answers[currentQuestion.correct] +
+          "</strong><br><br>" +
+          currentQuestion.feedback +
+          "<br><br>Difficulty will decrease.";
+      }
+
+      feedback.style.display = "block";
+      document.getElementById("nextBtn").style.display = "block";
+    }
+
+    function submitAnswer() {
+      if (currentQuestion.type === "multi") {
+        checkMultiAnswer();
+      } else if (currentQuestion.type === "matching") {
+        checkMatchingAnswer();
+      }
+    }
+
+    function checkMultiAnswer() {
+      const checked = Array.from(
+        document.querySelectorAll('#answers input[type="checkbox"]:checked')
+      ).map(cb => Number(cb.value));
+
+      const correct =
+        checked.length === currentQuestion.correct.length &&
+        checked.every(value => currentQuestion.correct.includes(value));
+
+      const feedback = document.getElementById("feedback");
+      const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
+
+      checkboxes.forEach(cb => {
+        cb.disabled = true;
+      });
+
+      if (correct) {
+        score++;
+        currentLevel++;
+        if (currentLevel > 4) currentLevel = 4;
+
+        feedback.innerHTML =
+          "<strong>Correct.</strong><br>" +
+          currentQuestion.feedback +
+          "<br><br>Difficulty will increase.";
+      } else {
+        currentLevel--;
+        if (currentLevel < 1) currentLevel = 1;
+
+        const correctAnswers = currentQuestion.correct
+          .map(index => currentQuestion.answers[index])
+          .join(", ");
+
+        feedback.innerHTML =
+          "<strong>Incorrect.</strong><br>" +
+          "Most correct answers: <strong>" +
+          correctAnswers +
+          "</strong><br><br>" +
+          currentQuestion.feedback +
+          "<br><br>Difficulty will decrease.";
+      }
+
+      feedback.style.display = "block";
+      document.getElementById("submitBtn").style.display = "none";
+      document.getElementById("nextBtn").style.display = "block";
+    }
+
+    function checkMatchingAnswer() {
+      const selects = document.querySelectorAll("#answers select");
+
+      const selectedAnswers = Array.from(selects).map(select => {
+        if (select.value === "") {
+          return null;
+        }
+        return Number(select.value);
+      });
+
+      const allAnswered = selectedAnswers.every(answer => answer !== null);
+
+      const correct =
+        allAnswered &&
+        selectedAnswers.length === currentQuestion.correct.length &&
+        selectedAnswers.every((value, index) => value === currentQuestion.correct[index]);
+
+      const feedback = document.getElementById("feedback");
+
+      selects.forEach(select => {
+        select.disabled = true;
+      });
+
+      if (correct) {
+        score++;
+        currentLevel++;
+        if (currentLevel > 4) currentLevel = 4;
+
+        feedback.innerHTML =
+          "<strong>Correct.</strong><br>" +
+          currentQuestion.feedback +
+          "<br><br>Difficulty will increase.";
+      } else {
+        currentLevel--;
+        if (currentLevel < 1) currentLevel = 1;
+
+        let correctText = "";
+
+        currentQuestion.leftItems.forEach((item, index) => {
+          correctText +=
+            item +
+            " = " +
+            currentQuestion.rightItems[currentQuestion.correct[index]] +
+            "<br>";
+        });
+
+        feedback.innerHTML =
+          "<strong>Incorrect.</strong><br>" +
+          "<br><strong>Most correct matches:</strong><br>" +
+          correctText +
+          "<br>" +
+          currentQuestion.feedback +
+          "<br><br>Difficulty will decrease.";
+      }
+
+      feedback.style.display = "block";
+      document.getElementById("submitBtn").style.display = "none";
+      document.getElementById("nextBtn").style.display = "block";
+    }
+
+    function nextQuestion() {
+      questionNumber++;
+      loadQuestion();
+    }
+
+    function finishExam() {
+      document.getElementById("question").innerHTML =
+        "<h2>Exam Complete</h2>";
+
+      document.getElementById("answers").innerHTML = "";
+
+      let result = "";
+
+      if (score >= 16) {
+        result = "Strong performance. Continue reviewing legal responsibilities, documentation, and patient communication.";
+      } else if (score >= 12) {
+        result = "Borderline performance. Review consent, refusal, confidentiality, documentation, and radio reports.";
+      } else {
+        result = "Needs remediation. Focus on basic legal terms, ethical behavior, documentation accuracy, and communication skills.";
+      }
+
+      document.getElementById("feedback").style.display = "block";
+      document.getElementById("feedback").innerHTML =
+        "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
+        "<br><br><strong>Final Difficulty Level:</strong> " + currentLevel +
+        "<br><br>" + result;
+
+      document.getElementById("status").innerText = "Adaptive Exam Finished";
+      document.getElementById("submitBtn").style.display = "none";
+      document.getElementById("nextBtn").style.display = "none";
+      document.getElementById("restartBtn").style.display = "block";
+    }
+
+    function restartExam() {
+      currentLevel = 2;
+      questionNumber = 0;
+      score = 0;
+      usedQuestions = [];
+      loadQuestion();
+    }
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
