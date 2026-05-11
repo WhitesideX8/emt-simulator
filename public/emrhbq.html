@@ -20,7 +20,8 @@
       border-radius: 10px;
     }
 
-    h1, h2 {
+    h1,
+    h2 {
       text-align: center;
     }
 
@@ -50,10 +51,23 @@
       background: darkgreen;
     }
 
-    #submitBtn, #nextBtn, #restartBtn {
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.85;
+    }
+
+    #submitBtn,
+    #nextBtn,
+    #restartBtn {
       background: #0066cc;
       text-align: center;
       display: none;
+    }
+
+    #submitBtn:hover,
+    #nextBtn:hover,
+    #restartBtn:hover {
+      background: #004c99;
     }
 
     #feedback {
@@ -113,610 +127,621 @@
 
 <body>
 
-<div class="container">
-  <h1>NREMT EMR Human Body Exam</h1>
-  <h2>Most-Correct EMR Style Questions</h2>
+  <div class="container">
+    <h1>NREMT EMR Human Body Exam</h1>
+    <h2>Most-Correct EMR Style Questions</h2>
 
-  <div id="status"></div>
+    <div id="status"></div>
 
-  <div class="question-box">
-    <div id="question"></div>
-    <div id="answers"></div>
+    <div class="question-box">
+      <div id="question"></div>
+      <div id="answers"></div>
 
-    <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
+      <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
 
-    <div id="feedback"></div>
+      <div id="feedback"></div>
 
-    <button id="nextBtn" onclick="nextQuestion()">Next Question</button>
-    <button id="restartBtn" onclick="restartExam()">Restart Exam</button>
+      <button id="nextBtn" onclick="nextQuestion()">Next Question</button>
+      <button id="restartBtn" onclick="restartExam()">Restart Exam</button>
+    </div>
   </div>
-</div>
-
-<script>
-const questions = [
-  {
-    level: 1,
-    type: "single",
-    question: "What body system is responsible for breathing?",
-    answers: [
-      "Respiratory system",
-      "Digestive system",
-      "Skeletal system",
-      "Urinary system"
-    ],
-    correct: 0,
-    feedback: "The respiratory system brings oxygen into the body and removes carbon dioxide."
-  },
-  {
-    level: 1,
-    type: "single",
-    question: "What organ pumps blood through the body?",
-    answers: [
-      "Heart",
-      "Lung",
-      "Brain",
-      "Stomach"
-    ],
-    correct: 0,
-    feedback: "The heart is the muscular pump of the circulatory system."
-  },
-  {
-    level: 1,
-    type: "single",
-    question: "Which structure protects the brain?",
-    answers: [
-      "Skull",
-      "Pelvis",
-      "Ribs",
-      "Femur"
-    ],
-    correct: 0,
-    feedback: "The skull protects the brain."
-  },
-  {
-    level: 1,
-    type: "multi",
-    question: "Which are parts of the respiratory system? Select all that apply.",
-    answers: [
-      "Lungs",
-      "Trachea",
-      "Bronchi",
-      "Stomach"
-    ],
-    correct: [0, 1, 2],
-    feedback: "The lungs, trachea, and bronchi are parts of the respiratory system."
-  },
-  {
-    level: 1,
-    type: "matching",
-    question: "Match the body part with its basic function.",
-    leftItems: ["Heart", "Lungs", "Brain"],
-    rightItems: [
-      "Pumps blood",
-      "Exchanges oxygen and carbon dioxide",
-      "Controls body functions"
-    ],
-    correct: [0, 1, 2],
-    feedback: "The heart pumps blood, the lungs exchange gases, and the brain controls body functions."
-  },
-
-  {
-    level: 2,
-    type: "single",
-    question: "What is the main purpose of the circulatory system?",
-    answers: [
-      "Move blood, oxygen, and nutrients through the body",
-      "Digest food",
-      "Protect the skin",
-      "Create movement only"
-    ],
-    correct: 0,
-    feedback: "The circulatory system moves blood, oxygen, nutrients, and waste products throughout the body."
-  },
-  {
-    level: 2,
-    type: "single",
-    question: "Which body cavity contains the heart and lungs?",
-    answers: [
-      "Thoracic cavity",
-      "Abdominal cavity",
-      "Pelvic cavity",
-      "Spinal cavity"
-    ],
-    correct: 0,
-    feedback: "The thoracic cavity contains the heart and lungs."
-  },
-  {
-    level: 2,
-    type: "single",
-    question: "The spine is also known as the:",
-    answers: [
-      "Vertebral column",
-      "Femur",
-      "Sternum",
-      "Clavicle"
-    ],
-    correct: 0,
-    feedback: "The spine is the vertebral column and protects the spinal cord."
-  },
-  {
-    level: 2,
-    type: "multi",
-    question: "Which organs are located in the abdominal cavity? Select all that apply.",
-    answers: [
-      "Stomach",
-      "Liver",
-      "Intestines",
-      "Brain"
-    ],
-    correct: [0, 1, 2],
-    feedback: "The stomach, liver, and intestines are located in the abdominal cavity."
-  },
-  {
-    level: 2,
-    type: "matching",
-    question: "Match the body system with the correct description.",
-    leftItems: ["Skeletal system", "Muscular system", "Nervous system"],
-    rightItems: [
-      "Provides structure and protection",
-      "Allows movement",
-      "Controls and coordinates body activity"
-    ],
-    correct: [0, 1, 2],
-    feedback: "The skeletal system supports and protects, the muscular system allows movement, and the nervous system controls body activity."
-  },
-
-  {
-    level: 3,
-    type: "single",
-    question: "Which blood vessel carries blood away from the heart?",
-    answers: [
-      "Artery",
-      "Vein",
-      "Capillary",
-      "Tendon"
-    ],
-    correct: 0,
-    feedback: "Arteries carry blood away from the heart."
-  },
-  {
-    level: 3,
-    type: "single",
-    question: "Which blood vessel usually carries blood back to the heart?",
-    answers: [
-      "Vein",
-      "Artery",
-      "Bronchus",
-      "Ligament"
-    ],
-    correct: 0,
-    feedback: "Veins usually carry blood back to the heart."
-  },
-  {
-    level: 3,
-    type: "single",
-    question: "What is the main purpose of red blood cells?",
-    answers: [
-      "Carry oxygen",
-      "Fight infection only",
-      "Digest food",
-      "Make bones move"
-    ],
-    correct: 0,
-    feedback: "Red blood cells carry oxygen to body tissues."
-  },
-  {
-    level: 3,
-    type: "multi",
-    question: "Which are major functions of the skin? Select all that apply.",
-    answers: [
-      "Protects the body",
-      "Helps regulate temperature",
-      "Helps prevent infection",
-      "Pumps blood"
-    ],
-    correct: [0, 1, 2],
-    feedback: "The skin protects the body, helps regulate temperature, and helps prevent infection."
-  },
-  {
-    level: 3,
-    type: "matching",
-    question: "Match the anatomical term with the correct location.",
-    leftItems: ["Anterior", "Posterior", "Lateral"],
-    rightItems: [
-      "Front of the body",
-      "Back of the body",
-      "Away from the midline"
-    ],
-    correct: [0, 1, 2],
-    feedback: "Anterior means front, posterior means back, and lateral means away from the midline."
-  },
-
-  {
-    level: 4,
-    type: "single",
-    question: "A patient has an injury to the femur. Where is the injury located?",
-    answers: [
-      "Thigh",
-      "Upper arm",
-      "Chest",
-      "Lower back"
-    ],
-    correct: 0,
-    feedback: "The femur is the thigh bone and is the longest bone in the body."
-  },
-  {
-    level: 4,
-    type: "single",
-    question: "The diaphragm is important because it:",
-    answers: [
-      "Helps with breathing",
-      "Pumps blood",
-      "Filters urine",
-      "Protects the brain"
-    ],
-    correct: 0,
-    feedback: "The diaphragm is the major muscle used for breathing."
-  },
-  {
-    level: 4,
-    type: "single",
-    question: "What is the MOST important reason EMRs understand body systems?",
-    answers: [
-      "To recognize life threats and report findings accurately",
-      "To diagnose every disease",
-      "To replace hospital care",
-      "To perform surgery"
-    ],
-    correct: 0,
-    feedback: "EMRs use anatomy knowledge to recognize life threats, assess patients, and report findings clearly."
-  },
-  {
-    level: 4,
-    type: "multi",
-    question: "Which structures help protect vital organs? Select all that apply.",
-    answers: [
-      "Skull",
-      "Rib cage",
-      "Spinal column",
-      "Skin only"
-    ],
-    correct: [0, 1, 2],
-    feedback: "The skull protects the brain, the rib cage protects the heart and lungs, and the spinal column protects the spinal cord."
-  },
-  {
-    level: 4,
-    type: "matching",
-    question: "Match the organ with the body cavity where it is found.",
-    leftItems: ["Brain", "Heart", "Stomach"],
-    rightItems: [
-      "Cranial cavity",
-      "Thoracic cavity",
-      "Abdominal cavity"
-    ],
-    correct: [0, 1, 2],
-    feedback: "The brain is in the cranial cavity, the heart is in the thoracic cavity, and the stomach is in the abdominal cavity."
-  }
-];
-
-let currentLevel = 2;
-let questionNumber = 0;
-let score = 0;
-let maxQuestions = 20;
-let currentQuestion;
-let usedQuestions = [];
-
-function shuffleArray(array) {
-  return array
-    .map(value => ({ value, sort: Math.random() }))
-    .sort((a, b) => a.sort - b.sort)
-    .map(({ value }) => value);
-}
-
-function getQuestionByLevel(level) {
-  let available = questions.filter(q =>
-    q.level === level && !usedQuestions.includes(q.question)
-  );
-
-  if (available.length === 0) {
-    available = questions.filter(q => !usedQuestions.includes(q.question));
-  }
-
-  if (available.length === 0) {
-    finishExam();
-    return null;
-  }
-
-  return available[Math.floor(Math.random() * available.length)];
-}
-
-function loadQuestion() {
-  if (questionNumber >= maxQuestions) {
-    finishExam();
-    return;
-  }
-
-  currentQuestion = getQuestionByLevel(currentLevel);
-  if (!currentQuestion) return;
-
-  usedQuestions.push(currentQuestion.question);
-
-  document.getElementById("status").innerText =
-    "Question " + (questionNumber + 1) +
-    " of " + maxQuestions +
-    " | Current Difficulty Level: " + currentLevel +
-    " | Score: " + score;
-
-  document.getElementById("question").innerHTML =
-    "<strong>" + currentQuestion.question + "</strong>";
-
-  document.getElementById("answers").innerHTML = "";
-  document.getElementById("feedback").style.display = "none";
-  document.getElementById("nextBtn").style.display = "none";
-  document.getElementById("restartBtn").style.display = "none";
-  document.getElementById("submitBtn").style.display = "none";
-
-  if (currentQuestion.type === "single") {
-    loadSingleQuestion();
-  } else if (currentQuestion.type === "multi") {
-    loadMultiQuestion();
-  } else if (currentQuestion.type === "matching") {
-    loadMatchingQuestion();
-  }
-}
-
-function loadSingleQuestion() {
-  const answersDiv = document.getElementById("answers");
-
-  currentQuestion.answers.forEach((answer, index) => {
-    answersDiv.innerHTML += `
-      <button onclick="checkSingleAnswer(${index})">
-        ${answer}
-      </button>
-    `;
-  });
-}
-
-function loadMultiQuestion() {
-  const answersDiv = document.getElementById("answers");
-
-  currentQuestion.answers.forEach((answer, index) => {
-    answersDiv.innerHTML += `
-      <label class="checkbox-answer">
-        <input type="checkbox" value="${index}">
-        ${answer}
-      </label>
-    `;
-  });
-
-  document.getElementById("submitBtn").style.display = "block";
-}
-
-function loadMatchingQuestion() {
-  const answersDiv = document.getElementById("answers");
-
-  currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
-    const shuffledOptions = shuffleArray(
-      currentQuestion.rightItems.map((rightItem, rightIndex) => ({
-        text: rightItem,
-        originalIndex: rightIndex
-      }))
-    );
-
-    let options = `<option value="">Choose match</option>`;
-
-    shuffledOptions.forEach(option => {
-      options += `
-        <option value="${option.originalIndex}">
-          ${option.text}
-        </option>
-      `;
-    });
-
-    answersDiv.innerHTML += `
-      <div class="matching-row">
-        <div class="matching-left">${leftItem}</div>
-        <select data-left-index="${leftIndex}">
-          ${options}
-        </select>
-      </div>
-    `;
-  });
-
-  document.getElementById("submitBtn").style.display = "block";
-}
-
-function checkSingleAnswer(selected) {
-  const feedback = document.getElementById("feedback");
-  const buttons = document.querySelectorAll("#answers button");
-
-  buttons.forEach(button => {
-    button.disabled = true;
-  });
-
-  if (selected === currentQuestion.correct) {
-    score++;
-    currentLevel++;
-    if (currentLevel > 4) currentLevel = 4;
-
-    buttons[selected].style.background = "darkgreen";
-
-    feedback.innerHTML =
-      "<strong>Correct.</strong><br>" +
-      currentQuestion.feedback +
-      "<br><br>Difficulty will increase.";
-  } else {
-    currentLevel--;
-    if (currentLevel < 1) currentLevel = 1;
-
-    buttons[selected].style.background = "darkred";
-    buttons[currentQuestion.correct].style.background = "darkgreen";
-
-    feedback.innerHTML =
-      "<strong>Incorrect.</strong><br>" +
-      "Most correct answer: <strong>" +
-      currentQuestion.answers[currentQuestion.correct] +
-      "</strong><br><br>" +
-      currentQuestion.feedback +
-      "<br><br>Difficulty will decrease.";
-  }
-
-  feedback.style.display = "block";
-  document.getElementById("nextBtn").style.display = "block";
-}
-
-function submitAnswer() {
-  if (currentQuestion.type === "multi") {
-    checkMultiAnswer();
-  } else if (currentQuestion.type === "matching") {
-    checkMatchingAnswer();
-  }
-}
-
-function checkMultiAnswer() {
-  const checked = Array.from(
-    document.querySelectorAll('#answers input[type="checkbox"]:checked')
-  ).map(cb => Number(cb.value));
-
-  const correct =
-    checked.length === currentQuestion.correct.length &&
-    checked.every(value => currentQuestion.correct.includes(value));
-
-  const feedback = document.getElementById("feedback");
-  const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
-
-  checkboxes.forEach(cb => {
-    cb.disabled = true;
-  });
-
-  if (correct) {
-    score++;
-    currentLevel++;
-    if (currentLevel > 4) currentLevel = 4;
-
-    feedback.innerHTML =
-      "<strong>Correct.</strong><br>" +
-      currentQuestion.feedback +
-      "<br><br>Difficulty will increase.";
-  } else {
-    currentLevel--;
-    if (currentLevel < 1) currentLevel = 1;
-
-    const correctAnswers = currentQuestion.correct
-      .map(index => currentQuestion.answers[index])
-      .join(", ");
-
-    feedback.innerHTML =
-      "<strong>Incorrect.</strong><br>" +
-      "Most correct answers: <strong>" +
-      correctAnswers +
-      "</strong><br><br>" +
-      currentQuestion.feedback +
-      "<br><br>Difficulty will decrease.";
-  }
-
-  feedback.style.display = "block";
-  document.getElementById("submitBtn").style.display = "none";
-  document.getElementById("nextBtn").style.display = "block";
-}
-
-function checkMatchingAnswer() {
-  const selects = document.querySelectorAll("#answers select");
-  const selectedAnswers = Array.from(selects).map(select => Number(select.value));
-
-  const allAnswered = selectedAnswers.every(answer => !Number.isNaN(answer));
-
-  const correct =
-    allAnswered &&
-    selectedAnswers.length === currentQuestion.correct.length &&
-    selectedAnswers.every((value, index) => value === currentQuestion.correct[index]);
-
-  const feedback = document.getElementById("feedback");
-
-  selects.forEach(select => {
-    select.disabled = true;
-  });
-
-  if (correct) {
-    score++;
-    currentLevel++;
-    if (currentLevel > 4) currentLevel = 4;
-
-    feedback.innerHTML =
-      "<strong>Correct.</strong><br>" +
-      currentQuestion.feedback +
-      "<br><br>Difficulty will increase.";
-  } else {
-    currentLevel--;
-    if (currentLevel < 1) currentLevel = 1;
-
-    let correctText = "";
-
-    currentQuestion.leftItems.forEach((item, index) => {
-      correctText +=
-        item +
-        " = " +
-        currentQuestion.rightItems[currentQuestion.correct[index]] +
-        "<br>";
-    });
-
-    feedback.innerHTML =
-      "<strong>Incorrect.</strong><br>" +
-      "<br><strong>Most correct matches:</strong><br>" +
-      correctText +
-      "<br>" +
-      currentQuestion.feedback +
-      "<br><br>Difficulty will decrease.";
-  }
-
-  feedback.style.display = "block";
-  document.getElementById("submitBtn").style.display = "none";
-  document.getElementById("nextBtn").style.display = "block";
-}
-
-function nextQuestion() {
-  questionNumber++;
-  loadQuestion();
-}
-
-function finishExam() {
-  document.getElementById("question").innerHTML =
-    "<h2>Exam Complete</h2>";
-
-  document.getElementById("answers").innerHTML = "";
-
-  let result = "";
-
-  if (score >= 16) {
-    result = "Strong performance. Continue reviewing EMR anatomy, body systems, and patient assessment.";
-  } else if (score >= 12) {
-    result = "Borderline performance. Review body systems, anatomical terms, body cavities, and major organs.";
-  } else {
-    result = "Needs remediation. Focus on basic anatomy, body systems, organs, cavities, and directional terms.";
-  }
-
-  document.getElementById("feedback").style.display = "block";
-  document.getElementById("feedback").innerHTML =
-    "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
-    "<br><br><strong>Final Difficulty Level:</strong> " + currentLevel +
-    "<br><br>" + result;
-
-  document.getElementById("status").innerText = "Adaptive Exam Finished";
-  document.getElementById("submitBtn").style.display = "none";
-  document.getElementById("nextBtn").style.display = "none";
-  document.getElementById("restartBtn").style.display = "block";
-}
-
-function restartExam() {
-  currentLevel = 2;
-  questionNumber = 0;
-  score = 0;
-  usedQuestions = [];
-  loadQuestion();
-}
-
-loadQuestion();
-</script>
+
+  <script>
+    const questions = [
+      {
+        level: 1,
+        type: "single",
+        question: "What body system is responsible for breathing?",
+        answers: [
+          "Respiratory system",
+          "Digestive system",
+          "Skeletal system",
+          "Urinary system"
+        ],
+        correct: 0,
+        feedback: "The respiratory system brings oxygen into the body and removes carbon dioxide."
+      },
+      {
+        level: 1,
+        type: "single",
+        question: "What organ pumps blood through the body?",
+        answers: [
+          "Heart",
+          "Lung",
+          "Brain",
+          "Stomach"
+        ],
+        correct: 0,
+        feedback: "The heart is the muscular pump of the circulatory system."
+      },
+      {
+        level: 1,
+        type: "single",
+        question: "Which structure protects the brain?",
+        answers: [
+          "Skull",
+          "Pelvis",
+          "Ribs",
+          "Femur"
+        ],
+        correct: 0,
+        feedback: "The skull protects the brain."
+      },
+      {
+        level: 1,
+        type: "multi",
+        question: "Which are parts of the respiratory system? Select all that apply.",
+        answers: [
+          "Lungs",
+          "Trachea",
+          "Bronchi",
+          "Stomach"
+        ],
+        correct: [0, 1, 2],
+        feedback: "The lungs, trachea, and bronchi are parts of the respiratory system."
+      },
+      {
+        level: 1,
+        type: "matching",
+        question: "Match the body part with its basic function.",
+        leftItems: ["Heart", "Lungs", "Brain"],
+        rightItems: [
+          "Pumps blood",
+          "Exchanges oxygen and carbon dioxide",
+          "Controls body functions"
+        ],
+        correct: [0, 1, 2],
+        feedback: "The heart pumps blood, the lungs exchange gases, and the brain controls body functions."
+      },
+
+      {
+        level: 2,
+        type: "single",
+        question: "What is the main purpose of the circulatory system?",
+        answers: [
+          "Move blood, oxygen, and nutrients through the body",
+          "Digest food",
+          "Protect the skin",
+          "Create movement only"
+        ],
+        correct: 0,
+        feedback: "The circulatory system moves blood, oxygen, nutrients, and waste products throughout the body."
+      },
+      {
+        level: 2,
+        type: "single",
+        question: "Which body cavity contains the heart and lungs?",
+        answers: [
+          "Thoracic cavity",
+          "Abdominal cavity",
+          "Pelvic cavity",
+          "Spinal cavity"
+        ],
+        correct: 0,
+        feedback: "The thoracic cavity contains the heart and lungs."
+      },
+      {
+        level: 2,
+        type: "single",
+        question: "The spine is also known as the:",
+        answers: [
+          "Vertebral column",
+          "Femur",
+          "Sternum",
+          "Clavicle"
+        ],
+        correct: 0,
+        feedback: "The spine is the vertebral column and protects the spinal cord."
+      },
+      {
+        level: 2,
+        type: "multi",
+        question: "Which organs are located in the abdominal cavity? Select all that apply.",
+        answers: [
+          "Stomach",
+          "Liver",
+          "Intestines",
+          "Brain"
+        ],
+        correct: [0, 1, 2],
+        feedback: "The stomach, liver, and intestines are located in the abdominal cavity."
+      },
+      {
+        level: 2,
+        type: "matching",
+        question: "Match the body system with the correct description.",
+        leftItems: ["Skeletal system", "Muscular system", "Nervous system"],
+        rightItems: [
+          "Provides structure and protection",
+          "Allows movement",
+          "Controls and coordinates body activity"
+        ],
+        correct: [0, 1, 2],
+        feedback: "The skeletal system supports and protects, the muscular system allows movement, and the nervous system controls body activity."
+      },
+
+      {
+        level: 3,
+        type: "single",
+        question: "Which blood vessel carries blood away from the heart?",
+        answers: [
+          "Artery",
+          "Vein",
+          "Capillary",
+          "Tendon"
+        ],
+        correct: 0,
+        feedback: "Arteries carry blood away from the heart."
+      },
+      {
+        level: 3,
+        type: "single",
+        question: "Which blood vessel usually carries blood back to the heart?",
+        answers: [
+          "Vein",
+          "Artery",
+          "Bronchus",
+          "Ligament"
+        ],
+        correct: 0,
+        feedback: "Veins usually carry blood back to the heart."
+      },
+      {
+        level: 3,
+        type: "single",
+        question: "What is the main purpose of red blood cells?",
+        answers: [
+          "Carry oxygen",
+          "Fight infection only",
+          "Digest food",
+          "Make bones move"
+        ],
+        correct: 0,
+        feedback: "Red blood cells carry oxygen to body tissues."
+      },
+      {
+        level: 3,
+        type: "multi",
+        question: "Which are major functions of the skin? Select all that apply.",
+        answers: [
+          "Protects the body",
+          "Helps regulate temperature",
+          "Helps prevent infection",
+          "Pumps blood"
+        ],
+        correct: [0, 1, 2],
+        feedback: "The skin protects the body, helps regulate temperature, and helps prevent infection."
+      },
+      {
+        level: 3,
+        type: "matching",
+        question: "Match the anatomical term with the correct location.",
+        leftItems: ["Anterior", "Posterior", "Lateral"],
+        rightItems: [
+          "Front of the body",
+          "Back of the body",
+          "Away from the midline"
+        ],
+        correct: [0, 1, 2],
+        feedback: "Anterior means front, posterior means back, and lateral means away from the midline."
+      },
+
+      {
+        level: 4,
+        type: "single",
+        question: "A patient has an injury to the femur. Where is the injury located?",
+        answers: [
+          "Thigh",
+          "Upper arm",
+          "Chest",
+          "Lower back"
+        ],
+        correct: 0,
+        feedback: "The femur is the thigh bone and is the longest bone in the body."
+      },
+      {
+        level: 4,
+        type: "single",
+        question: "The diaphragm is important because it:",
+        answers: [
+          "Helps with breathing",
+          "Pumps blood",
+          "Filters urine",
+          "Protects the brain"
+        ],
+        correct: 0,
+        feedback: "The diaphragm is the major muscle used for breathing."
+      },
+      {
+        level: 4,
+        type: "single",
+        question: "What is the MOST important reason EMRs understand body systems?",
+        answers: [
+          "To recognize life threats and report findings accurately",
+          "To diagnose every disease",
+          "To replace hospital care",
+          "To perform surgery"
+        ],
+        correct: 0,
+        feedback: "EMRs use anatomy knowledge to recognize life threats, assess patients, and report findings clearly."
+      },
+      {
+        level: 4,
+        type: "multi",
+        question: "Which structures help protect vital organs? Select all that apply.",
+        answers: [
+          "Skull",
+          "Rib cage",
+          "Spinal column",
+          "Skin only"
+        ],
+        correct: [0, 1, 2],
+        feedback: "The skull protects the brain, the rib cage protects the heart and lungs, and the spinal column protects the spinal cord."
+      },
+      {
+        level: 4,
+        type: "matching",
+        question: "Match the organ with the body cavity where it is found.",
+        leftItems: ["Brain", "Heart", "Stomach"],
+        rightItems: [
+          "Cranial cavity",
+          "Thoracic cavity",
+          "Abdominal cavity"
+        ],
+        correct: [0, 1, 2],
+        feedback: "The brain is in the cranial cavity, the heart is in the thoracic cavity, and the stomach is in the abdominal cavity."
+      }
+    ];
+
+    let currentLevel = 2;
+    let questionNumber = 0;
+    let score = 0;
+    let maxQuestions = 20;
+    let currentQuestion;
+    let usedQuestions = [];
+
+    function shuffleArray(array) {
+      return array
+        .map(value => ({ value, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ value }) => value);
+    }
+
+    function getQuestionByLevel(level) {
+      let available = questions.filter(q =>
+        q.level === level && !usedQuestions.includes(q.question)
+      );
+
+      if (available.length === 0) {
+        available = questions.filter(q => !usedQuestions.includes(q.question));
+      }
+
+      if (available.length === 0) {
+        finishExam();
+        return null;
+      }
+
+      return available[Math.floor(Math.random() * available.length)];
+    }
+
+    function loadQuestion() {
+      if (questionNumber >= maxQuestions) {
+        finishExam();
+        return;
+      }
+
+      currentQuestion = getQuestionByLevel(currentLevel);
+      if (!currentQuestion) return;
+
+      usedQuestions.push(currentQuestion.question);
+
+      document.getElementById("status").innerText =
+        "Question " + (questionNumber + 1) +
+        " of " + maxQuestions +
+        " | Current Difficulty Level: " + currentLevel +
+        " | Score: " + score;
+
+      document.getElementById("question").innerHTML =
+        "<strong>" + currentQuestion.question + "</strong>";
+
+      document.getElementById("answers").innerHTML = "";
+      document.getElementById("feedback").style.display = "none";
+      document.getElementById("nextBtn").style.display = "none";
+      document.getElementById("restartBtn").style.display = "none";
+      document.getElementById("submitBtn").style.display = "none";
+
+      if (currentQuestion.type === "single") {
+        loadSingleQuestion();
+      } else if (currentQuestion.type === "multi") {
+        loadMultiQuestion();
+      } else if (currentQuestion.type === "matching") {
+        loadMatchingQuestion();
+      }
+    }
+
+    function loadSingleQuestion() {
+      const answersDiv = document.getElementById("answers");
+
+      currentQuestion.answers.forEach((answer, index) => {
+        answersDiv.innerHTML += `
+          <button onclick="checkSingleAnswer(${index})">
+            ${answer}
+          </button>
+        `;
+      });
+    }
+
+    function loadMultiQuestion() {
+      const answersDiv = document.getElementById("answers");
+
+      currentQuestion.answers.forEach((answer, index) => {
+        answersDiv.innerHTML += `
+          <label class="checkbox-answer">
+            <input type="checkbox" value="${index}">
+            ${answer}
+          </label>
+        `;
+      });
+
+      document.getElementById("submitBtn").style.display = "block";
+    }
+
+    function loadMatchingQuestion() {
+      const answersDiv = document.getElementById("answers");
+
+      /*
+        This shuffles the matching dropdown answers.
+        The correct answers still work because the option value keeps
+        the original answer index.
+      */
+      const shuffledOptions = shuffleArray(
+        currentQuestion.rightItems.map((rightItem, rightIndex) => ({
+          text: rightItem,
+          originalIndex: rightIndex
+        }))
+      );
+
+      currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
+        let options = `<option value="">Choose match</option>`;
+
+        shuffledOptions.forEach(option => {
+          options += `
+            <option value="${option.originalIndex}">
+              ${option.text}
+            </option>
+          `;
+        });
+
+        answersDiv.innerHTML += `
+          <div class="matching-row">
+            <div class="matching-left">${leftItem}</div>
+            <select data-left-index="${leftIndex}">
+              ${options}
+            </select>
+          </div>
+        `;
+      });
+
+      document.getElementById("submitBtn").style.display = "block";
+    }
+
+    function checkSingleAnswer(selected) {
+      const feedback = document.getElementById("feedback");
+      const buttons = document.querySelectorAll("#answers button");
+
+      buttons.forEach(button => {
+        button.disabled = true;
+      });
+
+      if (selected === currentQuestion.correct) {
+        score++;
+        currentLevel++;
+        if (currentLevel > 4) currentLevel = 4;
+
+        buttons[selected].style.background = "darkgreen";
+
+        feedback.innerHTML =
+          "<strong>Correct.</strong><br>" +
+          currentQuestion.feedback +
+          "<br><br>Difficulty will increase.";
+      } else {
+        currentLevel--;
+        if (currentLevel < 1) currentLevel = 1;
+
+        buttons[selected].style.background = "darkred";
+        buttons[currentQuestion.correct].style.background = "darkgreen";
+
+        feedback.innerHTML =
+          "<strong>Incorrect.</strong><br>" +
+          "Most correct answer: <strong>" +
+          currentQuestion.answers[currentQuestion.correct] +
+          "</strong><br><br>" +
+          currentQuestion.feedback +
+          "<br><br>Difficulty will decrease.";
+      }
+
+      feedback.style.display = "block";
+      document.getElementById("nextBtn").style.display = "block";
+    }
+
+    function submitAnswer() {
+      if (currentQuestion.type === "multi") {
+        checkMultiAnswer();
+      } else if (currentQuestion.type === "matching") {
+        checkMatchingAnswer();
+      }
+    }
+
+    function checkMultiAnswer() {
+      const checked = Array.from(
+        document.querySelectorAll('#answers input[type="checkbox"]:checked')
+      ).map(cb => Number(cb.value));
+
+      const correct =
+        checked.length === currentQuestion.correct.length &&
+        checked.every(value => currentQuestion.correct.includes(value));
+
+      const feedback = document.getElementById("feedback");
+      const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
+
+      checkboxes.forEach(cb => {
+        cb.disabled = true;
+      });
+
+      if (correct) {
+        score++;
+        currentLevel++;
+        if (currentLevel > 4) currentLevel = 4;
+
+        feedback.innerHTML =
+          "<strong>Correct.</strong><br>" +
+          currentQuestion.feedback +
+          "<br><br>Difficulty will increase.";
+      } else {
+        currentLevel--;
+        if (currentLevel < 1) currentLevel = 1;
+
+        const correctAnswers = currentQuestion.correct
+          .map(index => currentQuestion.answers[index])
+          .join(", ");
+
+        feedback.innerHTML =
+          "<strong>Incorrect.</strong><br>" +
+          "Most correct answers: <strong>" +
+          correctAnswers +
+          "</strong><br><br>" +
+          currentQuestion.feedback +
+          "<br><br>Difficulty will decrease.";
+      }
+
+      feedback.style.display = "block";
+      document.getElementById("submitBtn").style.display = "none";
+      document.getElementById("nextBtn").style.display = "block";
+    }
+
+    function checkMatchingAnswer() {
+      const selects = document.querySelectorAll("#answers select");
+
+      const selectedAnswers = Array.from(selects).map(select => {
+        if (select.value === "") {
+          return null;
+        }
+        return Number(select.value);
+      });
+
+      const allAnswered = selectedAnswers.every(answer => answer !== null);
+
+      const correct =
+        allAnswered &&
+        selectedAnswers.length === currentQuestion.correct.length &&
+        selectedAnswers.every((value, index) => value === currentQuestion.correct[index]);
+
+      const feedback = document.getElementById("feedback");
+
+      selects.forEach(select => {
+        select.disabled = true;
+      });
+
+      if (correct) {
+        score++;
+        currentLevel++;
+        if (currentLevel > 4) currentLevel = 4;
+
+        feedback.innerHTML =
+          "<strong>Correct.</strong><br>" +
+          currentQuestion.feedback +
+          "<br><br>Difficulty will increase.";
+      } else {
+        currentLevel--;
+        if (currentLevel < 1) currentLevel = 1;
+
+        let correctText = "";
+
+        currentQuestion.leftItems.forEach((item, index) => {
+          correctText +=
+            item +
+            " = " +
+            currentQuestion.rightItems[currentQuestion.correct[index]] +
+            "<br>";
+        });
+
+        feedback.innerHTML =
+          "<strong>Incorrect.</strong><br>" +
+          "<br><strong>Most correct matches:</strong><br>" +
+          correctText +
+          "<br>" +
+          currentQuestion.feedback +
+          "<br><br>Difficulty will decrease.";
+      }
+
+      feedback.style.display = "block";
+      document.getElementById("submitBtn").style.display = "none";
+      document.getElementById("nextBtn").style.display = "block";
+    }
+
+    function nextQuestion() {
+      questionNumber++;
+      loadQuestion();
+    }
+
+    function finishExam() {
+      document.getElementById("question").innerHTML =
+        "<h2>Exam Complete</h2>";
+
+      document.getElementById("answers").innerHTML = "";
+
+      let result = "";
+
+      if (score >= 16) {
+        result = "Strong performance. Continue reviewing EMR anatomy, body systems, and patient assessment.";
+      } else if (score >= 12) {
+        result = "Borderline performance. Review body systems, anatomical terms, body cavities, and major organs.";
+      } else {
+        result = "Needs remediation. Focus on basic anatomy, body systems, organs, cavities, and directional terms.";
+      }
+
+      document.getElementById("feedback").style.display = "block";
+      document.getElementById("feedback").innerHTML =
+        "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
+        "<br><br><strong>Final Difficulty Level:</strong> " + currentLevel +
+        "<br><br>" + result;
+
+      document.getElementById("status").innerText = "Adaptive Exam Finished";
+      document.getElementById("submitBtn").style.display = "none";
+      document.getElementById("nextBtn").style.display = "none";
+      document.getElementById("restartBtn").style.display = "block";
+    }
+
+    function restartExam() {
+      currentLevel = 2;
+      questionNumber = 0;
+      score = 0;
+      usedQuestions = [];
+      loadQuestion();
+    }
+
+    loadQuestion();
+  </script>
 
 </body>
 </html>
