@@ -115,7 +115,7 @@
 
 <div class="container">
   <h1>EMT Cardiovascular Exam</h1>
-  <h2>Multiple Choice, Select-All-That-Apply, and Matching</h2>
+  <h2>Harder Adaptive NREMT-Style Questions</h2>
 
   <div id="status"></div>
 
@@ -138,329 +138,380 @@ const questions = [
 {
   level: 1,
   type: "single",
-  question: "What is the normal adult pulse rate?",
-  answers: ["20-40", "40-60", "60-100", "100-140"],
-  correct: 2,
-  feedback: "A normal adult pulse rate is typically 60-100 beats per minute."
-},
-
-{
-  level: 1,
-  type: "single",
-  question: "Chest pain caused by inadequate blood flow to the heart is called:",
-  answers: ["Angina", "Asthma", "Stroke", "COPD"],
+  question: "A 56-year-old patient reports chest pressure after climbing stairs. The pain improves after resting for several minutes. What is the MOST likely cause?",
+  answers: [
+    "Temporary decrease in oxygen supply to the heart muscle",
+    "Complete blockage of blood flow to the brain",
+    "Excessive air trapping in the lungs",
+    "Low blood sugar affecting cardiac muscle"
+  ],
   correct: 0,
-  feedback: "Angina occurs when the heart muscle does not receive enough oxygen-rich blood."
+  feedback: "Chest pressure brought on by exertion and relieved by rest suggests angina from temporary myocardial ischemia."
 },
 
 {
   level: 1,
   type: "single",
-  question: "Which artery is commonly checked for a pulse in an unconscious adult?",
-  answers: ["Radial", "Brachial", "Carotid", "Pedal"],
-  correct: 2,
-  feedback: "The carotid artery is the preferred pulse site in unconscious adults."
+  question: "A patient is pale, cool, diaphoretic, and anxious with chest discomfort. Which vital sign would be MOST concerning?",
+  answers: [
+    "Pulse 88 and regular",
+    "Blood pressure 84/50",
+    "Respirations 18 and unlabored",
+    "SpO2 97% on room air"
+  ],
+  correct: 1,
+  feedback: "Hypotension in a chest pain patient may indicate poor cardiac output or shock."
+},
+
+{
+  level: 1,
+  type: "single",
+  question: "An unconscious adult has no radial pulse. What should the EMT check NEXT?",
+  answers: [
+    "Pedal pulse",
+    "Carotid pulse",
+    "Blood glucose",
+    "Capillary refill"
+  ],
+  correct: 1,
+  feedback: "In an unconscious adult, the carotid pulse is used to assess for central circulation."
 },
 
 {
   level: 1,
   type: "multi",
-  question: "Which are common signs of cardiac chest pain? Select all that apply.",
+  question: "Which findings may suggest cardiac chest pain? Select all that apply.",
   answers: [
-    "Pressure in the chest",
-    "Pain radiating to jaw or arm",
-    "Pink frothy sputum",
-    "Shortness of breath"
+    "Pressure or squeezing in the chest",
+    "Pain radiating to the jaw or left arm",
+    "Shortness of breath",
+    "Pain that changes only with palpation",
+    "Nausea or diaphoresis"
   ],
-  correct: [0,1,3],
-  feedback: "Cardiac chest pain often includes chest pressure, radiation, and shortness of breath."
+  correct: [0,1,2,4],
+  feedback: "Cardiac chest pain may include pressure, radiation, shortness of breath, nausea, and diaphoresis."
 },
 
 {
   level: 1,
   type: "matching",
-  question: "Match the pulse term with its meaning.",
-  leftItems: ["Bradycardia", "Tachycardia", "Normal sinus rhythm"],
-  rightItems: ["Slow heart rate", "Fast heart rate", "Normal heart rhythm"],
+  question: "Match the cardiovascular term with the best description.",
+  leftItems: [
+    "Ischemia",
+    "Infarction",
+    "Perfusion"
+  ],
+  rightItems: [
+    "Inadequate oxygen supply to tissue",
+    "Tissue death from lack of blood flow",
+    "Circulation of blood through tissues"
+  ],
   correct: [0,1,2],
-  feedback: "Bradycardia is slow, tachycardia is fast, and sinus rhythm is normal."
+  feedback: "Ischemia means inadequate oxygen delivery, infarction means tissue death, and perfusion means blood flow through tissues."
 },
 
 {
   level: 2,
   type: "single",
-  question: "A patient with chest pain has prescribed nitroglycerin. Before assisting, you should:",
+  question: "A 64-year-old male with chest pain has a prescribed nitroglycerin bottle. His blood pressure is 88/56. What should the EMT do?",
   answers: [
-    "Check blood pressure",
-    "Give aspirin first",
-    "Have patient stand up",
-    "Delay treatment"
+    "Assist with one nitroglycerin tablet",
+    "Withhold nitroglycerin and continue assessment",
+    "Give two nitroglycerin tablets to improve circulation",
+    "Have the patient stand before giving nitroglycerin"
+  ],
+  correct: 1,
+  feedback: "Nitroglycerin can lower blood pressure further and should not be assisted when the patient is hypotensive."
+},
+
+{
+  level: 2,
+  type: "single",
+  question: "A patient with chest pain took sildenafil earlier today. Why is this important?",
+  answers: [
+    "It increases the risk of aspirin allergy",
+    "It can cause a dangerous drop in blood pressure with nitroglycerin",
+    "It makes oxygen ineffective",
+    "It prevents AED analysis"
+  ],
+  correct: 1,
+  feedback: "Erectile dysfunction medications such as sildenafil can cause severe hypotension when combined with nitroglycerin."
+},
+
+{
+  level: 2,
+  type: "single",
+  question: "A patient with suspected cardiac chest pain is alert and has no aspirin allergy. Which intervention is usually appropriate under EMT protocol?",
+  answers: [
+    "Assist with aspirin",
+    "Administer oral glucose",
+    "Apply a tourniquet",
+    "Give albuterol by nebulizer"
   ],
   correct: 0,
-  feedback: "Nitroglycerin can lower blood pressure, so it must be checked first."
-},
-
-{
-  level: 2,
-  type: "single",
-  question: "What medication may EMTs assist with for suspected cardiac chest pain?",
-  answers: ["Albuterol", "Oral glucose", "Nitroglycerin", "Epinephrine"],
-  correct: 2,
-  feedback: "EMTs may assist with prescribed nitroglycerin according to protocol."
-},
-
-{
-  level: 2,
-  type: "single",
-  question: "Which symptom is most associated with shock?",
-  answers: [
-    "Warm dry skin",
-    "Slow strong pulse",
-    "Cool clammy skin",
-    "Bounding pulse"
-  ],
-  correct: 2,
-  feedback: "Shock commonly presents with cool, pale, clammy skin."
+  feedback: "Aspirin may be given for suspected cardiac chest pain if there are no contraindications and local protocol allows."
 },
 
 {
   level: 2,
   type: "multi",
-  question: "Which may indicate poor perfusion? Select all that apply.",
+  question: "Which findings suggest poor perfusion? Select all that apply.",
   answers: [
     "Altered mental status",
+    "Weak radial pulses",
     "Cool clammy skin",
-    "Normal capillary refill",
-    "Weak pulse"
+    "Normal mentation with warm dry skin",
+    "Delayed capillary refill"
   ],
-  correct: [0,1,3],
-  feedback: "Poor perfusion often causes AMS, weak pulses, and cool clammy skin."
+  correct: [0,1,2,4],
+  feedback: "Poor perfusion can cause altered mental status, weak pulses, cool clammy skin, and delayed capillary refill."
 },
 
 {
   level: 2,
   type: "matching",
-  question: "Match the cardiovascular condition with the likely symptom.",
-  leftItems: ["Angina", "Shock", "Cardiac arrest"],
-  rightItems: ["Chest pressure", "Poor perfusion", "Pulselessness"],
+  question: "Match the finding with the most likely concern.",
+  leftItems: [
+    "Hypotension after nitroglycerin",
+    "Chest pain with diaphoresis",
+    "Weak pulse and altered mental status"
+  ],
+  rightItems: [
+    "Medication-related drop in blood pressure",
+    "Possible myocardial infarction",
+    "Poor perfusion"
+  ],
   correct: [0,1,2],
-  feedback: "Angina causes chest pain, shock causes perfusion problems, and arrest causes pulselessness."
+  feedback: "These findings require careful EMT recognition and treatment prioritization."
 },
 
 {
   level: 3,
   type: "single",
-  question: "A patient suddenly collapses and is pulseless. Your priority is:",
+  question: "A 70-year-old female complains of weakness, nausea, and shortness of breath. She denies chest pain. Skin is cool and moist. BP is 90/58. What should the EMT suspect?",
   answers: [
-    "Give oral glucose",
-    "Begin CPR",
-    "Obtain SAMPLE history",
-    "Apply splint"
-  ],
-  correct: 1,
-  feedback: "Immediate CPR is critical for pulseless patients."
-},
-
-{
-  level: 3,
-  type: "single",
-  question: "What does an AED primarily do?",
-  answers: [
-    "Provide oxygen",
-    "Restart breathing",
-    "Analyze and shock certain rhythms",
-    "Measure blood sugar"
-  ],
-  correct: 2,
-  feedback: "AEDs analyze heart rhythms and deliver shocks when indicated."
-},
-
-{
-  level: 3,
-  type: "single",
-  question: "A patient with chest pain becomes pale, diaphoretic, and hypotensive. Suspect:",
-  answers: [
-    "Heart attack",
-    "Asthma",
-    "Stroke",
-    "COPD"
+    "Atypical myocardial infarction",
+    "Simple indigestion",
+    "Isolated anxiety",
+    "Muscle strain"
   ],
   correct: 0,
-  feedback: "These are concerning signs of myocardial infarction."
+  feedback: "Older adults and females may have atypical MI symptoms without classic chest pain."
+},
+
+{
+  level: 3,
+  type: "single",
+  question: "A patient becomes unresponsive while you are assessing chest pain. He has agonal respirations and no pulse. What should you do FIRST?",
+  answers: [
+    "Apply oxygen by nasal cannula",
+    "Begin CPR and apply the AED",
+    "Obtain a full SAMPLE history",
+    "Assist with nitroglycerin"
+  ],
+  correct: 1,
+  feedback: "Agonal respirations are not normal breathing. A pulseless patient needs immediate CPR and AED use."
+},
+
+{
+  level: 3,
+  type: "single",
+  question: "During CPR, the AED states 'No shock advised.' The patient remains pulseless. What should the EMT do NEXT?",
+  answers: [
+    "Resume CPR immediately",
+    "Check blood pressure",
+    "Remove the AED pads",
+    "Wait for the AED to reanalyze without compressions"
+  ],
+  correct: 0,
+  feedback: "If no shock is advised and the patient remains pulseless, CPR should be resumed immediately."
 },
 
 {
   level: 3,
   type: "multi",
-  question: "Which findings may indicate shock? Select all that apply.",
+  question: "Which actions are appropriate for a suspected cardiac chest pain patient? Select all that apply.",
   answers: [
-    "Weak pulse",
-    "Cool clammy skin",
-    "Normal mentation",
-    "Rapid breathing"
+    "Place the patient in a position of comfort",
+    "Administer oxygen if hypoxic or in respiratory distress",
+    "Assist with prescribed nitroglycerin if allowed and not contraindicated",
+    "Delay transport until pain is completely gone",
+    "Consider aspirin if not contraindicated"
   ],
-  correct: [0,1,3],
-  feedback: "Shock commonly causes weak pulses, cool skin, and tachypnea."
+  correct: [0,1,2,4],
+  feedback: "Cardiac chest pain care includes comfort, oxygen when indicated, aspirin if allowed, nitroglycerin when appropriate, and prompt transport."
 },
 
 {
   level: 3,
   type: "matching",
-  question: "Match the EMT action with the cardiovascular emergency.",
-  leftItems: ["Cardiac arrest", "Chest pain", "Shock"],
+  question: "Match the presentation with the best EMT priority.",
+  leftItems: [
+    "Pulseless and apneic patient",
+    "Chest pain with adequate blood pressure",
+    "Chest pain with severe hypotension"
+  ],
   rightItems: [
     "CPR and AED",
-    "Assist with nitroglycerin",
-    "Treat for hypoperfusion"
+    "Cardiac assessment and medication assistance if appropriate",
+    "Treat for shock and avoid nitroglycerin"
   ],
   correct: [0,1,2],
-  feedback: "Each emergency requires specific EMT priorities."
+  feedback: "Treatment priorities depend on perfusion, pulse, breathing, and medication contraindications."
 },
 
 {
   level: 4,
   type: "single",
-  question: "Which finding is most concerning in a chest pain patient?",
+  question: "A patient with chest pain has crackles in both lungs, severe dyspnea, and pink frothy sputum. What condition should the EMT suspect?",
   answers: [
-    "Pain relieved by rest",
-    "Normal skin signs",
-    "Hypotension and diaphoresis",
-    "Mild anxiety"
+    "Pulmonary edema from heart failure",
+    "Simple bronchitis",
+    "Tension pneumothorax",
+    "Hyperventilation syndrome"
   ],
-  correct: 2,
-  feedback: "Hypotension and diaphoresis may indicate severe cardiac compromise."
+  correct: 0,
+  feedback: "Crackles, dyspnea, and pink frothy sputum suggest pulmonary edema, often related to heart failure."
 },
 
 {
   level: 4,
   type: "single",
-  question: "What is the purpose of aspirin in suspected heart attack?",
+  question: "A chest pain patient has unequal blood pressures in the arms and tearing pain radiating to the back. What should the EMT suspect?",
   answers: [
-    "Increase heart rate",
-    "Reduce clot formation",
-    "Lower blood sugar",
-    "Open the airway"
+    "Aortic dissection",
+    "Stable angina",
+    "Hypoglycemia",
+    "Simple muscle strain"
   ],
-  correct: 1,
-  feedback: "Aspirin helps inhibit platelet aggregation."
+  correct: 0,
+  feedback: "Tearing chest or back pain with unequal pulses or blood pressures may indicate aortic dissection."
 },
 
 {
   level: 4,
   type: "single",
-  question: "A patient in cardiogenic shock may present with:",
+  question: "A patient in cardiogenic shock is MOST likely experiencing shock because:",
   answers: [
-    "Warm dry skin",
-    "Strong bounding pulse",
-    "Pulmonary edema",
-    "Slow respirations"
+    "The heart is failing to pump effectively",
+    "The blood vessels are dilating from an allergen",
+    "The patient has lost a large amount of blood",
+    "The airway is blocked by a foreign body"
   ],
-  correct: 2,
-  feedback: "Cardiogenic shock may cause pulmonary edema and severe perfusion problems."
+  correct: 0,
+  feedback: "Cardiogenic shock occurs when the heart cannot pump enough blood to meet the body's needs."
 },
 
 {
   level: 4,
   type: "multi",
-  question: "Which are signs of poor cardiac output? Select all that apply.",
+  question: "Which findings are consistent with cardiogenic shock? Select all that apply.",
   answers: [
     "Hypotension",
-    "Weak pulse",
-    "Altered mental status",
-    "Warm flushed skin"
+    "Weak or irregular pulse",
+    "Cool clammy skin",
+    "Clear lungs with normal perfusion",
+    "Signs of pulmonary edema"
   ],
-  correct: [0,1,2],
-  feedback: "Poor cardiac output reduces perfusion to the brain and tissues."
+  correct: [0,1,2,4],
+  feedback: "Cardiogenic shock may include hypotension, weak or irregular pulse, poor skin signs, and pulmonary edema."
 },
 
 {
   level: 4,
   type: "matching",
-  question: "Match the medication with its cardiovascular purpose.",
-  leftItems: ["Nitroglycerin", "Aspirin", "Oxygen"],
-  rightItems: [
-    "Vasodilation",
-    "Reduce clotting",
-    "Improve oxygen delivery"
+  question: "Match the medication or intervention with its primary EMT purpose.",
+  leftItems: [
+    "Aspirin",
+    "Nitroglycerin",
+    "AED",
+    "Oxygen"
   ],
-  correct: [0,1,2],
-  feedback: "These are common EMT cardiovascular interventions."
+  rightItems: [
+    "Reduce platelet aggregation",
+    "Dilate blood vessels and reduce cardiac workload",
+    "Analyze rhythm and defibrillate when indicated",
+    "Improve oxygen delivery when indicated"
+  ],
+  correct: [0,1,2,3],
+  feedback: "Each intervention has a specific purpose in cardiovascular emergency care."
 },
 
 {
   level: 5,
   type: "single",
-  question: "An unresponsive patient has agonal respirations and no pulse. What should you do first?",
+  question: "A patient with chest pain is alert but suddenly becomes confused, pale, and hypotensive after taking nitroglycerin. What is the MOST appropriate EMT action?",
   answers: [
-    "Check blood glucose",
-    "Begin CPR",
-    "Administer nitroglycerin",
-    "Apply cold packs"
+    "Assist with another nitroglycerin dose",
+    "Treat for shock and reassess blood pressure",
+    "Have the patient walk to improve circulation",
+    "Delay transport until mental status improves"
   ],
   correct: 1,
-  feedback: "Agonal respirations are not effective breathing. CPR should begin immediately."
+  feedback: "A drop in blood pressure and altered mental status after nitroglycerin requires shock management and reassessment."
 },
 
 {
   level: 5,
   type: "single",
-  question: "What confirms effective CPR compressions?",
+  question: "A pulseless patient receives a shock from the AED. What should the EMT do immediately after the shock is delivered?",
   answers: [
-    "Visible chest rise",
-    "Pulse during compressions",
-    "Adequate depth and recoil",
-    "Patient movement"
+    "Resume CPR immediately",
+    "Check blood pressure",
+    "Remove the AED pads",
+    "Give nitroglycerin"
   ],
-  correct: 2,
-  feedback: "Proper compression depth and recoil are essential for effective CPR."
+  correct: 0,
+  feedback: "After a shock, CPR should be resumed immediately unless the patient shows clear signs of life."
 },
 
 {
   level: 5,
   type: "single",
-  question: "The most important intervention for ventricular fibrillation is:",
+  question: "Which patient should be considered the highest priority for rapid transport?",
   answers: [
-    "Nitroglycerin",
-    "Aspirin",
-    "Defibrillation",
-    "Oral glucose"
+    "Chest pain relieved by rest with normal vitals",
+    "Chest pressure with diaphoresis and hypotension",
+    "Mild dizziness after standing quickly",
+    "Localized chest pain reproducible by palpation"
   ],
-  correct: 2,
-  feedback: "Early defibrillation is critical for ventricular fibrillation."
+  correct: 1,
+  feedback: "Chest pressure with diaphoresis and hypotension suggests severe cardiac compromise and poor perfusion."
 },
 
 {
   level: 5,
   type: "multi",
-  question: "Which findings may indicate cardiac arrest? Select all that apply.",
+  question: "A patient has chest pain, BP 82/48, and took sildenafil 4 hours ago. Which actions are appropriate? Select all that apply.",
   answers: [
-    "Unresponsiveness",
-    "No pulse",
-    "Apnea or agonal breathing",
-    "Normal speech"
+    "Withhold nitroglycerin",
+    "Administer oxygen if indicated",
+    "Prepare for rapid transport",
+    "Consider aspirin if not contraindicated",
+    "Place the patient standing upright"
   ],
-  correct: [0,1,2],
-  feedback: "Cardiac arrest commonly presents with unresponsiveness, apnea, and pulselessness."
+  correct: [0,1,2,3],
+  feedback: "Nitroglycerin is contraindicated with hypotension and recent sildenafil use. Support oxygenation, consider aspirin, and transport rapidly."
 },
 
 {
   level: 5,
   type: "matching",
-  question: "Match the cardiovascular emergency with the EMT priority.",
+  question: "Match the presentation with the MOST likely cardiovascular emergency.",
   leftItems: [
-    "Cardiac arrest",
-    "Shock",
-    "Chest pain",
-    "Pulmonary edema"
+    "Pink frothy sputum with crackles",
+    "Tearing chest pain radiating to the back",
+    "Unresponsive with no pulse",
+    "Exertional chest pressure relieved by rest"
   ],
   rightItems: [
-    "CPR and AED",
-    "Support perfusion",
-    "Oxygen and cardiac care",
-    "Assist breathing and oxygenation"
+    "Pulmonary edema",
+    "Aortic dissection",
+    "Cardiac arrest",
+    "Angina"
   ],
   correct: [0,1,2,3],
-  feedback: "Each cardiovascular emergency requires rapid EMT intervention."
+  feedback: "These presentations require EMTs to recognize high-risk cardiovascular emergencies."
 }
 
 ];
@@ -791,11 +842,11 @@ function finishExam() {
   }
 
   else if (score >= 15) {
-    result = "Borderline performance. Review cardiovascular emergencies and shock.";
+    result = "Borderline performance. Review cardiovascular emergencies, medication contraindications, shock, and cardiac arrest management.";
   }
 
   else {
-    result = "Needs remediation. Focus on CPR, AED use, chest pain care, shock, and perfusion.";
+    result = "Needs remediation. Focus on chest pain assessment, aspirin, nitroglycerin contraindications, CPR, AED use, pulmonary edema, shock, and perfusion.";
   }
 
   document.getElementById("feedback").style.display = "block";
