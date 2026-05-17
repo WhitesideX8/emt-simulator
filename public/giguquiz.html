@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Adaptive EMT GI/GU Emergencies Exam</title>
+  <title>Level 7 Adaptive EMT GI/GU Emergencies Exam</title>
 
   <style>
     body {
@@ -115,7 +115,7 @@
 
 <div class="container">
   <h1>EMT GI/GU Emergencies Exam</h1>
-  <h2>Most-Correct EMT Style Questions</h2>
+  <h2>Level 7 Critical-Thinking Scenario Questions</h2>
 
   <div id="status"></div>
 
@@ -135,338 +135,397 @@
 <script>
 const questions = [
   {
-    level: 1,
+    level: 7,
     type: "single",
-    question: "A patient complains of abdominal pain. What is the MOST appropriate initial EMT action?",
+    question: "A 68-year-old patient with liver disease vomits a large amount of bright red blood. He is pale, diaphoretic, confused, and has a weak radial pulse. What is the MOST appropriate EMT action?",
     answers: [
-      "Assess airway, breathing, circulation, and overall patient stability",
-      "Give the patient food to settle the stomach",
-      "Tell the patient abdominal pain is usually minor",
-      "Massage the abdomen firmly"
+      "Manage airway risk, treat for shock, request ALS, and rapidly transport",
+      "Place the patient flat and give water to replace fluids",
+      "Delay transport until bleeding stops",
+      "Have the patient walk to the ambulance to avoid worsening nausea"
     ],
     correct: 0,
-    feedback: "Initial care begins with assessing ABCs and determining whether the patient is stable or unstable."
+    feedback: "Liver disease with massive hematemesis suggests possible variceal bleeding. Shock and airway risk are immediate concerns."
   },
   {
-    level: 1,
+    level: 7,
     type: "single",
-    question: "A patient reports nausea, vomiting, and abdominal cramping. Which body system is MOST likely involved?",
+    question: "A dialysis patient missed two treatments and now has shortness of breath, crackles, swelling in the legs, weakness, and a slow irregular pulse. What should concern the EMT MOST?",
     answers: [
-      "Gastrointestinal system",
-      "Respiratory system",
-      "Skeletal system",
-      "Integumentary system"
+      "Fluid overload with possible electrolyte disturbance",
+      "Simple anxiety from missing dialysis",
+      "Isolated abdominal discomfort",
+      "A minor urinary tract infection only"
     ],
     correct: 0,
-    feedback: "Nausea, vomiting, and abdominal cramping are commonly associated with the gastrointestinal system."
+    feedback: "Missed dialysis can cause fluid overload and dangerous electrolyte problems, especially with slow irregular pulse."
   },
   {
-    level: 1,
+    level: 7,
     type: "single",
-    question: "Which finding is MOST concerning in a patient with abdominal pain?",
+    question: "A patient with severe abdominal pain becomes pale, cool, restless, and hypotensive. The abdomen is rigid and tender. What is the BEST EMT priority?",
     answers: [
-      "Cool, clammy skin and weakness",
-      "Mild pain after eating",
-      "Normal breathing and normal skin signs",
-      "Pain that resolved completely yesterday"
+      "Treat for shock, avoid oral intake, and rapidly transport",
+      "Give the patient food to reduce stomach acid",
+      "Apply heat directly to the abdomen",
+      "Wait on scene until pain decreases"
     ],
     correct: 0,
-    feedback: "Cool, clammy skin and weakness may indicate shock or internal bleeding."
+    feedback: "Rigid abdomen with shock signs may indicate a serious abdominal emergency or internal bleeding."
   },
   {
-    level: 1,
-    type: "multi",
-    question: "Which findings may suggest a GI/GU emergency? Select all that apply.",
+    level: 7,
+    type: "single",
+    question: "A 74-year-old reports black tarry stools for several days and now feels weak and dizzy when sitting up. His skin is pale and his pulse is rapid. What should the EMT suspect?",
     answers: [
-      "Severe abdominal pain",
-      "Vomiting blood",
-      "Blood in urine",
-      "Normal appetite with no complaint"
+      "Ongoing GI bleeding with possible hypovolemia",
+      "Normal aging changes",
+      "Simple constipation",
+      "A minor food intolerance"
     ],
-    correct: [0, 1, 2],
-    feedback: "Severe abdominal pain, vomiting blood, and blood in urine may indicate serious GI/GU problems."
+    correct: 0,
+    feedback: "Melena with weakness, pallor, dizziness, and tachycardia suggests GI bleeding and poor perfusion."
   },
   {
-    level: 1,
-    type: "matching",
-    question: "Match the term with the MOST correct meaning.",
-    leftItems: ["Hematemesis", "Hematuria", "Melena"],
-    rightItems: [
-      "Vomiting blood",
-      "Blood in urine",
-      "Black, tarry stool"
+    level: 7,
+    type: "single",
+    question: "A patient has sudden tearing abdominal and back pain, pale skin, hypotension, and a pulsating abdominal mass. What is the MOST appropriate EMT action?",
+    answers: [
+      "Treat for shock and rapidly transport without palpating the abdomen further",
+      "Firmly massage the abdomen to confirm the mass",
+      "Give oral fluids and reassess in 20 minutes",
+      "Have the patient stand to see if pain improves"
     ],
-    correct: [0, 1, 2],
-    feedback: "Recognizing these terms helps identify possible bleeding or urinary problems."
+    correct: 0,
+    feedback: "This may be an abdominal aortic aneurysm. Avoid unnecessary palpation and rapidly transport."
+  },
+  {
+    level: 7,
+    type: "single",
+    question: "A patient with flank pain radiating to the groin is restless, nauseated, and has blood in the urine. Vital signs are stable. What is the MOST appropriate EMT care?",
+    answers: [
+      "Position of comfort, reassessment, and transport",
+      "Force fluids to flush the kidney stone",
+      "Tell the patient transport is unnecessary",
+      "Apply deep pressure over the painful kidney"
+    ],
+    correct: 0,
+    feedback: "Kidney stones may be extremely painful. EMT care is supportive with transport and reassessment."
+  },
+  {
+    level: 7,
+    type: "single",
+    question: "A female patient has lower abdominal pain, dizziness, shoulder pain, and signs of shock. She states there is a chance she is pregnant. What should the EMT MOST suspect?",
+    answers: [
+      "Possible ectopic pregnancy with internal bleeding",
+      "Simple menstrual cramps",
+      "Minor urinary infection only",
+      "Normal pregnancy discomfort without risk"
+    ],
+    correct: 0,
+    feedback: "Pregnancy possibility plus abdominal pain, shoulder pain, dizziness, and shock signs is concerning for ectopic pregnancy."
+  },
+  {
+    level: 7,
+    type: "single",
+    question: "A patient with abdominal trauma initially answers questions but becomes increasingly confused and pale during transport. Pulse rises from 98 to 132. What does this change MOST likely indicate?",
+    answers: [
+      "Worsening perfusion, possibly from internal bleeding",
+      "Improvement because the patient is talking less",
+      "Anxiety only",
+      "Normal response after minor injury"
+    ],
+    correct: 0,
+    feedback: "Worsening mental status, pallor, and rising pulse after trauma suggest worsening shock."
+  },
+  {
+    level: 7,
+    type: "single",
+    question: "A patient with vomiting and diarrhea has dry mucous membranes, dizziness, tachycardia, and becomes confused when sitting upright. What is the BEST EMT priority?",
+    answers: [
+      "Assess perfusion, treat for shock, and transport",
+      "Encourage the patient to keep walking",
+      "Give large amounts of water immediately",
+      "Delay transport until diarrhea stops"
+    ],
+    correct: 0,
+    feedback: "Severe fluid loss can cause hypovolemic shock. Oral fluids are not the EMT priority in an unstable patient."
+  },
+  {
+    level: 7,
+    type: "single",
+    question: "A patient with severe abdominal pain refuses transport but is pale, weak, and repeatedly asks the same question. What is the MOST appropriate conclusion?",
+    answers: [
+      "The patient may not have decision-making capacity",
+      "The refusal is valid because the patient spoke clearly once",
+      "A signature is all that is needed",
+      "Leave immediately because abdominal pain is not life-threatening"
+    ],
+    correct: 0,
+    feedback: "Repeated questioning and signs of poor perfusion may impair capacity. Follow local refusal protocols."
   },
 
   {
-    level: 2,
-    type: "single",
-    question: "A patient has abdominal pain and has vomited bright red blood. What is the MOST appropriate EMT concern?",
-    answers: [
-      "Possible upper GI bleeding",
-      "Simple motion sickness",
-      "Minor muscle strain",
-      "Normal digestion"
-    ],
-    correct: 0,
-    feedback: "Vomiting bright red blood may indicate serious upper GI bleeding."
-  },
-  {
-    level: 2,
-    type: "single",
-    question: "A patient reports black, tarry stools and weakness. What should the EMT MOST strongly suspect?",
-    answers: [
-      "Possible gastrointestinal bleeding",
-      "Normal bowel function",
-      "Simple dehydration only",
-      "Urinary retention"
-    ],
-    correct: 0,
-    feedback: "Black, tarry stool can indicate digested blood from GI bleeding."
-  },
-  {
-    level: 2,
-    type: "single",
-    question: "A patient with severe abdominal pain wants to eat before transport. What is the BEST EMT response?",
-    answers: [
-      "Do not give food or drink and continue assessment",
-      "Give the patient food if they request it",
-      "Encourage large amounts of water",
-      "Delay transport until the patient eats"
-    ],
-    correct: 0,
-    feedback: "Patients with abdominal emergencies should generally not receive food or drink because surgery or worsening illness may be possible."
-  },
-  {
-    level: 2,
+    level: 7,
     type: "multi",
-    question: "Which questions are MOST useful for abdominal pain assessment? Select all that apply.",
-    answers: [
-      "When did the pain begin?",
-      "Where is the pain located?",
-      "Has there been vomiting, diarrhea, or bleeding?",
-      "What is your favorite color?"
-    ],
-    correct: [0, 1, 2],
-    feedback: "Onset, location, associated symptoms, and bleeding are important in abdominal pain assessment."
-  },
-  {
-    level: 2,
-    type: "matching",
-    question: "Match the complaint with the MOST likely concern.",
-    leftItems: ["Vomiting blood", "Black tarry stool", "Blood in urine"],
-    rightItems: [
-      "Upper GI bleeding",
-      "GI bleeding",
-      "GU problem or kidney/urinary bleeding"
-    ],
-    correct: [0, 1, 2],
-    feedback: "Blood from the GI or GU tract can indicate potentially serious disease."
-  },
-
-  {
-    level: 3,
-    type: "single",
-    question: "A patient has right lower quadrant abdominal pain, nausea, and fever. What condition should the EMT MOST suspect?",
-    answers: [
-      "Appendicitis",
-      "Asthma",
-      "Stroke",
-      "Simple ankle sprain"
-    ],
-    correct: 0,
-    feedback: "Right lower quadrant pain with nausea and fever is concerning for appendicitis."
-  },
-  {
-    level: 3,
-    type: "single",
-    question: "A patient complains of severe flank pain radiating toward the groin and has blood in the urine. What is the MOST likely concern?",
-    answers: [
-      "Kidney stone",
-      "Pneumonia",
-      "Cardiac arrest",
-      "Simple headache"
-    ],
-    correct: 0,
-    feedback: "Flank pain radiating to the groin with hematuria is commonly associated with kidney stones."
-  },
-  {
-    level: 3,
-    type: "single",
-    question: "A patient with abdominal pain is pale, weak, and has a rapid pulse. What should the EMT do FIRST?",
-    answers: [
-      "Treat for shock and prepare for prompt transport",
-      "Give the patient a meal",
-      "Have the patient walk around",
-      "Apply heat directly to the abdomen"
-    ],
-    correct: 0,
-    feedback: "Signs of shock require supportive care and prompt transport."
-  },
-  {
-    level: 3,
-    type: "multi",
-    question: "Which findings may indicate shock from a GI/GU emergency? Select all that apply.",
-    answers: [
-      "Rapid weak pulse",
-      "Pale cool skin",
-      "Altered mental status",
-      "Normal skin and no weakness"
-    ],
-    correct: [0, 1, 2],
-    feedback: "Shock may present with rapid weak pulse, pale cool skin, and altered mental status."
-  },
-  {
-    level: 3,
-    type: "matching",
-    question: "Match the condition with the MOST likely presentation.",
-    leftItems: ["Appendicitis", "Kidney stone", "GI bleed"],
-    rightItems: [
-      "Right lower quadrant abdominal pain",
-      "Flank pain radiating to groin",
-      "Vomiting blood or black tarry stool"
-    ],
-    correct: [0, 1, 2],
-    feedback: "These common presentations help guide EMT suspicion and transport decisions."
-  },
-
-  {
-    level: 4,
-    type: "single",
-    question: "A patient has sudden severe abdominal pain and a rigid abdomen. What is the MOST appropriate concern?",
-    answers: [
-      "Possible serious abdominal emergency",
-      "Mild indigestion only",
-      "Normal digestion",
-      "Simple anxiety"
-    ],
-    correct: 0,
-    feedback: "Sudden severe pain with rigidity may indicate a serious abdominal condition requiring rapid transport."
-  },
-  {
-    level: 4,
-    type: "single",
-    question: "A dialysis patient complains of weakness and shortness of breath. What should the EMT MOST carefully assess?",
-    answers: [
-      "Airway, breathing, circulation, and signs of fluid overload or electrolyte problems",
-      "Only the dialysis access site",
-      "Only the patient's temperature",
-      "Only whether the patient is hungry"
-    ],
-    correct: 0,
-    feedback: "Dialysis patients can develop fluid overload, electrolyte problems, and serious cardiovascular or respiratory complications."
-  },
-  {
-    level: 4,
-    type: "single",
-    question: "A patient with liver disease vomits a large amount of blood. What should the EMT MOST strongly suspect?",
-    answers: [
-      "Possible esophageal varices or major GI bleeding",
-      "Simple nausea",
-      "Normal liver function",
-      "Minor sore throat"
-    ],
-    correct: 0,
-    feedback: "Patients with liver disease may develop esophageal varices that can bleed severely."
-  },
-  {
-    level: 4,
-    type: "multi",
-    question: "Which findings are MOST concerning in a GI/GU patient? Select all that apply.",
-    answers: [
-      "Vomiting blood",
-      "Rigid abdomen",
-      "Signs of shock",
-      "Mild nausea after eating with normal vitals"
-    ],
-    correct: [0, 1, 2],
-    feedback: "Bleeding, abdominal rigidity, and shock signs suggest a potentially life-threatening emergency."
-  },
-  {
-    level: 4,
-    type: "matching",
-    question: "Match the GI/GU finding with the MOST appropriate EMT priority.",
-    leftItems: ["Vomiting blood", "Rigid abdomen", "Dialysis patient with dyspnea"],
-    rightItems: [
-      "Treat for shock and transport",
-      "Suspect serious abdominal emergency",
-      "Assess breathing and possible fluid overload"
-    ],
-    correct: [0, 1, 2],
-    feedback: "GI/GU patients may need shock care, respiratory support, and rapid transport."
-  },
-
-  {
-    level: 5,
-    type: "single",
-    question: "A patient with abdominal pain becomes confused, pale, and hypotensive. What is the EMT’s priority?",
-    answers: [
-      "Support ABCs, treat for shock, and transport rapidly",
-      "Allow the patient to drink fluids",
-      "Delay care until pain improves",
-      "Have the patient stand and walk"
-    ],
-    correct: 0,
-    feedback: "Confusion, pallor, and hypotension indicate poor perfusion and require shock care and rapid transport."
-  },
-  {
-    level: 5,
-    type: "single",
-    question: "A patient has severe abdominal pain after trauma and signs of shock. What should the EMT MOST strongly suspect?",
-    answers: [
-      "Internal bleeding",
-      "Simple indigestion",
-      "Mild dehydration only",
-      "Normal post-injury discomfort"
-    ],
-    correct: 0,
-    feedback: "Abdominal trauma with shock signs is highly concerning for internal bleeding."
-  },
-  {
-    level: 5,
-    type: "single",
-    question: "A dialysis patient missed treatment and now has difficulty breathing and swelling. What is the MOST appropriate EMT action?",
-    answers: [
-      "Provide oxygen if indicated, assess for fluid overload, and transport",
-      "Give the patient large amounts of water",
-      "Massage the dialysis fistula",
-      "Delay transport until the next dialysis appointment"
-    ],
-    correct: 0,
-    feedback: "Missed dialysis can lead to fluid overload and serious complications requiring prompt care."
-  },
-  {
-    level: 5,
-    type: "multi",
-    question: "Which findings MOST strongly suggest an unstable GI/GU patient? Select all that apply.",
+    question: "Which findings suggest a GI/GU patient may be unstable? Select all that apply.",
     answers: [
       "Hypotension",
       "Altered mental status",
-      "Severe bleeding",
-      "Normal vitals with mild discomfort"
-    ],
-    correct: [0, 1, 2],
-    feedback: "Hypotension, altered mental status, and severe bleeding suggest instability."
-  },
-  {
-    level: 5,
-    type: "matching",
-    question: "Match the GI/GU emergency with the MOST appropriate EMT priority.",
-    leftItems: ["GI bleeding with shock", "Kidney stone pain", "Missed dialysis with dyspnea", "Abdominal trauma"],
-    rightItems: [
-      "Treat for shock and rapid transport",
-      "Position of comfort and pain assessment",
-      "Support breathing and transport",
-      "Suspect internal bleeding"
+      "Cool clammy skin",
+      "Rapid weak pulse",
+      "Mild nausea with normal vitals",
+      "Pain that resolved with normal appearance"
     ],
     correct: [0, 1, 2, 3],
-    feedback: "GI/GU emergencies require supportive care based on severity, perfusion, breathing, and transport priority."
+    feedback: "Hypotension, altered mental status, cool clammy skin, and rapid weak pulse indicate poor perfusion."
+  },
+  {
+    level: 7,
+    type: "multi",
+    question: "Which actions are appropriate for a patient with suspected severe GI bleeding? Select all that apply.",
+    answers: [
+      "Protect the airway from blood or vomit",
+      "Treat for shock",
+      "Rapid transport",
+      "Request ALS if available",
+      "Give food or drink",
+      "Delay transport until bleeding stops"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Severe GI bleeding can threaten airway and circulation. Do not give food or drink or delay transport."
+  },
+  {
+    level: 7,
+    type: "multi",
+    question: "Which findings may suggest internal bleeding in an abdominal patient? Select all that apply.",
+    answers: [
+      "Pale cool skin",
+      "Increasing tachycardia",
+      "Weakness or syncope",
+      "Abdominal rigidity or tenderness",
+      "Normal pulse and normal mentation",
+      "Pain-free patient with normal skin signs"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Internal bleeding may present with shock signs, weakness, syncope, and abdominal tenderness or rigidity."
+  },
+  {
+    level: 7,
+    type: "multi",
+    question: "A dialysis patient has shortness of breath, crackles, weakness, and a slow irregular pulse. Which concerns should the EMT consider? Select all that apply.",
+    answers: [
+      "Fluid overload",
+      "Electrolyte disturbance",
+      "Respiratory compromise",
+      "Need for ALS and transport",
+      "Simple indigestion only",
+      "No transport if the patient feels anxious"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Dialysis patients can deteriorate from fluid overload and electrolyte problems."
+  },
+  {
+    level: 7,
+    type: "multi",
+    question: "Which findings in an abdominal pain patient should make the EMT avoid giving anything by mouth? Select all that apply.",
+    answers: [
+      "Possible need for surgery",
+      "Vomiting",
+      "Altered mental status",
+      "Shock signs",
+      "Normal mental status with no complaint",
+      "Minor hunger after a normal meal"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Vomiting, altered mental status, shock, and possible surgical abdomen make oral intake unsafe."
+  },
+  {
+    level: 7,
+    type: "multi",
+    question: "Which clues suggest abdominal pain may be masking a life-threatening condition? Select all that apply.",
+    answers: [
+      "Syncope or near-syncope",
+      "Shoulder pain with possible pregnancy",
+      "Sudden tearing pain into the back",
+      "Rigid abdomen",
+      "Mild burping after eating",
+      "Pain that fully resolved days ago with no symptoms"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Syncope, shoulder pain with possible pregnancy, tearing pain, and rigidity can indicate serious pathology."
+  },
+  {
+    level: 7,
+    type: "multi",
+    question: "Which EMT actions are unsafe in a serious GI/GU emergency? Select all that apply.",
+    answers: [
+      "Having a hypotensive patient walk",
+      "Massaging a pulsating abdominal mass",
+      "Giving food to a patient with severe abdominal pain",
+      "Ignoring altered mental status",
+      "Positioning for comfort if breathing is adequate",
+      "Rapid transport for shock"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "These unsafe actions can worsen bleeding, aspiration risk, falls, or delayed recognition of shock."
+  },
+
+  {
+    level: 7,
+    type: "matching",
+    question: "Match the presentation with the MOST appropriate EMT priority.",
+    leftItems: [
+      "Vomiting blood with confusion",
+      "Rigid abdomen with hypotension",
+      "Missed dialysis with dyspnea",
+      "Flank pain radiating to groin"
+    ],
+    rightItems: [
+      "Airway protection and shock care",
+      "Rapid transport for possible surgical abdomen",
+      "Support breathing and consider fluid overload",
+      "Position of comfort and reassessment"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "GI/GU priorities depend on airway, breathing, circulation, and severity."
+  },
+  {
+    level: 7,
+    type: "matching",
+    question: "Match the clue with the MOST likely concern.",
+    leftItems: [
+      "Black tarry stool",
+      "Pulsating abdominal mass",
+      "Shoulder pain with possible pregnancy",
+      "Slow irregular pulse after missed dialysis"
+    ],
+    rightItems: [
+      "GI bleeding",
+      "Possible abdominal aortic aneurysm",
+      "Possible ectopic pregnancy",
+      "Possible electrolyte disturbance"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "These clues can point to hidden life threats."
+  },
+  {
+    level: 7,
+    type: "matching",
+    question: "Match the unsafe action with why it is dangerous.",
+    leftItems: [
+      "Giving food or drink",
+      "Walking a weak hypotensive patient",
+      "Palpating a pulsating mass repeatedly",
+      "Delaying transport for complete history"
+    ],
+    rightItems: [
+      "May increase aspiration or surgical risk",
+      "Fall and worsening shock risk",
+      "May worsen suspected vascular emergency",
+      "Delays care for unstable patient"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Many wrong answers sound helpful but are unsafe in unstable GI/GU patients."
+  },
+  {
+    level: 7,
+    type: "matching",
+    question: "Match the condition with the most concerning complication.",
+    leftItems: [
+      "Severe GI bleeding",
+      "Missed dialysis",
+      "Abdominal trauma",
+      "Ectopic pregnancy"
+    ],
+    rightItems: [
+      "Shock and airway contamination",
+      "Fluid overload or potassium disturbance",
+      "Internal bleeding",
+      "Life-threatening internal hemorrhage"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "The EMT must recognize the complication that can kill the patient first."
+  },
+  {
+    level: 7,
+    type: "matching",
+    question: "Match the changing finding with the reassessment focus.",
+    leftItems: [
+      "Mental status worsens",
+      "Pulse becomes faster and weaker",
+      "Vomiting continues during transport",
+      "Breathing worsens in dialysis patient"
+    ],
+    rightItems: [
+      "Perfusion and neurologic status",
+      "Shock progression",
+      "Airway and aspiration risk",
+      "Respiratory compromise and fluid overload"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Advanced questions test reassessment as the patient changes."
+  },
+  {
+    level: 7,
+    type: "matching",
+    question: "Match the symptom pattern with the BEST suspicion.",
+    leftItems: [
+      "RLQ pain with fever and nausea",
+      "Flank pain with hematuria",
+      "Hematemesis and liver disease",
+      "Tearing abdominal pain to back"
+    ],
+    rightItems: [
+      "Appendicitis",
+      "Kidney stone",
+      "Possible variceal bleeding",
+      "Possible abdominal aortic aneurysm"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Pattern recognition matters, but priorities still come from ABCs and perfusion."
+  },
+  {
+    level: 7,
+    type: "matching",
+    question: "Match the patient statement with the EMT concern.",
+    leftItems: [
+      "I feel like I might pass out",
+      "There is a chance I am pregnant",
+      "I missed dialysis twice",
+      "My stool has been black for days"
+    ],
+    rightItems: [
+      "Possible shock or poor perfusion",
+      "Consider ectopic pregnancy if abdominal pain is present",
+      "Fluid overload or electrolyte emergency",
+      "Possible GI bleeding"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Patient statements can provide critical clues to hidden emergencies."
+  },
+  {
+    level: 7,
+    type: "matching",
+    question: "Match the distractor with the safer EMT decision.",
+    leftItems: [
+      "Give water for vomiting and diarrhea shock",
+      "Massage abdomen with pulsating mass",
+      "Accept refusal from confused patient",
+      "Wait for bleeding to stop before transport"
+    ],
+    rightItems: [
+      "Treat for shock and transport",
+      "Avoid further palpation and transport",
+      "Question capacity and follow protocol",
+      "Rapid transport and shock care"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "The safer choice prioritizes airway, perfusion, capacity, and transport."
   }
 ];
 
-let currentLevel = 2;
+let currentLevel = 7;
 let questionNumber = 0;
 let score = 0;
 let maxQuestions = 25;
@@ -535,10 +594,19 @@ function loadQuestion() {
 function loadSingleQuestion() {
   const answersDiv = document.getElementById("answers");
 
-  currentQuestion.answers.forEach((answer, index) => {
+  const shuffledAnswers = shuffleArray(
+    currentQuestion.answers.map((answer, index) => ({
+      text: answer,
+      originalIndex: index
+    }))
+  );
+
+  currentQuestion.shuffledSingleAnswers = shuffledAnswers;
+
+  shuffledAnswers.forEach((answer, index) => {
     answersDiv.innerHTML += `
       <button onclick="checkSingleAnswer(${index})">
-        ${answer}
+        ${answer.text}
       </button>
     `;
   });
@@ -547,11 +615,37 @@ function loadSingleQuestion() {
 function loadMultiQuestion() {
   const answersDiv = document.getElementById("answers");
 
-  currentQuestion.answers.forEach((answer, index) => {
+  const correctAnswers = currentQuestion.correct.map(index => ({
+    text: currentQuestion.answers[index],
+    isCorrect: true
+  }));
+
+  const incorrectAnswers = currentQuestion.answers
+    .map((answer, index) => ({
+      text: answer,
+      isCorrect: false,
+      originalIndex: index
+    }))
+    .filter(answer => !currentQuestion.correct.includes(answer.originalIndex));
+
+  const twoIncorrectAnswers = shuffleArray(incorrectAnswers).slice(0, 2);
+
+  const finalAnswers = shuffleArray([
+    ...correctAnswers,
+    ...twoIncorrectAnswers
+  ]);
+
+  currentQuestion.shuffledAnswers = finalAnswers;
+
+  currentQuestion.shuffledCorrect = finalAnswers
+    .map((answer, index) => answer.isCorrect ? index : null)
+    .filter(index => index !== null);
+
+  finalAnswers.forEach((answer, index) => {
     answersDiv.innerHTML += `
       <label class="checkbox-answer">
         <input type="checkbox" value="${index}">
-        ${answer}
+        ${answer.text}
       </label>
     `;
   });
@@ -601,23 +695,29 @@ function checkSingleAnswer(selected) {
     button.disabled = true;
   });
 
-  if (selected === currentQuestion.correct) {
+  const selectedOriginalIndex =
+    currentQuestion.shuffledSingleAnswers[selected].originalIndex;
+
+  const correctShuffledIndex =
+    currentQuestion.shuffledSingleAnswers.findIndex(
+      answer => answer.originalIndex === currentQuestion.correct
+    );
+
+  if (selectedOriginalIndex === currentQuestion.correct) {
     score++;
-    currentLevel++;
-    if (currentLevel > 5) currentLevel = 5;
+    currentLevel = 7;
 
     buttons[selected].style.background = "darkgreen";
 
     feedback.innerHTML =
       "<strong>Correct.</strong><br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will increase.";
+      "<br><br>Difficulty will remain at Level 7.";
   } else {
-    currentLevel--;
-    if (currentLevel < 1) currentLevel = 1;
+    currentLevel = 7;
 
     buttons[selected].style.background = "darkred";
-    buttons[currentQuestion.correct].style.background = "darkgreen";
+    buttons[correctShuffledIndex].style.background = "darkgreen";
 
     feedback.innerHTML =
       "<strong>Incorrect.</strong><br>" +
@@ -625,7 +725,7 @@ function checkSingleAnswer(selected) {
       currentQuestion.answers[currentQuestion.correct] +
       "</strong><br><br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will decrease.";
+      "<br><br>Difficulty will remain at Level 7.";
   }
 
   feedback.style.display = "block";
@@ -645,9 +745,11 @@ function checkMultiAnswer() {
     document.querySelectorAll('#answers input[type="checkbox"]:checked')
   ).map(cb => Number(cb.value));
 
+  const correctAnswers = currentQuestion.shuffledCorrect;
+
   const correct =
-    checked.length === currentQuestion.correct.length &&
-    checked.every(value => currentQuestion.correct.includes(value));
+    checked.length === correctAnswers.length &&
+    checked.every(value => correctAnswers.includes(value));
 
   const feedback = document.getElementById("feedback");
   const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
@@ -658,28 +760,26 @@ function checkMultiAnswer() {
 
   if (correct) {
     score++;
-    currentLevel++;
-    if (currentLevel > 5) currentLevel = 5;
+    currentLevel = 7;
 
     feedback.innerHTML =
       "<strong>Correct.</strong><br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will increase.";
+      "<br><br>Difficulty will remain at Level 7.";
   } else {
-    currentLevel--;
-    if (currentLevel < 1) currentLevel = 1;
+    currentLevel = 7;
 
-    const correctAnswers = currentQuestion.correct
-      .map(index => currentQuestion.answers[index])
+    const correctText = currentQuestion.shuffledCorrect
+      .map(index => currentQuestion.shuffledAnswers[index].text)
       .join(", ");
 
     feedback.innerHTML =
       "<strong>Incorrect.</strong><br>" +
       "Most correct answers: <strong>" +
-      correctAnswers +
+      correctText +
       "</strong><br><br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will decrease.";
+      "<br><br>Difficulty will remain at Level 7.";
   }
 
   feedback.style.display = "block";
@@ -706,16 +806,14 @@ function checkMatchingAnswer() {
 
   if (correct) {
     score++;
-    currentLevel++;
-    if (currentLevel > 5) currentLevel = 5;
+    currentLevel = 7;
 
     feedback.innerHTML =
       "<strong>Correct.</strong><br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will increase.";
+      "<br><br>Difficulty will remain at Level 7.";
   } else {
-    currentLevel--;
-    if (currentLevel < 1) currentLevel = 1;
+    currentLevel = 7;
 
     let correctText = "";
 
@@ -733,7 +831,7 @@ function checkMatchingAnswer() {
       correctText +
       "<br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will decrease.";
+      "<br><br>Difficulty will remain at Level 7.";
   }
 
   feedback.style.display = "block";
@@ -754,12 +852,14 @@ function finishExam() {
 
   let result = "";
 
-  if (score >= 20) {
-    result = "Strong performance. Continue with advanced GI/GU emergency review.";
-  } else if (score >= 15) {
-    result = "Borderline performance. Review abdominal pain assessment, GI bleeding, kidney stones, dialysis complications, and shock.";
+  if (score >= 22) {
+    result = "Excellent performance. Student is handling Level 7 GI/GU emergency scenarios with strong prioritization.";
+  } else if (score >= 18) {
+    result = "Good performance. Review GI bleeding, dialysis complications, shock, abdominal trauma, ectopic pregnancy, and unsafe distractors.";
+  } else if (score >= 14) {
+    result = "Borderline performance. Review multi-threat GI/GU scenarios, perfusion, airway risk, refusal capacity, and rapid transport decisions.";
   } else {
-    result = "Needs remediation. Focus on GI bleeding, abdominal pain assessment, GU complaints, dialysis emergencies, internal bleeding, and shock care.";
+    result = "Needs remediation. Focus on EMT priorities: scene safety, airway, breathing, circulation, shock, internal bleeding, abdominal pain assessment, dialysis emergencies, and rapid transport.";
   }
 
   document.getElementById("feedback").style.display = "block";
@@ -768,14 +868,14 @@ function finishExam() {
     "<br><br><strong>Final Difficulty Level:</strong> " + currentLevel +
     "<br><br>" + result;
 
-  document.getElementById("status").innerText = "Adaptive Exam Finished";
+  document.getElementById("status").innerText = "Level 7 Exam Finished";
   document.getElementById("submitBtn").style.display = "none";
   document.getElementById("nextBtn").style.display = "none";
   document.getElementById("restartBtn").style.display = "block";
 }
 
 function restartExam() {
-  currentLevel = 2;
+  currentLevel = 7;
   questionNumber = 0;
   score = 0;
   usedQuestions = [];
