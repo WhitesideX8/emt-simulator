@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Adaptive EMT Endocrine Emergencies Exam</title>
+  <title>Advanced Adaptive EMT Endocrine Emergencies Exam</title>
 
   <style>
     body {
@@ -114,8 +114,8 @@
 <body>
 
 <div class="container">
-  <h1>EMT Endocrine Emergencies Exam</h1>
-  <h2>Most-Correct EMT Style Questions</h2>
+  <h1>Advanced EMT Endocrine Emergencies Exam</h1>
+  <h2>Highest-Level Scenario-Based NREMT Style</h2>
 
   <div id="status"></div>
 
@@ -135,338 +135,395 @@
 <script>
 const questions = [
   {
-    level: 1,
+    level: 4,
     type: "single",
-    question: "Which endocrine condition is MOST commonly encountered by EMTs?",
-    answers: [
-      "Diabetic emergency",
-      "Broken bone",
-      "Stroke only",
-      "Asthma attack"
-    ],
-    correct: 0,
-    feedback: "Diabetic emergencies are among the most common endocrine-related emergencies EMTs encounter."
-  },
-  {
-    level: 1,
-    type: "single",
-    question: "A patient with diabetes becomes confused and sweaty. What should the EMT MOST strongly suspect?",
-    answers: [
-      "Possible hypoglycemia",
-      "Simple anxiety only",
-      "Normal blood sugar",
-      "Isolated muscle strain"
-    ],
-    correct: 0,
-    feedback: "Confusion and sweating are common signs of low blood sugar."
-  },
-  {
-    level: 1,
-    type: "single",
-    question: "What does insulin primarily help the body do?",
-    answers: [
-      "Move glucose from the blood into cells",
-      "Increase oxygen in the lungs",
-      "Stop bleeding",
-      "Digest protein only"
-    ],
-    correct: 0,
-    feedback: "Insulin helps glucose move from the bloodstream into the cells for energy."
-  },
-  {
-    level: 1,
-    type: "multi",
-    question: "Which findings may suggest a diabetic emergency? Select all that apply.",
-    answers: [
-      "Altered mental status",
-      "Sweating",
-      "Weakness",
-      "Normal alertness with no complaint"
-    ],
-    correct: [0, 1, 2],
-    feedback: "Diabetic emergencies may cause altered mental status, sweating, weakness, hunger, or abnormal behavior."
-  },
-  {
-    level: 1,
-    type: "matching",
-    question: "Match the endocrine term with the MOST correct meaning.",
-    leftItems: ["Hypoglycemia", "Hyperglycemia", "Insulin"],
-    rightItems: [
-      "Low blood sugar",
-      "High blood sugar",
-      "Hormone that helps move glucose into cells"
-    ],
-    correct: [0, 1, 2],
-    feedback: "Understanding these terms helps guide assessment of diabetic emergencies."
-  },
-
-  {
-    level: 2,
-    type: "single",
-    question: "A diabetic patient is awake, able to swallow, confused, and has a low blood glucose reading. What is the MOST appropriate EMT action?",
-    answers: [
-      "Administer oral glucose if allowed by protocol",
-      "Give nothing because the patient is confused",
-      "Force water into the patient's mouth",
-      "Have the patient walk around"
-    ],
-    correct: 0,
-    feedback: "Oral glucose may be given to a diabetic patient with suspected hypoglycemia who is awake and able to swallow."
-  },
-  {
-    level: 2,
-    type: "single",
-    question: "A diabetic patient is unconscious and cannot swallow. What is the MOST appropriate EMT action?",
-    answers: [
-      "Do not give anything by mouth and support ABCs",
-      "Place oral glucose deep in the throat",
-      "Give the patient food",
-      "Sit the patient upright and make them drink"
-    ],
-    correct: 0,
-    feedback: "Never give anything by mouth to an unconscious patient. Support airway, breathing, and circulation."
-  },
-  {
-    level: 2,
-    type: "single",
-    question: "Which finding is MOST associated with hypoglycemia?",
-    answers: [
-      "Sudden onset of confusion and sweating",
-      "Slow onset of dry skin and excessive thirst only",
-      "Isolated ankle pain",
-      "Normal mental status"
-    ],
-    correct: 0,
-    feedback: "Hypoglycemia often has a sudden onset and may cause sweating, confusion, weakness, and behavior changes."
-  },
-  {
-    level: 2,
-    type: "multi",
-    question: "Which conditions should be met before giving oral glucose? Select all that apply.",
-    answers: [
-      "Patient can swallow",
-      "Patient can protect their airway",
-      "Protocol allows it",
-      "Patient is unresponsive with no gag reflex"
-    ],
-    correct: [0, 1, 2],
-    feedback: "Oral glucose is used only when the patient can swallow and protect the airway, and when allowed by protocol."
-  },
-  {
-    level: 2,
-    type: "matching",
-    question: "Match the patient presentation with the MOST appropriate EMT concern.",
-    leftItems: ["Confused and sweaty", "Unconscious diabetic", "Thirst and frequent urination"],
-    rightItems: [
-      "Possible hypoglycemia",
-      "Airway risk",
-      "Possible hyperglycemia"
-    ],
-    correct: [0, 1, 2],
-    feedback: "Diabetic emergencies require careful mental status and airway assessment."
-  },
-
-  {
-    level: 3,
-    type: "single",
-    question: "A diabetic patient has warm dry skin, deep rapid breathing, fruity breath odor, and severe thirst. What should the EMT MOST suspect?",
-    answers: [
-      "Hyperglycemia or diabetic ketoacidosis",
-      "Simple fainting",
-      "Isolated anxiety",
-      "Hypothermia"
-    ],
-    correct: 0,
-    feedback: "Hyperglycemia and diabetic ketoacidosis may cause dehydration, fruity breath, thirst, and deep rapid breathing."
-  },
-  {
-    level: 3,
-    type: "single",
-    question: "A confused patient has slurred speech and one-sided weakness, but also has a history of diabetes. What should the EMT do?",
-    answers: [
-      "Assess for stroke and check blood glucose if available",
-      "Assume it is only diabetes",
-      "Assume it is only stroke and ignore glucose",
-      "Give food regardless of airway status"
-    ],
-    correct: 0,
-    feedback: "Hypoglycemia can mimic stroke, but stroke must still be considered. Check glucose if available and continue appropriate stroke assessment."
-  },
-  {
-    level: 3,
-    type: "single",
-    question: "A diabetic patient took insulin but skipped breakfast. Which emergency is MOST likely?",
+    question: "A diabetic patient is awake but confused, pale, and diaphoretic. Family states the patient took insulin but did not eat. What should the EMT suspect first?",
     answers: [
       "Hypoglycemia",
-      "Hyperglycemia only",
-      "Heat stroke",
-      "Pulmonary edema"
+      "Hyperglycemia",
+      "DKA",
+      "Heat stroke"
     ],
     correct: 0,
-    feedback: "Taking insulin without eating can cause low blood sugar."
+    feedback: "Insulin without food commonly causes hypoglycemia."
   },
   {
-    level: 3,
-    type: "multi",
-    question: "Which findings are MOST consistent with hyperglycemia? Select all that apply.",
+    level: 4,
+    type: "single",
+    question: "A diabetic patient has warm dry skin, deep rapid respirations, fruity breath odor, and vomiting. What should the EMT MOST suspect?",
     answers: [
-      "Excessive thirst",
-      "Frequent urination",
-      "Warm dry skin",
-      "Sudden sweating and hunger"
+      "Diabetic ketoacidosis",
+      "Simple hypoglycemia",
+      "Anaphylaxis",
+      "Opioid overdose"
+    ],
+    correct: 0,
+    feedback: "Fruity breath, Kussmaul respirations, dehydration, and vomiting strongly suggest DKA."
+  },
+  {
+    level: 4,
+    type: "single",
+    question: "A patient with diabetes is confused and unable to swallow. Which treatment is contraindicated?",
+    answers: [
+      "Oral glucose",
+      "Oxygen",
+      "Airway positioning",
+      "Rapid transport"
+    ],
+    correct: 0,
+    feedback: "Oral glucose should not be given if the patient cannot swallow or protect the airway."
+  },
+  {
+    level: 4,
+    type: "multi",
+    question: "Which findings are concerning in a diabetic emergency? Select all that apply.",
+    answers: [
+      "Decreasing level of consciousness",
+      "Seizure activity",
+      "Inability to swallow",
+      "Normal mentation and no symptoms"
     ],
     correct: [0, 1, 2],
-    feedback: "Hyperglycemia often develops gradually and may cause thirst, frequent urination, dehydration, and warm dry skin."
+    feedback: "Altered mental status, seizures, and airway risk are high-priority findings."
   },
   {
-    level: 3,
+    level: 4,
     type: "matching",
     question: "Match the diabetic emergency with the MOST likely presentation.",
-    leftItems: ["Hypoglycemia", "Hyperglycemia", "DKA"],
+    leftItems: [
+      "Hypoglycemia",
+      "Hyperglycemia",
+      "DKA"
+    ],
     rightItems: [
-      "Sudden confusion and sweating",
-      "Gradual thirst and frequent urination",
+      "Sudden confusion, sweating, weakness",
+      "Gradual thirst, urination, dehydration",
       "Fruity breath and deep rapid breathing"
     ],
     correct: [0, 1, 2],
-    feedback: "Hypoglycemia tends to be sudden, while hyperglycemia and DKA often develop more gradually."
+    feedback: "Hypoglycemia is often sudden. Hyperglycemia and DKA usually develop more gradually."
   },
 
   {
-    level: 4,
+    level: 5,
     type: "single",
-    question: "A patient with suspected hypoglycemia becomes increasingly less responsive. What is the EMT’s priority?",
+    question: "You respond for a 19-year-old diabetic found confused and combative in a dorm room. Friends state he took insulin after basketball practice but never ate dinner. He is pale, diaphoretic, and pushing responders away. What is the MOST appropriate EMT action?",
     answers: [
-      "Manage airway and breathing and request ALS if appropriate",
-      "Continue trying to force oral glucose",
-      "Delay transport until the patient wakes up",
-      "Have the patient stand"
+      "Request ALS if available, maintain safety, attempt verbal calming, and assess airway and glucose status",
+      "Immediately restrain the patient and force oral glucose into his mouth",
+      "Assume intoxication and wait outside until law enforcement arrives",
+      "Delay treatment until the patient becomes cooperative"
     ],
     correct: 0,
-    feedback: "If mental status worsens, airway and breathing become the priority. Do not force oral glucose into an unsafe airway."
+    feedback: "Combative behavior in a diabetic patient may be severe hypoglycemia. Safety, airway, glucose assessment, ALS, and protocol-based care are priorities."
   },
   {
-    level: 4,
+    level: 5,
     type: "single",
-    question: "A patient with diabetes is confused but combative and refuses oral glucose. What is the MOST appropriate EMT action?",
+    question: "A 47-year-old diabetic complains of weakness and dizziness. He is alert but slow to answer questions. Skin is cool and diaphoretic. Blood glucose reads 48 mg/dL. During transport, he suddenly becomes unresponsive and begins snoring. What should the EMT do FIRST?",
     answers: [
-      "Continue assessment, protect safety, and follow local protocol",
-      "Force the glucose into the mouth",
-      "Leave the patient alone",
-      "Ignore the altered mental status"
+      "Open the airway and assist ventilations if needed",
+      "Administer oral glucose immediately",
+      "Place the patient in Trendelenburg position",
+      "Repeat the glucose reading before any treatment"
     ],
     correct: 0,
-    feedback: "Combative altered patients require safety, continued assessment, possible ALS, and protocol-based care."
+    feedback: "Once the patient becomes unresponsive, airway and breathing become the immediate priority."
   },
   {
-    level: 4,
+    level: 5,
     type: "single",
-    question: "A patient with DKA may breathe deeply and rapidly. What is this breathing pattern MOST likely attempting to correct?",
+    question: "A 62-year-old patient has slurred speech, right arm drift, confusion, warm dry skin, and a blood glucose of 32 mg/dL. What is the MOST appropriate interpretation?",
     answers: [
-      "Acidosis",
-      "A broken bone",
+      "Hypoglycemia may be mimicking a stroke",
+      "The patient is definitely having a stroke only",
+      "The patient is having a psychiatric emergency",
+      "The blood glucose finding is unrelated"
+    ],
+    correct: 0,
+    feedback: "Hypoglycemia can mimic stroke. Continue stroke assessment but treat glucose issues according to protocol."
+  },
+  {
+    level: 5,
+    type: "single",
+    question: "A diabetic patient with altered mental status suddenly vomits while lying supine. What is the EMT’s immediate priority?",
+    answers: [
+      "Roll the patient onto their side and clear the airway",
+      "Administer oral glucose",
+      "Ask additional SAMPLE questions",
+      "Recheck blood glucose before moving the patient"
+    ],
+    correct: 0,
+    feedback: "Vomiting in an altered patient creates an immediate airway and aspiration risk."
+  },
+  {
+    level: 5,
+    type: "single",
+    question: "An unconscious diabetic patient has slow, shallow breathing and cyanosis. What is the EMT’s priority?",
+    answers: [
+      "Open the airway and provide positive-pressure ventilation",
+      "Administer oral glucose",
+      "Place food inside the patient’s cheek",
+      "Wait for the glucometer reading before ventilating"
+    ],
+    correct: 0,
+    feedback: "Inadequate breathing must be corrected immediately."
+  },
+  {
+    level: 5,
+    type: "single",
+    question: "A diabetic patient states, 'I think my sugar is low.' He is alert but has slurred speech and difficulty swallowing. What is the MOST appropriate EMT action?",
+    answers: [
+      "Do not give oral glucose and manage airway risk",
+      "Give oral glucose quickly before he becomes worse",
+      "Have the patient drink juice rapidly",
+      "Leave the patient alone because he is alert"
+    ],
+    correct: 0,
+    feedback: "Difficulty swallowing creates aspiration risk. Oral glucose is unsafe if swallowing is impaired."
+  },
+  {
+    level: 5,
+    type: "single",
+    question: "A patient with suspected DKA has deep rapid respirations. What is the body attempting to correct?",
+    answers: [
+      "Metabolic acidosis",
+      "Hypothermia",
       "External bleeding",
-      "Low body temperature only"
+      "Low oxygen from asthma only"
     ],
     correct: 0,
-    feedback: "Deep rapid breathing in DKA is the body's attempt to compensate for metabolic acidosis."
+    feedback: "Kussmaul respirations are the body’s attempt to compensate for metabolic acidosis."
   },
   {
-    level: 4,
-    type: "multi",
-    question: "Which findings are MOST concerning in an endocrine emergency? Select all that apply.",
+    level: 5,
+    type: "single",
+    question: "A patient has altered mental status, diaphoresis, pinpoint pupils, and slow respirations. Family says the patient is diabetic. Which finding MOST strongly suggests opioid overdose rather than hypoglycemia?",
     answers: [
-      "Decreasing level of consciousness",
-      "Inability to protect airway",
-      "Seizure activity",
-      "Alert and oriented with no symptoms"
+      "Pinpoint pupils with respiratory depression",
+      "Diaphoresis",
+      "History of diabetes",
+      "Altered mental status"
     ],
-    correct: [0, 1, 2],
-    feedback: "Decreasing mental status, airway risk, and seizures are serious findings in diabetic and endocrine emergencies."
+    correct: 0,
+    feedback: "Pinpoint pupils and respiratory depression strongly suggest opioid overdose."
   },
   {
-    level: 4,
-    type: "matching",
-    question: "Match the finding with the MOST appropriate EMT priority.",
-    leftItems: ["Unable to swallow", "Low glucose and awake", "Seizure in diabetic patient"],
-    rightItems: [
-      "Do not give anything by mouth",
-      "Oral glucose if allowed",
-      "Protect from injury and manage airway"
+    level: 5,
+    type: "single",
+    question: "A diabetic patient improves after oral glucose but becomes confused again 10 minutes later. What should the EMT suspect?",
+    answers: [
+      "Recurrent hypoglycemia",
+      "Complete resolution of the emergency",
+      "A normal response to oral glucose",
+      "A purely behavioral problem"
     ],
-    correct: [0, 1, 2],
-    feedback: "Treatment depends on mental status, airway safety, and ability to swallow."
+    correct: 0,
+    feedback: "Recurring symptoms suggest continued glucose instability and require reassessment."
+  },
+  {
+    level: 5,
+    type: "single",
+    question: "A diabetic patient refuses transport after treatment for hypoglycemia. He is now alert and oriented. What is the MOST appropriate EMT action?",
+    answers: [
+      "Assess decision-making capacity and follow refusal protocols",
+      "Force the patient to go to the hospital",
+      "Have family sign the refusal form instead",
+      "Leave immediately without documentation"
+    ],
+    correct: 0,
+    feedback: "A competent patient may refuse care, but the EMT must follow informed refusal procedures."
+  },
+  {
+    level: 5,
+    type: "single",
+    question: "During transport, a diabetic patient begins actively seizing. What should the EMT do FIRST?",
+    answers: [
+      "Protect the patient from injury and manage the airway when possible",
+      "Place oral glucose inside the cheek",
+      "Insert an oral airway during the seizure",
+      "Hold the patient down to stop movement"
+    ],
+    correct: 0,
+    feedback: "During a seizure, protect the patient from injury and do not place anything in the mouth."
+  },
+  {
+    level: 5,
+    type: "single",
+    question: "A patient with suspected hyperglycemia has deep rapid respirations, vomiting, and declining mental status. What is the EMT’s greatest concern?",
+    answers: [
+      "Severe metabolic emergency with airway and breathing risk",
+      "Mild dehydration only",
+      "Simple hunger",
+      "A resolved diabetic emergency"
+    ],
+    correct: 0,
+    feedback: "Kussmaul respirations, vomiting, and declining mental status suggest a serious metabolic emergency."
+  },
+  {
+    level: 5,
+    type: "single",
+    question: "A diabetic dialysis patient becomes confused during treatment. Which condition should the EMT consider early?",
+    answers: [
+      "Hypoglycemia",
+      "Appendicitis",
+      "Simple anxiety",
+      "Isolated muscle strain"
+    ],
+    correct: 0,
+    feedback: "Dialysis patients may develop glucose abnormalities and altered mental status."
   },
 
   {
     level: 5,
-    type: "single",
-    question: "A diabetic patient is unresponsive with slow, shallow breathing. What is the EMT’s priority?",
+    type: "multi",
+    question: "A patient with suspected DKA presents with deep rapid respirations, vomiting, dehydration, and fruity breath odor. Which EMT concerns are MOST important? Select all that apply.",
     answers: [
-      "Open the airway and assist ventilations as needed",
-      "Give oral glucose immediately",
-      "Ask family for a full medication list before treatment",
-      "Place food in the patient’s mouth"
+      "Airway compromise from vomiting",
+      "Severe dehydration",
+      "Respiratory compensation for acidosis",
+      "Risk of aspiration",
+      "Immediate oral glucose administration"
     ],
-    correct: 0,
-    feedback: "Airway and breathing are the priority in an unresponsive patient with inadequate respirations."
-  },
-  {
-    level: 5,
-    type: "single",
-    question: "A patient has a diabetic emergency and is showing signs of shock. What is the MOST appropriate EMT action?",
-    answers: [
-      "Support ABCs, treat for shock, and transport promptly",
-      "Give food and delay transport",
-      "Have the patient walk to the ambulance",
-      "Ignore vital signs if glucose is abnormal"
-    ],
-    correct: 0,
-    feedback: "Shock signs require ABC support, shock care, and prompt transport regardless of the suspected cause."
-  },
-  {
-    level: 5,
-    type: "single",
-    question: "A diabetic patient has a seizure. What is the MOST appropriate initial EMT action?",
-    answers: [
-      "Protect the patient from injury and manage the airway when able",
-      "Hold the patient down",
-      "Place oral glucose in the mouth during the seizure",
-      "Put a bite block between the teeth"
-    ],
-    correct: 0,
-    feedback: "During a seizure, protect the patient from injury and manage the airway when possible. Do not place anything in the mouth."
+    correct: [0, 1, 2, 3],
+    feedback: "DKA patients may be critically ill and at risk for airway compromise, aspiration, dehydration, and worsening acidosis."
   },
   {
     level: 5,
     type: "multi",
-    question: "Which findings MOST strongly suggest an unstable endocrine emergency? Select all that apply.",
+    question: "An unconscious diabetic patient is being ventilated with a bag-mask device. Which actions are MOST appropriate? Select all that apply.",
+    answers: [
+      "Ensure visible chest rise",
+      "Use an airway adjunct if appropriate",
+      "Administer high-concentration oxygen",
+      "Monitor for vomiting",
+      "Give oral glucose immediately"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Unconscious patients require airway and breathing support. Oral glucose is contraindicated."
+  },
+  {
+    level: 5,
+    type: "multi",
+    question: "Which findings suggest a critically unstable endocrine emergency? Select all that apply.",
+    answers: [
+      "Hypotension",
+      "Decreasing level of consciousness",
+      "Inadequate respirations",
+      "Persistent vomiting",
+      "Normal orientation and no complaint"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Hypotension, altered mental status, poor respirations, and vomiting are high-risk findings."
+  },
+  {
+    level: 5,
+    type: "multi",
+    question: "Which findings would make oral glucose unsafe? Select all that apply.",
     answers: [
       "Unresponsiveness",
-      "Inadequate breathing",
-      "Seizure activity",
-      "Mild hunger with normal mental status"
+      "Inability to swallow",
+      "Active seizure",
+      "Absent gag reflex",
+      "Awake, alert, able to swallow"
     ],
-    correct: [0, 1, 2],
-    feedback: "Unresponsiveness, inadequate breathing, and seizures are high-priority findings."
+    correct: [0, 1, 2, 3],
+    feedback: "Oral glucose requires the patient to be awake enough to swallow and protect the airway."
+  },
+  {
+    level: 5,
+    type: "multi",
+    question: "A diabetic patient is confused, combative, pale, and sweating. Which actions are appropriate? Select all that apply.",
+    answers: [
+      "Maintain scene safety",
+      "Consider hypoglycemia",
+      "Assess airway and breathing",
+      "Follow local protocol for glucose management",
+      "Force oral glucose regardless of airway status"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Do not force anything by mouth if airway protection is uncertain."
+  },
+
+  {
+    level: 5,
+    type: "matching",
+    question: "Match the scenario with the MOST likely endocrine problem.",
+    leftItems: [
+      "Patient skipped meal after insulin",
+      "Patient has fruity breath and Kussmaul respirations",
+      "Patient suddenly becomes combative and diaphoretic",
+      "Patient has gradual dehydration and excessive thirst"
+    ],
+    rightItems: [
+      "Hypoglycemia",
+      "DKA",
+      "Severe hypoglycemia",
+      "Hyperglycemia"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Scenario details help distinguish diabetic emergencies."
   },
   {
     level: 5,
     type: "matching",
-    question: "Match the endocrine emergency with the MOST appropriate EMT priority.",
-    leftItems: ["Hypoglycemia, awake and able to swallow", "Unresponsive diabetic", "DKA signs", "Diabetic seizure"],
+    question: "Match the patient finding with the MOST appropriate EMT priority.",
+    leftItems: [
+      "Unconscious with snoring respirations",
+      "Awake with low glucose and can swallow",
+      "Vomiting with altered mental status",
+      "Active seizure"
+    ],
     rightItems: [
-      "Oral glucose if allowed",
-      "Airway and breathing support",
-      "Assess hydration, breathing, and transport",
+      "Open airway and ventilate as needed",
+      "Oral glucose if allowed by protocol",
+      "Position and suction as needed",
       "Protect from injury and manage airway"
     ],
     correct: [0, 1, 2, 3],
-    feedback: "Endocrine emergencies are managed by prioritizing airway, breathing, glucose status, safety, and transport."
+    feedback: "Treatment priorities are based on airway, breathing, mental status, and safety."
+  },
+  {
+    level: 5,
+    type: "matching",
+    question: "Match the clue with the MOST likely condition.",
+    leftItems: [
+      "Cool, pale, diaphoretic skin",
+      "Warm dry skin with polyuria",
+      "Fruity breath odor",
+      "Pinpoint pupils and respiratory depression"
+    ],
+    rightItems: [
+      "Hypoglycemia",
+      "Hyperglycemia",
+      "DKA",
+      "Opioid overdose"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Not every altered diabetic patient has a diabetic emergency; consider other causes."
+  },
+  {
+    level: 5,
+    type: "matching",
+    question: "Match the complication with the EMT concern.",
+    leftItems: [
+      "Vomiting",
+      "Decreasing mental status",
+      "Kussmaul respirations",
+      "Hypotension"
+    ],
+    rightItems: [
+      "Aspiration risk",
+      "Airway protection risk",
+      "Compensation for acidosis",
+      "Shock or severe dehydration"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "High-level assessment requires connecting findings to priorities."
   }
 ];
 
-let currentLevel = 2;
+let currentLevel = 5;
 let questionNumber = 0;
 let score = 0;
 let maxQuestions = 25;
@@ -611,7 +668,7 @@ function checkSingleAnswer(selected) {
     feedback.innerHTML =
       "<strong>Correct.</strong><br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will increase.";
+      "<br><br>Difficulty will remain at the highest available level.";
   } else {
     currentLevel--;
     if (currentLevel < 1) currentLevel = 1;
@@ -625,7 +682,7 @@ function checkSingleAnswer(selected) {
       currentQuestion.answers[currentQuestion.correct] +
       "</strong><br><br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will decrease.";
+      "<br><br>Difficulty may decrease.";
   }
 
   feedback.style.display = "block";
@@ -664,7 +721,7 @@ function checkMultiAnswer() {
     feedback.innerHTML =
       "<strong>Correct.</strong><br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will increase.";
+      "<br><br>Difficulty will remain at the highest available level.";
   } else {
     currentLevel--;
     if (currentLevel < 1) currentLevel = 1;
@@ -679,7 +736,7 @@ function checkMultiAnswer() {
       correctAnswers +
       "</strong><br><br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will decrease.";
+      "<br><br>Difficulty may decrease.";
   }
 
   feedback.style.display = "block";
@@ -712,7 +769,7 @@ function checkMatchingAnswer() {
     feedback.innerHTML =
       "<strong>Correct.</strong><br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will increase.";
+      "<br><br>Difficulty will remain at the highest available level.";
   } else {
     currentLevel--;
     if (currentLevel < 1) currentLevel = 1;
@@ -733,7 +790,7 @@ function checkMatchingAnswer() {
       correctText +
       "<br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will decrease.";
+      "<br><br>Difficulty may decrease.";
   }
 
   feedback.style.display = "block";
@@ -754,12 +811,14 @@ function finishExam() {
 
   let result = "";
 
-  if (score >= 20) {
-    result = "Strong performance. Continue with advanced endocrine and diabetic emergency review.";
-  } else if (score >= 15) {
-    result = "Borderline performance. Review hypoglycemia, hyperglycemia, DKA, oral glucose rules, airway safety, and altered mental status.";
+  if (score >= 22) {
+    result = "Excellent performance. Student is handling high-level endocrine emergency scenarios well.";
+  } else if (score >= 18) {
+    result = "Good performance. Review advanced diabetic scenarios, airway decisions, DKA, and refusal situations.";
+  } else if (score >= 14) {
+    result = "Borderline performance. Review hypoglycemia, hyperglycemia, DKA, oral glucose contraindications, airway management, and altered mental status.";
   } else {
-    result = "Needs remediation. Focus on diabetic emergencies, glucose assessment, oral glucose indications, airway management, seizures, and shock care.";
+    result = "Needs remediation. Focus on diabetic emergencies, airway protection, seizure care, shock, and most-correct EMT decision making.";
   }
 
   document.getElementById("feedback").style.display = "block";
@@ -775,7 +834,7 @@ function finishExam() {
 }
 
 function restartExam() {
-  currentLevel = 2;
+  currentLevel = 5;
   questionNumber = 0;
   score = 0;
   usedQuestions = [];
