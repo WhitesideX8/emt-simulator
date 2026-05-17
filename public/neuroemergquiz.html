@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Adaptive EMT Neurological Emergencies Exam</title>
+  <title>Level 11-12 Adaptive EMT Neurological Emergencies Exam</title>
 
   <style>
     body {
@@ -115,7 +115,7 @@
 
 <div class="container">
   <h1>EMT Neurological Emergencies Exam</h1>
-  <h2>Most-Correct EMT Style Questions</h2>
+  <h2>Level 11-12 LC-Ready / NREMT Style</h2>
 
   <div id="status"></div>
 
@@ -134,361 +134,238 @@
 
 <script>
 const questions = [
+  {
+    level: 11,
+    type: "single",
+    question: "A 67-year-old has sudden slurred speech and right arm weakness. He is awake, breathing adequately, and his blood glucose is normal. His symptoms started 45 minutes ago. What is the MOST appropriate EMT action?",
+    answers: [
+      "Perform a stroke screen, determine last known well time, notify receiving facility, and rapidly transport",
+      "Complete a full neurological history before deciding on transport priority",
+      "Allow the patient to rest quietly and reassess for improvement before transport",
+      "Give oral fluids because dehydration can worsen neurological symptoms"
+    ],
+    correct: 0,
+    feedback: "Suspected stroke is time-sensitive. Last known well time, stroke screen, notification, and rapid transport are priorities."
+  },
+  {
+    level: 11,
+    type: "single",
+    question: "A patient had a seizure and is now confused, combative, and slowly improving. Family wants to hold him down so you can check vital signs. What is the BEST EMT action?",
+    answers: [
+      "Maintain scene safety, protect the patient from injury, avoid unnecessary restraint, and reassess ABCs as able",
+      "Physically restrain the patient immediately so a complete set of vitals can be obtained",
+      "Delay reassessment until the patient is fully alert and cooperative",
+      "Place an oral airway immediately because confusion after a seizure is abnormal"
+    ],
+    correct: 0,
+    feedback: "Postictal confusion can occur after a seizure. Safety and ABC reassessment are priorities. Restraint should not be routine."
+  },
+  {
+    level: 11,
+    type: "single",
+    question: "A suspected stroke patient suddenly becomes less responsive and begins drooling. Respirations are shallow but present. What should the EMT do FIRST?",
+    answers: [
+      "Manage the airway, suction as needed, and support breathing if inadequate",
+      "Continue the stroke screen to document worsening neurological findings",
+      "Ask family to clarify the exact last known well time before intervening",
+      "Place the patient flat and reassess speech in several minutes"
+    ],
+    correct: 0,
+    feedback: "Airway and breathing override the stroke assessment when the patient deteriorates."
+  },
+  {
+    level: 11,
+    type: "single",
+    question: "A diabetic patient has sudden confusion, sweating, and slurred speech. A family member says this looks like a stroke. Blood glucose is available on your unit. What is the MOST appropriate action?",
+    answers: [
+      "Check blood glucose while continuing stroke assessment and transport decision-making",
+      "Rule out stroke immediately because the patient is diabetic",
+      "Give oral glucose before assessing the patient's ability to swallow",
+      "Delay transport until the symptoms clearly identify one diagnosis"
+    ],
+    correct: 0,
+    feedback: "Hypoglycemia can mimic stroke. Check glucose if available, but do not ignore stroke possibilities or airway safety."
+  },
+  {
+    level: 11,
+    type: "single",
+    question: "A head injury patient initially answers questions appropriately. During reassessment, he becomes slower to respond, vomits once, and develops unequal pupils. What is the MOST appropriate EMT action?",
+    answers: [
+      "Reassess ABCs, support breathing as needed, protect the airway, and rapidly transport",
+      "Continue the original treatment plan because he was initially alert",
+      "Give oral fluids because vomiting may cause dehydration",
+      "Allow him to sleep because drowsiness is expected after stress"
+    ],
+    correct: 0,
+    feedback: "Worsening mental status, vomiting, and unequal pupils suggest serious brain injury or increased intracranial pressure."
+  },
+  {
+    level: 11,
+    type: "multi",
+    question: "Which findings suggest a neurological patient may be deteriorating? Select all that apply.",
+    answers: [
+      "Decreasing level of consciousness",
+      "New inability to handle secretions",
+      "Worsening speech or weakness",
+      "Repeated vomiting after head injury",
+      "Stable orientation with clear speech",
+      "Symptoms improving with no airway concern"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Deterioration is shown by worsening mental status, airway risk, neurological deficits, or signs of increased intracranial pressure."
+  },
+  {
+    level: 11,
+    type: "multi",
+    question: "Which actions are appropriate for a suspected stroke patient who is awake and breathing adequately? Select all that apply.",
+    answers: [
+      "Perform a stroke screen",
+      "Determine last known well time",
+      "Check blood glucose if available",
+      "Rapidly transport to an appropriate receiving facility",
+      "Give food or drink to improve energy",
+      "Wait on scene to see if symptoms resolve"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Stroke care includes stroke screening, glucose check if available, last known well time, and rapid transport."
+  },
+  {
+    level: 11,
+    type: "matching",
+    question: "Match the neurological clue with the most likely concern.",
+    leftItems: [
+      "Sudden arm drift and slurred speech",
+      "Confusion and sweating with stroke-like symptoms",
+      "Post-seizure confusion that gradually improves",
+      "Vomiting and unequal pupils after head injury"
+    ],
+    rightItems: [
+      "Possible stroke",
+      "Possible hypoglycemia mimic",
+      "Postictal state",
+      "Possible increased intracranial pressure"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Advanced neurological questions require recognizing similar presentations and prioritizing assessment."
+  },
 
-{
-  level: 1,
-  type: "single",
-  question: "A patient is awake but confused and not answering questions appropriately. What is the MOST accurate description of this finding?",
-  answers: [
-    "Altered mental status",
-    "Normal orientation",
-    "Cardiac arrest",
-    "Respiratory arrest"
-  ],
-  correct: 0,
-  feedback: "Altered mental status means the patient is not at their normal level of awareness or orientation."
-},
-
-{
-  level: 1,
-  type: "single",
-  question: "You are assessing a confused patient. Which tool is MOST appropriate for quickly checking level of consciousness?",
-  answers: [
-    "AVPU",
-    "OPQRST",
-    "APGAR",
-    "Rule of nines"
-  ],
-  correct: 0,
-  feedback: "AVPU is used to rapidly assess whether a patient is Alert, responsive to Verbal stimulus, responsive to Pain, or Unresponsive."
-},
-
-{
-  level: 1,
-  type: "single",
-  question: "A patient opens their eyes only when you speak loudly to them. Which AVPU category is MOST correct?",
-  answers: [
-    "Alert",
-    "Verbal",
-    "Pain",
-    "Unresponsive"
-  ],
-  correct: 1,
-  feedback: "A patient who responds to your voice is classified as responsive to Verbal stimulus."
-},
-
-{
-  level: 1,
-  type: "multi",
-  question: "Which findings are MOST concerning for a neurological emergency? Select all that apply.",
-  answers: [
-    "Sudden slurred speech",
-    "New confusion",
-    "Seizure activity",
-    "Alert and oriented with no complaint"
-  ],
-  correct: [0, 1, 2],
-  feedback: "Sudden speech problems, confusion, and seizure activity may indicate a neurological emergency."
-},
-
-{
-  level: 1,
-  type: "matching",
-  question: "Match the AVPU category with the MOST correct description.",
-  leftItems: ["Alert", "Verbal", "Pain"],
-  rightItems: [
-    "Awake and appropriately responsive",
-    "Responds when spoken to",
-    "Responds only to painful stimulus"
-  ],
-  correct: [0, 1, 2],
-  feedback: "AVPU helps quickly determine mental status."
-},
-
-{
-  level: 2,
-  type: "single",
-  question: "A patient is actively seizing on the floor. What is the MOST appropriate EMT action?",
-  answers: [
-    "Protect the patient from injury and maintain the airway as able",
-    "Hold the patient down to stop the seizure",
-    "Place an object in the patient's mouth",
-    "Immediately give the patient water"
-  ],
-  correct: 0,
-  feedback: "During a seizure, protect the patient from injury, move hazards away, and manage the airway when possible."
-},
-
-{
-  level: 2,
-  type: "single",
-  question: "A seizure has stopped and the patient is confused and sleepy. What is the MOST likely explanation?",
-  answers: [
-    "Postictal state",
-    "Normal baseline mental status",
-    "Cardiac arrest",
-    "Respiratory arrest"
-  ],
-  correct: 0,
-  feedback: "The postictal state is the period of confusion or sleepiness after a seizure."
-},
-
-{
-  level: 2,
-  type: "single",
-  question: "A bystander says a patient had a seizure for about 30 seconds and is now breathing adequately but confused. What should the EMT do FIRST?",
-  answers: [
-    "Assess airway, breathing, circulation, and protect privacy",
-    "Give oral fluids immediately",
-    "Restrain the patient to prevent movement",
-    "Place a bite block in the mouth"
-  ],
-  correct: 0,
-  feedback: "After a seizure, reassess ABCs, protect the patient, and continue monitoring."
-},
-
-{
-  level: 2,
-  type: "multi",
-  question: "Which actions are MOST appropriate during seizure care? Select all that apply.",
-  answers: [
-    "Protect the head",
-    "Move hazards away",
-    "Time the seizure",
-    "Force the mouth open"
-  ],
-  correct: [0, 1, 2],
-  feedback: "The EMT should protect the patient, remove hazards, and time the seizure. Never force the mouth open."
-},
-
-{
-  level: 2,
-  type: "matching",
-  question: "Match the seizure term with the MOST correct description.",
-  leftItems: ["Aura", "Tonic-clonic seizure", "Postictal"],
-  rightItems: [
-    "Warning before seizure",
-    "Stiffening and jerking movements",
-    "Confused recovery period"
-  ],
-  correct: [0, 1, 2],
-  feedback: "Seizures may include warning signs, active seizure activity, and postictal recovery."
-},
-
-{
-  level: 3,
-  type: "single",
-  question: "A patient suddenly develops facial droop and slurred speech. What is the MOST appropriate EMT action?",
-  answers: [
-    "Perform a stroke assessment and determine last known well time",
-    "Wait to see if the symptoms resolve",
-    "Give the patient food or drink",
-    "Have the patient walk to test balance"
-  ],
-  correct: 0,
-  feedback: "A stroke assessment and last known well time are critical for suspected stroke care."
-},
-
-{
-  level: 3,
-  type: "single",
-  question: "A patient has sudden right arm weakness and trouble speaking. Which finding is MOST important to obtain from family?",
-  answers: [
-    "Last known well time",
-    "Favorite food",
-    "Shoe size",
-    "Past childhood illnesses only"
-  ],
-  correct: 0,
-  feedback: "Last known well time helps determine eligibility for hospital stroke treatment."
-},
-
-{
-  level: 3,
-  type: "single",
-  question: "A stroke patient is awake, breathing adequately, and has no airway compromise. What is the BEST next step?",
-  answers: [
-    "Perform a stroke screen and prepare for rapid transport",
-    "Delay transport until symptoms improve",
-    "Give oral glucose without assessment",
-    "Allow the patient to sleep without monitoring"
-  ],
-  correct: 0,
-  feedback: "Stroke care includes stroke screening, determining last known well, monitoring ABCs, and rapid transport."
-},
-
-{
-  level: 3,
-  type: "multi",
-  question: "Which findings are MOST consistent with a possible stroke? Select all that apply.",
-  answers: [
-    "Facial droop",
-    "Arm drift",
-    "Slurred speech",
-    "Equal grip strength and clear speech"
-  ],
-  correct: [0, 1, 2],
-  feedback: "Facial droop, arm drift, and slurred speech are classic stroke screen findings."
-},
-
-{
-  level: 3,
-  type: "matching",
-  question: "Match the stroke assessment finding with what it MOST directly evaluates.",
-  leftItems: ["Facial droop", "Arm drift", "Speech abnormality"],
-  rightItems: [
-    "Facial muscle weakness",
-    "One-sided arm weakness",
-    "Language or speech problem"
-  ],
-  correct: [0, 1, 2],
-  feedback: "Stroke screens assess face, arm strength, and speech."
-},
-
-{
-  level: 4,
-  type: "single",
-  question: "A diabetic patient is confused, sweaty, and has slurred speech. What is the MOST appropriate EMT consideration?",
-  answers: [
-    "Hypoglycemia can mimic stroke and blood glucose should be checked if available",
-    "The patient should be allowed to sleep",
-    "Stroke can be ruled out immediately",
-    "The patient should walk around to improve circulation"
-  ],
-  correct: 0,
-  feedback: "Hypoglycemia can mimic stroke. Blood glucose should be checked if available while continuing appropriate assessment."
-},
-
-{
-  level: 4,
-  type: "single",
-  question: "A suspected stroke patient suddenly becomes unable to control secretions. What is the EMT's priority?",
-  answers: [
-    "Manage the airway and suction as needed",
-    "Continue only with the stroke screen",
-    "Give oral fluids",
-    "Place the patient flat without monitoring"
-  ],
-  correct: 0,
-  feedback: "Airway management takes priority when the patient cannot protect their airway."
-},
-
-{
-  level: 4,
-  type: "single",
-  question: "A patient has a severe headache, vomiting, and decreasing mental status after a head injury. What is MOST concerning?",
-  answers: [
-    "Increasing intracranial pressure",
-    "Minor anxiety",
-    "Simple dehydration only",
-    "Normal recovery"
-  ],
-  correct: 0,
-  feedback: "Worsening mental status, vomiting, and severe headache after head injury may indicate increased intracranial pressure."
-},
-
-{
-  level: 4,
-  type: "multi",
-  question: "Which information is MOST important for a suspected stroke patient? Select all that apply.",
-  answers: [
-    "Last known well time",
-    "Blood glucose if available",
-    "Use of blood thinners",
-    "Favorite television show"
-  ],
-  correct: [0, 1, 2],
-  feedback: "Last known well time, glucose level, and blood thinner use are important for suspected stroke."
-},
-
-{
-  level: 4,
-  type: "matching",
-  question: "Match the condition with the MOST likely presentation.",
-  leftItems: ["Stroke", "Hypoglycemia", "Seizure"],
-  rightItems: [
-    "Sudden one-sided weakness",
-    "Confusion, sweating, possible stroke-like symptoms",
-    "Postictal confusion after abnormal movements"
-  ],
-  correct: [0, 1, 2],
-  feedback: "Different neurological and metabolic emergencies can look similar and require careful assessment."
-},
-
-{
-  level: 5,
-  type: "single",
-  question: "A patient has been seizing continuously for more than 5 minutes. What is the MOST appropriate concern?",
-  answers: [
-    "Status epilepticus",
-    "Normal postictal period",
-    "Simple fainting episode",
-    "Resolved seizure"
-  ],
-  correct: 0,
-  feedback: "A seizure lasting longer than 5 minutes is concerning for status epilepticus and requires urgent care."
-},
-
-{
-  level: 5,
-  type: "single",
-  question: "A suspected stroke patient is becoming less responsive and breathing shallowly. What should the EMT do FIRST?",
-  answers: [
-    "Support airway and breathing",
-    "Complete all paperwork before treatment",
-    "Give food or drink",
-    "Delay care until the patient becomes alert"
-  ],
-  correct: 0,
-  feedback: "Airway and breathing are the priority when a neurological patient deteriorates."
-},
-
-{
-  level: 5,
-  type: "single",
-  question: "A head injury patient has unequal pupils, vomiting, and worsening confusion. What is the MOST appropriate EMT action?",
-  answers: [
-    "Maintain airway, support breathing, and transport rapidly",
-    "Allow the patient to sleep",
-    "Give oral fluids",
-    "Ignore the pupils if the patient can talk"
-  ],
-  correct: 0,
-  feedback: "Unequal pupils, vomiting, and worsening confusion may indicate serious brain injury."
-},
-
-{
-  level: 5,
-  type: "multi",
-  question: "Which findings are MOST concerning in a neurological patient? Select all that apply.",
-  answers: [
-    "Repeated seizures",
-    "Unequal pupils",
-    "Decreasing level of consciousness",
-    "Normal orientation and no complaint"
-  ],
-  correct: [0, 1, 2],
-  feedback: "Repeated seizures, unequal pupils, and decreasing mental status suggest serious neurological compromise."
-},
-
-{
-  level: 5,
-  type: "matching",
-  question: "Match the neurological emergency with the MOST appropriate EMT priority.",
-  leftItems: ["Stroke", "Seizure", "Altered mental status", "Head injury"],
-  rightItems: [
-    "Determine last known well and transport rapidly",
-    "Protect from injury and manage airway",
-    "Assess ABCs and consider reversible causes",
-    "Monitor for worsening mental status"
-  ],
-  correct: [0, 1, 2, 3],
-  feedback: "Neurological emergencies require rapid assessment, airway support, recognition of time-sensitive conditions, and transport."
-}
-
+  {
+    level: 12,
+    type: "single",
+    question: "You are transporting a suspected stroke patient with right-sided weakness. Ten minutes into transport, he becomes less responsive, has noisy respirations, and can no longer control secretions. What is the MOST appropriate action?",
+    answers: [
+      "Suction as needed, manage the airway, support ventilations if inadequate, and continue rapid transport",
+      "Complete another stroke scale before changing treatment priorities",
+      "Place the patient supine and continue monitoring until arrival",
+      "Obtain a more detailed medication list because stroke treatment depends on medications"
+    ],
+    correct: 0,
+    feedback: "Airway and breathing take priority when a stroke patient deteriorates."
+  },
+  {
+    level: 12,
+    type: "single",
+    question: "A patient has been seizing for approximately 6 minutes. Bystanders are yelling conflicting information, furniture is nearby, and the patient is cyanotic around the lips. What should the EMT do FIRST?",
+    answers: [
+      "Ensure scene safety, protect the patient from injury, manage airway and oxygenation as soon as possible",
+      "Hold the patient still to stop the seizure faster",
+      "Place something soft between the teeth to prevent tongue injury",
+      "Ask bystanders for a complete seizure history before intervening"
+    ],
+    correct: 0,
+    feedback: "A prolonged seizure is a high-risk emergency. Protect from injury and manage airway/oxygenation as soon as possible."
+  },
+  {
+    level: 12,
+    type: "single",
+    question: "A confused patient with suspected stroke refuses transport. He cannot repeat the risks of staying home, has worsening speech, and family says this is not his normal behavior. What is the BEST interpretation?",
+    answers: [
+      "The refusal may not be valid because decision-making capacity is impaired",
+      "The refusal is valid because the patient is awake and speaking",
+      "Family can sign a refusal because they know his baseline",
+      "Transport should be delayed until symptoms completely resolve"
+    ],
+    correct: 0,
+    feedback: "A valid refusal requires decision-making capacity. Worsening neurological status can impair capacity."
+  },
+  {
+    level: 12,
+    type: "single",
+    question: "A patient with head trauma becomes bradycardic, hypertensive, and irregular in respirations. Your partner says the blood pressure looks good. What is the MOST accurate interpretation?",
+    answers: [
+      "This pattern may indicate increased intracranial pressure and impending herniation",
+      "The patient is improving because blood pressure is elevated",
+      "The head injury is minor because the pulse is slow",
+      "Transport can be delayed for a more complete history"
+    ],
+    correct: 0,
+    feedback: "Hypertension, bradycardia, and irregular respirations may suggest increased intracranial pressure and serious brain injury."
+  },
+  {
+    level: 12,
+    type: "single",
+    question: "A patient has sudden facial droop and arm weakness. Family reports the symptoms began 20 minutes ago. During assessment, the patient vomits and becomes drowsy. What should happen NEXT?",
+    answers: [
+      "Protect the airway, reassess breathing, continue rapid transport, and update the receiving facility",
+      "Finish the stroke screen before addressing the vomiting",
+      "Give oral glucose because vomiting suggests low blood sugar",
+      "Delay transport until the patient becomes more alert"
+    ],
+    correct: 0,
+    feedback: "The patient is deteriorating. Airway protection and rapid transport are priorities."
+  },
+  {
+    level: 12,
+    type: "multi",
+    question: "Which features make a neurological question Level 12 difficulty? Select all that apply.",
+    answers: [
+      "The patient's condition changes during transport",
+      "Airway problems develop during a suspected stroke",
+      "Capacity/refusal conflict occurs with altered mental status",
+      "Multiple possible causes of altered mental status must be considered",
+      "The question only asks for the definition of AVPU",
+      "The patient is stable with no neurological complaint"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Level 12 questions involve changing conditions, competing priorities, legal issues, and multiple possible causes."
+  },
+  {
+    level: 12,
+    type: "multi",
+    question: "A suspected stroke patient becomes less responsive and can no longer manage secretions. Which actions are MOST appropriate? Select all that apply.",
+    answers: [
+      "Suction the airway as needed",
+      "Assess breathing adequacy",
+      "Assist ventilations if inadequate",
+      "Continue rapid transport and update the receiving facility",
+      "Give oral fluids to clear secretions",
+      "Delay airway care until the stroke screen is complete"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Airway and breathing priorities override completion of the stroke screen."
+  },
+  {
+    level: 12,
+    type: "matching",
+    question: "Match the Level 12 neurological scenario with the highest EMT priority.",
+    leftItems: [
+      "Stroke patient becomes unable to control secretions",
+      "Seizure lasting longer than 5 minutes",
+      "Head injury with vomiting and unequal pupils",
+      "Confused stroke patient refusing transport"
+    ],
+    rightItems: [
+      "Suction and airway management",
+      "Protect from injury and manage oxygenation",
+      "Rapid transport for possible increased intracranial pressure",
+      "Assess decision-making capacity and follow protocol"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "The highest priority is the action that prevents death or protects the patient's legal and medical safety."
+  }
 ];
 
-let currentLevel = 2;
+let currentLevel = 11;
 let questionNumber = 0;
 let score = 0;
 let maxQuestions = 25;
@@ -512,8 +389,8 @@ function getQuestionByLevel(level) {
   }
 
   if (available.length === 0) {
-    finishExam();
-    return null;
+    usedQuestions = [];
+    available = questions.filter(q => q.level === level);
   }
 
   return available[Math.floor(Math.random() * available.length)];
@@ -558,10 +435,19 @@ function loadQuestion() {
 function loadSingleQuestion() {
   const answersDiv = document.getElementById("answers");
 
-  currentQuestion.answers.forEach((answer, index) => {
+  const shuffledAnswers = shuffleArray(
+    currentQuestion.answers.map((answer, index) => ({
+      text: answer,
+      originalIndex: index
+    }))
+  );
+
+  currentQuestion.shuffledSingleAnswers = shuffledAnswers;
+
+  shuffledAnswers.forEach((answer, index) => {
     answersDiv.innerHTML += `
       <button onclick="checkSingleAnswer(${index})">
-        ${answer}
+        ${answer.text}
       </button>
     `;
   });
@@ -570,11 +456,37 @@ function loadSingleQuestion() {
 function loadMultiQuestion() {
   const answersDiv = document.getElementById("answers");
 
-  currentQuestion.answers.forEach((answer, index) => {
+  const correctAnswers = currentQuestion.correct.map(index => ({
+    text: currentQuestion.answers[index],
+    isCorrect: true
+  }));
+
+  const incorrectAnswers = currentQuestion.answers
+    .map((answer, index) => ({
+      text: answer,
+      isCorrect: false,
+      originalIndex: index
+    }))
+    .filter(answer => !currentQuestion.correct.includes(answer.originalIndex));
+
+  const twoIncorrectAnswers = shuffleArray(incorrectAnswers).slice(0, 2);
+
+  const finalAnswers = shuffleArray([
+    ...correctAnswers,
+    ...twoIncorrectAnswers
+  ]);
+
+  currentQuestion.shuffledAnswers = finalAnswers;
+
+  currentQuestion.shuffledCorrect = finalAnswers
+    .map((answer, index) => answer.isCorrect ? index : null)
+    .filter(index => index !== null);
+
+  finalAnswers.forEach((answer, index) => {
     answersDiv.innerHTML += `
       <label class="checkbox-answer">
         <input type="checkbox" value="${index}">
-        ${answer}
+        ${answer.text}
       </label>
     `;
   });
@@ -586,7 +498,6 @@ function loadMatchingQuestion() {
   const answersDiv = document.getElementById("answers");
 
   currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
-
     const shuffledOptions = shuffleArray(
       currentQuestion.rightItems.map((rightItem, rightIndex) => ({
         text: rightItem,
@@ -618,7 +529,6 @@ function loadMatchingQuestion() {
 }
 
 function checkSingleAnswer(selected) {
-
   const feedback = document.getElementById("feedback");
   const buttons = document.querySelectorAll("#answers button");
 
@@ -626,28 +536,31 @@ function checkSingleAnswer(selected) {
     button.disabled = true;
   });
 
-  if (selected === currentQuestion.correct) {
+  const selectedOriginalIndex =
+    currentQuestion.shuffledSingleAnswers[selected].originalIndex;
 
+  const correctShuffledIndex =
+    currentQuestion.shuffledSingleAnswers.findIndex(
+      answer => answer.originalIndex === currentQuestion.correct
+    );
+
+  if (selectedOriginalIndex === currentQuestion.correct) {
     score++;
     currentLevel++;
-
-    if (currentLevel > 5) currentLevel = 5;
+    if (currentLevel > 12) currentLevel = 12;
 
     buttons[selected].style.background = "darkgreen";
 
     feedback.innerHTML =
       "<strong>Correct.</strong><br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will increase.";
-
+      "<br><br>Difficulty will increase if possible.";
   } else {
-
     currentLevel--;
-
-    if (currentLevel < 1) currentLevel = 1;
+    if (currentLevel < 11) currentLevel = 11;
 
     buttons[selected].style.background = "darkred";
-    buttons[currentQuestion.correct].style.background = "darkgreen";
+    buttons[correctShuffledIndex].style.background = "darkgreen";
 
     feedback.innerHTML =
       "<strong>Incorrect.</strong><br>" +
@@ -655,7 +568,7 @@ function checkSingleAnswer(selected) {
       currentQuestion.answers[currentQuestion.correct] +
       "</strong><br><br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will decrease.";
+      "<br><br>Difficulty will decrease if possible.";
   }
 
   feedback.style.display = "block";
@@ -663,28 +576,25 @@ function checkSingleAnswer(selected) {
 }
 
 function submitAnswer() {
-
   if (currentQuestion.type === "multi") {
     checkMultiAnswer();
-  }
-
-  else if (currentQuestion.type === "matching") {
+  } else if (currentQuestion.type === "matching") {
     checkMatchingAnswer();
   }
 }
 
 function checkMultiAnswer() {
-
   const checked = Array.from(
     document.querySelectorAll('#answers input[type="checkbox"]:checked')
   ).map(cb => Number(cb.value));
 
+  const correctAnswers = currentQuestion.shuffledCorrect;
+
   const correct =
-    checked.length === currentQuestion.correct.length &&
-    checked.every(value => currentQuestion.correct.includes(value));
+    checked.length === correctAnswers.length &&
+    checked.every(value => correctAnswers.includes(value));
 
   const feedback = document.getElementById("feedback");
-
   const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
 
   checkboxes.forEach(cb => {
@@ -692,34 +602,29 @@ function checkMultiAnswer() {
   });
 
   if (correct) {
-
     score++;
     currentLevel++;
-
-    if (currentLevel > 5) currentLevel = 5;
+    if (currentLevel > 12) currentLevel = 12;
 
     feedback.innerHTML =
       "<strong>Correct.</strong><br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will increase.";
-
+      "<br><br>Difficulty will increase if possible.";
   } else {
-
     currentLevel--;
+    if (currentLevel < 11) currentLevel = 11;
 
-    if (currentLevel < 1) currentLevel = 1;
-
-    const correctAnswers = currentQuestion.correct
-      .map(index => currentQuestion.answers[index])
+    const correctText = currentQuestion.shuffledCorrect
+      .map(index => currentQuestion.shuffledAnswers[index].text)
       .join(", ");
 
     feedback.innerHTML =
       "<strong>Incorrect.</strong><br>" +
       "Most correct answers: <strong>" +
-      correctAnswers +
+      correctText +
       "</strong><br><br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will decrease.";
+      "<br><br>Difficulty will decrease if possible.";
   }
 
   feedback.style.display = "block";
@@ -728,23 +633,15 @@ function checkMultiAnswer() {
 }
 
 function checkMatchingAnswer() {
-
   const selects = document.querySelectorAll("#answers select");
+  const selectedAnswers = Array.from(selects).map(select => Number(select.value));
 
-  const selectedAnswers = Array.from(selects).map(select =>
-    Number(select.value)
-  );
-
-  const allAnswered = selectedAnswers.every(answer =>
-    !Number.isNaN(answer)
-  );
+  const allAnswered = selectedAnswers.every(answer => !Number.isNaN(answer));
 
   const correct =
     allAnswered &&
     selectedAnswers.length === currentQuestion.correct.length &&
-    selectedAnswers.every((value, index) =>
-      value === currentQuestion.correct[index]
-    );
+    selectedAnswers.every((value, index) => value === currentQuestion.correct[index]);
 
   const feedback = document.getElementById("feedback");
 
@@ -753,27 +650,21 @@ function checkMatchingAnswer() {
   });
 
   if (correct) {
-
     score++;
     currentLevel++;
-
-    if (currentLevel > 5) currentLevel = 5;
+    if (currentLevel > 12) currentLevel = 12;
 
     feedback.innerHTML =
       "<strong>Correct.</strong><br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will increase.";
-
+      "<br><br>Difficulty will increase if possible.";
   } else {
-
     currentLevel--;
-
-    if (currentLevel < 1) currentLevel = 1;
+    if (currentLevel < 11) currentLevel = 11;
 
     let correctText = "";
 
     currentQuestion.leftItems.forEach((item, index) => {
-
       correctText +=
         item +
         " = " +
@@ -787,7 +678,7 @@ function checkMatchingAnswer() {
       correctText +
       "<br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will decrease.";
+      "<br><br>Difficulty will decrease if possible.";
   }
 
   feedback.style.display = "block";
@@ -801,7 +692,6 @@ function nextQuestion() {
 }
 
 function finishExam() {
-
   document.getElementById("question").innerHTML =
     "<h2>Exam Complete</h2>";
 
@@ -809,27 +699,24 @@ function finishExam() {
 
   let result = "";
 
-  if (score >= 20) {
-    result = "Strong neurological emergency performance.";
-  }
-
-  else if (score >= 15) {
-    result = "Borderline performance. Review stroke assessment, seizure care, altered mental status, hypoglycemia, and airway priorities.";
-  }
-
-  else {
-    result = "Needs remediation. Focus on AVPU, stroke signs, last known well time, seizure safety, hypoglycemia as a stroke mimic, head injury warning signs, and airway management.";
+  if (score >= 22) {
+    result = "Excellent performance. Student is handling Level 11-12 LC-Ready/NREMT-style neurological critical-thinking scenarios.";
+  } else if (score >= 18) {
+    result = "Good performance. Review stroke assessment, airway priority, seizure care, altered mental status, hypoglycemia mimics, head injury warning signs, and refusal capacity.";
+  } else if (score >= 14) {
+    result = "Borderline performance. Review subtle neurological deterioration, reassessment changes, transport decisions, and most-correct-answer reasoning.";
+  } else {
+    result = "Needs remediation. Focus on EMT priorities: airway, breathing, circulation, altered mental status, stroke recognition, seizure safety, glucose assessment, head injury warning signs, and rapid transport.";
   }
 
   document.getElementById("feedback").style.display = "block";
-
   document.getElementById("feedback").innerHTML =
     "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
     "<br><br><strong>Final Difficulty Level:</strong> " + currentLevel +
     "<br><br>" + result;
 
   document.getElementById("status").innerText =
-    "Adaptive Exam Finished";
+    "Level 11-12 LC-Ready Style Exam Finished";
 
   document.getElementById("submitBtn").style.display = "none";
   document.getElementById("nextBtn").style.display = "none";
@@ -837,7 +724,7 @@ function finishExam() {
 }
 
 function restartExam() {
-  currentLevel = 2;
+  currentLevel = 11;
   questionNumber = 0;
   score = 0;
   usedQuestions = [];
@@ -845,7 +732,6 @@ function restartExam() {
 }
 
 loadQuestion();
-
 </script>
 
 </body>
