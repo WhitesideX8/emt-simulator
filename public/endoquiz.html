@@ -1,848 +1,203 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Advanced Adaptive EMT Endocrine Emergencies Exam</title>
+{
+  level: 6,
+  type: "single",
+  question: "You respond for a 58-year-old diabetic with altered mental status. Family states he has been vomiting for 2 days and recently stopped taking insulin because he 'felt sick.' The patient is tachypneic with deep respirations, BP 84/50, pulse 138, cool extremities, and glucose reads HIGH on the glucometer. During assessment the patient becomes increasingly confused and begins vomiting again. What is the MOST appropriate EMT priority?",
+  answers: [
+    "Manage the airway, begin rapid transport, and request ALS intercept",
+    "Administer oral glucose because the patient is diabetic",
+    "Delay transport until a full medical history is obtained",
+    "Reduce respirations using coached breathing techniques"
+  ],
+  correct: 0,
+  feedback: "This patient is critically unstable with likely DKA, shock, airway risk, and severe metabolic acidosis."
+},
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #222;
-      color: white;
-      padding: 20px;
-    }
+{
+  level: 6,
+  type: "single",
+  question: "A diabetic patient initially presents awake and combative with a glucose of 41 mg/dL. During transport, the patient suddenly becomes unconscious and develops shallow respirations after receiving oral glucose. Which EMT action is MOST appropriate?",
+  answers: [
+    "Immediately suction as needed, open the airway, and assist ventilations",
+    "Administer additional oral glucose",
+    "Place the patient in Trendelenburg position",
+    "Attempt to wake the patient using painful stimuli"
+  ],
+  correct: 0,
+  feedback: "A deteriorating airway overrides continued glucose administration."
+},
 
-    .container {
-      max-width: 900px;
-      margin: auto;
-      background: #333;
-      padding: 25px;
-      border-radius: 10px;
-    }
+{
+  level: 6,
+  type: "single",
+  question: "A 72-year-old diabetic complains of weakness and dizziness. Assessment reveals slurred speech, unilateral arm drift, pale cool skin, and glucose of 38 mg/dL. Which statement is MOST accurate?",
+  answers: [
+    "The patient may have both hypoglycemia and a stroke simultaneously",
+    "The glucose level rules out stroke completely",
+    "The patient is experiencing a psychiatric emergency",
+    "The arm drift confirms isolated hypoglycemia"
+  ],
+  correct: 0,
+  feedback: "Do not anchor on a single diagnosis. Stroke and hypoglycemia may coexist."
+},
 
-    h1, h2 {
-      text-align: center;
-    }
+{
+  level: 6,
+  type: "single",
+  question: "You arrive at a residence for a diabetic emergency. Family members are yelling conflicting information while the patient is actively seizing on the floor. Which action should the EMT take FIRST?",
+  answers: [
+    "Protect the patient from injury and assess airway/breathing",
+    "Obtain a detailed SAMPLE history from family",
+    "Insert an oral airway during the seizure",
+    "Restrain the patient's extremities"
+  ],
+  correct: 0,
+  feedback: "Scene distraction should not delay seizure safety and airway priorities."
+},
 
-    .question-box {
-      background: #d9d9d9;
-      color: black;
-      padding: 20px;
-      border-radius: 8px;
-      margin-top: 20px;
-    }
+{
+  level: 6,
+  type: "single",
+  question: "A diabetic patient refuses transport after treatment for hypoglycemia. During reassessment the patient correctly states name and location but cannot explain the risks of refusal and repeatedly asks the same questions. What is the MOST appropriate interpretation?",
+  answers: [
+    "The patient may lack decision-making capacity",
+    "The patient automatically has the right to refuse",
+    "The patient is fully alert and competent",
+    "The patient only requires another glucose check"
+  ],
+  correct: 0,
+  feedback: "Orientation alone does not guarantee medical decision-making capacity."
+},
 
-    button {
-      display: block;
-      width: 100%;
-      margin: 8px 0;
-      padding: 12px;
-      font-size: 16px;
-      background: green;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      text-align: left;
-    }
+{
+  level: 6,
+  type: "single",
+  question: "You are transporting a diabetic patient with suspected DKA when the patient suddenly becomes bradycardic and less responsive. Which EMT action is MOST appropriate?",
+  answers: [
+    "Reassess airway, breathing, circulation, and prepare for rapid deterioration",
+    "Slow transport to reduce patient anxiety",
+    "Have the patient rebreathe exhaled air",
+    "Place oral glucose inside the cheek"
+  ],
+  correct: 0,
+  feedback: "Changing vital signs and mental status suggest worsening instability requiring immediate reassessment."
+},
 
-    button:hover {
-      background: darkgreen;
-    }
+{
+  level: 6,
+  type: "multi",
+  question: "A patient with suspected endocrine emergency presents with altered mental status. Which findings would MOST strongly suggest a need for aggressive airway management? Select all that apply.",
+  answers: [
+    "Snoring respirations",
+    "Repeated vomiting",
+    "Absent gag reflex",
+    "Declining mental status",
+    "Mild thirst"
+  ],
+  correct: [0,1,2,3],
+  feedback: "All of these findings indicate increasing airway compromise risk."
+},
 
-    #submitBtn, #nextBtn, #restartBtn {
-      background: #0066cc;
-      text-align: center;
-      display: none;
-    }
+{
+  level: 6,
+  type: "multi",
+  question: "Which findings would MOST strongly suggest severe diabetic ketoacidosis? Select all that apply.",
+  answers: [
+    "Kussmaul respirations",
+    "Fruity breath odor",
+    "Persistent vomiting",
+    "Hypotension",
+    "Pinpoint pupils"
+  ],
+  correct: [0,1,2,3],
+  feedback: "Pinpoint pupils are more consistent with opioid overdose."
+},
 
-    #feedback {
-      margin-top: 15px;
-      padding: 15px;
-      background: white;
-      color: black;
-      border-radius: 6px;
-      display: none;
-    }
+{
+  level: 6,
+  type: "multi",
+  question: "A diabetic patient becomes combative during transport. Which EMT actions are MOST appropriate? Select all that apply.",
+  answers: [
+    "Maintain scene and crew safety",
+    "Consider worsening hypoglycemia",
+    "Continue reassessing airway and breathing",
+    "Request ALS if available",
+    "Force oral glucose into the mouth"
+  ],
+  correct: [0,1,2,3],
+  feedback: "Combative diabetic patients may deteriorate rapidly and should never be force-fed oral glucose."
+},
 
-    #status {
-      text-align: center;
-      margin-top: 15px;
-      font-size: 18px;
-    }
+{
+  level: 6,
+  type: "multi",
+  question: "A patient with severe hyperglycemia is showing signs of shock. Which findings support shock recognition? Select all that apply.",
+  answers: [
+    "Hypotension",
+    "Tachycardia",
+    "Altered mental status",
+    "Cool clammy skin",
+    "Normal mentation"
+  ],
+  correct: [0,1,2,3],
+  feedback: "Hyperglycemic emergencies can progress to severe dehydration and shock."
+},
 
-    .checkbox-answer {
-      display: block;
-      background: #eeeeee;
-      color: black;
-      padding: 12px;
-      margin: 8px 0;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-    }
+{
+  level: 6,
+  type: "matching",
+  question: "Match the evolving patient condition with the MOST appropriate EMT priority.",
+  leftItems: [
+    "Patient begins vomiting while altered",
+    "Patient develops snoring respirations",
+    "Patient becomes combative",
+    "Patient develops hypotension"
+  ],
+  rightItems: [
+    "Protect airway from aspiration",
+    "Open airway and ventilate as needed",
+    "Ensure crew safety and reassess glucose status",
+    "Treat for shock and transport rapidly"
+  ],
+  correct: [0,1,2,3],
+  feedback: "These questions focus on changing priorities during transport."
+},
 
-    .checkbox-answer input {
-      margin-right: 10px;
-      transform: scale(1.2);
-    }
+{
+  level: 6,
+  type: "matching",
+  question: "Match the clue with the MOST concerning underlying problem.",
+  leftItems: [
+    "Deep rapid respirations",
+    "Repeated questioning after treatment",
+    "Pinpoint pupils with hypoventilation",
+    "Difficulty swallowing"
+  ],
+  rightItems: [
+    "Metabolic acidosis",
+    "Persistent altered mental status",
+    "Possible opioid overdose",
+    "Aspiration risk"
+  ],
+  correct: [0,1,2,3],
+  feedback: "Upper-level questions often involve recognizing overlapping emergencies."
+},
 
-    .matching-row {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      margin: 12px 0;
-      background: #eeeeee;
-      padding: 12px;
-      border-radius: 6px;
-    }
-
-    .matching-left {
-      flex: 1;
-      font-weight: bold;
-    }
-
-    .matching-row select {
-      flex: 1;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 6px;
-    }
-  </style>
-</head>
-
-<body>
-
-<div class="container">
-  <h1>Advanced EMT Endocrine Emergencies Exam</h1>
-  <h2>Highest-Level Scenario-Based NREMT Style</h2>
-
-  <div id="status"></div>
-
-  <div class="question-box">
-    <div id="question"></div>
-    <div id="answers"></div>
-
-    <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
-
-    <div id="feedback"></div>
-
-    <button id="nextBtn" onclick="nextQuestion()">Next Question</button>
-    <button id="restartBtn" onclick="restartExam()">Restart Exam</button>
-  </div>
-</div>
-
-<script>
-const questions = [
-  {
-    level: 4,
-    type: "single",
-    question: "A diabetic patient is awake but confused, pale, and diaphoretic. Family states the patient took insulin but did not eat. What should the EMT suspect first?",
-    answers: [
-      "Hypoglycemia",
-      "Hyperglycemia",
-      "DKA",
-      "Heat stroke"
-    ],
-    correct: 0,
-    feedback: "Insulin without food commonly causes hypoglycemia."
-  },
-  {
-    level: 4,
-    type: "single",
-    question: "A diabetic patient has warm dry skin, deep rapid respirations, fruity breath odor, and vomiting. What should the EMT MOST suspect?",
-    answers: [
-      "Diabetic ketoacidosis",
-      "Simple hypoglycemia",
-      "Anaphylaxis",
-      "Opioid overdose"
-    ],
-    correct: 0,
-    feedback: "Fruity breath, Kussmaul respirations, dehydration, and vomiting strongly suggest DKA."
-  },
-  {
-    level: 4,
-    type: "single",
-    question: "A patient with diabetes is confused and unable to swallow. Which treatment is contraindicated?",
-    answers: [
-      "Oral glucose",
-      "Oxygen",
-      "Airway positioning",
-      "Rapid transport"
-    ],
-    correct: 0,
-    feedback: "Oral glucose should not be given if the patient cannot swallow or protect the airway."
-  },
-  {
-    level: 4,
-    type: "multi",
-    question: "Which findings are concerning in a diabetic emergency? Select all that apply.",
-    answers: [
-      "Decreasing level of consciousness",
-      "Seizure activity",
-      "Inability to swallow",
-      "Normal mentation and no symptoms"
-    ],
-    correct: [0, 1, 2],
-    feedback: "Altered mental status, seizures, and airway risk are high-priority findings."
-  },
-  {
-    level: 4,
-    type: "matching",
-    question: "Match the diabetic emergency with the MOST likely presentation.",
-    leftItems: [
-      "Hypoglycemia",
-      "Hyperglycemia",
-      "DKA"
-    ],
-    rightItems: [
-      "Sudden confusion, sweating, weakness",
-      "Gradual thirst, urination, dehydration",
-      "Fruity breath and deep rapid breathing"
-    ],
-    correct: [0, 1, 2],
-    feedback: "Hypoglycemia is often sudden. Hyperglycemia and DKA usually develop more gradually."
-  },
-
-  {
-    level: 5,
-    type: "single",
-    question: "You respond for a 19-year-old diabetic found confused and combative in a dorm room. Friends state he took insulin after basketball practice but never ate dinner. He is pale, diaphoretic, and pushing responders away. What is the MOST appropriate EMT action?",
-    answers: [
-      "Request ALS if available, maintain safety, attempt verbal calming, and assess airway and glucose status",
-      "Immediately restrain the patient and force oral glucose into his mouth",
-      "Assume intoxication and wait outside until law enforcement arrives",
-      "Delay treatment until the patient becomes cooperative"
-    ],
-    correct: 0,
-    feedback: "Combative behavior in a diabetic patient may be severe hypoglycemia. Safety, airway, glucose assessment, ALS, and protocol-based care are priorities."
-  },
-  {
-    level: 5,
-    type: "single",
-    question: "A 47-year-old diabetic complains of weakness and dizziness. He is alert but slow to answer questions. Skin is cool and diaphoretic. Blood glucose reads 48 mg/dL. During transport, he suddenly becomes unresponsive and begins snoring. What should the EMT do FIRST?",
-    answers: [
-      "Open the airway and assist ventilations if needed",
-      "Administer oral glucose immediately",
-      "Place the patient in Trendelenburg position",
-      "Repeat the glucose reading before any treatment"
-    ],
-    correct: 0,
-    feedback: "Once the patient becomes unresponsive, airway and breathing become the immediate priority."
-  },
-  {
-    level: 5,
-    type: "single",
-    question: "A 62-year-old patient has slurred speech, right arm drift, confusion, warm dry skin, and a blood glucose of 32 mg/dL. What is the MOST appropriate interpretation?",
-    answers: [
-      "Hypoglycemia may be mimicking a stroke",
-      "The patient is definitely having a stroke only",
-      "The patient is having a psychiatric emergency",
-      "The blood glucose finding is unrelated"
-    ],
-    correct: 0,
-    feedback: "Hypoglycemia can mimic stroke. Continue stroke assessment but treat glucose issues according to protocol."
-  },
-  {
-    level: 5,
-    type: "single",
-    question: "A diabetic patient with altered mental status suddenly vomits while lying supine. What is the EMT’s immediate priority?",
-    answers: [
-      "Roll the patient onto their side and clear the airway",
-      "Administer oral glucose",
-      "Ask additional SAMPLE questions",
-      "Recheck blood glucose before moving the patient"
-    ],
-    correct: 0,
-    feedback: "Vomiting in an altered patient creates an immediate airway and aspiration risk."
-  },
-  {
-    level: 5,
-    type: "single",
-    question: "An unconscious diabetic patient has slow, shallow breathing and cyanosis. What is the EMT’s priority?",
-    answers: [
-      "Open the airway and provide positive-pressure ventilation",
-      "Administer oral glucose",
-      "Place food inside the patient’s cheek",
-      "Wait for the glucometer reading before ventilating"
-    ],
-    correct: 0,
-    feedback: "Inadequate breathing must be corrected immediately."
-  },
-  {
-    level: 5,
-    type: "single",
-    question: "A diabetic patient states, 'I think my sugar is low.' He is alert but has slurred speech and difficulty swallowing. What is the MOST appropriate EMT action?",
-    answers: [
-      "Do not give oral glucose and manage airway risk",
-      "Give oral glucose quickly before he becomes worse",
-      "Have the patient drink juice rapidly",
-      "Leave the patient alone because he is alert"
-    ],
-    correct: 0,
-    feedback: "Difficulty swallowing creates aspiration risk. Oral glucose is unsafe if swallowing is impaired."
-  },
-  {
-    level: 5,
-    type: "single",
-    question: "A patient with suspected DKA has deep rapid respirations. What is the body attempting to correct?",
-    answers: [
-      "Metabolic acidosis",
-      "Hypothermia",
-      "External bleeding",
-      "Low oxygen from asthma only"
-    ],
-    correct: 0,
-    feedback: "Kussmaul respirations are the body’s attempt to compensate for metabolic acidosis."
-  },
-  {
-    level: 5,
-    type: "single",
-    question: "A patient has altered mental status, diaphoresis, pinpoint pupils, and slow respirations. Family says the patient is diabetic. Which finding MOST strongly suggests opioid overdose rather than hypoglycemia?",
-    answers: [
-      "Pinpoint pupils with respiratory depression",
-      "Diaphoresis",
-      "History of diabetes",
-      "Altered mental status"
-    ],
-    correct: 0,
-    feedback: "Pinpoint pupils and respiratory depression strongly suggest opioid overdose."
-  },
-  {
-    level: 5,
-    type: "single",
-    question: "A diabetic patient improves after oral glucose but becomes confused again 10 minutes later. What should the EMT suspect?",
-    answers: [
-      "Recurrent hypoglycemia",
-      "Complete resolution of the emergency",
-      "A normal response to oral glucose",
-      "A purely behavioral problem"
-    ],
-    correct: 0,
-    feedback: "Recurring symptoms suggest continued glucose instability and require reassessment."
-  },
-  {
-    level: 5,
-    type: "single",
-    question: "A diabetic patient refuses transport after treatment for hypoglycemia. He is now alert and oriented. What is the MOST appropriate EMT action?",
-    answers: [
-      "Assess decision-making capacity and follow refusal protocols",
-      "Force the patient to go to the hospital",
-      "Have family sign the refusal form instead",
-      "Leave immediately without documentation"
-    ],
-    correct: 0,
-    feedback: "A competent patient may refuse care, but the EMT must follow informed refusal procedures."
-  },
-  {
-    level: 5,
-    type: "single",
-    question: "During transport, a diabetic patient begins actively seizing. What should the EMT do FIRST?",
-    answers: [
-      "Protect the patient from injury and manage the airway when possible",
-      "Place oral glucose inside the cheek",
-      "Insert an oral airway during the seizure",
-      "Hold the patient down to stop movement"
-    ],
-    correct: 0,
-    feedback: "During a seizure, protect the patient from injury and do not place anything in the mouth."
-  },
-  {
-    level: 5,
-    type: "single",
-    question: "A patient with suspected hyperglycemia has deep rapid respirations, vomiting, and declining mental status. What is the EMT’s greatest concern?",
-    answers: [
-      "Severe metabolic emergency with airway and breathing risk",
-      "Mild dehydration only",
-      "Simple hunger",
-      "A resolved diabetic emergency"
-    ],
-    correct: 0,
-    feedback: "Kussmaul respirations, vomiting, and declining mental status suggest a serious metabolic emergency."
-  },
-  {
-    level: 5,
-    type: "single",
-    question: "A diabetic dialysis patient becomes confused during treatment. Which condition should the EMT consider early?",
-    answers: [
-      "Hypoglycemia",
-      "Appendicitis",
-      "Simple anxiety",
-      "Isolated muscle strain"
-    ],
-    correct: 0,
-    feedback: "Dialysis patients may develop glucose abnormalities and altered mental status."
-  },
-
-  {
-    level: 5,
-    type: "multi",
-    question: "A patient with suspected DKA presents with deep rapid respirations, vomiting, dehydration, and fruity breath odor. Which EMT concerns are MOST important? Select all that apply.",
-    answers: [
-      "Airway compromise from vomiting",
-      "Severe dehydration",
-      "Respiratory compensation for acidosis",
-      "Risk of aspiration",
-      "Immediate oral glucose administration"
-    ],
-    correct: [0, 1, 2, 3],
-    feedback: "DKA patients may be critically ill and at risk for airway compromise, aspiration, dehydration, and worsening acidosis."
-  },
-  {
-    level: 5,
-    type: "multi",
-    question: "An unconscious diabetic patient is being ventilated with a bag-mask device. Which actions are MOST appropriate? Select all that apply.",
-    answers: [
-      "Ensure visible chest rise",
-      "Use an airway adjunct if appropriate",
-      "Administer high-concentration oxygen",
-      "Monitor for vomiting",
-      "Give oral glucose immediately"
-    ],
-    correct: [0, 1, 2, 3],
-    feedback: "Unconscious patients require airway and breathing support. Oral glucose is contraindicated."
-  },
-  {
-    level: 5,
-    type: "multi",
-    question: "Which findings suggest a critically unstable endocrine emergency? Select all that apply.",
-    answers: [
-      "Hypotension",
-      "Decreasing level of consciousness",
-      "Inadequate respirations",
-      "Persistent vomiting",
-      "Normal orientation and no complaint"
-    ],
-    correct: [0, 1, 2, 3],
-    feedback: "Hypotension, altered mental status, poor respirations, and vomiting are high-risk findings."
-  },
-  {
-    level: 5,
-    type: "multi",
-    question: "Which findings would make oral glucose unsafe? Select all that apply.",
-    answers: [
-      "Unresponsiveness",
-      "Inability to swallow",
-      "Active seizure",
-      "Absent gag reflex",
-      "Awake, alert, able to swallow"
-    ],
-    correct: [0, 1, 2, 3],
-    feedback: "Oral glucose requires the patient to be awake enough to swallow and protect the airway."
-  },
-  {
-    level: 5,
-    type: "multi",
-    question: "A diabetic patient is confused, combative, pale, and sweating. Which actions are appropriate? Select all that apply.",
-    answers: [
-      "Maintain scene safety",
-      "Consider hypoglycemia",
-      "Assess airway and breathing",
-      "Follow local protocol for glucose management",
-      "Force oral glucose regardless of airway status"
-    ],
-    correct: [0, 1, 2, 3],
-    feedback: "Do not force anything by mouth if airway protection is uncertain."
-  },
-
-  {
-    level: 5,
-    type: "matching",
-    question: "Match the scenario with the MOST likely endocrine problem.",
-    leftItems: [
-      "Patient skipped meal after insulin",
-      "Patient has fruity breath and Kussmaul respirations",
-      "Patient suddenly becomes combative and diaphoretic",
-      "Patient has gradual dehydration and excessive thirst"
-    ],
-    rightItems: [
-      "Hypoglycemia",
-      "DKA",
-      "Severe hypoglycemia",
-      "Hyperglycemia"
-    ],
-    correct: [0, 1, 2, 3],
-    feedback: "Scenario details help distinguish diabetic emergencies."
-  },
-  {
-    level: 5,
-    type: "matching",
-    question: "Match the patient finding with the MOST appropriate EMT priority.",
-    leftItems: [
-      "Unconscious with snoring respirations",
-      "Awake with low glucose and can swallow",
-      "Vomiting with altered mental status",
-      "Active seizure"
-    ],
-    rightItems: [
-      "Open airway and ventilate as needed",
-      "Oral glucose if allowed by protocol",
-      "Position and suction as needed",
-      "Protect from injury and manage airway"
-    ],
-    correct: [0, 1, 2, 3],
-    feedback: "Treatment priorities are based on airway, breathing, mental status, and safety."
-  },
-  {
-    level: 5,
-    type: "matching",
-    question: "Match the clue with the MOST likely condition.",
-    leftItems: [
-      "Cool, pale, diaphoretic skin",
-      "Warm dry skin with polyuria",
-      "Fruity breath odor",
-      "Pinpoint pupils and respiratory depression"
-    ],
-    rightItems: [
-      "Hypoglycemia",
-      "Hyperglycemia",
-      "DKA",
-      "Opioid overdose"
-    ],
-    correct: [0, 1, 2, 3],
-    feedback: "Not every altered diabetic patient has a diabetic emergency; consider other causes."
-  },
-  {
-    level: 5,
-    type: "matching",
-    question: "Match the complication with the EMT concern.",
-    leftItems: [
-      "Vomiting",
-      "Decreasing mental status",
-      "Kussmaul respirations",
-      "Hypotension"
-    ],
-    rightItems: [
-      "Aspiration risk",
-      "Airway protection risk",
-      "Compensation for acidosis",
-      "Shock or severe dehydration"
-    ],
-    correct: [0, 1, 2, 3],
-    feedback: "High-level assessment requires connecting findings to priorities."
-  }
-];
-
-let currentLevel = 5;
-let questionNumber = 0;
-let score = 0;
-let maxQuestions = 25;
-let currentQuestion;
-let usedQuestions = [];
-
-function shuffleArray(array) {
-  return array
-    .map(value => ({ value, sort: Math.random() }))
-    .sort((a, b) => a.sort - b.sort)
-    .map(({ value }) => value);
+{
+  level: 6,
+  type: "matching",
+  question: "Match the patient presentation with the MOST likely immediate threat.",
+  leftItems: [
+    "Unconscious with cyanosis",
+    "Vomiting while supine",
+    "Hypotension and tachycardia",
+    "Combative altered diabetic"
+  ],
+  rightItems: [
+    "Respiratory failure",
+    "Aspiration",
+    "Shock",
+    "Scene safety risk"
+  ],
+  correct: [0,1,2,3],
+  feedback: "These questions emphasize prioritization rather than simple diagnosis."
 }
-
-function getQuestionByLevel(level) {
-  let available = questions.filter(q =>
-    q.level === level && !usedQuestions.includes(q.question)
-  );
-
-  if (available.length === 0) {
-    available = questions.filter(q => !usedQuestions.includes(q.question));
-  }
-
-  if (available.length === 0) {
-    finishExam();
-    return null;
-  }
-
-  return available[Math.floor(Math.random() * available.length)];
-}
-
-function loadQuestion() {
-  if (questionNumber >= maxQuestions) {
-    finishExam();
-    return;
-  }
-
-  currentQuestion = getQuestionByLevel(currentLevel);
-  if (!currentQuestion) return;
-
-  usedQuestions.push(currentQuestion.question);
-
-  document.getElementById("status").innerText =
-    "Question " + (questionNumber + 1) +
-    " of " + maxQuestions +
-    " | Current Difficulty Level: " + currentLevel +
-    " | Score: " + score;
-
-  document.getElementById("question").innerHTML =
-    "<strong>" + currentQuestion.question + "</strong>";
-
-  document.getElementById("answers").innerHTML = "";
-  document.getElementById("feedback").style.display = "none";
-  document.getElementById("nextBtn").style.display = "none";
-  document.getElementById("restartBtn").style.display = "none";
-  document.getElementById("submitBtn").style.display = "none";
-
-  if (currentQuestion.type === "single") {
-    loadSingleQuestion();
-  } else if (currentQuestion.type === "multi") {
-    loadMultiQuestion();
-  } else if (currentQuestion.type === "matching") {
-    loadMatchingQuestion();
-  }
-}
-
-function loadSingleQuestion() {
-  const answersDiv = document.getElementById("answers");
-
-  currentQuestion.answers.forEach((answer, index) => {
-    answersDiv.innerHTML += `
-      <button onclick="checkSingleAnswer(${index})">
-        ${answer}
-      </button>
-    `;
-  });
-}
-
-function loadMultiQuestion() {
-  const answersDiv = document.getElementById("answers");
-
-  currentQuestion.answers.forEach((answer, index) => {
-    answersDiv.innerHTML += `
-      <label class="checkbox-answer">
-        <input type="checkbox" value="${index}">
-        ${answer}
-      </label>
-    `;
-  });
-
-  document.getElementById("submitBtn").style.display = "block";
-}
-
-function loadMatchingQuestion() {
-  const answersDiv = document.getElementById("answers");
-
-  currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
-    const shuffledOptions = shuffleArray(
-      currentQuestion.rightItems.map((rightItem, rightIndex) => ({
-        text: rightItem,
-        originalIndex: rightIndex
-      }))
-    );
-
-    let options = `<option value="">Choose match</option>`;
-
-    shuffledOptions.forEach(option => {
-      options += `
-        <option value="${option.originalIndex}">
-          ${option.text}
-        </option>
-      `;
-    });
-
-    answersDiv.innerHTML += `
-      <div class="matching-row">
-        <div class="matching-left">${leftItem}</div>
-        <select data-left-index="${leftIndex}">
-          ${options}
-        </select>
-      </div>
-    `;
-  });
-
-  document.getElementById("submitBtn").style.display = "block";
-}
-
-function checkSingleAnswer(selected) {
-  const feedback = document.getElementById("feedback");
-  const buttons = document.querySelectorAll("#answers button");
-
-  buttons.forEach(button => {
-    button.disabled = true;
-  });
-
-  if (selected === currentQuestion.correct) {
-    score++;
-    currentLevel++;
-    if (currentLevel > 5) currentLevel = 5;
-
-    buttons[selected].style.background = "darkgreen";
-
-    feedback.innerHTML =
-      "<strong>Correct.</strong><br>" +
-      currentQuestion.feedback +
-      "<br><br>Difficulty will remain at the highest available level.";
-  } else {
-    currentLevel--;
-    if (currentLevel < 1) currentLevel = 1;
-
-    buttons[selected].style.background = "darkred";
-    buttons[currentQuestion.correct].style.background = "darkgreen";
-
-    feedback.innerHTML =
-      "<strong>Incorrect.</strong><br>" +
-      "Most correct answer: <strong>" +
-      currentQuestion.answers[currentQuestion.correct] +
-      "</strong><br><br>" +
-      currentQuestion.feedback +
-      "<br><br>Difficulty may decrease.";
-  }
-
-  feedback.style.display = "block";
-  document.getElementById("nextBtn").style.display = "block";
-}
-
-function submitAnswer() {
-  if (currentQuestion.type === "multi") {
-    checkMultiAnswer();
-  } else if (currentQuestion.type === "matching") {
-    checkMatchingAnswer();
-  }
-}
-
-function checkMultiAnswer() {
-  const checked = Array.from(
-    document.querySelectorAll('#answers input[type="checkbox"]:checked')
-  ).map(cb => Number(cb.value));
-
-  const correct =
-    checked.length === currentQuestion.correct.length &&
-    checked.every(value => currentQuestion.correct.includes(value));
-
-  const feedback = document.getElementById("feedback");
-  const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
-
-  checkboxes.forEach(cb => {
-    cb.disabled = true;
-  });
-
-  if (correct) {
-    score++;
-    currentLevel++;
-    if (currentLevel > 5) currentLevel = 5;
-
-    feedback.innerHTML =
-      "<strong>Correct.</strong><br>" +
-      currentQuestion.feedback +
-      "<br><br>Difficulty will remain at the highest available level.";
-  } else {
-    currentLevel--;
-    if (currentLevel < 1) currentLevel = 1;
-
-    const correctAnswers = currentQuestion.correct
-      .map(index => currentQuestion.answers[index])
-      .join(", ");
-
-    feedback.innerHTML =
-      "<strong>Incorrect.</strong><br>" +
-      "Most correct answers: <strong>" +
-      correctAnswers +
-      "</strong><br><br>" +
-      currentQuestion.feedback +
-      "<br><br>Difficulty may decrease.";
-  }
-
-  feedback.style.display = "block";
-  document.getElementById("submitBtn").style.display = "none";
-  document.getElementById("nextBtn").style.display = "block";
-}
-
-function checkMatchingAnswer() {
-  const selects = document.querySelectorAll("#answers select");
-  const selectedAnswers = Array.from(selects).map(select => Number(select.value));
-
-  const allAnswered = selectedAnswers.every(answer => !Number.isNaN(answer));
-
-  const correct =
-    allAnswered &&
-    selectedAnswers.length === currentQuestion.correct.length &&
-    selectedAnswers.every((value, index) => value === currentQuestion.correct[index]);
-
-  const feedback = document.getElementById("feedback");
-
-  selects.forEach(select => {
-    select.disabled = true;
-  });
-
-  if (correct) {
-    score++;
-    currentLevel++;
-    if (currentLevel > 5) currentLevel = 5;
-
-    feedback.innerHTML =
-      "<strong>Correct.</strong><br>" +
-      currentQuestion.feedback +
-      "<br><br>Difficulty will remain at the highest available level.";
-  } else {
-    currentLevel--;
-    if (currentLevel < 1) currentLevel = 1;
-
-    let correctText = "";
-
-    currentQuestion.leftItems.forEach((item, index) => {
-      correctText +=
-        item +
-        " = " +
-        currentQuestion.rightItems[currentQuestion.correct[index]] +
-        "<br>";
-    });
-
-    feedback.innerHTML =
-      "<strong>Incorrect.</strong><br>" +
-      "<br><strong>Most correct matches:</strong><br>" +
-      correctText +
-      "<br>" +
-      currentQuestion.feedback +
-      "<br><br>Difficulty may decrease.";
-  }
-
-  feedback.style.display = "block";
-  document.getElementById("submitBtn").style.display = "none";
-  document.getElementById("nextBtn").style.display = "block";
-}
-
-function nextQuestion() {
-  questionNumber++;
-  loadQuestion();
-}
-
-function finishExam() {
-  document.getElementById("question").innerHTML =
-    "<h2>Exam Complete</h2>";
-
-  document.getElementById("answers").innerHTML = "";
-
-  let result = "";
-
-  if (score >= 22) {
-    result = "Excellent performance. Student is handling high-level endocrine emergency scenarios well.";
-  } else if (score >= 18) {
-    result = "Good performance. Review advanced diabetic scenarios, airway decisions, DKA, and refusal situations.";
-  } else if (score >= 14) {
-    result = "Borderline performance. Review hypoglycemia, hyperglycemia, DKA, oral glucose contraindications, airway management, and altered mental status.";
-  } else {
-    result = "Needs remediation. Focus on diabetic emergencies, airway protection, seizure care, shock, and most-correct EMT decision making.";
-  }
-
-  document.getElementById("feedback").style.display = "block";
-  document.getElementById("feedback").innerHTML =
-    "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
-    "<br><br><strong>Final Difficulty Level:</strong> " + currentLevel +
-    "<br><br>" + result;
-
-  document.getElementById("status").innerText = "Adaptive Exam Finished";
-  document.getElementById("submitBtn").style.display = "none";
-  document.getElementById("nextBtn").style.display = "none";
-  document.getElementById("restartBtn").style.display = "block";
-}
-
-function restartExam() {
-  currentLevel = 5;
-  questionNumber = 0;
-  score = 0;
-  usedQuestions = [];
-  loadQuestion();
-}
-
-loadQuestion();
-</script>
-
-</body>
-</html>
