@@ -115,7 +115,7 @@
 
 <div class="container">
   <h1>EMT GI/GU Emergencies Exam</h1>
-  <h2>Level 11-12 Advanced Adaptive Exam</h2>
+  <h2>Level 11-12 LC-Ready / NREMT Style</h2>
 
   <div id="status"></div>
 
@@ -137,196 +137,222 @@ const questions = [
   {
     level: 11,
     type: "single",
-    question: "A dialysis patient missed two treatments and has abdominal pain, vomiting, crackles, bradycardia, and worsening confusion. During transport, respirations become shallow. What is the MOST appropriate EMT priority?",
+    question: "A 68-year-old dialysis patient missed two treatments. He complains of weakness, nausea, and abdominal discomfort. During transport, he becomes slower to answer questions, his pulse is slow and irregular, and his respirations become shallow. What is the MOST appropriate EMT action?",
     answers: [
-      "Support airway and ventilation while continuing rapid transport and requesting ALS intercept",
-      "Focus only on the abdominal pain because this is a GI/GU complaint",
-      "Stop transport to obtain a complete dialysis history",
-      "Give oral fluids because vomiting suggests dehydration"
+      "Support ventilation as needed, continue rapid transport, and request ALS intercept if available",
+      "Place him upright, apply oxygen, and reassess after several minutes",
+      "Complete a detailed medication history before changing treatment priorities",
+      "Focus reassessment on the abdomen because that was the original complaint"
     ],
     correct: 0,
-    feedback: "This patient may have life-threatening electrolyte imbalance, pulmonary edema, and respiratory failure. Airway and ventilation come first."
+    feedback: "The priority is airway and ventilation. Missed dialysis with bradycardia, weakness, and altered mental status may indicate a life-threatening electrolyte problem."
   },
   {
     level: 11,
     type: "single",
-    question: "A patient with suspected GI bleeding is pale, diaphoretic, confused, and vomiting blood. Your partner wants to place the patient supine, but the patient is actively vomiting. What is the BEST action?",
+    question: "A 72-year-old with liver disease has vomited dark red blood twice. He is pale, cool, anxious, and increasingly tachycardic, but his blood pressure is still 112/70. Which finding is MOST concerning?",
     answers: [
-      "Protect the airway, suction as needed, position to reduce aspiration risk, treat shock, and rapidly transport",
-      "Place the patient flat and leave vomit in the mouth until arrival",
-      "Delay transport until vomiting stops",
-      "Give water to clear blood from the throat"
+      "Increasing anxiety, pallor, and tachycardia despite a normal blood pressure",
+      "The blood pressure remaining within the normal range",
+      "The patient’s ability to answer some questions",
+      "The absence of severe abdominal tenderness"
     ],
     correct: 0,
-    feedback: "Airway contamination and shock are immediate life threats."
+    feedback: "Compensated shock may occur before hypotension. Trends in perfusion and mental status are more important than one normal blood pressure."
   },
   {
     level: 11,
     type: "single",
-    question: "A woman with possible pregnancy has lower abdominal pain, syncope, shoulder pain, and hypotension. She becomes anxious and refuses care, but cannot explain the risks of refusal. What is the MOST appropriate EMT decision?",
+    question: "A 35-year-old woman has lower abdominal pain, dizziness, shoulder pain, and possible pregnancy. She is embarrassed and asks you not to tell anyone. She becomes pale and nearly faints when standing. What should you do?",
     answers: [
-      "Question capacity, follow local protocol, treat for shock, and transport",
-      "Accept the refusal because she verbally said no",
-      "Ignore the pregnancy concern because she is embarrassed",
-      "Wait for her blood pressure to improve before moving"
+      "Protect privacy as much as possible, share necessary information with the care team, treat for shock, and transport",
+      "Withhold the pregnancy information from your partner because the patient requested privacy",
+      "Delay transport until she is comfortable discussing the issue in detail",
+      "Ask family members to confirm whether pregnancy is possible before treating"
     ],
     correct: 0,
-    feedback: "Shock and altered decision-making raise concern for lack of capacity. Possible ectopic pregnancy is life-threatening."
+    feedback: "Privacy matters, but critical information affecting care must be shared with the treatment team. Possible ectopic pregnancy with shock is life-threatening."
   },
   {
     level: 11,
     type: "single",
-    question: "A patient with a suspected AAA is hypotensive and confused. Family insists he walk to the ambulance because he dislikes stretchers. What is the BEST EMT decision?",
+    question: "A 74-year-old suddenly develops tearing abdominal pain radiating to the back. He is pale, weak, and says he feels like he may pass out. Family wants him to walk to the ambulance because the stretcher will not fit easily through the hallway. What is the BEST decision?",
     answers: [
-      "Minimize exertion, move safely, treat for shock, and rapidly transport",
-      "Allow him to walk because family requested it",
-      "Repeatedly palpate the abdomen to confirm the aneurysm",
-      "Delay care until ALS arrives"
+      "Minimize exertion, move him carefully, treat for shock, and rapidly transport",
+      "Allow him to walk slowly while monitoring for worsening symptoms",
+      "Delay movement until the abdominal pain improves",
+      "Recheck the abdomen several times to confirm the suspected problem"
     ],
     correct: 0,
-    feedback: "Possible AAA requires minimal movement, shock care, and rapid transport."
+    feedback: "This presentation suggests possible abdominal aortic aneurysm. Avoid unnecessary exertion or repeated palpation."
+  },
+  {
+    level: 11,
+    type: "single",
+    question: "A patient with vomiting and diarrhea is dizzy, weak, and confused when sitting upright. Family states he has been unable to keep fluids down all day. Which action is MOST appropriate?",
+    answers: [
+      "Assess airway and perfusion, treat for shock, and transport without delaying for oral fluids",
+      "Encourage small sips of water while completing the history",
+      "Have the patient stand slowly to determine if dizziness improves",
+      "Wait on scene until vomiting has stopped for at least several minutes"
+    ],
+    correct: 0,
+    feedback: "Altered mental status and orthostatic symptoms suggest poor perfusion. Oral fluids should not delay care in an unstable patient."
   },
   {
     level: 11,
     type: "multi",
-    question: "Which findings suggest a GI/GU patient is unstable even if the blood pressure is not yet low? Select all that apply.",
+    question: "Which findings suggest the GI/GU patient may be deteriorating even before severe hypotension appears? Select all that apply.",
     answers: [
       "Increasing tachycardia",
-      "Cool pale skin",
-      "Restlessness or confusion",
-      "Near-syncope",
-      "Normal mentation",
-      "Warm dry skin with stable vitals"
+      "Cool, pale, or diaphoretic skin",
+      "Restlessness or slower responses",
+      "Near-syncope with position change",
+      "Normal blood pressure alone",
+      "Mild nausea after eating"
     ],
     correct: [0, 1, 2, 3],
-    feedback: "Shock may be compensated before hypotension appears."
+    feedback: "Level 11 questions require recognizing compensated shock before the patient fully crashes."
   },
   {
     level: 11,
     type: "multi",
-    question: "Which actions are appropriate for an unstable GI/GU patient with vomiting, altered mental status, and signs of shock? Select all that apply.",
+    question: "Which actions are appropriate for an unstable GI/GU patient with vomiting, altered mental status, and signs of poor perfusion? Select all that apply.",
     answers: [
-      "Manage airway risk",
+      "Protect the airway from aspiration",
       "Assess breathing adequacy",
       "Treat for shock",
-      "Rapidly transport",
-      "Give oral fluids",
-      "Delay transport for complete history"
+      "Begin rapid transport",
+      "Delay movement until the full SAMPLE history is complete",
+      "Give oral fluids to correct dehydration"
     ],
     correct: [0, 1, 2, 3],
-    feedback: "Airway, breathing, circulation, and transport are the priorities."
+    feedback: "Airway, breathing, circulation, and transport are the priorities. History should not delay care."
   },
   {
     level: 11,
     type: "matching",
-    question: "Match the advanced finding with the most likely hidden life threat.",
+    question: "Match the subtle finding with the most likely hidden life threat.",
     leftItems: [
-      "Missed dialysis with bradycardia and weakness",
+      "Missed dialysis with slow irregular pulse",
       "Shoulder pain with possible pregnancy",
-      "Vomiting blood with altered mental status",
+      "Dark red vomit with worsening confusion",
       "Tearing abdominal pain radiating to the back"
     ],
     rightItems: [
       "Possible potassium disturbance",
       "Possible ectopic pregnancy",
-      "GI bleed with airway and shock risk",
+      "GI bleeding with airway and shock risk",
       "Possible abdominal aortic aneurysm"
     ],
     correct: [0, 1, 2, 3],
-    feedback: "Level 11 questions require recognition of hidden threats before collapse."
+    feedback: "Advanced questions require identifying the hidden threat from subtle clues."
   },
 
   {
     level: 12,
     type: "single",
-    question: "You are transporting a dialysis patient who missed treatment. He has abdominal pain, vomiting, crackles, bradycardia, and altered mental status. ALS is unavailable. Halfway to the hospital, he becomes apneic. What is the MOST appropriate EMT action?",
+    question: "You are 35 minutes from the hospital with no ALS available. A dialysis patient who missed treatment develops shallow respirations, increasing confusion, crackles, and a slow irregular pulse. Family asks you to divert to a closer urgent care. What is the MOST appropriate action?",
     answers: [
-      "Begin ventilations immediately, continue rapid transport, and reassess circulation frequently",
-      "Stop and obtain a complete medication list",
-      "Give oral glucose because altered mental status is present",
-      "Place him upright and wait to see if breathing returns"
+      "Support ventilation as needed and continue to the appropriate emergency department",
+      "Divert to urgent care because it is closer and the family requested it",
+      "Stop transport until the patient becomes more responsive",
+      "Place the patient upright and complete a medication list before deciding"
     ],
     correct: 0,
-    feedback: "Apnea requires immediate ventilatory support. Do not delay transport."
+    feedback: "This patient needs an emergency department. The priority is airway, ventilation, reassessment, and rapid transport."
   },
   {
     level: 12,
     type: "single",
-    question: "A patient with severe GI bleeding becomes unresponsive, has gurgling respirations, and has weak carotid pulses. What should happen FIRST?",
+    question: "A patient with repeated hematemesis becomes less responsive during transport. He has gurgling respirations, weak radial pulses, and blood around the mouth. What should happen FIRST?",
     answers: [
-      "Suction the airway and support ventilations as needed",
-      "Ask family about medical history",
-      "Apply a blanket only",
-      "Wait until arrival at the hospital"
+      "Suction the airway and support ventilations if breathing is inadequate",
+      "Apply oxygen and obtain another full set of vital signs before intervening",
+      "Request ALS intercept and continue reassessing the abdomen",
+      "Place him supine to improve blood pressure and reassess in two minutes"
     ],
     correct: 0,
-    feedback: "Airway obstruction from blood or vomit is the immediate threat."
+    feedback: "Airway contamination is the immediate life threat. Oxygen and ALS may be appropriate, but suction and ventilation come first."
   },
   {
     level: 12,
     type: "single",
-    question: "A confused patient with suspected internal abdominal bleeding refuses transport. He is pale, diaphoretic, tachycardic, and unable to repeat the risks of refusal. What is the BEST interpretation?",
+    question: "A confused patient with suspected internal abdominal bleeding refuses transport. He is pale, diaphoretic, tachycardic, and cannot explain what may happen if he stays home. What is the BEST interpretation?",
     answers: [
       "The refusal may not be valid because decision-making capacity is impaired",
-      "The refusal is automatically valid because he is awake",
-      "Family may sign refusal for him without concern",
+      "The refusal is valid because the patient is awake and speaking",
+      "The family can sign the refusal because they know the patient best",
       "Transport should be delayed until the patient becomes hypotensive"
     ],
     correct: 0,
-    feedback: "Capacity requires understanding, appreciation, reasoning, and communication of a choice."
+    feedback: "A patient must have decision-making capacity to refuse. Confusion and poor perfusion raise serious concern."
   },
   {
     level: 12,
     type: "single",
-    question: "A patient with suspected AAA becomes more lethargic during movement. Your partner wants to sit the patient upright and continue lifting quickly. What is the BEST response?",
+    question: "A 76-year-old with sudden abdominal pain radiating to the back becomes more lethargic while being moved. Your partner says, 'Let’s hurry and have him help us stand.' What is the BEST response?",
     answers: [
       "Stop unnecessary exertion, reassess ABCs and perfusion, move carefully, and expedite transport",
-      "Tell the patient to assist with walking",
-      "Repeat abdominal palpation several times",
-      "Delay transport until pain improves"
+      "Have the patient assist briefly to reduce lifting time",
+      "Place the patient upright and reassess the pain level",
+      "Repeat abdominal palpation before deciding how to move him"
     ],
     correct: 0,
-    feedback: "Deterioration during movement suggests worsening perfusion. Minimize exertion and reassess."
+    feedback: "Worsening lethargy suggests worsening perfusion. Minimize exertion and reassess immediately."
+  },
+  {
+    level: 12,
+    type: "single",
+    question: "A GI bleed patient is pale and confused. Your partner is focused on obtaining the medication list because the patient may take blood thinners. During this time, the patient vomits and begins coughing weakly. What is the MOST appropriate action?",
+    answers: [
+      "Interrupt the history, manage the airway, suction as needed, and continue rapid transport",
+      "Finish obtaining the medication list because anticoagulants change hospital care",
+      "Place the patient flat to improve blood flow to the brain",
+      "Ask the family to clear the blood from the patient’s mouth while you reassess vitals"
+    ],
+    correct: 0,
+    feedback: "Medication history is useful, but airway risk and active vomiting take priority."
   },
   {
     level: 12,
     type: "multi",
-    question: "Which findings make a GI/GU call Level 12 difficulty? Select all that apply.",
+    question: "Which features make a GI/GU scenario Level 12 difficulty? Select all that apply.",
     answers: [
-      "Multiple systems failing at once",
-      "Changing condition during transport",
-      "Limited resources or no ALS",
-      "Legal/capacity conflict with an unstable patient",
-      "Stable patient with mild nausea",
-      "Simple recall of terminology"
+      "The patient condition changes during transport",
+      "More than one body system is involved",
+      "There is a legal, ethical, or destination conflict",
+      "The correct answer depends on priority rather than diagnosis alone",
+      "The patient has stable vital signs and a minor complaint",
+      "The question only asks for a definition"
     ],
     correct: [0, 1, 2, 3],
-    feedback: "Level 12 requires prioritization, reassessment, ethics, transport decisions, and multi-system thinking."
+    feedback: "Level 12 questions require prioritization, reassessment, legal judgment, and multi-system thinking."
   },
   {
     level: 12,
     type: "multi",
-    question: "A vomiting GI bleed patient becomes unresponsive during transport. Which actions are MOST appropriate? Select all that apply.",
+    question: "A vomiting GI bleed patient becomes less responsive and has gurgling respirations during transport. Which actions are MOST appropriate? Select all that apply.",
     answers: [
-      "Suction airway",
-      "Assess breathing",
-      "Assist ventilations if inadequate",
+      "Suction the airway",
+      "Assess breathing adequacy",
+      "Assist ventilations if needed",
       "Continue rapid transport",
-      "Give oral water",
-      "Delay care for full SAMPLE history"
+      "Delay airway care until a complete history is obtained",
+      "Give small amounts of water to clear blood from the throat"
     ],
     correct: [0, 1, 2, 3],
-    feedback: "Airway, breathing, and circulation priorities override history gathering."
+    feedback: "Airway, breathing, and transport priorities override history gathering."
   },
   {
     level: 12,
     type: "matching",
-    question: "Match the Level 12 complication with the highest EMT priority.",
+    question: "Match the Level 12 scenario with the highest EMT priority.",
     leftItems: [
-      "Unresponsive GI bleed with gurgling",
+      "Unresponsive GI bleed with gurgling respirations",
       "Dialysis patient becomes apneic",
-      "Possible ectopic pregnancy with shock",
-      "Suspected AAA with worsening lethargy"
+      "Possible pregnancy with shoulder pain and shock",
+      "Tearing abdominal pain with worsening lethargy"
     ],
     rightItems: [
       "Suction and airway protection",
@@ -335,7 +361,7 @@ const questions = [
       "Minimize movement and treat shock"
     ],
     correct: [0, 1, 2, 3],
-    feedback: "Level 12 questions test the priority that prevents death first."
+    feedback: "The correct answer is the priority that prevents death first."
   }
 ];
 
@@ -671,13 +697,13 @@ function finishExam() {
   let result = "";
 
   if (score >= 22) {
-    result = "Excellent performance. Student is handling Level 11-12 advanced EMT GI/GU critical-thinking scenarios.";
+    result = "Excellent performance. Student is handling Level 11-12 LC-Ready/NREMT-style GI/GU critical-thinking scenarios.";
   } else if (score >= 18) {
-    result = "Good performance. Review dialysis complications, GI bleeding, airway compromise, shock, AAA, pregnancy complications, and refusal capacity.";
+    result = "Good performance. Review airway priority, shock recognition, dialysis complications, GI bleeding, AAA, pregnancy complications, and refusal capacity.";
   } else if (score >= 14) {
-    result = "Borderline performance. Review multi-system patient deterioration, airway priorities, reassessment, and rapid transport decisions.";
+    result = "Borderline performance. Review subtle instability, reassessment changes, transport decisions, and most-correct-answer reasoning.";
   } else {
-    result = "Needs remediation. Focus on EMT priorities: scene safety, airway, breathing, circulation, shock, internal bleeding, dialysis emergencies, GI bleeding, and transport decisions.";
+    result = "Needs remediation. Focus on EMT priorities: airway, breathing, circulation, shock, altered mental status, internal bleeding, dialysis emergencies, and rapid transport.";
   }
 
   document.getElementById("feedback").style.display = "block";
@@ -686,7 +712,7 @@ function finishExam() {
     "<br><br><strong>Final Difficulty Level:</strong> " + currentLevel +
     "<br><br>" + result;
 
-  document.getElementById("status").innerText = "Level 11-12 Exam Finished";
+  document.getElementById("status").innerText = "Level 11-12 LC-Ready Style Exam Finished";
   document.getElementById("submitBtn").style.display = "none";
   document.getElementById("nextBtn").style.display = "none";
   document.getElementById("restartBtn").style.display = "block";
