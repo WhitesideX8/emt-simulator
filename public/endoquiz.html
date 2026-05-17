@@ -274,7 +274,8 @@ const questions = [
       "Vomiting with altered mental status",
       "Absent gag reflex",
       "Declining level of consciousness",
-      "Mild thirst"
+      "Mild thirst",
+      "Normal speech without distress"
     ],
     correct: [0, 1, 2, 3],
     feedback: "These findings suggest the patient may be unable to protect the airway."
@@ -288,7 +289,8 @@ const questions = [
       "Treat for shock",
       "Request ALS intercept if available",
       "Transport rapidly",
-      "Administer oral glucose"
+      "Administer oral glucose",
+      "Delay transport for a full medication inventory"
     ],
     correct: [0, 1, 2, 3],
     feedback: "Oral glucose is not appropriate for DKA, especially with vomiting or altered mental status."
@@ -302,7 +304,8 @@ const questions = [
       "Stroke and hypoglycemia can occur together",
       "Glucose correction does not eliminate the need for reassessment",
       "Transport decisions should consider time-sensitive stroke care",
-      "Low glucose always rules out stroke"
+      "Low glucose always rules out stroke",
+      "Stroke assessment should be skipped once glucose is checked"
     ],
     correct: [0, 1, 2, 3],
     feedback: "Do not rule out stroke only because glucose is abnormal."
@@ -316,7 +319,8 @@ const questions = [
       "Repeated questioning",
       "Unable to explain consequences",
       "Recent severe hypoglycemia",
-      "Clear understanding of risks"
+      "Clear understanding of risks",
+      "Stable mental status with full understanding"
     ],
     correct: [0, 1, 2, 3],
     feedback: "Capacity and recurrence risk are major concerns after hypoglycemia."
@@ -330,7 +334,8 @@ const questions = [
       "Electrolyte disturbance",
       "Airway and breathing compromise",
       "Need for ALS",
-      "Isolated anxiety only"
+      "Isolated anxiety only",
+      "No transport needed if sugar improves"
     ],
     correct: [0, 1, 2, 3],
     feedback: "This is a complex patient with multiple possible life threats."
@@ -344,7 +349,8 @@ const questions = [
       "Delaying airway care for a medication list",
       "Ignoring vomiting",
       "Allowing the patient to walk despite instability",
-      "Positioning to protect the airway"
+      "Positioning to protect the airway",
+      "Suctioning when secretions are present"
     ],
     correct: [0, 1, 2, 3],
     feedback: "Airway safety, fall prevention, and rapid reassessment are essential."
@@ -358,7 +364,8 @@ const questions = [
       "Tachycardia",
       "Altered mental status",
       "Cool extremities",
-      "Normal perfusion"
+      "Normal perfusion",
+      "Warm dry skin with normal mentation"
     ],
     correct: [0, 1, 2, 3],
     feedback: "Severe dehydration from hyperglycemia or DKA can cause shock."
@@ -599,11 +606,37 @@ function loadSingleQuestion() {
 function loadMultiQuestion() {
   const answersDiv = document.getElementById("answers");
 
-  currentQuestion.answers.forEach((answer, index) => {
+  const correctAnswers = currentQuestion.correct.map(index => ({
+    text: currentQuestion.answers[index],
+    isCorrect: true
+  }));
+
+  const incorrectAnswers = currentQuestion.answers
+    .map((answer, index) => ({
+      text: answer,
+      isCorrect: false,
+      originalIndex: index
+    }))
+    .filter(answer => !currentQuestion.correct.includes(answer.originalIndex));
+
+  const twoIncorrectAnswers = shuffleArray(incorrectAnswers).slice(0, 2);
+
+  const finalAnswers = shuffleArray([
+    ...correctAnswers,
+    ...twoIncorrectAnswers
+  ]);
+
+  currentQuestion.shuffledAnswers = finalAnswers;
+
+  currentQuestion.shuffledCorrect = finalAnswers
+    .map((answer, index) => answer.isCorrect ? index : null)
+    .filter(index => index !== null);
+
+  finalAnswers.forEach((answer, index) => {
     answersDiv.innerHTML += `
       <label class="checkbox-answer">
         <input type="checkbox" value="${index}">
-        ${answer}
+        ${answer.text}
       </label>
     `;
   });
@@ -697,9 +730,11 @@ function checkMultiAnswer() {
     document.querySelectorAll('#answers input[type="checkbox"]:checked')
   ).map(cb => Number(cb.value));
 
+  const correctAnswers = currentQuestion.shuffledCorrect;
+
   const correct =
-    checked.length === currentQuestion.correct.length &&
-    checked.every(value => currentQuestion.correct.includes(value));
+    checked.length === correctAnswers.length &&
+    checked.every(value => correctAnswers.includes(value));
 
   const feedback = document.getElementById("feedback");
   const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
@@ -721,14 +756,14 @@ function checkMultiAnswer() {
     currentLevel--;
     if (currentLevel < 7) currentLevel = 7;
 
-    const correctAnswers = currentQuestion.correct
-      .map(index => currentQuestion.answers[index])
+    const correctText = currentQuestion.shuffledCorrect
+      .map(index => currentQuestion.shuffledAnswers[index].text)
       .join(", ");
 
     feedback.innerHTML =
       "<strong>Incorrect.</strong><br>" +
       "Most correct answers: <strong>" +
-      correctAnswers +
+      correctText +
       "</strong><br><br>" +
       currentQuestion.feedback +
       "<br><br>Difficulty will remain at Level 7.";
