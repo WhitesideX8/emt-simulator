@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Adaptive EMT Cardiovascular Exam</title>
+  <title>Level 19-20 Adaptive EMT Cardiovascular Exam</title>
 
   <style>
     body {
@@ -115,7 +115,7 @@
 
 <div class="container">
   <h1>EMT Cardiovascular Exam</h1>
-  <h2>Harder Adaptive NREMT-Style Questions</h2>
+  <h2>Level 19-20 Expert Critical-Thinking Adaptive Exam</h2>
 
   <div id="status"></div>
 
@@ -134,389 +134,238 @@
 
 <script>
 const questions = [
+  {
+    level: 19,
+    type: "single",
+    question: "A 64-year-old male has crushing chest pressure, pale clammy skin, and nausea. BP is 86/54. He has his prescribed nitroglycerin and took sildenafil earlier today. His wife insists nitro always helps. What is the MOST appropriate EMT action?",
+    answers: [
+      "Withhold nitroglycerin, treat for poor perfusion, consider aspirin if not contraindicated by protocol, and rapidly transport",
+      "Assist with nitroglycerin because the patient has his own prescription",
+      "Give nitroglycerin only after the patient stands to improve venous return",
+      "Delay transport until the chest pressure improves with rest"
+    ],
+    correct: 0,
+    feedback: "Hypotension and recent sildenafil are major nitroglycerin contraindications. The priority is perfusion support and rapid transport."
+  },
+  {
+    level: 19,
+    type: "single",
+    question: "A 71-year-old female reports weakness, nausea, shortness of breath, and jaw discomfort but denies chest pain. She is cool, diaphoretic, and hypotensive. What is the MOST correct EMT interpretation?",
+    answers: [
+      "This may be an atypical acute coronary syndrome presentation requiring high-priority assessment and transport",
+      "This is unlikely cardiac because there is no chest pain",
+      "This is most likely anxiety because the symptoms are vague",
+      "Transport can be delayed until chest pain develops"
+    ],
+    correct: 0,
+    feedback: "Women and older adults may present with atypical ACS symptoms. Absence of chest pain does not rule out serious cardiac disease."
+  },
+  {
+    level: 19,
+    type: "single",
+    question: "A patient with chest pressure becomes suddenly unresponsive during assessment. He has gasping respirations and no carotid pulse. Family says he was talking one minute ago. What should the EMT do FIRST?",
+    answers: [
+      "Begin high-quality CPR and apply the AED as soon as possible",
+      "Apply oxygen by nonrebreather and obtain a blood pressure",
+      "Assist with prescribed nitroglycerin because the complaint began as chest pain",
+      "Check a radial pulse for 30 seconds before starting CPR"
+    ],
+    correct: 0,
+    feedback: "Agonal respirations are not normal breathing. Pulseless patients need immediate CPR and AED use."
+  },
+  {
+    level: 19,
+    type: "single",
+    question: "A 58-year-old with chest pain has severe dyspnea, crackles, pink frothy sputum, and cool clammy skin. BP is 92/60. Which treatment priority is MOST appropriate?",
+    answers: [
+      "Support oxygenation and ventilation as needed, keep the patient positioned for breathing if tolerated, and rapidly transport",
+      "Lay the patient flat to improve venous return",
+      "Encourage the patient to cough forcefully until the fluid clears",
+      "Withhold transport until lung sounds normalize"
+    ],
+    correct: 0,
+    feedback: "Pulmonary edema with poor perfusion is high risk. Oxygenation, ventilation support, position of comfort, and rapid transport are priorities."
+  },
+  {
+    level: 19,
+    type: "single",
+    question: "A patient describes sudden tearing chest pain radiating to the back. One radial pulse is weaker than the other, and arm blood pressures are unequal. He asks for aspirin because he thinks it is a heart attack. What should the EMT suspect?",
+    answers: [
+      "Possible aortic dissection requiring rapid transport and careful reassessment",
+      "Stable angina because pain radiates from the chest",
+      "Pulmonary edema because the pain is severe",
+      "Hypoglycemia because the symptoms are sudden"
+    ],
+    correct: 0,
+    feedback: "Tearing chest/back pain with pulse or blood pressure differences suggests possible aortic dissection."
+  },
+  {
+    level: 19,
+    type: "multi",
+    question: "A chest pain patient has BP 84/50, cool clammy skin, altered mental status, and recent sildenafil use. Which actions are MOST appropriate? Select all that apply.",
+    answers: [
+      "Withhold nitroglycerin",
+      "Treat for poor perfusion/shock",
+      "Prepare for rapid transport",
+      "Consider aspirin if not contraindicated and allowed by protocol",
+      "Assist with nitroglycerin because chest pain is present",
+      "Have the patient walk to improve circulation"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Hypotension and sildenafil make nitroglycerin unsafe. Poor perfusion requires support and rapid transport."
+  },
+  {
+    level: 19,
+    type: "multi",
+    question: "Which findings should make an EMT suspect a high-risk cardiovascular emergency rather than simple discomfort? Select all that apply.",
+    answers: [
+      "Chest pressure with diaphoresis and hypotension",
+      "Jaw discomfort with weakness and shortness of breath in an older adult",
+      "Pink frothy sputum with crackles and severe dyspnea",
+      "Tearing pain radiating to the back with unequal arm pressures",
+      "Localized pain only when pressing one small spot on the chest",
+      "Brief dizziness that resolves completely after standing too quickly"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "High-risk cardiovascular presentations include ACS, atypical MI, pulmonary edema, cardiogenic shock, and possible aortic dissection."
+  },
+  {
+    level: 19,
+    type: "matching",
+    question: "Match the Level 19 cardiovascular presentation with the highest EMT concern.",
+    leftItems: [
+      "Chest pain, hypotension, recent sildenafil",
+      "Weakness, nausea, jaw discomfort, diaphoresis",
+      "Pink frothy sputum with crackles",
+      "Tearing pain to back with unequal pulses"
+    ],
+    rightItems: [
+      "Nitroglycerin contraindication and poor perfusion",
+      "Possible atypical ACS/MI",
+      "Possible pulmonary edema from heart failure",
+      "Possible aortic dissection"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Level 19 questions require identifying the dangerous pattern and not being distracted by incomplete or atypical presentations."
+  },
 
-{
-  level: 1,
-  type: "single",
-  question: "A 56-year-old patient reports chest pressure after climbing stairs. The pain improves after resting for several minutes. What is the MOST likely cause?",
-  answers: [
-    "Temporary decrease in oxygen supply to the heart muscle",
-    "Complete blockage of blood flow to the brain",
-    "Excessive air trapping in the lungs",
-    "Low blood sugar affecting cardiac muscle"
-  ],
-  correct: 0,
-  feedback: "Chest pressure brought on by exertion and relieved by rest suggests angina from temporary myocardial ischemia."
-},
-
-{
-  level: 1,
-  type: "single",
-  question: "A patient is pale, cool, diaphoretic, and anxious with chest discomfort. Which vital sign would be MOST concerning?",
-  answers: [
-    "Pulse 88 and regular",
-    "Blood pressure 84/50",
-    "Respirations 18 and unlabored",
-    "SpO2 97% on room air"
-  ],
-  correct: 1,
-  feedback: "Hypotension in a chest pain patient may indicate poor cardiac output or shock."
-},
-
-{
-  level: 1,
-  type: "single",
-  question: "An unconscious adult has no radial pulse. What should the EMT check NEXT?",
-  answers: [
-    "Pedal pulse",
-    "Carotid pulse",
-    "Blood glucose",
-    "Capillary refill"
-  ],
-  correct: 1,
-  feedback: "In an unconscious adult, the carotid pulse is used to assess for central circulation."
-},
-
-{
-  level: 1,
-  type: "multi",
-  question: "Which findings may suggest cardiac chest pain? Select all that apply.",
-  answers: [
-    "Pressure or squeezing in the chest",
-    "Pain radiating to the jaw or left arm",
-    "Shortness of breath",
-    "Pain that changes only with palpation",
-    "Nausea or diaphoresis"
-  ],
-  correct: [0,1,2,4],
-  feedback: "Cardiac chest pain may include pressure, radiation, shortness of breath, nausea, and diaphoresis."
-},
-
-{
-  level: 1,
-  type: "matching",
-  question: "Match the cardiovascular term with the best description.",
-  leftItems: [
-    "Ischemia",
-    "Infarction",
-    "Perfusion"
-  ],
-  rightItems: [
-    "Inadequate oxygen supply to tissue",
-    "Tissue death from lack of blood flow",
-    "Circulation of blood through tissues"
-  ],
-  correct: [0,1,2],
-  feedback: "Ischemia means inadequate oxygen delivery, infarction means tissue death, and perfusion means blood flow through tissues."
-},
-
-{
-  level: 2,
-  type: "single",
-  question: "A 64-year-old male with chest pain has a prescribed nitroglycerin bottle. His blood pressure is 88/56. What should the EMT do?",
-  answers: [
-    "Assist with one nitroglycerin tablet",
-    "Withhold nitroglycerin and continue assessment",
-    "Give two nitroglycerin tablets to improve circulation",
-    "Have the patient stand before giving nitroglycerin"
-  ],
-  correct: 1,
-  feedback: "Nitroglycerin can lower blood pressure further and should not be assisted when the patient is hypotensive."
-},
-
-{
-  level: 2,
-  type: "single",
-  question: "A patient with chest pain took sildenafil earlier today. Why is this important?",
-  answers: [
-    "It increases the risk of aspirin allergy",
-    "It can cause a dangerous drop in blood pressure with nitroglycerin",
-    "It makes oxygen ineffective",
-    "It prevents AED analysis"
-  ],
-  correct: 1,
-  feedback: "Erectile dysfunction medications such as sildenafil can cause severe hypotension when combined with nitroglycerin."
-},
-
-{
-  level: 2,
-  type: "single",
-  question: "A patient with suspected cardiac chest pain is alert and has no aspirin allergy. Which intervention is usually appropriate under EMT protocol?",
-  answers: [
-    "Assist with aspirin",
-    "Administer oral glucose",
-    "Apply a tourniquet",
-    "Give albuterol by nebulizer"
-  ],
-  correct: 0,
-  feedback: "Aspirin may be given for suspected cardiac chest pain if there are no contraindications and local protocol allows."
-},
-
-{
-  level: 2,
-  type: "multi",
-  question: "Which findings suggest poor perfusion? Select all that apply.",
-  answers: [
-    "Altered mental status",
-    "Weak radial pulses",
-    "Cool clammy skin",
-    "Normal mentation with warm dry skin",
-    "Delayed capillary refill"
-  ],
-  correct: [0,1,2,4],
-  feedback: "Poor perfusion can cause altered mental status, weak pulses, cool clammy skin, and delayed capillary refill."
-},
-
-{
-  level: 2,
-  type: "matching",
-  question: "Match the finding with the most likely concern.",
-  leftItems: [
-    "Hypotension after nitroglycerin",
-    "Chest pain with diaphoresis",
-    "Weak pulse and altered mental status"
-  ],
-  rightItems: [
-    "Medication-related drop in blood pressure",
-    "Possible myocardial infarction",
-    "Poor perfusion"
-  ],
-  correct: [0,1,2],
-  feedback: "These findings require careful EMT recognition and treatment prioritization."
-},
-
-{
-  level: 3,
-  type: "single",
-  question: "A 70-year-old female complains of weakness, nausea, and shortness of breath. She denies chest pain. Skin is cool and moist. BP is 90/58. What should the EMT suspect?",
-  answers: [
-    "Atypical myocardial infarction",
-    "Simple indigestion",
-    "Isolated anxiety",
-    "Muscle strain"
-  ],
-  correct: 0,
-  feedback: "Older adults and females may have atypical MI symptoms without classic chest pain."
-},
-
-{
-  level: 3,
-  type: "single",
-  question: "A patient becomes unresponsive while you are assessing chest pain. He has agonal respirations and no pulse. What should you do FIRST?",
-  answers: [
-    "Apply oxygen by nasal cannula",
-    "Begin CPR and apply the AED",
-    "Obtain a full SAMPLE history",
-    "Assist with nitroglycerin"
-  ],
-  correct: 1,
-  feedback: "Agonal respirations are not normal breathing. A pulseless patient needs immediate CPR and AED use."
-},
-
-{
-  level: 3,
-  type: "single",
-  question: "During CPR, the AED states 'No shock advised.' The patient remains pulseless. What should the EMT do NEXT?",
-  answers: [
-    "Resume CPR immediately",
-    "Check blood pressure",
-    "Remove the AED pads",
-    "Wait for the AED to reanalyze without compressions"
-  ],
-  correct: 0,
-  feedback: "If no shock is advised and the patient remains pulseless, CPR should be resumed immediately."
-},
-
-{
-  level: 3,
-  type: "multi",
-  question: "Which actions are appropriate for a suspected cardiac chest pain patient? Select all that apply.",
-  answers: [
-    "Place the patient in a position of comfort",
-    "Administer oxygen if hypoxic or in respiratory distress",
-    "Assist with prescribed nitroglycerin if allowed and not contraindicated",
-    "Delay transport until pain is completely gone",
-    "Consider aspirin if not contraindicated"
-  ],
-  correct: [0,1,2,4],
-  feedback: "Cardiac chest pain care includes comfort, oxygen when indicated, aspirin if allowed, nitroglycerin when appropriate, and prompt transport."
-},
-
-{
-  level: 3,
-  type: "matching",
-  question: "Match the presentation with the best EMT priority.",
-  leftItems: [
-    "Pulseless and apneic patient",
-    "Chest pain with adequate blood pressure",
-    "Chest pain with severe hypotension"
-  ],
-  rightItems: [
-    "CPR and AED",
-    "Cardiac assessment and medication assistance if appropriate",
-    "Treat for shock and avoid nitroglycerin"
-  ],
-  correct: [0,1,2],
-  feedback: "Treatment priorities depend on perfusion, pulse, breathing, and medication contraindications."
-},
-
-{
-  level: 4,
-  type: "single",
-  question: "A patient with chest pain has crackles in both lungs, severe dyspnea, and pink frothy sputum. What condition should the EMT suspect?",
-  answers: [
-    "Pulmonary edema from heart failure",
-    "Simple bronchitis",
-    "Tension pneumothorax",
-    "Hyperventilation syndrome"
-  ],
-  correct: 0,
-  feedback: "Crackles, dyspnea, and pink frothy sputum suggest pulmonary edema, often related to heart failure."
-},
-
-{
-  level: 4,
-  type: "single",
-  question: "A chest pain patient has unequal blood pressures in the arms and tearing pain radiating to the back. What should the EMT suspect?",
-  answers: [
-    "Aortic dissection",
-    "Stable angina",
-    "Hypoglycemia",
-    "Simple muscle strain"
-  ],
-  correct: 0,
-  feedback: "Tearing chest or back pain with unequal pulses or blood pressures may indicate aortic dissection."
-},
-
-{
-  level: 4,
-  type: "single",
-  question: "A patient in cardiogenic shock is MOST likely experiencing shock because:",
-  answers: [
-    "The heart is failing to pump effectively",
-    "The blood vessels are dilating from an allergen",
-    "The patient has lost a large amount of blood",
-    "The airway is blocked by a foreign body"
-  ],
-  correct: 0,
-  feedback: "Cardiogenic shock occurs when the heart cannot pump enough blood to meet the body's needs."
-},
-
-{
-  level: 4,
-  type: "multi",
-  question: "Which findings are consistent with cardiogenic shock? Select all that apply.",
-  answers: [
-    "Hypotension",
-    "Weak or irregular pulse",
-    "Cool clammy skin",
-    "Clear lungs with normal perfusion",
-    "Signs of pulmonary edema"
-  ],
-  correct: [0,1,2,4],
-  feedback: "Cardiogenic shock may include hypotension, weak or irregular pulse, poor skin signs, and pulmonary edema."
-},
-
-{
-  level: 4,
-  type: "matching",
-  question: "Match the medication or intervention with its primary EMT purpose.",
-  leftItems: [
-    "Aspirin",
-    "Nitroglycerin",
-    "AED",
-    "Oxygen"
-  ],
-  rightItems: [
-    "Reduce platelet aggregation",
-    "Dilate blood vessels and reduce cardiac workload",
-    "Analyze rhythm and defibrillate when indicated",
-    "Improve oxygen delivery when indicated"
-  ],
-  correct: [0,1,2,3],
-  feedback: "Each intervention has a specific purpose in cardiovascular emergency care."
-},
-
-{
-  level: 5,
-  type: "single",
-  question: "A patient with chest pain is alert but suddenly becomes confused, pale, and hypotensive after taking nitroglycerin. What is the MOST appropriate EMT action?",
-  answers: [
-    "Assist with another nitroglycerin dose",
-    "Treat for shock and reassess blood pressure",
-    "Have the patient walk to improve circulation",
-    "Delay transport until mental status improves"
-  ],
-  correct: 1,
-  feedback: "A drop in blood pressure and altered mental status after nitroglycerin requires shock management and reassessment."
-},
-
-{
-  level: 5,
-  type: "single",
-  question: "A pulseless patient receives a shock from the AED. What should the EMT do immediately after the shock is delivered?",
-  answers: [
-    "Resume CPR immediately",
-    "Check blood pressure",
-    "Remove the AED pads",
-    "Give nitroglycerin"
-  ],
-  correct: 0,
-  feedback: "After a shock, CPR should be resumed immediately unless the patient shows clear signs of life."
-},
-
-{
-  level: 5,
-  type: "single",
-  question: "Which patient should be considered the highest priority for rapid transport?",
-  answers: [
-    "Chest pain relieved by rest with normal vitals",
-    "Chest pressure with diaphoresis and hypotension",
-    "Mild dizziness after standing quickly",
-    "Localized chest pain reproducible by palpation"
-  ],
-  correct: 1,
-  feedback: "Chest pressure with diaphoresis and hypotension suggests severe cardiac compromise and poor perfusion."
-},
-
-{
-  level: 5,
-  type: "multi",
-  question: "A patient has chest pain, BP 82/48, and took sildenafil 4 hours ago. Which actions are appropriate? Select all that apply.",
-  answers: [
-    "Withhold nitroglycerin",
-    "Administer oxygen if indicated",
-    "Prepare for rapid transport",
-    "Consider aspirin if not contraindicated",
-    "Place the patient standing upright"
-  ],
-  correct: [0,1,2,3],
-  feedback: "Nitroglycerin is contraindicated with hypotension and recent sildenafil use. Support oxygenation, consider aspirin, and transport rapidly."
-},
-
-{
-  level: 5,
-  type: "matching",
-  question: "Match the presentation with the MOST likely cardiovascular emergency.",
-  leftItems: [
-    "Pink frothy sputum with crackles",
-    "Tearing chest pain radiating to the back",
-    "Unresponsive with no pulse",
-    "Exertional chest pressure relieved by rest"
-  ],
-  rightItems: [
-    "Pulmonary edema",
-    "Aortic dissection",
-    "Cardiac arrest",
-    "Angina"
-  ],
-  correct: [0,1,2,3],
-  feedback: "These presentations require EMTs to recognize high-risk cardiovascular emergencies."
-}
-
+  {
+    level: 20,
+    type: "single",
+    question: "You are transporting a 67-year-old with suspected MI. He suddenly becomes unresponsive. The monitor/AED is not yet attached. He has agonal respirations and no carotid pulse. Your partner asks whether to finish the medication history first because the hospital will need it. What should guide your NEXT action?",
+    answers: [
+      "Immediate CPR and AED application take priority over history gathering",
+      "Complete the medication history before CPR because it affects cardiac treatment",
+      "Give aspirin first because the original complaint was chest pain",
+      "Check blood pressure before deciding whether the patient is in cardiac arrest"
+    ],
+    correct: 0,
+    feedback: "At Level 20, the correct action is the one that treats the immediate life threat. Pulseless arrest requires CPR and AED immediately."
+  },
+  {
+    level: 20,
+    type: "single",
+    question: "A patient with chest pressure, diaphoresis, and hypotension asks for nitroglycerin. He took tadalafil within the last 24 hours. His pain is 10/10 and he says he will refuse transport unless you give nitro. What is the MOST defensible EMT action?",
+    answers: [
+      "Do not assist nitroglycerin, explain the danger, treat poor perfusion, consider aspirin if appropriate, and continue high-priority transport/refusal protocol if needed",
+      "Give nitroglycerin because refusal risk is greater than medication risk",
+      "Give half a dose of nitroglycerin to satisfy the patient",
+      "Delay all care until the patient agrees to transport"
+    ],
+    correct: 0,
+    feedback: "Severe pain and patient pressure do not remove contraindications. PDE-5 inhibitor use plus hypotension creates major risk."
+  },
+  {
+    level: 20,
+    type: "single",
+    question: "A patient with suspected cardiac chest pain has increasing respiratory distress, crackles, and falling oxygen saturation despite a nonrebreather. He becomes drowsy and can only speak one-word answers. What is the MOST appropriate EMT priority?",
+    answers: [
+      "Reassess airway and breathing, support ventilations as needed, and rapidly transport while updating the receiving facility",
+      "Continue oxygen by nonrebreather only because positive pressure is never used for cardiac patients",
+      "Focus on obtaining a complete OPQRST history before changing treatment",
+      "Have the patient lie flat to improve blood flow to the brain"
+    ],
+    correct: 0,
+    feedback: "Worsening respiratory failure in pulmonary edema requires airway and breathing reassessment, ventilation support if needed, and rapid transport."
+  },
+  {
+    level: 20,
+    type: "single",
+    question: "A chest pain patient has unequal arm blood pressures, tearing pain into the back, and signs of poor perfusion. A bystander tells you to give aspirin immediately because it is always given for chest pain. What is the MOST important EMT reasoning?",
+    answers: [
+      "The presentation suggests possible aortic dissection; rapid transport and careful reassessment are priorities, and treatment should follow local protocol rather than automatic chest-pain routines",
+      "All chest pain must receive aspirin before transport regardless of presentation",
+      "Unequal arm blood pressures are usually caused by anxiety and should not affect care",
+      "The patient should walk to the ambulance to prevent worsening blood pressure"
+    ],
+    correct: 0,
+    feedback: "Level 20 distractors use common routines. Not all chest pain is the same. Possible dissection requires careful judgment and protocol-based care."
+  },
+  {
+    level: 20,
+    type: "single",
+    question: "After an AED shock, a pulseless patient remains unresponsive. A family member asks if the shock worked, and your partner pauses to check for a pulse. What should happen immediately after the shock unless signs of life are obvious?",
+    answers: [
+      "Resume CPR immediately",
+      "Wait for the AED to reanalyze without compressions",
+      "Remove the pads and check blood pressure",
+      "Give nitroglycerin because the arrest followed chest pain"
+    ],
+    correct: 0,
+    feedback: "CPR resumes immediately after a shock unless the patient shows clear signs of life. Do not create unnecessary pauses."
+  },
+  {
+    level: 20,
+    type: "multi",
+    question: "Which choices demonstrate Level 20 expert EMT cardiovascular judgment? Select all that apply.",
+    answers: [
+      "Withholding nitroglycerin when hypotension or recent PDE-5 inhibitor use is present",
+      "Recognizing atypical ACS in a weak, nauseated, diaphoretic older adult without chest pain",
+      "Beginning CPR and applying an AED when a chest pain patient becomes pulseless with agonal respirations",
+      "Supporting ventilation when pulmonary edema progresses to respiratory failure",
+      "Giving nitroglycerin because the patient insists it always helps",
+      "Waiting for diagnostic certainty before transporting a high-risk chest pain patient"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Expert cardiovascular judgment means resisting routine answers when contraindications, deterioration, or atypical symptoms change the priority."
+  },
+  {
+    level: 20,
+    type: "multi",
+    question: "A cardiovascular patient deteriorates during transport. Which findings require immediate reassessment of ABCs before further history or documentation? Select all that apply.",
+    answers: [
+      "Sudden unresponsiveness with agonal respirations",
+      "Falling oxygen saturation with increasing drowsiness",
+      "Severe dyspnea with worsening crackles and one-word speech",
+      "Loss of central pulse",
+      "Family provides a complete medication list",
+      "Pain score changes from 7/10 to 6/10 with stable vital signs"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "ABCs override paperwork and history when the patient shows respiratory failure, cardiac arrest, or rapid deterioration."
+  },
+  {
+    level: 20,
+    type: "matching",
+    question: "Match the Level 20 cardiovascular pressure/distractor with the safest EMT priority.",
+    leftItems: [
+      "Patient demands nitro but is hypotensive and took tadalafil",
+      "Chest pain patient becomes pulseless with agonal respirations",
+      "Pulmonary edema patient becomes drowsy with falling oxygen saturation",
+      "Tearing chest pain to back with unequal arm pressures"
+    ],
+    rightItems: [
+      "Withhold nitro and manage poor perfusion",
+      "Start CPR and apply AED",
+      "Reassess airway/breathing and support ventilations",
+      "Suspect possible aortic dissection and transport rapidly"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Level 20 matching focuses on the safest governing principle when distractors compete with patient priorities."
+  }
 ];
 
-let currentLevel = 2;
+let currentLevel = 19;
 let questionNumber = 0;
 let score = 0;
 let maxQuestions = 25;
@@ -540,8 +389,8 @@ function getQuestionByLevel(level) {
   }
 
   if (available.length === 0) {
-    finishExam();
-    return null;
+    usedQuestions = [];
+    available = questions.filter(q => q.level === level);
   }
 
   return available[Math.floor(Math.random() * available.length)];
@@ -586,10 +435,19 @@ function loadQuestion() {
 function loadSingleQuestion() {
   const answersDiv = document.getElementById("answers");
 
-  currentQuestion.answers.forEach((answer, index) => {
+  const shuffledAnswers = shuffleArray(
+    currentQuestion.answers.map((answer, index) => ({
+      text: answer,
+      originalIndex: index
+    }))
+  );
+
+  currentQuestion.shuffledSingleAnswers = shuffledAnswers;
+
+  shuffledAnswers.forEach((answer, index) => {
     answersDiv.innerHTML += `
       <button onclick="checkSingleAnswer(${index})">
-        ${answer}
+        ${answer.text}
       </button>
     `;
   });
@@ -598,11 +456,37 @@ function loadSingleQuestion() {
 function loadMultiQuestion() {
   const answersDiv = document.getElementById("answers");
 
-  currentQuestion.answers.forEach((answer, index) => {
+  const correctAnswers = currentQuestion.correct.map(index => ({
+    text: currentQuestion.answers[index],
+    isCorrect: true
+  }));
+
+  const incorrectAnswers = currentQuestion.answers
+    .map((answer, index) => ({
+      text: answer,
+      isCorrect: false,
+      originalIndex: index
+    }))
+    .filter(answer => !currentQuestion.correct.includes(answer.originalIndex));
+
+  const twoIncorrectAnswers = shuffleArray(incorrectAnswers).slice(0, 2);
+
+  const finalAnswers = shuffleArray([
+    ...correctAnswers,
+    ...twoIncorrectAnswers
+  ]);
+
+  currentQuestion.shuffledAnswers = finalAnswers;
+
+  currentQuestion.shuffledCorrect = finalAnswers
+    .map((answer, index) => answer.isCorrect ? index : null)
+    .filter(index => index !== null);
+
+  finalAnswers.forEach((answer, index) => {
     answersDiv.innerHTML += `
       <label class="checkbox-answer">
         <input type="checkbox" value="${index}">
-        ${answer}
+        ${answer.text}
       </label>
     `;
   });
@@ -614,7 +498,6 @@ function loadMatchingQuestion() {
   const answersDiv = document.getElementById("answers");
 
   currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
-
     const shuffledOptions = shuffleArray(
       currentQuestion.rightItems.map((rightItem, rightIndex) => ({
         text: rightItem,
@@ -646,7 +529,6 @@ function loadMatchingQuestion() {
 }
 
 function checkSingleAnswer(selected) {
-
   const feedback = document.getElementById("feedback");
   const buttons = document.querySelectorAll("#answers button");
 
@@ -654,36 +536,39 @@ function checkSingleAnswer(selected) {
     button.disabled = true;
   });
 
-  if (selected === currentQuestion.correct) {
+  const selectedOriginalIndex =
+    currentQuestion.shuffledSingleAnswers[selected].originalIndex;
 
+  const correctShuffledIndex =
+    currentQuestion.shuffledSingleAnswers.findIndex(
+      answer => answer.originalIndex === currentQuestion.correct
+    );
+
+  if (selectedOriginalIndex === currentQuestion.correct) {
     score++;
     currentLevel++;
-
-    if (currentLevel > 5) currentLevel = 5;
+    if (currentLevel > 20) currentLevel = 20;
 
     buttons[selected].style.background = "darkgreen";
 
     feedback.innerHTML =
       "<strong>Correct.</strong><br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will increase.";
-
+      "<br><br>Difficulty will increase if possible.";
   } else {
-
     currentLevel--;
-
-    if (currentLevel < 1) currentLevel = 1;
+    if (currentLevel < 19) currentLevel = 19;
 
     buttons[selected].style.background = "darkred";
-    buttons[currentQuestion.correct].style.background = "darkgreen";
+    buttons[correctShuffledIndex].style.background = "darkgreen";
 
     feedback.innerHTML =
       "<strong>Incorrect.</strong><br>" +
-      "Correct answer: <strong>" +
+      "Most correct answer: <strong>" +
       currentQuestion.answers[currentQuestion.correct] +
       "</strong><br><br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will decrease.";
+      "<br><br>Difficulty will decrease if possible.";
   }
 
   feedback.style.display = "block";
@@ -691,28 +576,25 @@ function checkSingleAnswer(selected) {
 }
 
 function submitAnswer() {
-
   if (currentQuestion.type === "multi") {
     checkMultiAnswer();
-  }
-
-  else if (currentQuestion.type === "matching") {
+  } else if (currentQuestion.type === "matching") {
     checkMatchingAnswer();
   }
 }
 
 function checkMultiAnswer() {
-
   const checked = Array.from(
     document.querySelectorAll('#answers input[type="checkbox"]:checked')
   ).map(cb => Number(cb.value));
 
+  const correctAnswers = currentQuestion.shuffledCorrect;
+
   const correct =
-    checked.length === currentQuestion.correct.length &&
-    checked.every(value => currentQuestion.correct.includes(value));
+    checked.length === correctAnswers.length &&
+    checked.every(value => correctAnswers.includes(value));
 
   const feedback = document.getElementById("feedback");
-
   const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
 
   checkboxes.forEach(cb => {
@@ -720,34 +602,29 @@ function checkMultiAnswer() {
   });
 
   if (correct) {
-
     score++;
     currentLevel++;
-
-    if (currentLevel > 5) currentLevel = 5;
+    if (currentLevel > 20) currentLevel = 20;
 
     feedback.innerHTML =
       "<strong>Correct.</strong><br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will increase.";
-
+      "<br><br>Difficulty will increase if possible.";
   } else {
-
     currentLevel--;
+    if (currentLevel < 19) currentLevel = 19;
 
-    if (currentLevel < 1) currentLevel = 1;
-
-    const correctAnswers = currentQuestion.correct
-      .map(index => currentQuestion.answers[index])
+    const correctText = currentQuestion.shuffledCorrect
+      .map(index => currentQuestion.shuffledAnswers[index].text)
       .join(", ");
 
     feedback.innerHTML =
       "<strong>Incorrect.</strong><br>" +
-      "Correct answers: <strong>" +
-      correctAnswers +
+      "Most correct answers: <strong>" +
+      correctText +
       "</strong><br><br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will decrease.";
+      "<br><br>Difficulty will decrease if possible.";
   }
 
   feedback.style.display = "block";
@@ -756,23 +633,15 @@ function checkMultiAnswer() {
 }
 
 function checkMatchingAnswer() {
-
   const selects = document.querySelectorAll("#answers select");
+  const selectedAnswers = Array.from(selects).map(select => Number(select.value));
 
-  const selectedAnswers = Array.from(selects).map(select =>
-    Number(select.value)
-  );
-
-  const allAnswered = selectedAnswers.every(answer =>
-    !Number.isNaN(answer)
-  );
+  const allAnswered = selectedAnswers.every(answer => !Number.isNaN(answer));
 
   const correct =
     allAnswered &&
     selectedAnswers.length === currentQuestion.correct.length &&
-    selectedAnswers.every((value, index) =>
-      value === currentQuestion.correct[index]
-    );
+    selectedAnswers.every((value, index) => value === currentQuestion.correct[index]);
 
   const feedback = document.getElementById("feedback");
 
@@ -781,27 +650,21 @@ function checkMatchingAnswer() {
   });
 
   if (correct) {
-
     score++;
     currentLevel++;
-
-    if (currentLevel > 5) currentLevel = 5;
+    if (currentLevel > 20) currentLevel = 20;
 
     feedback.innerHTML =
       "<strong>Correct.</strong><br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will increase.";
-
+      "<br><br>Difficulty will increase if possible.";
   } else {
-
     currentLevel--;
-
-    if (currentLevel < 1) currentLevel = 1;
+    if (currentLevel < 19) currentLevel = 19;
 
     let correctText = "";
 
     currentQuestion.leftItems.forEach((item, index) => {
-
       correctText +=
         item +
         " = " +
@@ -811,11 +674,11 @@ function checkMatchingAnswer() {
 
     feedback.innerHTML =
       "<strong>Incorrect.</strong><br>" +
-      "<br><strong>Correct matches:</strong><br>" +
+      "<br><strong>Most correct matches:</strong><br>" +
       correctText +
       "<br>" +
       currentQuestion.feedback +
-      "<br><br>Difficulty will decrease.";
+      "<br><br>Difficulty will decrease if possible.";
   }
 
   feedback.style.display = "block";
@@ -829,7 +692,6 @@ function nextQuestion() {
 }
 
 function finishExam() {
-
   document.getElementById("question").innerHTML =
     "<h2>Exam Complete</h2>";
 
@@ -837,27 +699,24 @@ function finishExam() {
 
   let result = "";
 
-  if (score >= 20) {
-    result = "Strong cardiovascular performance.";
-  }
-
-  else if (score >= 15) {
-    result = "Borderline performance. Review cardiovascular emergencies, medication contraindications, shock, and cardiac arrest management.";
-  }
-
-  else {
-    result = "Needs remediation. Focus on chest pain assessment, aspirin, nitroglycerin contraindications, CPR, AED use, pulmonary edema, shock, and perfusion.";
+  if (score >= 22) {
+    result = "Excellent performance. Student is handling Level 19-20 expert cardiovascular scenarios with strong prioritization and resistance to distractors.";
+  } else if (score >= 18) {
+    result = "Good performance. Review nitroglycerin contraindications, atypical ACS, pulmonary edema, aortic dissection, cardiogenic shock, CPR, and AED sequencing.";
+  } else if (score >= 14) {
+    result = "Borderline performance. Review competing cardiovascular priorities, medication contraindications, deteriorating breathing, poor perfusion, and most-correct-answer reasoning.";
+  } else {
+    result = "Needs remediation. Focus on EMT cardiovascular priorities: ABCs, perfusion, aspirin/nitroglycerin rules, shock, AED use, CPR, pulmonary edema, atypical MI, and rapid transport.";
   }
 
   document.getElementById("feedback").style.display = "block";
-
   document.getElementById("feedback").innerHTML =
     "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
     "<br><br><strong>Final Difficulty Level:</strong> " + currentLevel +
     "<br><br>" + result;
 
   document.getElementById("status").innerText =
-    "Adaptive Exam Finished";
+    "Level 19-20 Expert Cardiovascular Exam Finished";
 
   document.getElementById("submitBtn").style.display = "none";
   document.getElementById("nextBtn").style.display = "none";
@@ -865,7 +724,7 @@ function finishExam() {
 }
 
 function restartExam() {
-  currentLevel = 2;
+  currentLevel = 19;
   questionNumber = 0;
   score = 0;
   usedQuestions = [];
@@ -873,7 +732,6 @@ function restartExam() {
 }
 
 loadQuestion();
-
 </script>
 
 </body>
