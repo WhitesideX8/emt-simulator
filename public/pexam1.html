@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Level 80 EMT Assessment, A&P, Airway, and Cardiology Exam</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #222;
+      color: white;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 950px;
+      margin: auto;
+      background: #333;
+      padding: 25px;
+      border-radius: 10px;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .question-box {
+      background: #d9d9d9;
+      color: black;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      font-size: 16px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    button:hover {
+      background: darkgreen;
+    }
+
+    #submitBtn, #nextBtn, #restartBtn {
+      background: #0066cc;
+      text-align: center;
+      display: none;
+    }
+
+    #feedback {
+      margin-top: 15px;
+      padding: 15px;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      display: none;
+      line-height: 1.5;
+    }
+
+    #status {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 18px;
+    }
+
+    .checkbox-answer {
+      display: block;
+      background: #eeeeee;
+      color: black;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .checkbox-answer input {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    .matching-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 12px 0;
+      background: #eeeeee;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .matching-left {
+      flex: 1;
+      font-weight: bold;
+    }
+
+    .matching-row select {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Level 80 EMT Assessment, A&P, Airway, and Cardiology Exam</h1>
+  <h2>Multiple Choice, Select All That Apply, and Matching</h2>
+
+  <div id="status"></div>
+
+  <div class="question-box">
+    <div id="question"></div>
+    <div id="answers"></div>
+
+    <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
+
+    <div id="feedback"></div>
+
+    <button id="nextBtn" onclick="nextQuestion()">Next Question</button>
+    <button id="restartBtn" onclick="restartExam()">Restart Exam</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    level: 80,
+    type: "single",
+    question: "You arrive for a 54-year-old male sitting upright, pale, cool, and diaphoretic. He is speaking in 2-word sentences and states, 'I can't breathe.' Family wants to explain his medical history first. What is the most appropriate EMT action?",
+    answers: [
+      "Obtain a complete SAMPLE history before touching the patient",
+      "Begin the primary assessment and address airway/breathing immediately",
+      "Ask family to gather all medications while you complete documentation",
+      "Apply oxygen while continuing to assess airway, breathing, and circulation"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 3,
+    reasonBest: "The patient has an immediate breathing problem. EMT assessment prioritizes life threats first: airway, breathing, circulation, and transport decisions before detailed history.",
+    feedbackPartial: "Oxygen may be appropriate, but this answer is less complete because it does not clearly identify the primary assessment and immediate airway/breathing management.",
+    feedbackWrong: "History and documentation come after immediate life threats are assessed."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which findings during the primary assessment indicate immediate life threats? Select all that apply.",
+    answers: [
+      "Snoring respirations",
+      "Severe uncontrolled bleeding",
+      "Weak rapid pulse with altered mental status",
+      "Old surgical scar",
+      "Patient's insurance card is unavailable"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Snoring respirations, severe bleeding, and signs of poor perfusion are immediate life threats."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the assessment step with its purpose.",
+    leftItems: ["Scene size-up", "Primary assessment", "SAMPLE history", "Reassessment"],
+    rightItems: [
+      "Identify hazards and need for resources",
+      "Find and treat immediate life threats",
+      "Gather history about the patient and event",
+      "Track patient condition and treatment response",
+      "Choose hospital cafeteria location"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Scene size-up, primary assessment, history, and reassessment each serve a different purpose in EMT care."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A 78-year-old female is found confused after a fall. She has snoring respirations, a weak radial pulse, and a scalp laceration. What should be done first?",
+    answers: [
+      "Control the scalp bleeding before assessing airway",
+      "Open the airway using a trauma-appropriate maneuver",
+      "Perform a full neurological exam",
+      "Apply manual stabilization while assessing airway"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 3,
+    reasonBest: "Snoring respirations indicate airway obstruction. Even with trauma, airway comes before bleeding control or neurological assessment.",
+    feedbackPartial: "Manual stabilization is important, but the most immediate life threat is the obstructed airway.",
+    feedbackWrong: "Bleeding and neurological assessment are important, but airway obstruction is treated first."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which findings suggest poor perfusion? Select all that apply.",
+    answers: [
+      "Altered mental status",
+      "Cool clammy skin",
+      "Weak rapid pulse",
+      "Normal mentation with strong radial pulse",
+      "Warm dry skin after mild exercise"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Poor perfusion commonly presents with altered mental status, cool clammy skin, and weak rapid pulse."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the sign with the most likely concern.",
+    leftItems: ["Snoring respirations", "Unequal pupils after trauma", "Weak rapid pulse", "Drooling with tripod position"],
+    rightItems: [
+      "Airway obstruction",
+      "Possible brain injury",
+      "Poor perfusion",
+      "Possible upper-airway emergency",
+      "Normal finding in all adults"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "These signs are high-risk assessment findings and should not be dismissed."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "During your scene size-up at a motor vehicle crash, you see leaking fuel, downed wires, and one patient yelling for help. What is the most appropriate first action?",
+    answers: [
+      "Enter quickly because the patient is conscious",
+      "Ensure scene safety and request appropriate resources",
+      "Begin the rapid trauma assessment immediately",
+      "Call for additional resources while staging at a safe distance"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 3,
+    reasonBest: "Scene safety is the first step in the EMT assessment process. Downed wires and leaking fuel create hazards that must be managed before patient contact.",
+    feedbackPartial: "Staging and requesting resources are appropriate, but the best answer is broader because it includes scene safety and resource management.",
+    feedbackWrong: "Do not enter an unsafe scene."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which actions are appropriate during reassessment? Select all that apply.",
+    answers: [
+      "Repeat vital signs",
+      "Check whether treatments are helping",
+      "Look for changes in mental status",
+      "Ignore worsening symptoms if transport has started",
+      "Stop monitoring after the first normal blood pressure"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Reassessment includes repeated vital signs, treatment response, and changes in patient condition."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the anatomy/physiology concept with the EMT meaning.",
+    leftItems: ["Perfusion", "Ventilation", "Oxygenation", "Cardiac output"],
+    rightItems: [
+      "Blood flow through tissues",
+      "Movement of air in and out of lungs",
+      "Loading oxygen into the blood",
+      "Amount of blood pumped by the heart",
+      "Digestion of food in the stomach"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Perfusion, ventilation, oxygenation, and cardiac output are core EMT physiology concepts."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A patient with chest discomfort is alert but pale and anxious. BP is 84/50, pulse 126, respirations 24. Which assessment finding most strongly indicates poor perfusion?",
+    answers: [
+      "The patient reports anxiety",
+      "Hypotension with weak rapid pulse",
+      "Chest discomfort alone",
+      "Pale skin with abnormal vital signs"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 3,
+    reasonBest: "Hypotension with a weak rapid pulse is objective evidence that circulation is failing. This is stronger than symptoms alone.",
+    feedbackPartial: "Pale skin and abnormal vital signs are concerning, but hypotension with a weak rapid pulse is more specific for poor perfusion.",
+    feedbackWrong: "Symptoms alone are less reliable than objective perfusion findings."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which findings are concerning for a respiratory emergency? Select all that apply.",
+    answers: [
+      "Two-word dyspnea",
+      "Cyanosis",
+      "Poor chest rise",
+      "Clear speech with no distress",
+      "Normal breathing after walking"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Two-word dyspnea, cyanosis, and poor chest rise indicate significant breathing problems."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the body system with the assessment focus.",
+    leftItems: ["Respiratory", "Cardiovascular", "Neurological", "Endocrine"],
+    rightItems: [
+      "Breathing effort and chest rise",
+      "Pulse, skin signs, and perfusion",
+      "Mental status, speech, and movement",
+      "Glucose-related problems",
+      "Bone length only"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Body-system thinking helps organize assessment and identify likely life threats."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "An elderly patient has altered mental status. Family says, 'She is just acting weird.' She is breathing adequately and has no obvious trauma. What assessment should be strongly considered early?",
+    answers: [
+      "Blood glucose assessment",
+      "Detailed orthopedic exam",
+      "Refusal documentation",
+      "Stroke screen and glucose assessment"
+    ],
+    bestCorrect: 3,
+    partialCorrect: 0,
+    reasonBest: "Altered mental status requires checking for both stroke and reversible causes such as hypoglycemia. This answer is broader and more complete.",
+    feedbackPartial: "Blood glucose is important, but the most correct answer also includes stroke screening.",
+    feedbackWrong: "Altered mental status should not be dismissed or handled as a refusal without assessing decision-making capacity."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which findings may indicate a neurological emergency? Select all that apply.",
+    answers: [
+      "Sudden speech difficulty",
+      "Arm drift",
+      "Decreasing level of consciousness",
+      "Normal gait and clear speech",
+      "Isolated old scar"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Speech difficulty, arm drift, and decreasing level of consciousness are concerning neurological findings."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the term with the correct EMT meaning.",
+    leftItems: ["Hypoxia", "Hypoglycemia", "Shock", "Stroke"],
+    rightItems: [
+      "Low oxygen at the tissue level",
+      "Low blood glucose",
+      "Inadequate tissue perfusion",
+      "Interrupted blood flow or bleeding in the brain",
+      "Normal digestion after eating"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "These terms describe life-threatening problems that require rapid recognition."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A trauma patient is awake but has pale cool skin, rapid weak pulse, and abdominal tenderness after a crash. No external bleeding is seen. What should you suspect?",
+    answers: [
+      "Internal bleeding with compensated shock",
+      "Minor anxiety from the crash",
+      "No shock because there is no external bleeding",
+      "Possible internal bleeding requiring rapid transport"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 3,
+    reasonBest: "Abdominal tenderness after trauma with pale cool skin and rapid weak pulse suggests internal bleeding and shock, even without visible bleeding.",
+    feedbackPartial: "Rapid transport is appropriate, but this answer is less complete because it does not identify compensated shock.",
+    feedbackWrong: "Shock can occur from internal bleeding even when there is no external blood loss."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which statements about anatomy and physiology are correct? Select all that apply.",
+    answers: [
+      "The brain requires continuous oxygen and glucose",
+      "The lungs exchange oxygen and carbon dioxide",
+      "The heart pumps blood to maintain perfusion",
+      "The stomach controls voluntary movement",
+      "The ribs produce oxygen"
+    ],
+    correct: [0, 1, 2],
+    feedback: "The brain depends on oxygen and glucose, the lungs exchange gases, and the heart supports perfusion."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the condition with the physiology problem.",
+    leftItems: ["Carbon monoxide poisoning", "Flail chest", "Anaphylaxis", "Severe blood loss"],
+    rightItems: [
+      "Impaired oxygen transport by hemoglobin",
+      "Ineffective chest wall movement",
+      "Airway narrowing and vasodilation",
+      "Reduced circulating volume",
+      "Improved oxygen delivery"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Each condition creates a different oxygenation, ventilation, or perfusion problem."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A patient with carbon monoxide exposure has a pulse oximetry reading of 99%, but is confused and short of breath. What physiology explains why the reading may be misleading?",
+    answers: [
+      "Carbon monoxide binds to hemoglobin and interferes with oxygen transport",
+      "Pulse oximetry always accurately detects carbon monoxide poisoning",
+      "Carbon monoxide increases oxygen delivery to the brain",
+      "Hemoglobin may be occupied by carbon monoxide instead of oxygen"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 3,
+    reasonBest: "Carbon monoxide binds strongly to hemoglobin, preventing normal oxygen transport despite a falsely reassuring pulse oximeter reading.",
+    feedbackPartial: "This is correct, but the most correct answer also explains that oxygen transport is impaired.",
+    feedbackWrong: "Pulse oximetry can be misleading in carbon monoxide exposure."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which findings should cause concern during transport reassessment? Select all that apply.",
+    answers: [
+      "Increasing confusion",
+      "Falling blood pressure",
+      "Increasing respiratory distress",
+      "Improved skin color and mentation",
+      "Pain decreasing after treatment"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Increasing confusion, falling blood pressure, and worsening breathing suggest deterioration."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the assessment finding with the correct priority.",
+    leftItems: ["Absent breathing with pulse", "Severe external bleeding", "Chest pain with hypotension", "Altered mental status with low glucose"],
+    rightItems: [
+      "Ventilate immediately",
+      "Control bleeding",
+      "Treat as high-priority cardiovascular emergency",
+      "Treat hypoglycemia if safe per protocol",
+      "Delay care until paperwork is complete"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "The priority is based on the immediate threat to airway, breathing, circulation, or brain function."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "An unresponsive trauma patient has snoring respirations after a fall. What is the most appropriate airway maneuver?",
+    answers: ["Head-tilt chin-lift", "Jaw-thrust maneuver", "Finger sweep without looking", "Place the patient upright"],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "The jaw-thrust is preferred when spinal injury is suspected because it opens the airway while limiting neck movement.",
+    feedbackPartial: "The head-tilt chin-lift can open the airway, but it is not the most correct choice when trauma is suspected.",
+    feedbackWrong: "Blind finger sweeps are not appropriate and may push an obstruction deeper."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A patient is breathing 6 times per minute with shallow chest rise. What is the most appropriate EMT action?",
+    answers: ["Apply a nasal cannula", "Assist ventilations with a BVM", "Place in recovery position only", "Obtain SAMPLE history first"],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Slow, shallow breathing is inadequate ventilation. The EMT must assist ventilations with a BVM.",
+    feedbackPartial: "Oxygen may be needed, but nasal cannula alone does not correct inadequate ventilation.",
+    feedbackWrong: "Airway and breathing problems are treated before history."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which findings indicate inadequate breathing? Select all that apply.",
+    answers: ["Slow respirations with poor chest rise", "Cyanosis", "Altered mental status with shallow breathing", "Clear speech in full sentences", "Normal chest rise"],
+    correct: [0, 1, 2],
+    feedback: "Inadequate breathing may present with slow respirations, poor chest rise, cyanosis, and altered mental status."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the airway device or technique with its best use.",
+    leftItems: ["OPA", "NPA", "Suction", "BVM"],
+    rightItems: [
+      "Unresponsive patient without gag reflex",
+      "Patient who cannot tolerate an OPA but needs airway support",
+      "Remove fluid, vomit, or secretions",
+      "Assist inadequate ventilations",
+      "Measure blood pressure"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Airway tools are chosen based on airway patency, gag reflex, secretions, and ventilation adequacy."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A patient vomits during ventilations. What should the EMT do first?",
+    answers: ["Continue ventilating through the vomit", "Turn/suction the airway and clear secretions", "Give oral glucose", "Remove the mask permanently"],
+    bestCorrect: 1,
+    partialCorrect: 3,
+    reasonBest: "Vomitus must be cleared immediately to prevent aspiration and restore airway patency.",
+    feedbackPartial: "Removing the mask may be part of clearing the airway, but suctioning and clearing the airway is the most complete answer.",
+    feedbackWrong: "Ventilating through vomit increases aspiration risk."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "You insert an OPA and the patient begins gagging. What should you do?",
+    answers: ["Leave it in place because it was measured correctly", "Remove the OPA immediately", "Push it deeper", "Begin chest compressions"],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Gagging means the patient has an intact gag reflex. The OPA should be removed to reduce vomiting and aspiration risk.",
+    feedbackPartial: "Assessment matters, but the immediate action is to remove the OPA.",
+    feedbackWrong: "Do not push an airway adjunct deeper if the patient gags."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which are appropriate airway management actions? Select all that apply.",
+    answers: ["Suction secretions when they obstruct the airway", "Use an OPA only when gag reflex is absent", "Assist ventilations when breathing is inadequate", "Use an OPA in an alert patient", "Ignore gurgling respirations"],
+    correct: [0, 1, 2],
+    feedback: "Airway care includes suctioning, correct adjunct selection, and assisted ventilations when needed."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the airway sound with the likely problem.",
+    leftItems: ["Snoring", "Gurgling", "Wheezing", "Stridor"],
+    rightItems: ["Tongue or soft tissue obstruction", "Fluid or secretions in the airway", "Lower-airway narrowing", "Upper-airway obstruction", "Normal breathing"],
+    correct: [0, 1, 2, 3],
+    feedback: "Breath sounds help identify whether the problem is obstruction, fluid, upper airway, or lower airway."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A child with fever is sitting forward, drooling, and has stridor. What is the most appropriate airway approach?",
+    answers: ["Force the child supine and inspect the throat", "Keep the child calm and transport rapidly", "Perform blind finger sweeps", "Give oral fluids"],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Drooling, fever, tripod positioning, and stridor suggest a serious upper-airway emergency. Agitation can worsen obstruction.",
+    feedbackPartial: "Assessment is important, but the child should be kept calm and transported rapidly.",
+    feedbackWrong: "Do not force throat inspection or give oral fluids in a possible upper-airway obstruction."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "While using a BVM, the chest does not rise. What should the EMT do first?",
+    answers: ["Reposition the airway and improve mask seal", "Increase ventilation speed rapidly", "Stop ventilating", "Begin oral glucose"],
+    bestCorrect: 0,
+    partialCorrect: 2,
+    reasonBest: "Poor chest rise usually means poor airway position, poor mask seal, or obstruction. Repositioning and seal correction are first.",
+    feedbackPartial: "Stopping briefly may occur while correcting technique, but the most correct answer is to reposition and improve the seal.",
+    feedbackWrong: "Ventilating faster can force air into the stomach and does not fix poor chest rise."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A 64-year-old male has crushing chest pressure, nausea, and diaphoresis. BP is 88/54, pulse 118, respirations 24, SpO2 94%. He has prescribed nitroglycerin. What is the most appropriate EMT action?",
+    answers: ["Assist with nitroglycerin immediately", "Withhold nitroglycerin and treat as high-priority cardiac patient", "Have the patient walk to the ambulance", "Give oral glucose for diaphoresis"],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Hypotension makes nitroglycerin unsafe. The patient has signs of possible acute coronary syndrome with poor perfusion and needs rapid transport and ongoing reassessment.",
+    feedbackPartial: "Nitroglycerin may be appropriate for some cardiac chest pain patients, but this patient is hypotensive, making it unsafe.",
+    feedbackWrong: "Do not ignore hypotension or make the patient walk. Diaphoresis alone does not indicate hypoglycemia."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which findings increase concern for acute coronary syndrome? Select all that apply.",
+    answers: ["Pressure-like chest discomfort", "Pain radiating to jaw or arm", "Unexplained nausea with diaphoresis", "Isolated ankle itching", "Improved exercise tolerance during pain"],
+    correct: [0, 1, 2],
+    feedback: "ACS may present with chest pressure, radiation, nausea, diaphoresis, weakness, dyspnea, or atypical symptoms."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the cardiology finding with the likely concern.",
+    leftItems: ["Crushing chest pressure", "Pink frothy sputum", "Unequal radial pulses", "No pulse and abnormal breathing"],
+    rightItems: ["Possible acute coronary syndrome", "Pulmonary edema", "Possible aortic dissection", "Cardiac arrest", "Simple muscle strain"],
+    correct: [0, 1, 2, 3],
+    feedback: "Cardiology presentations require pattern recognition and rapid identification of life threats."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A 76-year-old female has weakness, mild shortness of breath, nausea, and diaphoresis but denies chest pain. BP is 96/60 and pulse is 112. What should the EMT suspect?",
+    answers: ["No cardiac issue because there is no chest pain", "Possible atypical acute coronary syndrome", "Simple anxiety only", "Stroke because weakness always means stroke"],
+    bestCorrect: 1,
+    partialCorrect: 3,
+    reasonBest: "Older adults, women, and diabetic patients may have ACS without classic chest pain. Weakness, dyspnea, nausea, and diaphoresis are concerning.",
+    feedbackPartial: "Stroke can cause weakness, but the full presentation is more suspicious for atypical ACS.",
+    feedbackWrong: "Absence of chest pain does not rule out ACS."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A patient with chest pressure took sildenafil earlier today. His BP is 132/84 and he asks for help taking nitroglycerin. What is the most appropriate action?",
+    answers: ["Assist with nitroglycerin because his blood pressure is normal", "Withhold nitroglycerin and continue cardiac care", "Give two nitroglycerin tablets to overcome the interaction", "Delay transport until the sildenafil wears off"],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Recent PDE-5 inhibitor use can cause severe hypotension when combined with nitroglycerin, even if the current blood pressure is normal.",
+    feedbackPartial: "Blood pressure must be checked, but normal BP does not remove the medication interaction risk.",
+    feedbackWrong: "Do not give extra nitroglycerin or delay transport."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which are important checks before assisting with prescribed nitroglycerin? Select all that apply.",
+    answers: ["Blood pressure", "Recent PDE-5 inhibitor use", "Patient has their own prescribed medication", "Favorite food", "Shoe size"],
+    correct: [0, 1, 2],
+    feedback: "Nitroglycerin decisions require blood pressure, prescription status, dose/protocol, and contraindication checks."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A patient with chest pain becomes unresponsive and is not breathing normally. What should the EMT do first?",
+    answers: ["Give aspirin by mouth", "Check pulse and begin CPR/AED sequence if pulseless", "Assist with nitroglycerin", "Place the patient in recovery position and wait"],
+    bestCorrect: 1,
+    partialCorrect: 3,
+    reasonBest: "Unresponsiveness with abnormal breathing requires rapid pulse check. If pulseless, begin CPR and apply the AED.",
+    feedbackPartial: "Recovery position may be used for some breathing patients, but abnormal breathing after collapse requires cardiac arrest assessment first.",
+    feedbackWrong: "Do not give oral medications to an unresponsive patient."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the medication with the EMT cardiology consideration.",
+    leftItems: ["Aspirin", "Nitroglycerin", "Oxygen", "AED"],
+    rightItems: ["Avoid with allergy or active bleeding", "Can lower blood pressure", "Use based on hypoxia, distress, or protocol", "Use for cardiac arrest rhythm analysis/shock", "Used to treat hypoglycemia"],
+    correct: [0, 1, 2, 3],
+    feedback: "Cardiac care requires knowing indications, contraindications, and the immediate priority."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A patient has severe tearing chest pain radiating to the back and unequal radial pulses. BP is 196/110. What should you suspect?",
+    answers: ["Aortic dissection", "Simple indigestion", "Hypoglycemia", "Panic attack only"],
+    bestCorrect: 0,
+    partialCorrect: 3,
+    reasonBest: "Tearing chest/back pain with unequal pulses and severe hypertension is concerning for aortic dissection, a high-risk vascular emergency.",
+    feedbackPartial: "Anxiety may accompany serious illness, but it does not explain the unequal pulses and tearing pain pattern.",
+    feedbackWrong: "This presentation should not be dismissed as indigestion or hypoglycemia."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which findings may indicate cardiogenic shock? Select all that apply.",
+    answers: ["Hypotension", "Cool clammy skin", "Altered mental status", "Strong regular pulse with normal mentation", "Warm dry skin after exercise"],
+    correct: [0, 1, 2],
+    feedback: "Cardiogenic shock may cause hypotension, altered mental status, cool clammy skin, dyspnea, and weak pulses."
+  }
+  ,
+  {
+    level: 80,
+    type: "single",
+    question: "You are called for a 58-year-old female with shortness of breath. She is sitting upright, pale, anxious, and speaking in short phrases. Lung sounds reveal crackles bilaterally. BP is 188/104, pulse 124, respirations 30, SpO2 86%. What is the most appropriate EMT priority?",
+    answers: [
+      "Place her supine to improve blood flow to the brain",
+      "Support oxygenation/ventilation, keep her upright, and prepare rapid transport",
+      "Give oral glucose because anxiety indicates hypoglycemia",
+      "Obtain a full medication list before treating breathing"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 3,
+    reasonBest: "This patient has severe respiratory distress with signs of pulmonary edema. Airway and breathing support, positioning, and rapid transport are the priority.",
+    feedbackPartial: "Medication history is useful, but breathing problems must be addressed first.",
+    feedbackWrong: "Supine positioning can worsen breathing, and oral glucose is not indicated."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A 42-year-old male was ejected from a vehicle. He is confused, has shallow respirations, weak radial pulses, and obvious deformity to the pelvis. No major external bleeding is seen. What should you suspect?",
+    answers: [
+      "Internal bleeding with shock",
+      "Minor orthopedic injury only",
+      "Hyperventilation from anxiety",
+      "Possible internal bleeding requiring rapid transport"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 3,
+    reasonBest: "Pelvic trauma can cause severe internal bleeding. Confusion, weak pulses, and shallow breathing indicate high-priority shock physiology.",
+    feedbackPartial: "Rapid transport is appropriate, but the most correct answer identifies the likely life threat: internal bleeding with shock.",
+    feedbackWrong: "Absence of external bleeding does not rule out life-threatening hemorrhage."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "A patient with suspected sepsis is becoming confused during transport. Which findings would support worsening shock? Select all that apply.",
+    answers: [
+      "Falling blood pressure",
+      "Increasing heart rate",
+      "Cool clammy skin or poor peripheral perfusion",
+      "Improved mental status",
+      "Stable vital signs over repeated assessments"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Worsening shock is suggested by falling blood pressure, tachycardia, poor perfusion, and declining mental status."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the scenario clue with the most likely high-risk condition.",
+    leftItems: [
+      "Sudden tearing chest pain to the back",
+      "Unilateral weakness and aphasia",
+      "Wheezing, hives, and hypotension",
+      "Slow breathing with pinpoint pupils"
+    ],
+    rightItems: [
+      "Aortic dissection",
+      "Stroke",
+      "Anaphylaxis",
+      "Opioid overdose",
+      "Simple anxiety attack"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "High-risk EMT questions often require identifying dangerous patterns from limited clues."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A 9-year-old child has respiratory distress after choking on food. He is coughing weakly, has poor air movement, and is becoming cyanotic. What is the most appropriate action?",
+    answers: [
+      "Encourage continued coughing only",
+      "Begin airway obstruction maneuvers appropriate for the child",
+      "Perform a blind finger sweep",
+      "Give oral fluids to clear the obstruction"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Weak cough, poor air movement, cyanosis, and deterioration indicate severe airway obstruction requiring immediate intervention.",
+    feedbackPartial: "Encouraging coughing is appropriate for effective coughing, but this child is showing signs of severe obstruction.",
+    feedbackWrong: "Blind finger sweeps and oral fluids are inappropriate and may worsen obstruction."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "An elderly diabetic patient is found confused and sweaty. Glucose is 52 mg/dL. He is awake but drooling and unable to follow commands. What is the most appropriate EMT action?",
+    answers: [
+      "Administer oral glucose immediately",
+      "Withhold oral glucose, manage airway risk, and request ALS/rapid transport",
+      "Ignore glucose because altered mental status is always stroke",
+      "Give aspirin because sweating indicates cardiac chest pain"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "The patient has hypoglycemia but cannot safely swallow. Oral glucose creates aspiration risk; airway management and rapid transport/ALS are priorities.",
+    feedbackPartial: "Oral glucose is correct only if the patient can swallow safely.",
+    feedbackWrong: "Do not ignore hypoglycemia, and aspirin is not indicated for this presentation."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which scenario findings require immediate airway or breathing intervention? Select all that apply.",
+    answers: [
+      "Snoring respirations in an unresponsive patient",
+      "Gurgling respirations after vomiting",
+      "Respiratory rate of 6 with poor chest rise",
+      "Speaking clearly in full sentences",
+      "Normal skin color and normal work of breathing"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Snoring, gurgling, and inadequate respirations are airway or ventilation threats that require immediate action."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the reassessment trend with the EMT concern.",
+    leftItems: [
+      "BP falling and pulse rising",
+      "Mental status worsening",
+      "Increasing work of breathing",
+      "Skin becoming cool and clammy"
+    ],
+    rightItems: [
+      "Possible developing shock",
+      "Possible neurological/perfusion decline",
+      "Respiratory deterioration",
+      "Poor peripheral perfusion",
+      "Normal improvement"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Trends during reassessment are often more important than a single set of vital signs."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A 35-year-old male was stabbed in the chest. He is anxious, has severe dyspnea, absent breath sounds on one side, and signs of shock. What should the EMT suspect?",
+    answers: [
+      "Tension pneumothorax or serious chest injury",
+      "Simple hyperventilation",
+      "Hypoglycemia",
+      "Chest wall injury requiring high-priority transport"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 3,
+    reasonBest: "Penetrating chest trauma with unilateral absent breath sounds, dyspnea, and shock suggests a life-threatening chest injury such as tension pneumothorax.",
+    feedbackPartial: "High-priority transport is appropriate, but the most correct answer identifies the likely life threat.",
+    feedbackWrong: "This presentation should not be dismissed as hyperventilation or hypoglycemia."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A cardiac arrest patient receives one AED shock. Your partner asks to check a pulse immediately after the shock. What is the most appropriate action?",
+    answers: [
+      "Resume CPR immediately unless signs of life are present",
+      "Check blood pressure first",
+      "Remove AED pads after the shock",
+      "Stop compressions and ventilate only"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 3,
+    reasonBest: "After a shock, CPR should resume immediately to minimize interruptions and maintain perfusion unless the patient shows signs of life.",
+    feedbackPartial: "Ventilations are part of CPR, but compressions must resume immediately.",
+    feedbackWrong: "Do not check blood pressure or remove pads in ongoing cardiac arrest care."
+  }
+  ,
+  {
+    level: 80,
+    type: "single",
+    question: "You are called for a 68-year-old male with chest pain. He is alert, oriented, understands the risks, and refuses transport after you explain the concern for a heart attack. What is the most appropriate EMT action?",
+    answers: [
+      "Force transport because chest pain is always life threatening",
+      "Assess decision-making capacity, explain risks, document the refusal, and follow local protocol",
+      "Leave immediately because any refusal ends the call",
+      "Have the family sign the refusal instead of the patient"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 2,
+    reasonBest: "A competent adult may refuse care, but the EMT must assess capacity, explain risks, encourage appropriate care, document thoroughly, and follow protocol.",
+    feedbackPartial: "Leaving may occur after a valid refusal is completed, but simply leaving without assessment and documentation is incomplete.",
+    feedbackWrong: "Forcing transport can be battery or false imprisonment unless legal exceptions apply. Family cannot replace a competent patient's refusal."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which elements should be included when documenting a patient refusal? Select all that apply.",
+    answers: [
+      "Patient's mental status and decision-making capacity",
+      "Risks explained to the patient",
+      "Vital signs and assessment findings",
+      "EMT opinion that the patient was annoying",
+      "False statement that the patient was transported"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Refusal documentation should include capacity, risks explained, assessment findings, vital signs, advice given, witnesses when possible, and local protocol steps."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the medical/legal term with the best meaning.",
+    leftItems: [
+      "Consent",
+      "Implied consent",
+      "Negligence",
+      "Abandonment"
+    ],
+    rightItems: [
+      "Permission to provide care",
+      "Assumed permission for an unable/unresponsive patient with emergency need",
+      "Failure to meet standard of care causing harm",
+      "Ending care without proper transfer or patient refusal",
+      "Taking property from the patient"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "These terms are common EMT medical/legal concepts and affect how care is delivered and documented."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "An unconscious adult is found after a possible overdose. No family is present. The patient has inadequate breathing. What allows the EMT to provide emergency care?",
+    answers: [
+      "Expressed consent",
+      "Implied consent",
+      "Involuntary consent for every adult patient",
+      "A signed refusal form"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Implied consent applies when a patient cannot consent and emergency care is needed to prevent death or serious harm.",
+    feedbackPartial: "Expressed consent requires the patient to actively agree, which this unresponsive patient cannot do.",
+    feedbackWrong: "A refusal form is not appropriate for an unresponsive patient with an emergency."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "You are treating a confused patient with suspected hypoglycemia. He repeatedly says 'no hospital' but cannot state his name, location, or the risks of refusing. What is the most appropriate action?",
+    answers: [
+      "Accept the refusal because he said no",
+      "Treat under implied consent according to protocol because capacity is impaired",
+      "Leave the patient with bystanders",
+      "Have police sign the refusal form"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "A patient must have decision-making capacity to refuse. Altered mental status from a reversible medical emergency may allow treatment under implied consent.",
+    feedbackPartial: "A verbal no matters only if the patient has capacity to understand and refuse care.",
+    feedbackWrong: "Police do not replace medical decision-making capacity or proper EMS protocol."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which situations may create a duty to act for an EMT? Select all that apply.",
+    answers: [
+      "The EMT is on duty and dispatched to the call",
+      "The EMT has begun patient care",
+      "The EMT is working under an EMS agency response",
+      "The EMT sees a news story about a crash while off duty in another state",
+      "The EMT dislikes the patient"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Duty to act commonly exists when on duty, dispatched, assigned, or once care has been initiated. Local laws and agency policy apply."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A competent adult patient gives consent for assessment but refuses oxygen, even after you explain why it is recommended. What should you do?",
+    answers: [
+      "Force oxygen because oxygen is harmless",
+      "Respect the refusal, continue care the patient accepts, document, and follow protocol",
+      "Stop all care immediately",
+      "Tell the patient they are under arrest"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 2,
+    reasonBest: "A competent patient can refuse part of care while accepting other care. The EMT should continue accepted care and document the specific refusal.",
+    feedbackPartial: "Stopping all care is usually not appropriate if the patient accepts other assessment or treatment.",
+    feedbackWrong: "Forcing treatment on a competent refusing patient may create legal risk."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the action with the possible legal concern.",
+    leftItems: [
+      "Touching a competent patient after refusal",
+      "Transporting a competent patient against will",
+      "Sharing patient details publicly",
+      "Leaving before transfer of care"
+    ],
+    rightItems: [
+      "Battery",
+      "False imprisonment",
+      "Breach of confidentiality",
+      "Abandonment",
+      "Proper documentation"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "EMTs must understand how consent, confidentiality, and transfer of care affect legal risk."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "At the hospital, you give a verbal report to the nurse and transfer the patient to the emergency department bed. What should you do next?",
+    answers: [
+      "Leave without completing documentation",
+      "Complete accurate documentation according to policy",
+      "Change vital signs to make the report look better",
+      "Erase details that make the call seem complicated"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Accurate documentation is part of patient care, legal protection, quality improvement, and continuity of care.",
+    feedbackPartial: "Leaving may occur after transfer, but documentation must still be completed accurately.",
+    feedbackWrong: "Changing or deleting accurate patient information is improper and may be legally serious."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A bystander asks for the name and condition of the patient you are treating after a public crash. What is the most appropriate response?",
+    answers: [
+      "Give details because the crash happened in public",
+      "Protect patient confidentiality and do not share private medical information",
+      "Post the information online so family can find it",
+      "Only share the information if the bystander seems concerned"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 3,
+    reasonBest: "Patient confidentiality applies even in public settings. Medical information should be shared only with those directly involved in care or as allowed by law/policy.",
+    feedbackPartial: "Concern does not automatically give a bystander the right to private medical information.",
+    feedbackWrong: "Public location does not remove confidentiality obligations."
+  }
+  {
+  level: 80,
+  type: "single",
+  question: "A 68-year-old patient with COPD is sitting upright and speaking in 2-word sentences. Respirations are 32, shallow, and labored. SpO2 is 84%. What is the most appropriate EMT action?",
+  answers: [
+    "Withhold oxygen because the patient has COPD",
+    "Support oxygenation and ventilation according to patient condition and protocol",
+    "Have the patient lie flat",
+    "Wait until the patient becomes unresponsive"
+  ],
+  bestCorrect: 1,
+  partialCorrect: 0,
+  reasonBest: "COPD does not mean oxygen should be withheld. Severe respiratory distress and hypoxia require oxygenation and possible ventilatory support.",
+  feedbackPartial: "Oxygen must not be withheld from a hypoxic patient.",
+  feedbackWrong: "Positioning flat or delaying care can worsen respiratory failure."
+},
+{
+  level: 80,
+  type: "multi",
+  question: "Which findings suggest severe respiratory distress? Select all that apply.",
+  answers: [
+    "Cyanosis",
+    "One- or two-word speech",
+    "Poor chest rise",
+    "Normal skin color and full sentences",
+    "Respirations 16 and unlabored"
+  ],
+  correct: [0, 1, 2],
+  feedback: "Cyanosis, short speech, and poor chest rise are signs of significant respiratory compromise."
+},
+{
+  level: 80,
+  type: "matching",
+  question: "Match the respiratory sound with the most likely problem.",
+  leftItems: [
+    "Wheezing",
+    "Stridor",
+    "Gurgling",
+    "Crackles"
+  ],
+  rightItems: [
+    "Lower-airway narrowing",
+    "Upper-airway obstruction",
+    "Fluid or secretions in airway",
+    "Fluid in the alveoli or small airways",
+    "Normal breathing"
+  ],
+  correct: [0, 1, 2, 3],
+  feedback: "Respiratory sounds help identify whether the issue is upper airway, lower airway, secretions, or fluid."
+},
+{
+  level: 80,
+  type: "single",
+  question: "A child with fever is sitting forward, drooling, and has stridor. What is the most appropriate EMT action?",
+  answers: [
+    "Force the child supine and inspect the throat",
+    "Keep the child calm and transport rapidly",
+    "Perform a blind finger sweep",
+    "Give oral fluids"
+  ],
+  bestCorrect: 1,
+  partialCorrect: 0,
+  reasonBest: "Drooling, fever, tripod positioning, and stridor suggest a serious upper-airway emergency. Agitation can worsen obstruction.",
+  feedbackPartial: "Assessment is important, but the child should not be agitated.",
+  feedbackWrong: "Do not force throat inspection, perform blind sweeps, or give oral fluids."
+},
+{
+  level: 80,
+  type: "single",
+  question: "A patient with asthma has wheezing, accessory muscle use, and worsening fatigue. Respirations were 34 but are now 12 and shallow. What does this most likely indicate?",
+  answers: [
+    "The patient is improving",
+    "Respiratory failure may be developing",
+    "The asthma attack is over",
+    "The patient no longer needs oxygen"
+  ],
+  bestCorrect: 1,
+  partialCorrect: 0,
+  reasonBest: "A falling respiratory rate with fatigue and shallow breathing in a distressed patient suggests respiratory failure, not improvement.",
+  feedbackPartial: "Improvement would include reduced distress and adequate breathing, not fatigue and shallow respirations.",
+  feedbackWrong: "Do not assume improvement when breathing becomes inadequate."
+},
+{
+  level: 80,
+  type: "multi",
+  question: "Which patients may require assisted ventilations with a BVM? Select all that apply.",
+  answers: [
+    "Respirations 6 and shallow",
+    "Poor chest rise with altered mental status",
+    "Cyanosis with inadequate breathing",
+    "Alert patient speaking full sentences",
+    "Normal breathing after mild exertion"
+  ],
+  correct: [0, 1, 2],
+  feedback: "Slow shallow respirations, poor chest rise, cyanosis, and altered mental status indicate inadequate ventilation."
+},
+{
+  level: 80,
+  type: "matching",
+  question: "Match the respiratory emergency with the likely presentation.",
+  leftItems: [
+    "Asthma",
+    "Pulmonary edema",
+    "Pneumonia",
+    "Pulmonary embolism"
+  ],
+  rightItems: [
+    "Wheezing and prolonged exhalation",
+    "Crackles and pink frothy sputum",
+    "Fever, cough, and localized lung findings",
+    "Sudden dyspnea with pleuritic chest pain",
+    "Isolated ankle pain"
+  ],
+  correct: [0, 1, 2, 3],
+  feedback: "Scenario clues help differentiate common respiratory emergencies."
+},
+{
+  level: 80,
+  type: "single",
+  question: "A patient has sudden shortness of breath, sharp chest pain worse with breathing, tachycardia, and one swollen calf after a long car ride. What should you suspect?",
+  answers: [
+    "Pulmonary embolism",
+    "Simple anxiety",
+    "Hypoglycemia",
+    "Mild asthma only"
+  ],
+  bestCorrect: 0,
+  partialCorrect: 1,
+  reasonBest: "Sudden dyspnea, pleuritic chest pain, tachycardia, and DVT signs after immobility strongly suggest pulmonary embolism.",
+  feedbackPartial: "Anxiety may cause shortness of breath, but the swollen calf and pleuritic pain make pulmonary embolism more concerning.",
+  feedbackWrong: "This presentation should not be dismissed as mild asthma or hypoglycemia."
+},
+{
+  level: 80,
+  type: "single",
+  question: "A patient with respiratory distress has gurgling respirations and vomit in the mouth. What is the most appropriate immediate action?",
+  answers: [
+    "Suction the airway",
+    "Apply a nasal cannula only",
+    "Give oral glucose",
+    "Have the patient drink water"
+  ],
+  bestCorrect: 0,
+  partialCorrect: 1,
+  reasonBest: "Gurgling respirations and vomit indicate fluid in the airway. Suction is needed to clear the airway before effective ventilation or oxygenation.",
+  feedbackPartial: "Oxygen may be needed, but it will not clear vomit from the airway.",
+  feedbackWrong: "Do not give oral fluids or glucose to a patient with airway contamination."
+},
+{
+  level: 80,
+  type: "multi",
+  question: "Which findings suggest possible pulmonary edema? Select all that apply.",
+  answers: [
+    "Crackles",
+    "Pink frothy sputum",
+    "Severe dyspnea while sitting upright",
+    "Clear lungs and no distress",
+    "Isolated finger pain"
+  ],
+  correct: [0, 1, 2],
+  feedback: "Pulmonary edema may cause crackles, pink frothy sputum, severe dyspnea, and upright positioning."
+}
+];
+
+let currentLevel = 80;
+let questionNumber = 0;
+let score = 0;
+let partialScore = 0;
+let maxQuestions = 60;
+let currentQuestion;
+let usedQuestions = [];
+
+function shuffleArray(array) {
+  return array
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+}
+
+function getQuestionByLevel(level) {
+  let available = questions.filter(q =>
+    q.level === level && !usedQuestions.includes(q.question)
+  );
+
+  if (available.length === 0) {
+    available = questions.filter(q => !usedQuestions.includes(q.question));
+  }
+
+  if (available.length === 0) {
+    finishExam();
+    return null;
+  }
+
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+function loadQuestion() {
+  if (questionNumber >= maxQuestions) {
+    finishExam();
+    return;
+  }
+
+  currentQuestion = getQuestionByLevel(currentLevel);
+  if (!currentQuestion) return;
+
+  usedQuestions.push(currentQuestion.question);
+
+  document.getElementById("status").innerText =
+    "Question " + (questionNumber + 1) +
+    " of " + maxQuestions +
+    " | Difficulty Level: " + currentLevel +
+    " | Score: " + score +
+    " | Partially Correct: " + partialScore;
+
+  document.getElementById("question").innerHTML =
+    "<strong>" + currentQuestion.question + "</strong>";
+
+  document.getElementById("answers").innerHTML = "";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "none";
+  document.getElementById("submitBtn").style.display = "none";
+
+  if (currentQuestion.type === "single") {
+    loadSingleQuestion();
+  } else if (currentQuestion.type === "multi") {
+    loadMultiQuestion();
+  } else if (currentQuestion.type === "matching") {
+    loadMatchingQuestion();
+  }
+}
+
+function loadSingleQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  const shuffledAnswers = shuffleArray(
+    currentQuestion.answers.map((answer, index) => ({
+      text: answer,
+      originalIndex: index
+    }))
+  );
+
+  shuffledAnswers.forEach(answerObj => {
+    answersDiv.innerHTML += `
+      <button onclick="checkSingleAnswer(${answerObj.originalIndex}, this)">
+        ${answerObj.text}
+      </button>
+    `;
+  });
+}
+
+function loadMultiQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  const shuffledAnswers = shuffleArray(
+    currentQuestion.answers.map((answer, index) => ({
+      text: answer,
+      originalIndex: index
+    }))
+  );
+
+  shuffledAnswers.forEach(answerObj => {
+    answersDiv.innerHTML += `
+      <label class="checkbox-answer">
+        <input type="checkbox" value="${answerObj.originalIndex}">
+        ${answerObj.text}
+      </label>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function loadMatchingQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
+    const shuffledOptions = shuffleArray(
+      currentQuestion.rightItems.map((rightItem, rightIndex) => ({
+        text: rightItem,
+        originalIndex: rightIndex
+      }))
+    );
+
+    let options = `<option value="">Choose match</option>`;
+
+    shuffledOptions.forEach(option => {
+      options += `
+        <option value="${option.originalIndex}">
+          ${option.text}
+        </option>
+      `;
+    });
+
+    answersDiv.innerHTML += `
+      <div class="matching-row">
+        <div class="matching-left">${leftItem}</div>
+        <select data-left-index="${leftIndex}">
+          ${options}
+        </select>
+      </div>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function checkSingleAnswer(selected, clickedButton) {
+  const feedback = document.getElementById("feedback");
+  const buttons = document.querySelectorAll("#answers button");
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+
+  if (selected === currentQuestion.bestCorrect) {
+    score++;
+    clickedButton.style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Most Correct Answer.</strong><br><br>" +
+      "<strong>Reason:</strong> " +
+      currentQuestion.reasonBest;
+  } else if (selected === currentQuestion.partialCorrect) {
+    partialScore++;
+    clickedButton.style.background = "orange";
+
+    buttons.forEach(button => {
+      if (button.innerText.trim() === currentQuestion.answers[currentQuestion.bestCorrect]) {
+        button.style.background = "darkgreen";
+      }
+    });
+
+    feedback.innerHTML =
+      "<strong>Partially Correct, but not the most correct.</strong><br><br>" +
+      currentQuestion.feedbackPartial +
+      "<br><br><strong>Most correct answer:</strong> " +
+      currentQuestion.answers[currentQuestion.bestCorrect] +
+      "<br><br><strong>Reason:</strong> " +
+      currentQuestion.reasonBest;
+  } else {
+    clickedButton.style.background = "darkred";
+
+    buttons.forEach(button => {
+      if (button.innerText.trim() === currentQuestion.answers[currentQuestion.bestCorrect]) {
+        button.style.background = "darkgreen";
+      }
+
+      if (button.innerText.trim() === currentQuestion.answers[currentQuestion.partialCorrect]) {
+        button.style.background = "orange";
+      }
+    });
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br><br>" +
+      currentQuestion.feedbackWrong +
+      "<br><br><strong>Most correct answer:</strong> " +
+      currentQuestion.answers[currentQuestion.bestCorrect] +
+      "<br><br><strong>Reason this is most correct:</strong> " +
+      currentQuestion.reasonBest +
+      "<br><br><strong>Partially correct answer:</strong> " +
+      currentQuestion.answers[currentQuestion.partialCorrect];
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function submitAnswer() {
+  if (currentQuestion.type === "multi") {
+    checkMultiAnswer();
+  } else if (currentQuestion.type === "matching") {
+    checkMatchingAnswer();
+  }
+}
+
+function checkMultiAnswer() {
+  const checked = Array.from(
+    document.querySelectorAll('#answers input[type="checkbox"]:checked')
+  ).map(cb => Number(cb.value));
+
+  const correct =
+    checked.length === currentQuestion.correct.length &&
+    checked.every(value => currentQuestion.correct.includes(value));
+
+  const feedback = document.getElementById("feedback");
+  const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
+
+  checkboxes.forEach(cb => {
+    cb.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br><br>" +
+      currentQuestion.feedback;
+  } else {
+    const correctAnswers = currentQuestion.correct
+      .map(index => currentQuestion.answers[index])
+      .join(", ");
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br><br>" +
+      "<strong>Correct answers:</strong> " +
+      correctAnswers +
+      "<br><br>" +
+      currentQuestion.feedback;
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function checkMatchingAnswer() {
+  const selects = document.querySelectorAll("#answers select");
+  const selectedAnswers = Array.from(selects).map(select => Number(select.value));
+
+  const allAnswered = selectedAnswers.every(answer => !Number.isNaN(answer));
+
+  const correct =
+    allAnswered &&
+    selectedAnswers.length === currentQuestion.correct.length &&
+    selectedAnswers.every((value, index) => value === currentQuestion.correct[index]);
+
+  const feedback = document.getElementById("feedback");
+
+  selects.forEach(select => {
+    select.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br><br>" +
+      currentQuestion.feedback;
+  } else {
+    let correctText = "";
+
+    currentQuestion.leftItems.forEach((item, index) => {
+      correctText +=
+        item +
+        " = " +
+        currentQuestion.rightItems[currentQuestion.correct[index]] +
+        "<br>";
+    });
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br><br>" +
+      "<strong>Correct matches:</strong><br>" +
+      correctText +
+      "<br>" +
+      currentQuestion.feedback;
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function nextQuestion() {
+  questionNumber++;
+  loadQuestion();
+}
+
+function finishExam() {
+  document.getElementById("question").innerHTML =
+    "<h2>Exam Complete</h2>";
+
+  document.getElementById("answers").innerHTML = "";
+
+  let result = "";
+
+  if (score >= 51) {
+    result = "Excellent. You handled Level 80 EMT assessment, anatomy, airway, cardiology, and medical/legal questions well.";
+  } else if (score >= 42) {
+    result = "Good. Continue reviewing assessment sequence, airway management, cardiology, medical/legal issues, anatomy, physiology, and most-correct decision making.";
+  } else {
+    result = "Needs remediation. Focus on ABCs, airway positioning, suctioning, ventilation, perfusion, oxygenation, shock, cardiac chest pain, nitroglycerin contraindications, AED/CPR sequence, consent, refusal, documentation, and confidentiality.";
+  }
+
+  document.getElementById("feedback").style.display = "block";
+  document.getElementById("feedback").innerHTML =
+    "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
+    "<br><br><strong>Partially Correct Answers:</strong> " + partialScore +
+    "<br><br><strong>Difficulty Level:</strong> " + currentLevel +
+    "<br><br>" + result;
+
+  document.getElementById("status").innerText =
+    "Level 80 Assessment, A&P, Airway, Cardiology, and Medical/Legal Exam Finished";
+
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "block";
+}
+
+function restartExam() {
+  currentLevel = 80;
+  questionNumber = 0;
+  score = 0;
+  partialScore = 0;
+  usedQuestions = [];
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
