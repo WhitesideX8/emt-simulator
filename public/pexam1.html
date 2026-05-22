@@ -345,21 +345,22 @@ const questions = [
     correct: [0, 1, 2],
     feedback: "Speech difficulty, arm drift, and decreasing level of consciousness are concerning neurological findings."
   },
-  {
-    level: 80,
-    type: "matching",
-    question: "Match the term with the correct EMT meaning.",
-    leftItems: ["Hypoxia", "COPD exacerbation with wheezing", "Shock", "Stroke"],
-    rightItems: [
-      "Low oxygen at the tissue level",
-      "Low blood glucose",
-      "Inadequate tissue perfusion",
-      "Interrupted blood flow or bleeding in the brain",
-      "Transient weakness after exertion"
-    ],
-    correct: [0, 1, 2, 3],
-    feedback: "These terms describe life-threatening problems that require rapid recognition."
-  },
+{
+  level: 80,
+  type: "single",
+  question: "A 72-year-old male suddenly becomes dizzy and collapses while mowing the lawn. He is pale, diaphoretic, confused, and has a weak irregular pulse at 38/min. Blood pressure is 78/46. What is the most appropriate EMT priority?",
+  answers: [
+    "Assist the patient to stand and walk to the ambulance to improve circulation",
+    "Recognize unstable bradycardia with poor perfusion and begin rapid transport with airway, oxygenation, and reassessment support",
+    "Delay transport until a complete SAMPLE history is obtained",
+    "Administer oral glucose because diaphoresis always indicates hypoglycemia"
+  ],
+  bestCorrect: 1,
+  partialCorrect: 3,
+  reasonBest: "The patient shows signs of unstable bradycardia with shock: hypotension, altered mental status, diaphoresis, and weak pulses. Immediate supportive care and rapid transport are priorities.",
+  feedbackPartial: "Hypoglycemia can cause diaphoresis, but the severe bradycardia and hypotension indicate a cardiovascular emergency until proven otherwise.",
+  feedbackWrong: "Walking the patient or delaying transport can worsen poor perfusion."
+},
   {
     level: 80,
     type: "single",
