@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Maximum Difficulty EMR Practice Exam</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #222;
+      color: white;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 950px;
+      margin: auto;
+      background: #333;
+      padding: 25px;
+      border-radius: 10px;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .question-box {
+      background: #d9d9d9;
+      color: black;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      font-size: 16px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    button:hover {
+      background: darkgreen;
+    }
+
+    #submitBtn, #nextBtn, #restartBtn {
+      background: #0066cc;
+      text-align: center;
+      display: none;
+    }
+
+    #feedback {
+      margin-top: 15px;
+      padding: 15px;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      display: none;
+      line-height: 1.5;
+    }
+
+    #status {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 18px;
+    }
+
+    .checkbox-answer {
+      display: block;
+      background: #eeeeee;
+      color: black;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .checkbox-answer input {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    .matching-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 12px 0;
+      background: #eeeeee;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .matching-left {
+      flex: 1;
+      font-weight: bold;
+    }
+
+    .matching-row select {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Maximum Difficulty EMR Practice Exam</h1>
+  <h2>Multiple Choice, Select All That Apply, and Matching</h2>
+
+  <div id="status"></div>
+
+  <div class="question-box">
+    <div id="question"></div>
+    <div id="answers"></div>
+
+    <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
+
+    <div id="feedback"></div>
+
+    <button id="nextBtn" onclick="nextQuestion()">Next Question</button>
+    <button id="restartBtn" onclick="restartExam()">Restart Exam</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    level: 80,
+    type: "single",
+    question: "You arrive for a 64-year-old male who is pale, sweaty, and speaking only 2-word sentences. His family begins giving a long medical history. What is the most appropriate EMR priority?",
+    answers: [
+      "Stop and obtain the full medical history before touching the patient",
+      "Begin the primary assessment and address airway and breathing immediately",
+      "Ask the family to gather medications while you complete the report",
+      "Apply oxygen if available while continuing assessment"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 3,
+    reasonBest: "The patient has an immediate breathing problem. EMR care prioritizes life threats using airway, breathing, circulation, and rapid EMS activation.",
+    feedbackPartial: "Oxygen may be appropriate if available and allowed, but the best answer identifies the primary assessment and immediate life-threat management.",
+    feedbackWrong: "History and paperwork come after immediate life threats."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which findings during the primary assessment are immediate life threats? Select all that apply.",
+    answers: [
+      "Snoring respirations in an unresponsive patient",
+      "Severe uncontrolled bleeding",
+      "Weak rapid pulse with altered mental status",
+      "Mild ankle pain after walking",
+      "Nausea without distress"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Snoring respirations, severe bleeding, and signs of poor perfusion are immediate life threats."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the EMR assessment step with its purpose.",
+    leftItems: ["Scene size-up", "Primary assessment", "SAMPLE history", "Reassessment"],
+    rightItems: [
+      "Identify hazards and request resources",
+      "Find and treat immediate life threats",
+      "Gather history about the patient and event",
+      "Track changes and treatment response",
+      "Choose the patient's preferred hospital"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Each step has a different purpose: safety, life-threat management, history, and ongoing monitoring."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "An elderly fall patient is confused and has snoring respirations. A scalp wound is bleeding slowly. What should the EMR do first?",
+    answers: [
+      "Control the scalp wound before assessing the airway",
+      "Open the airway using a trauma-appropriate maneuver",
+      "Perform a complete neurological exam",
+      "Ask witnesses how far the patient fell"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Snoring respirations indicate airway obstruction. Airway is the immediate priority, especially in an unresponsive or altered patient.",
+    feedbackPartial: "Bleeding control matters, but the airway problem is more immediately life-threatening.",
+    feedbackWrong: "History and detailed exams come after immediate airway threats."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which signs suggest poor perfusion or shock? Select all that apply.",
+    answers: [
+      "Altered mental status",
+      "Cool clammy skin",
+      "Weak rapid pulse",
+      "Mild dizziness that resolves immediately",
+      "Normal skin signs with mild anxiety"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Poor perfusion commonly presents with altered mental status, cool clammy skin, and weak rapid pulse."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the patient finding with the most likely concern.",
+    leftItems: ["Snoring respirations", "Gurgling respirations", "Weak rapid pulse", "Drooling with tripod position"],
+    rightItems: [
+      "Tongue or soft tissue airway obstruction",
+      "Fluid or vomit in the airway",
+      "Possible shock or poor perfusion",
+      "Possible serious upper-airway emergency",
+      "Normal anxiety response"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Airway sounds and perfusion signs help the EMR identify dangerous problems quickly."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "At a crash scene, you see leaking fuel, broken glass, and a patient yelling for help. What is the best first action?",
+    answers: [
+      "Enter quickly because the patient is conscious",
+      "Ensure scene safety and request appropriate resources",
+      "Begin the head-to-toe exam immediately",
+      "Move the patient before checking hazards"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Scene safety comes first. EMRs should not become additional patients and must request appropriate help.",
+    feedbackPartial: "Helping the patient is important, but only after safety is addressed.",
+    feedbackWrong: "Entering an unsafe scene can place rescuers and patients at greater risk."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which actions are appropriate during reassessment? Select all that apply.",
+    answers: [
+      "Repeat vital signs when trained and equipped",
+      "Check whether the patient's condition is improving or worsening",
+      "Look for changes in mental status",
+      "Ignore worsening symptoms once EMS is called",
+      "Stop monitoring after the first normal pulse"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Reassessment includes repeated observations, treatment response, and changes in condition."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the physiology term with the EMR-level meaning.",
+    leftItems: ["Ventilation", "Oxygenation", "Perfusion", "Cardiac output"],
+    rightItems: [
+      "Moving air in and out of the lungs",
+      "Getting oxygen into the blood",
+      "Blood flow through body tissues",
+      "Blood pumped by the heart",
+      "Digesting food in the stomach"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Ventilation, oxygenation, and perfusion are core concepts in emergency care."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A patient is breathing 6 times per minute with shallow chest rise and decreasing responsiveness. What is the most appropriate EMR action if trained and equipped?",
+    answers: [
+      "Apply oxygen by nonrebreather only",
+      "Assist ventilations with a BVM and activate/continue EMS response",
+      "Wait to see if breathing improves",
+      "Obtain a full SAMPLE history first"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Slow, shallow breathing is inadequate ventilation. If trained and equipped, the EMR should assist ventilations with a BVM while ensuring EMS response.",
+    feedbackPartial: "Oxygen alone does not fix inadequate ventilation.",
+    feedbackWrong: "Airway and breathing emergencies are managed before history."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which findings indicate inadequate breathing? Select all that apply.",
+    answers: [
+      "Slow respirations with poor chest rise",
+      "Cyanosis",
+      "Altered mental status with shallow breathing",
+      "Mild shortness of breath while speaking full sentences",
+      "Normal chest rise and normal mental status"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Inadequate breathing may show slow or shallow respirations, poor chest rise, cyanosis, or altered mental status."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the airway tool or action with its best use.",
+    leftItems: ["OPA", "NPA", "Suction", "BVM"],
+    rightItems: [
+      "Unresponsive patient without gag reflex",
+      "Patient who needs airway support but cannot tolerate an OPA",
+      "Clear vomit, blood, or secretions",
+      "Assist inadequate breathing",
+      "Treat chest pain"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Airway tools are selected based on responsiveness, gag reflex, secretions, and ventilation adequacy."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A patient vomits while you are assisting ventilations. What should you do first?",
+    answers: [
+      "Continue ventilating faster to push air past the vomit",
+      "Turn or position as appropriate, suction/clear the airway, then resume ventilations",
+      "Stop all care until EMS arrives",
+      "Place the patient flat and reassess later"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Vomitus must be cleared immediately to reduce aspiration risk and restore airway patency.",
+    feedbackPartial: "Ventilations should resume after the airway is cleared.",
+    feedbackWrong: "Ventilating through vomit increases aspiration risk."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "You insert an OPA and the patient begins gagging. What is the most appropriate action?",
+    answers: [
+      "Push the OPA farther in",
+      "Remove the OPA immediately and reassess the airway",
+      "Switch to a larger OPA",
+      "Continue because gagging confirms placement"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Gagging means the patient has an intact gag reflex. The OPA should be removed to reduce vomiting and aspiration risk.",
+    feedbackPartial: "Reassessment is important, but the immediate action is removal.",
+    feedbackWrong: "Do not force an airway adjunct in a patient with a gag reflex."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which are appropriate EMR airway actions when trained and equipped? Select all that apply.",
+    answers: [
+      "Suction visible secretions that obstruct the airway",
+      "Use an OPA only when the gag reflex is absent",
+      "Assist ventilations when breathing is inadequate",
+      "Place an NPA in any patient with severe facial trauma",
+      "Delay airway care until transport arrives"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Airway care includes suctioning, proper adjunct selection, and assisted ventilation when needed."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the airway sound with the likely problem.",
+    leftItems: ["Snoring", "Gurgling", "Wheezing", "Stridor"],
+    rightItems: [
+      "Tongue or soft tissue obstruction",
+      "Fluid or secretions in the airway",
+      "Lower-airway narrowing",
+      "Upper-airway obstruction",
+      "Normal breathing"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Airway sounds can point to obstruction, fluid, lower-airway narrowing, or upper-airway emergencies."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A child with fever is sitting forward, drooling, and has stridor. What is the safest EMR approach?",
+    answers: [
+      "Look in the throat with a tongue depressor",
+      "Keep the child calm, avoid agitation, and ensure rapid EMS response",
+      "Give water to clear the throat",
+      "Place the child flat and inspect the airway"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Drooling, fever, tripod positioning, and stridor suggest a serious upper-airway emergency. Agitation can worsen obstruction.",
+    feedbackPartial: "Assessment is important, but forced throat inspection is unsafe in suspected upper-airway obstruction.",
+    feedbackWrong: "Do not force throat inspection or give oral fluids."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "During BVM ventilations, the chest does not rise. What should you do first?",
+    answers: [
+      "Reposition the airway and improve the mask seal",
+      "Ventilate with more force until the abdomen rises",
+      "Stop ventilations permanently",
+      "Switch to oxygen only"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 1,
+    reasonBest: "Poor chest rise usually means poor airway position, poor mask seal, or obstruction. Repositioning and improving the seal come first.",
+    feedbackPartial: "More force can push air into the stomach and does not correct poor technique.",
+    feedbackWrong: "The ventilation problem must be corrected immediately."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A 58-year-old female has pressure-like chest discomfort, nausea, and sweating. She is pale and weak. What should the EMR suspect?",
+    answers: [
+      "A cardiac emergency until proven otherwise",
+      "Anxiety because she is sweating",
+      "Indigestion because nausea is present",
+      "A minor illness unless chest pain is severe"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 3,
+    reasonBest: "Chest pressure with nausea, diaphoresis, pallor, and weakness is concerning for a cardiac emergency.",
+    feedbackPartial: "Mild symptoms can still be serious, especially in cardiac patients.",
+    feedbackWrong: "Cardiac symptoms may be atypical and should not be dismissed."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which findings increase concern for a cardiac emergency? Select all that apply.",
+    answers: [
+      "Pressure-like chest discomfort",
+      "Pain radiating to the jaw or arm",
+      "Unexplained nausea with sweating",
+      "Pain that clearly changes only with movement",
+      "Mild soreness after lifting with normal appearance"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Cardiac emergencies may present with pressure, radiation, nausea, sweating, weakness, or shortness of breath."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the cardiovascular finding with the likely concern.",
+    leftItems: ["Crushing chest pressure", "Pink frothy sputum", "Unequal radial pulses", "No pulse and abnormal breathing"],
+    rightItems: [
+      "Possible heart attack",
+      "Pulmonary edema",
+      "Possible major vascular emergency",
+      "Cardiac arrest",
+      "Simple chest wall strain"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Cardiovascular emergencies require rapid recognition and EMS activation."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A patient with chest discomfort suddenly becomes unresponsive and is not breathing normally. What should the EMR do first?",
+    answers: [
+      "Give aspirin if available",
+      "Check responsiveness/breathing, check pulse if trained, and begin CPR/AED sequence if pulseless",
+      "Place the patient in a chair",
+      "Wait for EMS because the patient had chest pain"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Unresponsiveness with abnormal breathing requires rapid cardiac arrest assessment. If pulseless, start CPR and use an AED.",
+    feedbackPartial: "Oral medications are unsafe in an unresponsive patient.",
+    feedbackWrong: "Do not delay CPR/AED for a patient in cardiac arrest."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "After an AED delivers a shock, what is the best next action?",
+    answers: [
+      "Resume CPR immediately unless signs of life are present",
+      "Check blood pressure",
+      "Remove the AED pads",
+      "Wait quietly for the AED to shock again"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 3,
+    reasonBest: "After a shock, compressions should resume immediately to minimize interruptions unless the patient shows signs of life.",
+    feedbackPartial: "The AED will reanalyze later, but CPR should resume immediately.",
+    feedbackWrong: "Do not remove pads or delay compressions."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which actions are correct during adult CPR? Select all that apply.",
+    answers: [
+      "Compress hard and fast in the center of the chest",
+      "Allow complete chest recoil",
+      "Minimize interruptions",
+      "Stop compressions every 15 seconds to check a pulse",
+      "Delay AED use until transport arrives"
+    ],
+    correct: [0, 1, 2],
+    feedback: "High-quality CPR includes correct hand placement, adequate depth/rate, full recoil, and minimal interruptions."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the CPR/AED step with the correct purpose.",
+    leftItems: ["Chest compressions", "AED analysis", "Rescue breaths", "Early activation of EMS"],
+    rightItems: [
+      "Move blood to vital organs",
+      "Check for shockable rhythm",
+      "Provide ventilation when indicated",
+      "Bring advanced resources and transport",
+      "Replace scene safety"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "CPR, AED use, ventilations, and EMS activation work together in cardiac arrest care."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A patient has sudden facial droop, slurred speech, and arm weakness. What is the most appropriate EMR priority?",
+    answers: [
+      "Give the patient food or drink",
+      "Recognize possible stroke, note last known well time, and activate EMS rapidly",
+      "Have the patient sleep and reassess later",
+      "Move the patient around to improve circulation"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Stroke is time-sensitive. The EMR should identify stroke signs, determine last known well time if possible, and ensure rapid EMS response.",
+    feedbackPartial: "Comfort is important, but stroke recognition and EMS activation are the priority.",
+    feedbackWrong: "Do not give oral intake or delay care."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which findings suggest a possible stroke? Select all that apply.",
+    answers: [
+      "Sudden speech difficulty",
+      "Facial droop",
+      "Arm drift or one-sided weakness",
+      "Old weakness from a past injury with no change",
+      "Mild fatigue after exercise"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Sudden speech difficulty, facial droop, and one-sided weakness are concerning for stroke."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the neurological finding with the concern.",
+    leftItems: ["Facial droop", "Arm drift", "Slurred speech", "Seizure followed by confusion"],
+    rightItems: [
+      "Possible stroke finding",
+      "Possible one-sided weakness",
+      "Possible speech abnormality",
+      "Postictal state",
+      "Normal finding after eating"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Neurological emergencies require recognition of abnormal speech, movement, mental status, and seizure patterns."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A diabetic patient is confused, sweaty, and unable to follow commands. Family says he may have low sugar. What is the most appropriate EMR action?",
+    answers: [
+      "Give oral glucose even if he cannot swallow",
+      "Do not give anything by mouth if he cannot safely swallow; protect airway and activate EMS",
+      "Tell family to give food immediately",
+      "Ignore diabetes until EMS arrives"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Oral glucose or food is unsafe if the patient cannot swallow or follow commands. Airway protection and EMS response are priorities.",
+    feedbackPartial: "Low glucose is possible, but aspiration risk must be considered.",
+    feedbackWrong: "Never give oral substances to a patient who cannot safely swallow."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which findings may be seen with hypoglycemia? Select all that apply.",
+    answers: [
+      "Altered mental status",
+      "Sweating",
+      "Weakness or seizure",
+      "Clear thinking with no symptoms",
+      "Only ankle pain"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Hypoglycemia can cause sweating, weakness, altered mental status, seizures, or unconsciousness."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the emergency with the likely clue.",
+    leftItems: ["Hypoglycemia", "Stroke", "Seizure", "Opioid overdose"],
+    rightItems: [
+      "Confusion, sweating, possible diabetes history",
+      "Sudden one-sided weakness or speech problem",
+      "Shaking followed by confusion",
+      "Slow breathing with pinpoint pupils",
+      "Isolated wrist pain"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Pattern recognition helps EMRs identify high-risk medical emergencies."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A patient has hives, wheezing, swelling of the lips, and dizziness after a bee sting. What should the EMR suspect?",
+    answers: [
+      "Anaphylaxis",
+      "Simple anxiety",
+      "Stroke",
+      "Isolated skin irritation only"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 3,
+    reasonBest: "Skin findings plus breathing problems and dizziness after exposure strongly suggest anaphylaxis.",
+    feedbackPartial: "Skin irritation alone does not explain wheezing, swelling, and dizziness.",
+    feedbackWrong: "Anaphylaxis can rapidly become life-threatening."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which findings support anaphylaxis? Select all that apply.",
+    answers: [
+      "Wheezing or breathing difficulty",
+      "Hives",
+      "Hypotension, dizziness, or signs of shock",
+      "Mild localized pain only",
+      "Normal breathing with no systemic symptoms"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Anaphylaxis often includes respiratory compromise, skin findings, swelling, and poor perfusion."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the allergic reaction finding with the concern.",
+    leftItems: ["Wheezing", "Hives", "Lip/tongue swelling", "Dizziness after exposure"],
+    rightItems: [
+      "Lower-airway narrowing",
+      "Skin involvement",
+      "Possible airway compromise",
+      "Possible poor perfusion",
+      "Normal response"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Anaphylaxis can affect the airway, breathing, circulation, and skin."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A patient is found unresponsive with slow breathing and pinpoint pupils. What is the most important EMR priority?",
+    answers: [
+      "Manage airway and breathing while activating EMS",
+      "Place the patient in a chair",
+      "Give oral fluids",
+      "Wait for the patient to wake up"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 1,
+    reasonBest: "Slow breathing is the immediate life threat. EMR care focuses on airway, breathing support, and EMS activation.",
+    feedbackPartial: "Positioning may be used if appropriate, but airway and breathing are the priority.",
+    feedbackWrong: "Do not give oral fluids to an unresponsive patient."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which overdose findings require urgent airway or breathing concern? Select all that apply.",
+    answers: [
+      "Slow breathing",
+      "Gurgling respirations",
+      "Decreased level of consciousness",
+      "Mild nausea while fully alert",
+      "Normal breathing and alertness"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Overdose patients may deteriorate from airway obstruction, aspiration, or respiratory depression."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the toxicology clue with the possible condition.",
+    leftItems: ["Slow breathing and pinpoint pupils", "Confusion after CO exposure", "Burning around mouth after ingestion", "Agitation after stimulant use"],
+    rightItems: [
+      "Opioid overdose",
+      "Carbon monoxide poisoning",
+      "Possible poisoning/caustic exposure",
+      "Sympathomimetic/stimulant emergency",
+      "Simple ankle injury"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Toxicological emergencies require attention to airway, breathing, exposure history, and responder safety."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "Several people in one home complain of headache, dizziness, nausea, and confusion in winter. What should the EMR suspect?",
+    answers: [
+      "Carbon monoxide exposure",
+      "Food poisoning only",
+      "Stroke in all patients",
+      "Normal fatigue"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 1,
+    reasonBest: "Multiple patients with headache, dizziness, nausea, and confusion in an enclosed setting suggest carbon monoxide exposure.",
+    feedbackPartial: "Food poisoning is possible, but the setting and neurological symptoms make CO especially concerning.",
+    feedbackWrong: "Responder safety and evacuation are major concerns in possible CO exposure."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A patient has severe bleeding from the thigh with blood pooling on the ground. What is the best EMR action?",
+    answers: [
+      "Apply direct pressure immediately and use a tourniquet if bleeding is life-threatening and not controlled or protocol indicates",
+      "Wait for EMS before touching the wound",
+      "Apply a cold pack only",
+      "Elevate the leg without direct pressure"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 3,
+    reasonBest: "Severe bleeding is a circulation life threat. Direct pressure and tourniquet use when indicated can be lifesaving.",
+    feedbackPartial: "Elevation alone is not enough for life-threatening bleeding.",
+    feedbackWrong: "Do not delay bleeding control."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which findings suggest life-threatening bleeding? Select all that apply.",
+    answers: [
+      "Blood spurting or rapidly flowing",
+      "Blood pooling on the ground",
+      "Signs of shock after injury",
+      "Small scrape with controlled oozing",
+      "Old bruise with no pain"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Life-threatening bleeding may spurt, pool, soak clothing, or cause shock signs."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the bleeding-control action with its purpose.",
+    leftItems: ["Direct pressure", "Tourniquet", "Hemostatic dressing", "Reassessment"],
+    rightItems: [
+      "Compress bleeding vessel at wound site",
+      "Control severe extremity bleeding when indicated",
+      "Help clotting in severe bleeding when available",
+      "Check if bleeding remains controlled",
+      "Replace airway assessment"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Bleeding control requires immediate intervention and continued reassessment."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A motorcyclist is confused, pale, and has a deformed pelvis. No major external bleeding is seen. What should the EMR suspect?",
+    answers: [
+      "Internal bleeding with shock",
+      "Minor pelvic pain only",
+      "Anxiety from the crash",
+      "Hyperventilation only"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 2,
+    reasonBest: "Pelvic trauma can cause severe internal bleeding. Pale skin, confusion, and mechanism suggest shock.",
+    feedbackPartial: "Anxiety can occur after trauma, but it does not explain signs of poor perfusion.",
+    feedbackWrong: "Absence of external bleeding does not rule out internal hemorrhage."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which trauma patients should be considered high priority? Select all that apply.",
+    answers: [
+      "Altered mental status after head injury",
+      "Signs of shock after trauma",
+      "Respiratory distress after chest injury",
+      "Small isolated finger cut",
+      "Minor ankle pain with normal walking"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Altered mental status, shock, and respiratory distress after trauma are high-risk findings."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the trauma clue with the likely concern.",
+    leftItems: ["Unequal pupils after head injury", "Absent breath sounds on one side", "Pelvic instability", "Cool clammy skin after bleeding"],
+    rightItems: [
+      "Possible brain injury",
+      "Possible serious chest injury",
+      "Possible internal bleeding",
+      "Shock",
+      "Normal trauma finding"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "High-risk trauma clues should guide rapid recognition and EMS coordination."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A patient fell from a roof and complains of neck pain and numbness in both hands. What should the EMR do?",
+    answers: [
+      "Encourage the patient to stand and walk",
+      "Maintain manual spinal motion restriction and activate EMS",
+      "Move the neck to see where it hurts",
+      "Give the patient water and let them rest"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Mechanism plus neck pain and neurological symptoms suggest possible spinal injury. Limit movement and ensure EMS response.",
+    feedbackPartial: "Comfort is helpful, but movement must be limited.",
+    feedbackWrong: "Do not move the neck or have the patient walk."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which signs increase concern for spinal injury? Select all that apply.",
+    answers: [
+      "Neck or back pain after trauma",
+      "Numbness or weakness in extremities",
+      "Altered mental status after injury",
+      "Minor isolated hand scrape",
+      "No pain after a simple paper cut"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Spinal concern increases with pain, neurological deficits, altered mental status, or significant mechanism."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the musculoskeletal injury with the best EMR concern.",
+    leftItems: ["Open fracture", "Joint deformity", "Pelvic injury", "Amputation"],
+    rightItems: [
+      "Bleeding and infection risk",
+      "Possible dislocation or fracture",
+      "Possible severe internal bleeding",
+      "Severe bleeding and part preservation",
+      "No emergency risk"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Musculoskeletal injuries can include bleeding, neurovascular compromise, and shock risk."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A burn patient has soot around the mouth, hoarse voice, and was trapped in a house fire. What is the most serious concern?",
+    answers: [
+      "Possible airway burn or inhalation injury",
+      "Only minor facial burns",
+      "Pain control only",
+      "Simple anxiety"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 1,
+    reasonBest: "Soot, hoarseness, and enclosed-space fire exposure suggest possible inhalation injury and airway swelling.",
+    feedbackPartial: "Facial burns may be present, but airway injury is the life threat.",
+    feedbackWrong: "Airway compromise can worsen rapidly."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which burn findings are high risk? Select all that apply.",
+    answers: [
+      "Burns to the face or airway concern",
+      "Circumferential burns",
+      "Large surface-area burns",
+      "Tiny first-degree burn on fingertip",
+      "Mild sunburn without symptoms"
+    ],
+    correct: [0, 1, 2],
+    feedback: "High-risk burns include airway involvement, circumferential burns, large burns, chemical/electrical burns, and burns in vulnerable patients."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the environmental emergency with the likely clue.",
+    leftItems: ["Heat stroke", "Hypothermia", "Frostbite", "Drowning"],
+    rightItems: [
+      "Hot skin and altered mental status",
+      "Cold exposure with shivering or confusion",
+      "Frozen or numb tissue",
+      "Respiratory problem after submersion",
+      "Chest pain after eating"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Environmental emergencies can affect airway, breathing, circulation, and mental status."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A football player collapses during practice. He is confused, very hot, and not sweating much. What should the EMR suspect?",
+    answers: [
+      "Heat stroke",
+      "Mild fatigue",
+      "Simple dehydration only",
+      "Hypothermia"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 2,
+    reasonBest: "Hot skin and altered mental status after heat exposure suggest heat stroke, a life-threatening emergency.",
+    feedbackPartial: "Dehydration can contribute, but altered mental status and high heat exposure make heat stroke more concerning.",
+    feedbackWrong: "This is not a minor condition."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A drowning patient is pulled from the water and is not breathing normally. What is the most appropriate EMR priority?",
+    answers: [
+      "Begin airway and breathing support and CPR/AED sequence if pulseless",
+      "Drain water from the lungs by holding the patient upside down",
+      "Wait for the patient to cough",
+      "Give water to drink"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 2,
+    reasonBest: "Drowning is primarily an airway and breathing emergency. Provide ventilations/CPR as indicated and activate EMS.",
+    feedbackPartial: "Coughing may occur in some patients, but abnormal breathing requires immediate care.",
+    feedbackWrong: "Do not delay ventilations trying to drain water."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which pediatric findings are especially concerning? Select all that apply.",
+    answers: [
+      "Poor feeding with lethargy",
+      "Nasal flaring or retractions",
+      "Cyanosis",
+      "Playing normally after minor bump",
+      "Normal breathing and normal mental status"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Children may deteriorate quickly. Lethargy, retractions, nasal flaring, and cyanosis are high-risk signs."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the pediatric sign with the concern.",
+    leftItems: ["Nasal flaring", "Retractions", "Grunting", "Poor responsiveness"],
+    rightItems: [
+      "Increased work of breathing",
+      "Use of accessory muscles",
+      "Attempt to maintain airway pressure",
+      "Possible severe illness or poor perfusion",
+      "Normal finding in all children"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Pediatric respiratory distress can show subtle but serious signs."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "An infant is limp, pale, and has slow irregular breathing. What is the best EMR action?",
+    answers: [
+      "Stimulate briefly, assess breathing/pulse, and begin ventilations/CPR as indicated",
+      "Give the infant a bottle",
+      "Place the infant in a car seat and wait",
+      "Focus only on temperature"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 3,
+    reasonBest: "A limp infant with abnormal breathing needs immediate assessment and support of airway, breathing, and circulation.",
+    feedbackPartial: "Temperature matters, but ABCs are first.",
+    feedbackWrong: "Do not give oral intake or delay care."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A pregnant patient in the third trimester is supine, dizzy, pale, and hypotensive after a minor fall. What positioning should be considered while maintaining injury precautions?",
+    answers: [
+      "Keep her completely flat no matter what",
+      "Left lateral tilt or positioning to reduce pressure on major blood vessels",
+      "Trendelenburg position",
+      "Have her stand and walk"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Late pregnancy can compress major blood vessels when supine. Left lateral tilt can improve circulation while maintaining precautions.",
+    feedbackPartial: "Spinal concerns matter after trauma, but supine hypotension should be considered.",
+    feedbackWrong: "Do not make a dizzy hypotensive trauma patient stand."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which obstetric findings require urgent EMS response? Select all that apply.",
+    answers: [
+      "Heavy vaginal bleeding",
+      "Seizure in pregnancy",
+      "Imminent delivery with crowning",
+      "Mild nausea early in pregnancy only",
+      "Normal fetal movement with no complaints"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Heavy bleeding, seizure, and imminent delivery are high-priority obstetric emergencies."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the obstetric emergency clue with the likely concern.",
+    leftItems: ["Heavy bleeding late pregnancy", "Seizure in pregnancy", "Crowning", "Supine dizziness in third trimester"],
+    rightItems: [
+      "Possible serious maternal/fetal emergency",
+      "Possible eclampsia",
+      "Delivery is imminent",
+      "Possible vena cava compression",
+      "Normal pregnancy discomfort only"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Obstetric emergencies require rapid recognition and EMS involvement."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A confused elderly patient says 'no ambulance' but cannot explain where he is, what happened, or the risks of refusing. What is the best EMR action?",
+    answers: [
+      "Accept the refusal because he said no",
+      "Treat as lacking decision-making capacity, continue care within scope, and involve EMS/medical direction per protocol",
+      "Leave immediately",
+      "Have a neighbor sign refusal"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "A patient must have decision-making capacity to refuse. Altered mental status may prevent valid refusal.",
+    feedbackPartial: "A verbal refusal matters only when the patient understands the situation and risks.",
+    feedbackWrong: "A neighbor cannot replace the patient's capacity or legal process."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which elements should be included in refusal documentation or communication to EMS? Select all that apply.",
+    answers: [
+      "Mental status and capacity concerns",
+      "Risks explained to the patient",
+      "Vital signs and assessment findings if obtained",
+      "Only the patient's first name",
+      "Personal opinions about the patient"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Refusal documentation should include capacity, assessment findings, risks explained, patient statements, and protocol steps."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the medical/legal term with the best meaning.",
+    leftItems: ["Consent", "Implied consent", "Negligence", "Abandonment"],
+    rightItems: [
+      "Permission to provide care",
+      "Assumed permission for an unable patient needing emergency care",
+      "Failure to meet standard of care causing harm",
+      "Ending care without proper transfer or valid refusal",
+      "Sharing patient details online"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "EMRs must understand consent, implied consent, negligence, and abandonment."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A bystander asks for the name and condition of the patient you are treating at a public crash. What is the best response?",
+    answers: [
+      "Give details because the crash is public",
+      "Protect confidentiality and do not share private medical information",
+      "Share only the diagnosis",
+      "Post an update online without the patient's name"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 2,
+    reasonBest: "Patient confidentiality applies even in public. Information should be shared only with those involved in care or as allowed by law/policy.",
+    feedbackPartial: "Even limited medical details may violate confidentiality.",
+    feedbackWrong: "Public scene does not remove privacy responsibilities."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "You are first on scene for a patient with chest pain. EMS is en route. What report should you prepare to give arriving EMTs?",
+    answers: [
+      "Only the patient's name",
+      "Age, chief complaint, mental status, ABC findings, vitals if obtained, history, treatments, and changes",
+      "Only the medications found nearby",
+      "A guess at the final diagnosis"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 2,
+    reasonBest: "A concise handoff should include the key findings, care provided, and changes in condition.",
+    feedbackPartial: "Medications may help, but handoff must include assessment and care details.",
+    feedbackWrong: "Do not focus on guessing a final diagnosis."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which are appropriate radio or verbal report elements? Select all that apply.",
+    answers: [
+      "Chief complaint",
+      "Mental status and ABC concerns",
+      "Vital signs if obtained",
+      "Private unrelated patient details",
+      "Personal criticism of the patient"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Reports should be accurate, relevant, concise, and professional."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the communication behavior with the best description.",
+    leftItems: ["Closed-loop communication", "Therapeutic communication", "Handoff report", "Confidentiality"],
+    rightItems: [
+      "Repeat and confirm important instructions",
+      "Calm, respectful patient interaction",
+      "Transfer key patient information to EMS",
+      "Protect private medical information",
+      "Guess the diagnosis aloud"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Good communication improves safety, teamwork, and patient trust."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A violent scene is reported and the patient may have a weapon. What should the EMR do?",
+    answers: [
+      "Enter quickly before the patient gets worse",
+      "Stage safely and wait for law enforcement to secure the scene",
+      "Approach alone to calm the patient",
+      "Ask bystanders to take the weapon"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Responder safety comes first. EMRs should not enter potentially violent scenes until secured.",
+    feedbackPartial: "Patient care is important, but unsafe scenes must be controlled first.",
+    feedbackWrong: "Do not place yourself or bystanders in danger."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which scene findings require caution before patient contact? Select all that apply.",
+    answers: [
+      "Downed wires",
+      "Violence or weapons",
+      "Hazardous materials signs",
+      "Clear walkway and calm patient",
+      "Minor rain with no hazards"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Electrical hazards, violence, weapons, and hazardous materials require scene safety actions before contact."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the scene hazard with the correct EMR response.",
+    leftItems: ["Downed power line", "Violent patient", "Chemical spill", "Traffic crash"],
+    rightItems: [
+      "Stay back and request utility/fire resources",
+      "Stage until law enforcement secures scene",
+      "Avoid exposure and request hazmat/fire resources",
+      "Use traffic control/scene protection and request resources",
+      "Enter immediately without PPE"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Scene safety decisions protect rescuers, patients, and bystanders."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A patient with shortness of breath becomes more tired, less anxious, and has weaker respiratory effort. What does this most likely indicate?",
+    answers: [
+      "The patient is improving because anxiety decreased",
+      "Respiratory failure may be developing",
+      "The patient no longer needs monitoring",
+      "The problem is only emotional"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Decreasing anxiety with worsening fatigue and weaker breathing may mean the patient is tiring and failing, not improving.",
+    feedbackPartial: "Improvement requires better breathing and mental status, not weaker effort.",
+    feedbackWrong: "Respiratory patients can deteriorate rapidly."
+  },
+  {
+    level: 80,
+    type: "multi",
+    question: "Which reassessment trends are concerning? Select all that apply.",
+    answers: [
+      "Mental status worsening",
+      "Breathing becoming more shallow",
+      "Pulse becoming weaker and faster",
+      "Pain improving after splinting",
+      "Skin becoming warmer with improved alertness"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Worsening mental status, weaker breathing, and weaker/faster pulse suggest deterioration."
+  },
+  {
+    level: 80,
+    type: "matching",
+    question: "Match the trend with the concern.",
+    leftItems: ["Falling blood pressure", "Increasing confusion", "Increasing work of breathing", "Skin becoming cool and clammy"],
+    rightItems: [
+      "Possible worsening shock",
+      "Possible brain/perfusion problem",
+      "Respiratory deterioration",
+      "Poor peripheral perfusion",
+      "Normal improvement"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Trends during reassessment are often more important than one isolated finding."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A patient is alert but has severe respiratory distress. He wants to sit upright. What position is usually best if there is no trauma concern?",
+    answers: [
+      "Position of comfort, usually sitting upright",
+      "Flat on the back",
+      "Face down",
+      "Standing and walking"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 1,
+    reasonBest: "Patients with breathing difficulty often breathe best sitting upright. Position should support breathing unless trauma or other concerns dictate otherwise.",
+    feedbackPartial: "Supine positioning can worsen respiratory distress.",
+    feedbackWrong: "Do not make a distressed patient walk."
+  },
+  {
+    level: 80,
+    type: "single",
+    question: "A patient has a seizure that stops before EMS arrives. He is now confused and breathing adequately. What is the most appropriate EMR action?",
+    answers: [
+      "Hold him down so another seizure cannot occur",
+      "Protect from injury, monitor airway/breathing, place in recovery position if appropriate, and reassess",
+      "Put something in his mouth",
+      "Give oral fluids immediately"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "After a seizure, the patient may be postictal. Protect the patient, monitor airway and breathing, and do not place anything in the mouth.",
+    feedbackPartial: "Comfort is important, but airway/breathing monitoring and safety are key.",
+    feedbackWrong: "Do not restrain forcefully or put anything in the mouth."
+  }
+];
+
+let currentLevel = 80;
+let questionNumber = 0;
+let score = 0;
+let partialScore = 0;
+let maxQuestions = 60;
+let currentQuestion;
+let usedQuestions = [];
+
+function shuffleArray(array) {
+  return array
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+}
+
+function getQuestionByLevel(level) {
+  let available = questions.filter(q =>
+    q.level === level && !usedQuestions.includes(q.question)
+  );
+
+  if (available.length === 0) {
+    available = questions.filter(q => !usedQuestions.includes(q.question));
+  }
+
+  if (available.length === 0) {
+    finishExam();
+    return null;
+  }
+
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+function loadQuestion() {
+  if (questionNumber >= maxQuestions) {
+    finishExam();
+    return;
+  }
+
+  currentQuestion = getQuestionByLevel(currentLevel);
+  if (!currentQuestion) return;
+
+  usedQuestions.push(currentQuestion.question);
+
+  document.getElementById("status").innerText =
+    "Question " + (questionNumber + 1) +
+    " of " + maxQuestions +
+    " | Difficulty Level: " + currentLevel +
+    " | Score: " + score +
+    " | Partially Correct: " + partialScore;
+
+  document.getElementById("question").innerHTML =
+    "<strong>" + currentQuestion.question + "</strong>";
+
+  document.getElementById("answers").innerHTML = "";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "none";
+  document.getElementById("submitBtn").style.display = "none";
+
+  if (currentQuestion.type === "single") {
+    loadSingleQuestion();
+  } else if (currentQuestion.type === "multi") {
+    loadMultiQuestion();
+  } else if (currentQuestion.type === "matching") {
+    loadMatchingQuestion();
+  }
+}
+
+function loadSingleQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  const shuffledAnswers = shuffleArray(
+    currentQuestion.answers.map((answer, index) => ({
+      text: answer,
+      originalIndex: index
+    }))
+  );
+
+  shuffledAnswers.forEach(answerObj => {
+    answersDiv.innerHTML += `
+      <button onclick="checkSingleAnswer(${answerObj.originalIndex}, this)">
+        ${answerObj.text}
+      </button>
+    `;
+  });
+}
+
+function loadMultiQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  const shuffledAnswers = shuffleArray(
+    currentQuestion.answers.map((answer, index) => ({
+      text: answer,
+      originalIndex: index
+    }))
+  );
+
+  shuffledAnswers.forEach(answerObj => {
+    answersDiv.innerHTML += `
+      <label class="checkbox-answer">
+        <input type="checkbox" value="${answerObj.originalIndex}">
+        ${answerObj.text}
+      </label>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function loadMatchingQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
+    const shuffledOptions = shuffleArray(
+      currentQuestion.rightItems.map((rightItem, rightIndex) => ({
+        text: rightItem,
+        originalIndex: rightIndex
+      }))
+    );
+
+    let options = `<option value="">Choose match</option>`;
+
+    shuffledOptions.forEach(option => {
+      options += `
+        <option value="${option.originalIndex}">
+          ${option.text}
+        </option>
+      `;
+    });
+
+    answersDiv.innerHTML += `
+      <div class="matching-row">
+        <div class="matching-left">${leftItem}</div>
+        <select data-left-index="${leftIndex}">
+          ${options}
+        </select>
+      </div>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function checkSingleAnswer(selected, clickedButton) {
+  const feedback = document.getElementById("feedback");
+  const buttons = document.querySelectorAll("#answers button");
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+
+  if (selected === currentQuestion.bestCorrect) {
+    score++;
+    clickedButton.style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Most Correct Answer.</strong><br><br>" +
+      "<strong>Reason:</strong> " +
+      currentQuestion.reasonBest;
+  } else if (selected === currentQuestion.partialCorrect) {
+    partialScore++;
+    clickedButton.style.background = "orange";
+
+    buttons.forEach(button => {
+      if (button.innerText.trim() === currentQuestion.answers[currentQuestion.bestCorrect]) {
+        button.style.background = "darkgreen";
+      }
+    });
+
+    feedback.innerHTML =
+      "<strong>Partially Correct, but not the most correct.</strong><br><br>" +
+      currentQuestion.feedbackPartial +
+      "<br><br><strong>Most correct answer:</strong> " +
+      currentQuestion.answers[currentQuestion.bestCorrect] +
+      "<br><br><strong>Reason:</strong> " +
+      currentQuestion.reasonBest;
+  } else {
+    clickedButton.style.background = "darkred";
+
+    buttons.forEach(button => {
+      if (button.innerText.trim() === currentQuestion.answers[currentQuestion.bestCorrect]) {
+        button.style.background = "darkgreen";
+      }
+
+      if (button.innerText.trim() === currentQuestion.answers[currentQuestion.partialCorrect]) {
+        button.style.background = "orange";
+      }
+    });
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br><br>" +
+      currentQuestion.feedbackWrong +
+      "<br><br><strong>Most correct answer:</strong> " +
+      currentQuestion.answers[currentQuestion.bestCorrect] +
+      "<br><br><strong>Reason this is most correct:</strong> " +
+      currentQuestion.reasonBest +
+      "<br><br><strong>Partially correct answer:</strong> " +
+      currentQuestion.answers[currentQuestion.partialCorrect];
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function submitAnswer() {
+  if (currentQuestion.type === "multi") {
+    checkMultiAnswer();
+  } else if (currentQuestion.type === "matching") {
+    checkMatchingAnswer();
+  }
+}
+
+function checkMultiAnswer() {
+  const checked = Array.from(
+    document.querySelectorAll('#answers input[type="checkbox"]:checked')
+  ).map(cb => Number(cb.value));
+
+  const correct =
+    checked.length === currentQuestion.correct.length &&
+    checked.every(value => currentQuestion.correct.includes(value));
+
+  const feedback = document.getElementById("feedback");
+  const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
+
+  checkboxes.forEach(cb => {
+    cb.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br><br>" +
+      currentQuestion.feedback;
+  } else {
+    const correctAnswers = currentQuestion.correct
+      .map(index => currentQuestion.answers[index])
+      .join(", ");
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br><br>" +
+      "<strong>Correct answers:</strong> " +
+      correctAnswers +
+      "<br><br>" +
+      currentQuestion.feedback;
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function checkMatchingAnswer() {
+  const selects = document.querySelectorAll("#answers select");
+  const selectedAnswers = Array.from(selects).map(select => Number(select.value));
+
+  const allAnswered = selectedAnswers.every(answer => !Number.isNaN(answer));
+
+  const correct =
+    allAnswered &&
+    selectedAnswers.length === currentQuestion.correct.length &&
+    selectedAnswers.every((value, index) => value === currentQuestion.correct[index]);
+
+  const feedback = document.getElementById("feedback");
+
+  selects.forEach(select => {
+    select.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br><br>" +
+      currentQuestion.feedback;
+  } else {
+    let correctText = "";
+
+    currentQuestion.leftItems.forEach((item, index) => {
+      correctText +=
+        item +
+        " = " +
+        currentQuestion.rightItems[currentQuestion.correct[index]] +
+        "<br>";
+    });
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br><br>" +
+      "<strong>Correct matches:</strong><br>" +
+      correctText +
+      "<br>" +
+      currentQuestion.feedback;
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function nextQuestion() {
+  questionNumber++;
+  loadQuestion();
+}
+
+function finishExam() {
+  document.getElementById("question").innerHTML =
+    "<h2>Exam Complete</h2>";
+
+  document.getElementById("answers").innerHTML = "";
+
+  let result = "";
+
+  if (score >= 51) {
+    result = "Excellent. You handled maximum-difficulty EMR-level patient assessment, airway, CPR/AED, trauma, medical emergencies, legal/ethical, and communication questions well.";
+  } else if (score >= 42) {
+    result = "Good. Continue reviewing primary assessment, airway management, bleeding control, CPR/AED sequence, shock, stroke, anaphylaxis, diabetic emergencies, trauma, documentation, refusal, and patient handoff.";
+  } else {
+    result = "Needs remediation. Focus on scene safety, ABCs, airway positioning, suctioning, assisted ventilations, CPR/AED, bleeding control, shock recognition, stroke recognition, anaphylaxis, diabetic emergencies, consent/refusal, confidentiality, and communication.";
+  }
+
+  document.getElementById("feedback").style.display = "block";
+  document.getElementById("feedback").innerHTML =
+    "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
+    "<br><br><strong>Partially Correct Answers:</strong> " + partialScore +
+    "<br><br><strong>Difficulty Level:</strong> " + currentLevel +
+    "<br><br>" + result;
+
+  document.getElementById("status").innerText =
+    "Maximum Difficulty EMR Exam Finished";
+
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "block";
+}
+
+function restartExam() {
+  currentLevel = 80;
+  questionNumber = 0;
+  score = 0;
+  partialScore = 0;
+  usedQuestions = [];
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
