@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Level 100 EMR / EMT Trauma Practice Exam</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #222;
+      color: white;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 950px;
+      margin: auto;
+      background: #333;
+      padding: 25px;
+      border-radius: 10px;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .question-box {
+      background: #d9d9d9;
+      color: black;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      font-size: 16px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    button:hover {
+      background: darkgreen;
+    }
+
+    #submitBtn, #nextBtn, #restartBtn {
+      background: #0066cc;
+      text-align: center;
+      display: none;
+    }
+
+    #feedback {
+      margin-top: 15px;
+      padding: 15px;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      display: none;
+      line-height: 1.5;
+    }
+
+    #status {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 18px;
+    }
+
+    .checkbox-answer {
+      display: block;
+      background: #eeeeee;
+      color: black;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .checkbox-answer input {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    .matching-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 12px 0;
+      background: #eeeeee;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .matching-left {
+      flex: 1;
+      font-weight: bold;
+    }
+
+    .matching-row select {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Level 100 EMR / EMT Practice Exam</h2>
+  <h2>Multiple Choice, Select All That Apply, Matching, and Scenario-Based Questions</h2>
+
+  <div id="status"></div>
+
+  <div class="question-box">
+    <div id="question"></div>
+    <div id="answers"></div>
+
+    <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
+
+    <div id="feedback"></div>
+
+    <button id="nextBtn" onclick="nextQuestion()">Next Question</button>
+    <button id="restartBtn" onclick="restartExam()">Restart Exam</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+
+{
+  level: 100,
+  type: "single",
+  question: "A 27-year-old male was ejected from a vehicle during a rollover crash. He is confused, breathing 30 times per minute, and has weak radial pulses. What is the MOST immediate concern?",
+  answers: [
+    "Possible spinal injury",
+    "Compensated shock from internal bleeding",
+    "Pain from orthopedic injuries",
+    "Anxiety caused by the crash"
+  ],
+  bestCorrect: 1,
+  partialCorrect: 0,
+  reasonBest: "Weak radial pulses, altered mental status, and tachypnea following major trauma strongly suggest shock from possible internal hemorrhage.",
+  feedbackPartial: "Spinal injury is possible, but signs of shock represent the more immediate life threat.",
+  feedbackWrong: "The patient shows systemic hypoperfusion, not simple pain or anxiety."
+},
+
+{
+  level: 100,
+  type: "multi",
+  question: "Which findings suggest decompensated shock in a trauma patient? Select all that apply.",
+  answers: [
+    "Altered mental status",
+    "Weak or absent peripheral pulses",
+    "Cool clammy skin",
+    "Bounding pulse with flushed skin",
+    "Stable blood pressure with normal mentation"
+  ],
+  correct: [0, 1, 2],
+  feedback: "Altered mental status, weak or absent peripheral pulses, and cool clammy skin are concerning signs of worsening shock."
+},
+
+{
+  level: 100,
+  type: "matching",
+  question: "Match the trauma finding with the MOST likely concern.",
+  leftItems: [
+    "Jugular venous distention after chest trauma",
+    "Paradoxical chest movement",
+    "Pelvic instability",
+    "Unequal pupils after head injury"
+  ],
+  rightItems: [
+    "Possible tension pneumothorax",
+    "Flail chest",
+    "Internal hemorrhage",
+    "Traumatic brain injury",
+    "Simple anxiety reaction"
+  ],
+  correct: [0, 1, 2, 3],
+  feedback: "These trauma findings suggest serious injuries requiring rapid recognition and EMS management."
+},
+
+{
+  level: 100,
+  type: "single",
+  question: "A construction worker falls 20 feet and is found unresponsive with snoring respirations. What should the EMR do FIRST?",
+  answers: [
+    "Apply a cervical collar immediately",
+    "Open the airway using a jaw-thrust maneuver",
+    "Control minor bleeding from the arm",
+    "Assess pupils for neurological injury"
+  ],
+  bestCorrect: 1,
+  partialCorrect: 0,
+  reasonBest: "Snoring respirations indicate airway obstruction. In trauma, a jaw-thrust maneuver is preferred when spinal injury is suspected.",
+  feedbackPartial: "Spinal precautions are important, but airway management comes first.",
+  feedbackWrong: "Airway compromise is the immediate life threat."
+},
+
+{
+  level: 100,
+  type: "single",
+  question: "A trauma patient becomes increasingly restless, tachycardic, and pale. What does this MOST likely indicate?",
+  answers: [
+    "Pain response only",
+    "Compensated shock",
+    "Improving perfusion",
+    "Mild anxiety"
+  ],
+  bestCorrect: 1,
+  partialCorrect: 0,
+  reasonBest: "Restlessness, tachycardia, and pallor are early signs of shock and poor tissue perfusion.",
+  feedbackPartial: "Pain may contribute, but the overall pattern suggests shock.",
+  feedbackWrong: "These are not signs of improvement."
+},
+
+{
+  level: 100,
+  type: "multi",
+  question: "Which findings are MOST concerning for traumatic brain injury? Select all that apply.",
+  answers: [
+    "Unequal pupils",
+    "Repeated vomiting",
+    "Decreasing mental status",
+    "Minor isolated wrist pain",
+    "Normal orientation after injury"
+  ],
+  correct: [0, 1, 2],
+  feedback: "Unequal pupils, repeated vomiting, and decreasing mental status are concerning for traumatic brain injury."
+},
+
+{
+  level: 100,
+  type: "matching",
+  question: "Match the chest trauma finding with the likely injury.",
+  leftItems: [
+    "Absent breath sounds on one side",
+    "Sucking chest wound",
+    "Pink frothy sputum after trauma",
+    "Paradoxical chest wall movement"
+  ],
+  rightItems: [
+    "Pneumothorax",
+    "Open chest wound",
+    "Pulmonary contusion",
+    "Flail chest",
+    "Simple rib bruise"
+  ],
+  correct: [0, 1, 2, 3],
+  feedback: "Chest trauma can rapidly compromise ventilation, oxygenation, and circulation."
+},
+
+{
+  level: 100,
+  type: "single",
+  question: "A motorcycle crash patient has absent radial pulses but palpable carotid pulses. What does this MOST likely indicate?",
+  answers: [
+    "Mild dehydration",
+    "Severe hypoperfusion and shock",
+    "Normal response to trauma",
+    "An isolated arm injury"
+  ],
+  bestCorrect: 1,
+  partialCorrect: 3,
+  reasonBest: "Absent peripheral pulses with central pulses still present suggests severe shock and poor peripheral perfusion.",
+  feedbackPartial: "One injured arm may affect one pulse, but absent radial pulses in a trauma patient should raise concern for systemic shock.",
+  feedbackWrong: "This is a high-risk finding after trauma."
+},
+
+{
+  level: 100,
+  type: "multi",
+  question: "Which trauma patients should be considered high priority? Select all that apply.",
+  answers: [
+    "Altered mental status after injury",
+    "Respiratory distress after chest trauma",
+    "Signs of shock",
+    "Small isolated finger laceration",
+    "Stable isolated ankle pain"
+  ],
+  correct: [0, 1, 2],
+  feedback: "Altered mental status, respiratory distress, and shock are high-priority trauma findings."
+},
+
+{
+  level: 100,
+  type: "matching",
+  question: "Match the burn finding with the MOST serious concern.",
+  leftItems: [
+    "Hoarse voice after fire exposure",
+    "Circumferential extremity burn",
+    "Electrical burn",
+    "Chemical exposure to eyes"
+  ],
+  rightItems: [
+    "Airway compromise",
+    "Circulatory compromise",
+    "Hidden internal injury",
+    "Vision-threatening injury",
+    "Minor superficial injury"
+  ],
+  correct: [0, 1, 2, 3],
+  feedback: "Burns may involve airway compromise, circulation problems, hidden tissue injury, and eye damage."
+},
+
+{
+  level: 100,
+  type: "single",
+  question: "A patient has a penetrating chest wound and increasing respiratory distress. What should the EMR suspect?",
+  answers: [
+    "Simple anxiety",
+    "Life-threatening chest injury",
+    "Minor soft tissue trauma",
+    "Hyperventilation syndrome only"
+  ],
+  bestCorrect: 1,
+  partialCorrect: 3,
+  reasonBest: "Penetrating chest trauma with worsening breathing suggests a potentially life-threatening thoracic injury.",
+  feedbackPartial: "Hyperventilation can occur, but the mechanism and symptoms suggest chest trauma.",
+  feedbackWrong: "This presentation should be treated as potentially life-threatening."
+},
+
+{
+  level: 100,
+  type: "single",
+  question: "A trauma patient suddenly loses consciousness during reassessment. What should the EMR do FIRST?",
+  answers: [
+    "Complete a detailed SAMPLE history",
+    "Reassess airway, breathing, and circulation immediately",
+    "Document the event before treatment",
+    "Check for orthopedic deformities"
+  ],
+  bestCorrect: 1,
+  partialCorrect: 0,
+  reasonBest: "A sudden deterioration requires immediate reassessment of airway, breathing, and circulation.",
+  feedbackPartial: "History and documentation are important, but not before ABCs.",
+  feedbackWrong: "Immediate life threats must be reassessed first."
+},
+
+{
+  level: 100,
+  type: "multi",
+  question: "Which findings indicate increased work of breathing? Select all that apply.",
+  answers: [
+    "Retractions",
+    "Nasal flaring",
+    "Use of accessory muscles",
+    "Normal speech and relaxed posture",
+    "Regular unlabored respirations"
+  ],
+  correct: [0, 1, 2],
+  feedback: "Retractions, nasal flaring, and accessory muscle use indicate increased work of breathing."
+},
+
+{
+  level: 100,
+  type: "matching",
+  question: "Match the airway sound with the MOST likely cause.",
+  leftItems: [
+    "Snoring",
+    "Gurgling",
+    "Stridor",
+    "Wheezing"
+  ],
+  rightItems: [
+    "Tongue or soft tissue obstruction",
+    "Fluid in the airway",
+    "Upper-airway narrowing",
+    "Lower-airway constriction",
+    "Normal respirations"
+  ],
+  correct: [0, 1, 2, 3],
+  feedback: "Airway sounds help identify the cause and location of airway compromise."
+},
+
+{
+  level: 100,
+  type: "single",
+  question: "A patient with severe chest trauma suddenly develops absent breath sounds on the left side and worsening hypotension. What is the MOST likely cause?",
+  answers: [
+    "Simple rib fracture",
+    "Tension pneumothorax",
+    "Hyperventilation syndrome",
+    "Minor pulmonary contusion"
+  ],
+  bestCorrect: 1,
+  partialCorrect: 3,
+  reasonBest: "Unilateral absent breath sounds with hypotension after trauma strongly suggests tension pneumothorax.",
+  feedbackPartial: "A pulmonary contusion may cause breathing problems, but the combination of absent breath sounds and hypotension is more concerning for tension pneumothorax.",
+  feedbackWrong: "This is a life-threatening chest injury pattern."
+},
+
+{
+  level: 100,
+  type: "multi",
+  question: "Which findings suggest severe internal bleeding? Select all that apply.",
+  answers: [
+    "Abdominal distention",
+    "Weak rapid pulse",
+    "Cool pale skin",
+    "Localized bruising only",
+    "Warm dry skin with normal mentation"
+  ],
+  correct: [0, 1, 2],
+  feedback: "Abdominal distention, weak rapid pulse, and cool pale skin are concerning for internal hemorrhage."
+},
+
+{
+  level: 100,
+  type: "matching",
+  question: "Match the neurological finding with the MOST likely concern.",
+  leftItems: [
+    "Slurred speech",
+    "Arm drift",
+    "Sudden facial droop",
+    "Post-seizure confusion"
+  ],
+  rightItems: [
+    "Stroke symptom",
+    "One-sided weakness",
+    "Facial nerve deficit",
+    "Postictal state",
+    "Normal aging process"
+  ],
+  correct: [0, 1, 2, 3],
+  feedback: "Neurological emergencies often present with sudden deficits or altered mental status."
+},
+
+{
+  level: 100,
+  type: "single",
+  question: "A patient involved in a high-speed collision has rigid abdominal muscles and severe pain. What should the EMR suspect?",
+  answers: [
+    "Minor muscle strain",
+    "Potential internal abdominal injury",
+    "Simple anxiety reaction",
+    "Normal response to trauma"
+  ],
+  bestCorrect: 1,
+  partialCorrect: 0,
+  reasonBest: "Rigid abdominal muscles after trauma may indicate serious internal injury or bleeding.",
+  feedbackPartial: "Pain alone is not the main concern; abdominal rigidity suggests a deeper injury.",
+  feedbackWrong: "Abdominal rigidity after trauma is a serious finding."
+},
+
+{
+  level: 100,
+  type: "multi",
+  question: "Which findings suggest respiratory failure is developing? Select all that apply.",
+  answers: [
+    "Decreasing respiratory effort",
+    "Altered mental status",
+    "Cyanosis",
+    "Improving alertness",
+    "Normal chest rise"
+  ],
+  correct: [0, 1, 2],
+  feedback: "Decreasing respiratory effort, altered mental status, and cyanosis suggest impending respiratory failure."
+},
+
+{
+  level: 100,
+  type: "matching",
+  question: "Match the medical/legal term with the correct meaning.",
+  leftItems: [
+    "Consent",
+    "Negligence",
+    "Abandonment",
+    "Implied consent"
+  ],
+  rightItems: [
+    "Permission for treatment",
+    "Failure to provide standard care causing harm",
+    "Ending care without proper transfer or valid refusal",
+    "Emergency permission when the patient cannot consent",
+    "Patient confidentiality violation"
+  ],
+  correct: [0, 1, 2, 3],
+  feedback: "EMRs and EMTs must understand consent, negligence, abandonment, and implied consent."
+},
+
+{
+  level: 100,
+  type: "single",
+  question: "A patient has severe bleeding from a partial amputation of the lower leg. Direct pressure is not controlling the bleeding. What is the MOST appropriate next step?",
+  answers: [
+    "Apply a tourniquet proximal to the injury",
+    "Apply ice directly to the wound",
+    "Elevate the leg only",
+    "Wait for EMS before doing anything else"
+  ],
+  bestCorrect: 0,
+  partialCorrect: 2,
+  reasonBest: "Life-threatening extremity bleeding not controlled by direct pressure requires tourniquet application according to training and protocol.",
+  feedbackPartial: "Elevation alone is not enough for uncontrolled life-threatening bleeding.",
+  feedbackWrong: "Severe bleeding must be controlled immediately."
+},
+
+{
+  level: 100,
+  type: "multi",
+  question: "Which findings indicate life-threatening external bleeding? Select all that apply.",
+  answers: [
+    "Blood spurting from a wound",
+    "Blood pooling on the ground",
+    "Clothing rapidly becoming soaked with blood",
+    "Small abrasion with slow oozing",
+    "Old bruise with no swelling"
+  ],
+  correct: [0, 1, 2],
+  feedback: "Spurting blood, pooling blood, and rapidly soaked clothing indicate life-threatening bleeding."
+},
+
+{
+  level: 100,
+  type: "matching",
+  question: "Match the bleeding-control method with its purpose.",
+  leftItems: [
+    "Direct pressure",
+    "Tourniquet",
+    "Hemostatic dressing",
+    "Reassessment"
+  ],
+  rightItems: [
+    "Compress the bleeding vessel at the wound site",
+    "Control severe extremity bleeding",
+    "Promote clotting in severe bleeding",
+    "Confirm bleeding remains controlled",
+    "Replace airway assessment"
+  ],
+  correct: [0, 1, 2, 3],
+  feedback: "Bleeding control requires intervention and repeated reassessment."
+},
+
+{
+  level: 100,
+  type: "single",
+  question: "A patient has neck pain, numbness in both hands, and weakness after diving into shallow water. What is the MOST appropriate EMR action?",
+  answers: [
+    "Help the patient stand",
+    "Maintain manual spinal motion restriction and activate EMS",
+    "Move the neck to assess pain",
+    "Give oral fluids"
+  ],
+  bestCorrect: 1,
+  partialCorrect: 0,
+  reasonBest: "Neck pain with neurological symptoms after trauma suggests spinal cord injury. Movement should be minimized.",
+  feedbackPartial: "Comfort is important, but spinal motion restriction is the priority.",
+  feedbackWrong: "Do not move the neck or have the patient walk."
+},
+
+{
+  level: 100,
+  type: "multi",
+  question: "Which signs increase concern for spinal injury? Select all that apply.",
+  answers: [
+    "Neck pain after trauma",
+    "Numbness or weakness in extremities",
+    "Altered mental status after injury",
+    "Small isolated hand scrape",
+    "No pain after a minor paper cut"
+  ],
+  correct: [0, 1, 2],
+  feedback: "Neck/back pain, neurological deficits, altered mental status, and significant mechanism increase concern for spinal injury."
+},
+
+{
+  level: 100,
+  type: "matching",
+  question: "Match the musculoskeletal injury with the MOST important concern.",
+  leftItems: [
+    "Open fracture",
+    "Pelvic fracture",
+    "Dislocation",
+    "Amputation"
+  ],
+  rightItems: [
+    "Bleeding and infection risk",
+    "Severe internal bleeding",
+    "Neurovascular compromise",
+    "Severe bleeding and part preservation",
+    "No emergency risk"
+  ],
+  correct: [0, 1, 2, 3],
+  feedback: "Musculoskeletal injuries can involve bleeding, infection, neurovascular compromise, and shock."
+},
+
+{
+  level: 100,
+  type: "single",
+  question: "A patient has an open abdominal wound with organs protruding. What should the EMR do?",
+  answers: [
+    "Push the organs back inside",
+    "Cover the organs with a moist sterile dressing if available and protect from heat loss",
+    "Apply direct pressure over the organs",
+    "Leave the wound uncovered"
+  ],
+  bestCorrect: 1,
+  partialCorrect: 3,
+  reasonBest: "Eviscerated organs should not be pushed back in. They should be covered with a moist sterile dressing if available and protected from heat loss.",
+  feedbackPartial: "Leaving it uncovered increases contamination and drying.",
+  feedbackWrong: "Do not push organs back inside or apply direct pressure over them."
+},
+
+{
+  level: 100,
+  type: "multi",
+  question: "Which trauma findings suggest a load-and-go/high-priority patient? Select all that apply.",
+  answers: [
+    "Airway compromise",
+    "Respiratory distress",
+    "Signs of shock",
+    "Minor isolated hand pain",
+    "Normal mental status with small scrape"
+  ],
+  correct: [0, 1, 2],
+  feedback: "Airway compromise, respiratory distress, and shock are immediate high-priority findings."
+},
+
+{
+  level: 100,
+  type: "matching",
+  question: "Match the environmental emergency with the likely clue.",
+  leftItems: [
+    "Heat stroke",
+    "Hypothermia",
+    "Frostbite",
+    "Drowning"
+  ],
+  rightItems: [
+    "Hot skin and altered mental status",
+    "Cold exposure with confusion or shivering",
+    "Frozen or numb tissue",
+    "Respiratory problem after submersion",
+    "Chest pain after eating"
+  ],
+  correct: [0, 1, 2, 3],
+  feedback: "Environmental emergencies can affect airway, breathing, circulation, and mental status."
+}
+
+];
+
+let currentLevel = 100;
+let questionNumber = 0;
+let score = 0;
+let partialScore = 0;
+let maxQuestions = 30;
+let currentQuestion;
+let usedQuestions = [];
+
+function shuffleArray(array) {
+  return array
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+}
+
+function getQuestionByLevel(level) {
+  let available = questions.filter(q =>
+    q.level === level && !usedQuestions.includes(q.question)
+  );
+
+  if (available.length === 0) {
+    available = questions.filter(q => !usedQuestions.includes(q.question));
+  }
+
+  if (available.length === 0) {
+    finishExam();
+    return null;
+  }
+
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+function loadQuestion() {
+  if (questionNumber >= maxQuestions) {
+    finishExam();
+    return;
+  }
+
+  currentQuestion = getQuestionByLevel(currentLevel);
+  if (!currentQuestion) return;
+
+  usedQuestions.push(currentQuestion.question);
+
+  document.getElementById("status").innerText =
+    "Question " + (questionNumber + 1) +
+    " of " + maxQuestions +
+    " | Difficulty Level: " + currentLevel +
+    " | Score: " + score +
+    " | Partially Correct: " + partialScore;
+
+  document.getElementById("question").innerHTML =
+    "<strong>" + currentQuestion.question + "</strong>";
+
+  document.getElementById("answers").innerHTML = "";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "none";
+  document.getElementById("submitBtn").style.display = "none";
+
+  if (currentQuestion.type === "single") {
+    loadSingleQuestion();
+  } else if (currentQuestion.type === "multi") {
+    loadMultiQuestion();
+  } else if (currentQuestion.type === "matching") {
+    loadMatchingQuestion();
+  }
+}
+
+function loadSingleQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  const shuffledAnswers = shuffleArray(
+    currentQuestion.answers.map((answer, index) => ({
+      text: answer,
+      originalIndex: index
+    }))
+  );
+
+  shuffledAnswers.forEach(answerObj => {
+    answersDiv.innerHTML += `
+      <button onclick="checkSingleAnswer(${answerObj.originalIndex}, this)">
+        ${answerObj.text}
+      </button>
+    `;
+  });
+}
+
+function loadMultiQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  const shuffledAnswers = shuffleArray(
+    currentQuestion.answers.map((answer, index) => ({
+      text: answer,
+      originalIndex: index
+    }))
+  );
+
+  shuffledAnswers.forEach(answerObj => {
+    answersDiv.innerHTML += `
+      <label class="checkbox-answer">
+        <input type="checkbox" value="${answerObj.originalIndex}">
+        ${answerObj.text}
+      </label>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function loadMatchingQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
+    const shuffledOptions = shuffleArray(
+      currentQuestion.rightItems.map((rightItem, rightIndex) => ({
+        text: rightItem,
+        originalIndex: rightIndex
+      }))
+    );
+
+    let options = `<option value="">Choose match</option>`;
+
+    shuffledOptions.forEach(option => {
+      options += `
+        <option value="${option.originalIndex}">
+          ${option.text}
+        </option>
+      `;
+    });
+
+    answersDiv.innerHTML += `
+      <div class="matching-row">
+        <div class="matching-left">${leftItem}</div>
+        <select data-left-index="${leftIndex}">
+          ${options}
+        </select>
+      </div>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function checkSingleAnswer(selected, clickedButton) {
+  const feedback = document.getElementById("feedback");
+  const buttons = document.querySelectorAll("#answers button");
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+
+  if (selected === currentQuestion.bestCorrect) {
+    score++;
+    clickedButton.style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Most Correct Answer.</strong><br><br>" +
+      "<strong>Reason:</strong> " +
+      currentQuestion.reasonBest;
+
+  } else if (selected === currentQuestion.partialCorrect) {
+    partialScore++;
+    clickedButton.style.background = "orange";
+
+    buttons.forEach(button => {
+      if (button.innerText.trim() === currentQuestion.answers[currentQuestion.bestCorrect]) {
+        button.style.background = "darkgreen";
+      }
+    });
+
+    feedback.innerHTML =
+      "<strong>Partially Correct, but not the most correct.</strong><br><br>" +
+      currentQuestion.feedbackPartial +
+      "<br><br><strong>Most correct answer:</strong> " +
+      currentQuestion.answers[currentQuestion.bestCorrect] +
+      "<br><br><strong>Reason:</strong> " +
+      currentQuestion.reasonBest;
+
+  } else {
+    clickedButton.style.background = "darkred";
+
+    buttons.forEach(button => {
+      if (button.innerText.trim() === currentQuestion.answers[currentQuestion.bestCorrect]) {
+        button.style.background = "darkgreen";
+      }
+
+      if (button.innerText.trim() === currentQuestion.answers[currentQuestion.partialCorrect]) {
+        button.style.background = "orange";
+      }
+    });
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br><br>" +
+      currentQuestion.feedbackWrong +
+      "<br><br><strong>Most correct answer:</strong> " +
+      currentQuestion.answers[currentQuestion.bestCorrect] +
+      "<br><br><strong>Reason this is most correct:</strong> " +
+      currentQuestion.reasonBest +
+      "<br><br><strong>Partially correct answer:</strong> " +
+      currentQuestion.answers[currentQuestion.partialCorrect];
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function submitAnswer() {
+  if (currentQuestion.type === "multi") {
+    checkMultiAnswer();
+  } else if (currentQuestion.type === "matching") {
+    checkMatchingAnswer();
+  }
+}
+
+function checkMultiAnswer() {
+  const checked = Array.from(
+    document.querySelectorAll('#answers input[type="checkbox"]:checked')
+  ).map(cb => Number(cb.value));
+
+  const correct =
+    checked.length === currentQuestion.correct.length &&
+    checked.every(value => currentQuestion.correct.includes(value));
+
+  const feedback = document.getElementById("feedback");
+  const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
+
+  checkboxes.forEach(cb => {
+    cb.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br><br>" +
+      currentQuestion.feedback;
+  } else {
+    const correctAnswers = currentQuestion.correct
+      .map(index => currentQuestion.answers[index])
+      .join(", ");
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br><br>" +
+      "<strong>Correct answers:</strong> " +
+      correctAnswers +
+      "<br><br>" +
+      currentQuestion.feedback;
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function checkMatchingAnswer() {
+  const selects = document.querySelectorAll("#answers select");
+  const selectedAnswers = Array.from(selects).map(select => Number(select.value));
+
+  const allAnswered = selectedAnswers.every(answer => !Number.isNaN(answer));
+
+  const correct =
+    allAnswered &&
+    selectedAnswers.length === currentQuestion.correct.length &&
+    selectedAnswers.every((value, index) => value === currentQuestion.correct[index]);
+
+  const feedback = document.getElementById("feedback");
+
+  selects.forEach(select => {
+    select.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br><br>" +
+      currentQuestion.feedback;
+  } else {
+    let correctText = "";
+
+    currentQuestion.leftItems.forEach((item, index) => {
+      correctText +=
+        item +
+        " = " +
+        currentQuestion.rightItems[currentQuestion.correct[index]] +
+        "<br>";
+    });
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br><br>" +
+      "<strong>Correct matches:</strong><br>" +
+      correctText +
+      "<br>" +
+      currentQuestion.feedback;
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function nextQuestion() {
+  questionNumber++;
+  loadQuestion();
+}
+
+function finishExam() {
+  document.getElementById("question").innerHTML =
+    "<h2>Exam Complete</h2>";
+
+  document.getElementById("answers").innerHTML = "";
+
+  let result = "";
+
+  if (score >= 26) {
+    result = "Excellent. You handled Level 100 trauma, shock, airway, respiratory failure, bleeding control, neurological, burn, and medical/legal questions well.";
+  } else if (score >= 21) {
+    result = "Good. Continue reviewing trauma assessment, shock recognition, airway priorities, bleeding control, chest trauma, spinal injury, burns, and reassessment.";
+  } else {
+    result = "Needs remediation. Focus on scene safety, primary assessment, airway, breathing, circulation, shock, major trauma, spinal precautions, severe bleeding, chest trauma, and patient reassessment.";
+  }
+
+  document.getElementById("feedback").style.display = "block";
+  document.getElementById("feedback").innerHTML =
+    "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
+    "<br><br><strong>Partially Correct Answers:</strong> " + partialScore +
+    "<br><br><strong>Difficulty Level:</strong> " + currentLevel +
+    "<br><br>" + result;
+
+  document.getElementById("status").innerText =
+    "Level 100 Trauma Exam Finished";
+
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "block";
+}
+
+function restartExam() {
+  currentLevel = 100;
+  questionNumber = 0;
+  score = 0;
+  partialScore = 0;
+  usedQuestions = [];
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
