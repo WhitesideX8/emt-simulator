@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>60-Question EMT Critical Thinking Exam</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #222;
+      color: white;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 950px;
+      margin: auto;
+      background: #333;
+      padding: 25px;
+      border-radius: 10px;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .question-box {
+      background: #d9d9d9;
+      color: black;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      font-size: 16px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    button:hover {
+      background: darkgreen;
+    }
+
+    #submitBtn, #nextBtn, #restartBtn {
+      background: #0066cc;
+      text-align: center;
+      display: none;
+    }
+
+    #feedback {
+      margin-top: 15px;
+      padding: 15px;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      display: none;
+      line-height: 1.5;
+    }
+
+    #status {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 18px;
+    }
+
+    .checkbox-answer {
+      display: block;
+      background: #eeeeee;
+      color: black;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .checkbox-answer input {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    .matching-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 12px 0;
+      background: #eeeeee;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .matching-left {
+      flex: 1;
+      font-weight: bold;
+    }
+
+    .matching-row select {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>60-Question EMT Critical Thinking Exam</h2>
+
+  <p style="text-align:center; line-height:1.5;">
+    Advanced NREMT-style critical thinking exam with heavy emphasis on scenario-based decision making, most-correct answers, reassessment trends, shock recognition, airway emergencies, trauma patterns, contraindications, and life-threat prioritization across behavioral emergencies, AHA CPR, shock, respiratory emergencies, EMS system, neurological emergencies, soft tissue injuries, trauma, orthopedic injuries, and Glasgow Coma Scale.
+  </p>
+
+  <div id="status"></div>
+
+  <div class="question-box">
+    <div id="question"></div>
+    <div id="answers"></div>
+
+    <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
+
+    <div id="feedback"></div>
+
+    <button id="nextBtn" onclick="nextQuestion()">Next Question</button>
+    <button id="restartBtn" onclick="restartExam()">Restart Exam</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    level: 100,
+    type: "single",
+    question: "You respond to a psychiatric facility for a 29-year-old male who became violent after receiving bad news. Security states he punched a wall and threatened staff. The patient is pacing, sweating, clenching fists, and repeatedly yelling, 'Stay away from me!' What is the most appropriate EMT action?",
+    answers: [
+      "Move close to establish physical control before he escalates further",
+      "Maintain distance, avoid sudden movements, request law enforcement assistance, and attempt verbal de-escalation",
+      "Tell staff to restrain him immediately while you prepare medications",
+      "Stand directly in front of the patient and maintain eye contact to establish authority"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 2,
+    reasonBest: "Scene safety is the first priority. A potentially violent patient should be approached cautiously using verbal de-escalation, distance, escape awareness, and additional resources.",
+    feedbackPartial: "Restraints may eventually be necessary, but immediate physical confrontation can worsen violence and place everyone at risk.",
+    feedbackWrong: "Aggressive approaches increase the chance of injury to responders and the patient."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A 61-year-old female suddenly develops severe shortness of breath while walking upstairs. She is anxious, pale, diaphoretic, speaking in 1-word sentences, and has crackles in all lung fields. BP is 202/110, pulse 132, respirations 36, and SpO2 80%. What condition should the EMT most strongly suspect?",
+    answers: [
+      "Pulmonary edema from acute heart failure",
+      "Simple anxiety attack with hyperventilation",
+      "Mild COPD exacerbation",
+      "Pneumonia without respiratory compromise"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 2,
+    reasonBest: "Severe dyspnea, diffuse crackles, diaphoresis, and hypertension strongly suggest acute pulmonary edema and heart failure.",
+    feedbackPartial: "COPD may cause dyspnea, but diffuse crackles and severe hypertension are more consistent with pulmonary edema.",
+    feedbackWrong: "This patient has signs of severe respiratory failure and poor perfusion, not simple anxiety."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A 24-year-old male was involved in a motorcycle crash. He is alert but restless. Respirations are 30 and shallow. Skin is pale and cool. Radial pulses are weak. There is instability and tenderness to the pelvis. What should the EMT suspect?",
+    answers: [
+      "Major internal hemorrhage with compensated shock",
+      "Minor orthopedic trauma only",
+      "Pain-induced anxiety without shock",
+      "Respiratory infection causing tachypnea"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 2,
+    reasonBest: "Pelvic trauma can cause massive internal bleeding. Restlessness, tachypnea, cool skin, and weak pulses indicate compensated shock.",
+    feedbackPartial: "Pain may contribute, but the perfusion findings are more concerning for shock.",
+    feedbackWrong: "Normal blood pressure does not rule out shock in trauma."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "You are performing CPR on a 54-year-old cardiac arrest patient. Another EMT pauses compressions for 18 seconds while attempting intubation. Why is this harmful?",
+    answers: [
+      "Interruptions reduce coronary and cerebral perfusion pressure",
+      "Interruptions cause immediate pulmonary edema",
+      "Interruptions only matter after 30 seconds",
+      "Ventilations are more important than compressions during arrest"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 3,
+    reasonBest: "Interruptions in compressions reduce perfusion pressure to the heart and brain and worsen cardiac arrest outcomes.",
+    feedbackPartial: "Ventilations matter, but minimizing interruptions in compressions is critical.",
+    feedbackWrong: "Long pauses significantly worsen CPR effectiveness."
+  },
+  {
+    level: 100,
+    type: "multi",
+    question: "A trauma patient becomes increasingly confused during transport. Which findings suggest worsening shock? Select all that apply.",
+    answers: [
+      "Falling blood pressure",
+      "Increasing heart rate",
+      "Cool clammy skin",
+      "Improving mental status",
+      "Strong bounding pulses"
+    ],
+    correct: [0,1,2],
+    feedback: "Worsening shock commonly presents with tachycardia, hypotension, altered mental status, and cool clammy skin."
+  },
+  {
+    level: 100,
+    type: "matching",
+    question: "Match the trauma presentation with the most likely hidden injury.",
+    leftItems: ["Seatbelt bruising across abdomen", "Unequal breath sounds after chest trauma", "Battle signs behind ears", "Rigid distended abdomen after crash"],
+    rightItems: [
+      "Possible internal abdominal injury",
+      "Possible pneumothorax",
+      "Possible basilar skull fracture",
+      "Possible internal bleeding",
+      "Simple isolated soft tissue injury"
+    ],
+    correct: [0,1,2,3],
+    feedback: "Trauma assessment requires identifying clues to potentially hidden life-threatening injuries."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A 32-year-old male is yelling, pacing, and holding a bottle. He says he will hurt anyone who comes close. What is the most appropriate EMT action?",
+    answers: [
+      "Approach quickly and take the bottle away before he escalates",
+      "Keep a safe distance, request law enforcement, and avoid provoking the patient",
+      "Tell family to restrain him while you prepare the stretcher",
+      "Begin a detailed SAMPLE history from the patient"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 3,
+    reasonBest: "Scene safety comes first in behavioral emergencies. EMTs should keep distance, use de-escalation, and request law enforcement when there is a threat.",
+    feedbackPartial: "History is useful only after the scene is safe and the patient can be approached safely.",
+    feedbackWrong: "Do not rush, grab objects, or ask family to restrain a violent patient."
+  },
+  {
+    level: 100,
+    type: "multi",
+    question: "Which actions are appropriate when managing a behavioral emergency? Select all that apply.",
+    answers: [
+      "Maintain an escape route",
+      "Use calm, nonthreatening communication",
+      "Call for additional resources if danger is present",
+      "Stand directly over the seated patient",
+      "Argue with the patient to prove you are in control"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Behavioral emergency care requires scene safety, calm communication, distance, resources, and avoiding confrontation."
+  },
+  {
+    level: 100,
+    type: "matching",
+    question: "Match the behavioral emergency clue with the EMT concern.",
+    leftItems: ["Threats toward others", "Sudden confusion", "Alcohol odor", "Suicidal statement"],
+    rightItems: [
+      "Potential violence and scene safety issue",
+      "Possible medical cause of altered mental status",
+      "Possible intoxication but not the only explanation",
+      "High-risk psychiatric emergency",
+      "Normal behavior requiring no assessment"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Behavioral signs may be psychiatric, medical, toxicological, or safety-related."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A patient says, 'I want to kill myself,' but then laughs and says he was joking. What should the EMT do?",
+    answers: [
+      "Ignore the statement if the patient says it was a joke",
+      "Take the statement seriously and assess risk while maintaining safety",
+      "Leave the patient with family because he denied intent",
+      "Tell the patient that joking about suicide is illegal"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 2,
+    reasonBest: "Any suicidal statement should be taken seriously. EMTs should assess risk, protect the patient, involve appropriate resources, and follow local protocol.",
+    feedbackPartial: "Family may help provide history, but the patient still requires assessment and appropriate care.",
+    feedbackWrong: "Do not dismiss suicidal statements or use threats."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A confused elderly patient is combative after a sudden change in mental status. Family says he has no psychiatric history. What should the EMT suspect first?",
+    answers: [
+      "A behavioral problem only",
+      "A possible medical cause until proven otherwise",
+      "Normal aging",
+      "A refusal of care"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Sudden behavioral change, especially in older adults, should be treated as a possible medical emergency such as hypoxia, hypoglycemia, stroke, infection, or head injury.",
+    feedbackPartial: "It may appear behavioral, but EMTs must first consider life-threatening medical causes.",
+    feedbackWrong: "Sudden confusion is not normal aging and does not equal a valid refusal."
+  },
+  {
+    level: 100,
+    type: "multi",
+    question: "Which findings may suggest a medical cause of behavioral change? Select all that apply.",
+    answers: [
+      "Hypoxia",
+      "Hypoglycemia",
+      "Head injury",
+      "Sudden onset confusion",
+      "A patient being angry about a long wait"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Medical causes of behavioral change include hypoxia, hypoglycemia, stroke, infection, intoxication, trauma, and seizures."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "An adult collapses in front of you. He is unresponsive, not breathing normally, and has no pulse. What should you do first according to AHA CPR priorities?",
+    answers: [
+      "Give two rescue breaths before compressions",
+      "Start high-quality chest compressions and have an AED applied as soon as possible",
+      "Check blood pressure before starting CPR",
+      "Wait for ALS before touching the patient"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "For adult cardiac arrest, high-quality CPR and early defibrillation are priorities. Compressions should begin immediately once pulselessness is confirmed.",
+    feedbackPartial: "Rescue breaths are part of CPR, but compressions should not be delayed.",
+    feedbackWrong: "Do not delay CPR for blood pressure, history, or ALS arrival."
+  },
+  {
+    level: 100,
+    type: "multi",
+    question: "Which actions are part of high-quality adult CPR? Select all that apply.",
+    answers: [
+      "Push hard and fast at the correct rate",
+      "Allow complete chest recoil",
+      "Minimize interruptions",
+      "Ventilate as fast as possible",
+      "Pause frequently to recheck pulse"
+    ],
+    correct: [0, 1, 2],
+    feedback: "High-quality CPR includes correct rate and depth, full recoil, minimal interruptions, and avoiding excessive ventilation."
+  },
+  {
+    level: 100,
+    type: "matching",
+    question: "Match the AHA CPR concept with the correct EMT meaning.",
+    leftItems: ["Chest recoil", "AED", "Compression interruptions", "Excessive ventilation"],
+    rightItems: [
+      "Allows the heart to refill between compressions",
+      "Analyzes rhythm and may advise shock",
+      "Should be minimized",
+      "Can reduce venous return and worsen perfusion",
+      "Replaces the need for compressions"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "CPR quality directly affects perfusion during cardiac arrest."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "After the AED delivers a shock, what should the EMT do next?",
+    answers: [
+      "Immediately resume CPR",
+      "Check a pulse for 30 seconds",
+      "Remove AED pads and transport",
+      "Give oxygen only and wait for the next analysis"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 3,
+    reasonBest: "After a shock, CPR should resume immediately unless the patient shows signs of life. This minimizes interruptions in perfusion.",
+    feedbackPartial: "Oxygen and ventilations matter, but compressions must resume immediately.",
+    feedbackWrong: "Do not delay compressions with prolonged pulse checks or pad removal."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "You are performing CPR with a BVM. The patient's stomach is visibly inflating. What should you do?",
+    answers: [
+      "Ventilate faster to increase oxygen delivery",
+      "Reduce ventilation force/volume and ensure proper airway positioning",
+      "Stop compressions and focus only on breathing",
+      "Remove the BVM and use a nasal cannula"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Gastric inflation suggests excessive volume, force, or poor airway position. Ventilations should be enough to see visible chest rise without overventilation.",
+    feedbackPartial: "Ventilation matters, but it must be done correctly and should not interrupt compressions unnecessarily.",
+    feedbackWrong: "Excessive ventilation can worsen outcomes and increase aspiration risk."
+  },
+  {
+    level: 100,
+    type: "multi",
+    question: "Which findings indicate you should begin CPR? Select all that apply.",
+    answers: [
+      "Unresponsive adult with no normal breathing and no pulse",
+      "Unresponsive infant with no pulse",
+      "Unresponsive patient with only gasping and no pulse",
+      "Alert patient with chest pain and a radial pulse",
+      "Breathing patient who is confused but has a pulse"
+    ],
+    correct: [0, 1, 2],
+    feedback: "CPR is started for unresponsive patients without normal breathing and without a pulse. Gasping is not normal breathing."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A trauma patient has cool clammy skin, rapid weak pulse, and altered mental status after a fall. BP is 104/70. What should you suspect?",
+    answers: [
+      "Compensated shock",
+      "No shock because blood pressure is normal",
+      "Respiratory distress only",
+      "Anxiety without perfusion problem"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 3,
+    reasonBest: "Early shock may exist before hypotension. Cool clammy skin, weak rapid pulse, and altered mental status are signs of poor perfusion.",
+    feedbackPartial: "Anxiety can occur, but the perfusion signs make shock more concerning.",
+    feedbackWrong: "Normal blood pressure does not rule out shock."
+  },
+  {
+    level: 100,
+    type: "multi",
+    question: "Which findings are consistent with shock? Select all that apply.",
+    answers: [
+      "Altered mental status",
+      "Cool clammy skin",
+      "Rapid weak pulse",
+      "Normal mentation with warm dry skin",
+      "Improving blood pressure after rest"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Shock causes inadequate tissue perfusion and may present with altered mental status, cool clammy skin, and weak rapid pulse."
+  },
+  {
+    level: 100,
+    type: "matching",
+    question: "Match the shock type with the likely cause.",
+    leftItems: ["Hypovolemic", "Cardiogenic", "Obstructive", "Distributive"],
+    rightItems: [
+      "Blood or fluid loss",
+      "Pump failure",
+      "Blocked blood flow such as tension pneumothorax",
+      "Abnormal vessel dilation such as sepsis or anaphylaxis",
+      "Normal perfusion from anxiety"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Shock types are classified by the cause of inadequate perfusion."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A patient with severe vomiting and diarrhea is weak, dizzy, tachycardic, and has dry mucous membranes. What type of shock is most likely developing?",
+    answers: [
+      "Hypovolemic shock",
+      "Cardiogenic shock",
+      "Neurogenic shock",
+      "Obstructive shock"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 1,
+    reasonBest: "Fluid loss from vomiting and diarrhea can reduce circulating volume and cause hypovolemic shock.",
+    feedbackPartial: "Cardiogenic shock involves pump failure, not primarily fluid loss.",
+    feedbackWrong: "This presentation is most consistent with volume loss."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A patient with hives, wheezing, and hypotension after a bee sting is most likely experiencing which form of shock?",
+    answers: [
+      "Anaphylactic distributive shock",
+      "Cardiogenic shock",
+      "Obstructive shock",
+      "Simple anxiety reaction"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 3,
+    reasonBest: "Anaphylaxis can cause airway swelling, bronchoconstriction, and vasodilation leading to distributive shock.",
+    feedbackPartial: "Anxiety may occur, but wheezing, hives, and hypotension after a sting suggest anaphylaxis.",
+    feedbackWrong: "Do not dismiss airway and perfusion findings as anxiety."
+  },
+  {
+    level: 100,
+    type: "multi",
+    question: "Which treatments are appropriate EMT priorities for shock? Select all that apply.",
+    answers: [
+      "Control major bleeding",
+      "Support airway and breathing",
+      "Keep the patient warm",
+      "Delay transport until blood pressure improves",
+      "Allow the patient to walk to the ambulance"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Shock care focuses on correcting life threats, controlling bleeding, supporting oxygenation/ventilation, preventing heat loss, and rapid transport."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A COPD patient is in severe respiratory distress with cyanosis and an SpO2 of 82%. What is the most appropriate oxygen decision?",
+    answers: [
+      "Withhold oxygen because COPD patients cannot receive high-flow oxygen",
+      "Provide oxygen and ventilation support based on distress and local protocol",
+      "Use room air until ALS arrives",
+      "Wait for a complete history before treatment"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Do not withhold oxygen from a hypoxic patient. Severe distress requires oxygen and possible assisted ventilation based on adequacy of breathing.",
+    feedbackPartial: "Low-flow oxygen may be insufficient for severe distress and cyanosis.",
+    feedbackWrong: "COPD is not a reason to ignore hypoxia."
+  },
+  {
+    level: 100,
+    type: "multi",
+    question: "Which findings suggest inadequate breathing? Select all that apply.",
+    answers: [
+      "Respirations of 6 with shallow chest rise",
+      "Cyanosis",
+      "Altered mental status with poor chest rise",
+      "Speaking full sentences with mild wheezing",
+      "Normal mental status and normal chest rise"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Inadequate breathing includes very slow or shallow respirations, poor chest rise, cyanosis, and altered mental status."
+  },
+  {
+    level: 100,
+    type: "matching",
+    question: "Match the respiratory sound with the likely problem.",
+    leftItems: ["Wheezing", "Stridor", "Gurgling", "Crackles"],
+    rightItems: [
+      "Lower-airway narrowing",
+      "Upper-airway obstruction",
+      "Fluid or secretions in the airway",
+      "Fluid in small airways or alveoli",
+      "Normal breath sound"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Breath sounds help identify airway, lung, and fluid problems."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "An asthma patient was breathing 34/min with wheezing but is now breathing 10/min, shallow, and appears exhausted. What does this most likely indicate?",
+    answers: [
+      "Improvement because the rate decreased",
+      "Possible respiratory failure",
+      "Anxiety has resolved",
+      "The patient no longer needs oxygen"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "A falling respiratory rate with exhaustion and shallow breathing in a distressed patient suggests fatigue and possible respiratory failure.",
+    feedbackPartial: "A lower respiratory rate is not improvement if chest rise, mental status, and work of breathing are worsening.",
+    feedbackWrong: "Do not confuse fatigue with improvement."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A patient with respiratory distress has gurgling respirations and vomit in the mouth. What should be done first?",
+    answers: [
+      "Suction the airway",
+      "Apply a nasal cannula",
+      "Give oral glucose",
+      "Obtain a medication list"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 1,
+    reasonBest: "Gurgling and vomit indicate airway contamination. Suction is needed before effective ventilation or oxygenation.",
+    feedbackPartial: "Oxygen may be needed after clearing the airway, but oxygen alone will not remove vomit.",
+    feedbackWrong: "Airway contamination is an immediate life threat."
+  },
+  {
+    level: 100,
+    type: "multi",
+    question: "Which patients may require BVM ventilations? Select all that apply.",
+    answers: [
+      "Respirations 5/min and shallow",
+      "Poor chest rise with altered mental status",
+      "Cyanosis with inadequate breathing",
+      "Mild dyspnea speaking full sentences",
+      "Normal breathing after exertion"
+    ],
+    correct: [0, 1, 2],
+    feedback: "BVM ventilations are used when ventilation is inadequate, not just when oxygen saturation is mildly low."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A patient has sudden shortness of breath, sharp chest pain worse with breathing, tachycardia, and a swollen calf after a long trip. What should you suspect?",
+    answers: [
+      "Pulmonary embolism",
+      "Simple anxiety",
+      "Mild asthma",
+      "Upper respiratory infection only"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 1,
+    reasonBest: "Sudden dyspnea, pleuritic chest pain, tachycardia, and signs of DVT after immobility suggest pulmonary embolism.",
+    feedbackPartial: "Anxiety can mimic dyspnea, but the swollen calf and pleuritic pain make PE more concerning.",
+    feedbackWrong: "This is a high-risk respiratory/circulatory emergency pattern."
+  },
+  {
+    level: 100,
+    type: "matching",
+    question: "Match the respiratory condition with the likely presentation.",
+    leftItems: ["Asthma", "Pulmonary edema", "Pneumonia", "Upper-airway obstruction"],
+    rightItems: [
+      "Wheezing and prolonged exhalation",
+      "Crackles and possible pink frothy sputum",
+      "Fever, cough, and abnormal lung findings",
+      "Stridor and difficulty moving air",
+      "Normal oxygenation with no symptoms"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Different respiratory emergencies have different clues, but all require assessment of breathing adequacy."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "During scene size-up, what is the EMT's first priority?",
+    answers: [
+      "Determine the patient's insurance status",
+      "Ensure scene safety",
+      "Obtain a SAMPLE history",
+      "Load the patient before assessment"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 2,
+    reasonBest: "The first priority is scene safety. EMTs cannot help the patient if they become injured or enter an unsafe scene.",
+    feedbackPartial: "History is important, but it occurs after scene safety and initial life-threat assessment.",
+    feedbackWrong: "Nonclinical or delayed tasks do not come before safety."
+  },
+  {
+    level: 100,
+    type: "multi",
+    question: "Which are purposes of the EMS system? Select all that apply.",
+    answers: [
+      "Rapid access to emergency care",
+      "Public education and injury prevention",
+      "Medical direction and quality improvement",
+      "Replacing all hospital care",
+      "Transporting every patient without assessment"
+    ],
+    correct: [0, 1, 2],
+    feedback: "EMS includes access, dispatch, response, clinical care, transport, public education, medical direction, and quality improvement."
+  },
+  {
+    level: 100,
+    type: "matching",
+    question: "Match the EMS system role with its meaning.",
+    leftItems: ["Medical direction", "Quality improvement", "Dispatch", "Continuing education"],
+    rightItems: [
+      "Physician oversight of EMS care",
+      "Reviewing care to improve system performance",
+      "Receiving calls and sending resources",
+      "Ongoing training to maintain competence",
+      "Choosing hospital bills"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "The EMS system includes oversight, dispatch, education, and performance improvement."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "An EMT is unsure whether a medication can be assisted under local protocol. What should the EMT do?",
+    answers: [
+      "Administer it if the patient asks",
+      "Follow local protocol and contact medical direction when needed",
+      "Ask a bystander if the medication is safe",
+      "Ignore the medication history"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "EMTs must operate within scope, training, protocols, and medical direction.",
+    feedbackPartial: "Patient request alone does not authorize care outside protocol.",
+    feedbackWrong: "Medication decisions require protocol and medical oversight when uncertain."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "After transferring care at the emergency department, what should the EMT complete?",
+    answers: [
+      "Accurate documentation according to policy",
+      "Only a verbal report with no written record",
+      "Documentation only if the patient was unstable",
+      "A report written from memory next week"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 1,
+    reasonBest: "Documentation supports continuity of care, legal protection, billing, quality improvement, and medical records.",
+    feedbackPartial: "A verbal report is important but does not replace accurate documentation.",
+    feedbackWrong: "Documentation is required and should be timely and accurate."
+  },
+  {
+    level: 100,
+    type: "multi",
+    question: "Which are appropriate EMT professional responsibilities? Select all that apply.",
+    answers: [
+      "Protect patient confidentiality",
+      "Use standard precautions",
+      "Operate within scope and protocol",
+      "Post patient details on social media if names are removed",
+      "Ignore safety procedures when calls are urgent"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Professional EMT responsibilities include confidentiality, infection control, patient advocacy, safety, scope, and documentation."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A 70-year-old female suddenly develops facial droop, arm weakness, and slurred speech. What is the most appropriate EMT priority?",
+    answers: [
+      "Perform a stroke screen, determine last known well time, and transport rapidly",
+      "Wait to see if symptoms resolve",
+      "Give oral glucose without checking ability to swallow",
+      "Have the patient walk to the ambulance"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 2,
+    reasonBest: "Stroke care requires early recognition, last known well time, blood glucose consideration, airway monitoring, and rapid transport to an appropriate facility.",
+    feedbackPartial: "Glucose assessment may be important, but oral glucose is only safe if the patient can swallow and is indicated.",
+    feedbackWrong: "Do not delay stroke care or allow an unstable neurologic patient to walk."
+  },
+  {
+    level: 100,
+    type: "multi",
+    question: "Which findings may indicate stroke? Select all that apply.",
+    answers: [
+      "Facial droop",
+      "Arm drift",
+      "Speech difficulty",
+      "Sudden severe headache",
+      "Mild chronic knee pain"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Stroke findings may include facial droop, arm drift, speech problems, sudden severe headache, vision changes, weakness, or altered mental status."
+  },
+  {
+    level: 100,
+    type: "matching",
+    question: "Match the neurological finding with the concern.",
+    leftItems: ["Arm drift", "Unequal pupils after trauma", "Postictal state", "Low blood glucose"],
+    rightItems: [
+      "Possible stroke finding",
+      "Possible head injury",
+      "Confusion after seizure",
+      "Reversible cause of altered mental status",
+      "Normal finding after exercise"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Neurologic assessment includes stroke signs, trauma clues, seizure recovery, and glucose-related problems."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A patient has a generalized seizure that stops before you arrive. He is confused, breathing adequately, and has no obvious trauma. What should you do first?",
+    answers: [
+      "Place something in his mouth to prevent another seizure",
+      "Assess airway, breathing, circulation, and protect from injury",
+      "Immediately restrain all extremities",
+      "Give oral fluids"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "After a seizure, assess ABCs, protect the patient from injury, check glucose as appropriate, and monitor for recurrent seizures.",
+    feedbackPartial: "Glucose assessment may be appropriate later, but ABCs and safety are first.",
+    feedbackWrong: "Do not place objects in the mouth or restrain forcefully."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A diabetic patient is confused, sweaty, and has a blood glucose of 44 mg/dL. He is awake and able to swallow. What is the most appropriate EMT action?",
+    answers: [
+      "Administer oral glucose according to protocol",
+      "Withhold glucose because he is confused",
+      "Give aspirin",
+      "Treat only as a stroke"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 3,
+    reasonBest: "Hypoglycemia with ability to swallow can be treated with oral glucose according to protocol while continuing assessment and transport decisions.",
+    feedbackPartial: "Stroke may mimic hypoglycemia, but the confirmed low glucose should be addressed if safe.",
+    feedbackWrong: "Aspirin is not the priority for hypoglycemia."
+  },
+  {
+    level: 100,
+    type: "multi",
+    question: "Which actions are appropriate for a patient actively seizing? Select all that apply.",
+    answers: [
+      "Move dangerous objects away",
+      "Protect the head if possible",
+      "Do not force anything into the mouth",
+      "Restrain the patient forcefully",
+      "Give oral glucose during the seizure"
+    ],
+    correct: [0, 1, 2],
+    feedback: "During a seizure, protect from injury, maintain safety, time the seizure, and do not place anything in the mouth."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A worker has a deep laceration to the forearm with bright red spurting blood. What should be done first?",
+    answers: [
+      "Apply direct pressure immediately",
+      "Check blood glucose",
+      "Splint the arm before bleeding control",
+      "Clean the wound thoroughly with alcohol"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 2,
+    reasonBest: "Severe external bleeding is a life threat. Direct pressure is the first immediate bleeding control step unless a tourniquet is clearly needed for life-threatening extremity hemorrhage.",
+    feedbackPartial: "Splinting may help after bleeding is controlled, but hemorrhage control comes first.",
+    feedbackWrong: "Do not delay hemorrhage control."
+  },
+  {
+    level: 100,
+    type: "multi",
+    question: "Which soft tissue injuries may involve significant bleeding or contamination? Select all that apply.",
+    answers: [
+      "Avulsion",
+      "Amputation",
+      "Deep laceration",
+      "Small superficial abrasion",
+      "Minor bruise with no swelling"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Avulsions, amputations, and deep lacerations can involve serious bleeding, contamination, and tissue loss."
+  },
+  {
+    level: 100,
+    type: "matching",
+    question: "Match the soft tissue injury with the description.",
+    leftItems: ["Abrasion", "Laceration", "Avulsion", "Contusion"],
+    rightItems: [
+      "Scraping away of superficial skin",
+      "Cut or tear in the skin",
+      "Flap of skin/tissue partially or completely torn away",
+      "Bruise from blunt trauma",
+      "Fracture through the skin"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Soft tissue terms describe the mechanism and appearance of the injury."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A patient has a large flap of skin torn from the lower leg with steady bleeding. What is the best initial wound care?",
+    answers: [
+      "Replace the flap roughly and tape it tightly",
+      "Control bleeding with direct pressure and cover with a sterile dressing",
+      "Leave the wound uncovered to dry",
+      "Apply ice directly into the wound"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Bleeding control and sterile dressing are priorities for soft tissue wounds. Tissue should be handled gently and contamination minimized.",
+    feedbackPartial: "Preserving tissue may matter, but bleeding control and sterile covering are the priority.",
+    feedbackWrong: "Do not leave large wounds exposed or place ice directly in them."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A patient has an amputated finger. Bleeding is controlled. How should the amputated part be managed?",
+    answers: [
+      "Place it directly on ice",
+      "Wrap it in sterile dressing, place in a plastic bag, and keep it cool without direct ice contact",
+      "Place it in water",
+      "Discard it if bleeding is controlled"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "An amputated part should be wrapped in sterile dressing, sealed in a plastic bag, and kept cool, avoiding direct contact with ice or water.",
+    feedbackPartial: "Cooling is appropriate, but direct ice contact can damage tissue.",
+    feedbackWrong: "Do not place the part directly in water or discard it."
+  },
+  {
+    level: 100,
+    type: "multi",
+    question: "Which actions are appropriate for an open soft tissue wound? Select all that apply.",
+    answers: [
+      "Control bleeding",
+      "Prevent further contamination",
+      "Cover with a sterile dressing",
+      "Scrub deeply in the field",
+      "Remove deeply embedded objects"
+    ],
+    correct: [0, 1, 2],
+    feedback: "EMT wound care includes bleeding control, sterile dressing, contamination reduction, and stabilization of impaled objects."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A high-speed crash patient is confused, has shallow breathing, weak radial pulses, and abdominal tenderness. What should be suspected?",
+    answers: [
+      "Internal bleeding with shock",
+      "Simple anxiety after the crash",
+      "Isolated abdominal pain without serious injury",
+      "Low-priority trauma"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 3,
+    reasonBest: "High-energy trauma with abdominal tenderness and signs of poor perfusion suggests internal bleeding and shock.",
+    feedbackPartial: "The patient is not low priority because mental status, breathing, and perfusion are abnormal.",
+    feedbackWrong: "Do not dismiss shock signs after significant trauma."
+  },
+  {
+    level: 100,
+    type: "multi",
+    question: "Which trauma findings indicate high priority? Select all that apply.",
+    answers: [
+      "Altered mental status",
+      "Signs of shock",
+      "Respiratory distress",
+      "Isolated minor finger pain",
+      "Small abrasion with normal vital signs"
+    ],
+    correct: [0, 1, 2],
+    feedback: "High-priority trauma findings include abnormal mental status, poor perfusion, respiratory distress, severe bleeding, and high-risk mechanisms."
+  },
+  {
+    level: 100,
+    type: "matching",
+    question: "Match the trauma mechanism with the concern.",
+    leftItems: ["Fall from height", "Penetrating chest wound", "Dashboard knee impact", "Blast injury"],
+    rightItems: [
+      "Possible spine, head, or internal injury",
+      "Possible open chest injury or pneumothorax",
+      "Possible femur, hip, or posterior hip injury",
+      "Possible multi-system trauma including pressure injuries",
+      "Minor soft tissue injury only"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Mechanism of injury helps predict hidden injuries and transport priority."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A stabbed patient has an open chest wound with bubbling blood and respiratory distress. What should the EMT do?",
+    answers: [
+      "Cover with an appropriate occlusive dressing and monitor breathing closely",
+      "Pack the wound tightly with gauze only",
+      "Leave the wound open to air",
+      "Give oral fluids and reassess"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 1,
+    reasonBest: "An open chest wound should be covered with an occlusive dressing according to protocol while monitoring for worsening respiratory distress.",
+    feedbackPartial: "Gauze alone may not prevent air movement through the wound.",
+    feedbackWrong: "Do not leave an open chest wound uncovered or give oral fluids."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A patient with blunt chest trauma has paradoxical chest wall movement and severe pain. What should you suspect?",
+    answers: [
+      "Flail chest",
+      "Simple bruising only",
+      "Isolated anxiety",
+      "Stroke"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 1,
+    reasonBest: "Paradoxical chest wall movement after trauma suggests flail chest and possible underlying lung injury.",
+    feedbackPartial: "Bruising may be present, but paradoxical movement is more serious.",
+    feedbackWrong: "This is a traumatic chest injury pattern."
+  },
+  {
+    level: 100,
+    type: "multi",
+    question: "Which are appropriate priorities in major trauma? Select all that apply.",
+    answers: [
+      "Manage airway and breathing",
+      "Control major hemorrhage",
+      "Identify shock and transport rapidly",
+      "Perform a long detailed exam before treating life threats",
+      "Allow the patient to walk if awake"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Major trauma priorities include life-threat management, hemorrhage control, shock recognition, spinal precautions when indicated, and rapid transport."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A patient has an angulated lower-leg deformity after a fall. Distal pulse is absent and the foot is pale. What is the most important concern?",
+    answers: [
+      "Neurovascular compromise",
+      "A minor sprain",
+      "Normal finding after fracture",
+      "Soft tissue injury only"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 3,
+    reasonBest: "Absent distal pulse and pale extremity indicate possible neurovascular compromise, which is limb-threatening.",
+    feedbackPartial: "Soft tissue injury may exist, but the absent pulse is the key concern.",
+    feedbackWrong: "This is not a normal finding and should be treated as high priority."
+  },
+  {
+    level: 100,
+    type: "multi",
+    question: "Which should be checked before and after splinting? Select all that apply.",
+    answers: [
+      "Distal pulse",
+      "Motor function",
+      "Sensation",
+      "Patient's favorite hospital",
+      "Insurance information"
+    ],
+    correct: [0, 1, 2],
+    feedback: "Pulse, motor function, and sensation should be assessed before and after splinting."
+  },
+  {
+    level: 100,
+    type: "matching",
+    question: "Match the orthopedic term with the meaning.",
+    leftItems: ["Fracture", "Dislocation", "Sprain", "Strain"],
+    rightItems: [
+      "Break in bone",
+      "Joint surfaces displaced",
+      "Ligament injury",
+      "Muscle or tendon injury",
+      "Open soft tissue wound only"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "Orthopedic terms describe bone, joint, ligament, muscle, and tendon injuries."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A patient has a suspected mid-shaft femur fracture with severe pain and signs of shock. What complication should the EMT be especially concerned about?",
+    answers: [
+      "Significant internal blood loss",
+      "Minor bruising only",
+      "Normal anxiety response only",
+      "No risk if skin is intact"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 2,
+    reasonBest: "Femur fractures can cause major internal blood loss and shock even if the skin is intact.",
+    feedbackPartial: "Anxiety may be present, but shock signs with femur fracture suggest blood loss.",
+    feedbackWrong: "Closed fractures can still bleed internally."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "When splinting an isolated extremity injury, which principle is most correct?",
+    answers: [
+      "Splint only the painful spot",
+      "Immobilize the injured area and the joints above and below when possible",
+      "Force the limb straight before every splint",
+      "Delay splinting until after hospital arrival in all cases"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Splinting should reduce movement and pain by immobilizing the injury and adjacent joints when possible while preserving circulation.",
+    feedbackPartial: "The painful area matters, but joints above and below often need immobilization.",
+    feedbackWrong: "Do not force severely painful deformities straight unless protocol indicates gentle realignment for absent distal circulation."
+  },
+  {
+    level: 100,
+    type: "multi",
+    question: "Which findings suggest an open fracture? Select all that apply.",
+    answers: [
+      "Bone visible through a wound",
+      "Wound over a suspected fracture site",
+      "Bleeding with deformity",
+      "Pain without swelling after exercise",
+      "Old scar near the injury"
+    ],
+    correct: [0, 1, 2],
+    feedback: "An open fracture should be suspected when there is a wound over a fracture, visible bone, bleeding, deformity, or contamination."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A patient opens eyes to pain, speaks inappropriate words, and withdraws from pain. What is the Glasgow Coma Scale score?",
+    answers: [
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 0,
+    reasonBest: "Eyes to pain = 2, inappropriate words = 3, withdraws from pain = 4. Total GCS = 9? Wait: 2 + 3 + 4 = 9. The most correct answer is 9.",
+    feedbackPartial: "Recalculate each component: E2 + V3 + M4.",
+    feedbackWrong: "GCS is calculated by adding eye, verbal, and motor scores."
+  },
+  {
+    level: 100,
+    type: "matching",
+    question: "Match the GCS category with the highest score.",
+    leftItems: ["Eye opening", "Verbal response", "Motor response", "Total GCS"],
+    rightItems: [
+      "4",
+      "5",
+      "6",
+      "15",
+      "10"
+    ],
+    correct: [0, 1, 2, 3],
+    feedback: "GCS maximums are Eye 4, Verbal 5, Motor 6, for a total of 15."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A patient opens eyes spontaneously, is confused, and obeys commands. What is the GCS?",
+    answers: [
+      "14",
+      "13",
+      "12",
+      "15"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 3,
+    reasonBest: "Eyes spontaneous = 4, confused verbal = 4, obeys commands = 6. Total GCS = 14.",
+    feedbackPartial: "A GCS of 15 requires oriented verbal response, not confusion.",
+    feedbackWrong: "Add each component carefully: E4 + V4 + M6."
+  },
+  {
+    level: 100,
+    type: "multi",
+    question: "Which statements about GCS are correct? Select all that apply.",
+    answers: [
+      "It evaluates eye opening, verbal response, and motor response",
+      "The best total score is 15",
+      "A decreasing GCS can indicate worsening neurological status",
+      "It replaces airway assessment",
+      "It is only used for cardiac patients"
+    ],
+    correct: [0, 1, 2],
+    feedback: "GCS helps trend neurological status but does not replace ABC assessment."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A head injury patient had a GCS of 14 and now has a GCS of 9. What does this trend suggest?",
+    answers: [
+      "Improving neurological status",
+      "Worsening neurological status requiring high-priority reassessment and transport",
+      "Normal fatigue",
+      "No concern if blood pressure is normal"
+    ],
+    bestCorrect: 1,
+    partialCorrect: 3,
+    reasonBest: "A falling GCS is a serious sign of neurological deterioration and should prompt reassessment of ABCs, oxygenation, perfusion, and rapid transport.",
+    feedbackPartial: "Normal blood pressure does not remove concern for neurological decline.",
+    feedbackWrong: "A decreasing GCS is not normal improvement."
+  },
+  {
+    level: 100,
+    type: "single",
+    question: "A patient does not open eyes, makes incomprehensible sounds, and extends to pain. What is the GCS?",
+    answers: [
+      "5",
+      "6",
+      "7",
+      "8"
+    ],
+    bestCorrect: 0,
+    partialCorrect: 1,
+    reasonBest: "No eye opening = 1, incomprehensible sounds = 2, extension to pain = 2. Total GCS = 5.",
+    feedbackPartial: "A score of 6 would require one component to be higher. This patient is E1 V2 M2.",
+    feedbackWrong: "Calculate GCS by adding E + V + M."
+  }
+];
+
+// Fix question 55 best answer and reason after typo in the written reason.
+questions[54].bestCorrect = 0;
+questions[54].reasonBest = "Eyes to pain = 2, inappropriate words = 3, withdraws from pain = 4. Total GCS = 9.";
+questions[54].answers = ["9", "10", "11", "12"];
+
+let currentLevel = 100;
+let questionNumber = 0;
+let score = 0;
+let partialScore = 0;
+let maxQuestions = 60;
+let currentQuestion;
+let usedQuestions = [];
+
+function shuffleArray(array) {
+  return array
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+}
+
+function getQuestionByLevel(level) {
+  let available = questions.filter(q =>
+    q.level === level && !usedQuestions.includes(q.question)
+  );
+
+  if (available.length === 0) {
+    available = questions.filter(q => !usedQuestions.includes(q.question));
+  }
+
+  if (available.length === 0) {
+    finishExam();
+    return null;
+  }
+
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+function loadQuestion() {
+  if (questionNumber >= maxQuestions) {
+    finishExam();
+    return;
+  }
+
+  currentQuestion = getQuestionByLevel(currentLevel);
+  if (!currentQuestion) return;
+
+  usedQuestions.push(currentQuestion.question);
+
+  document.getElementById("status").innerText =
+    "Question " + (questionNumber + 1) +
+    " of " + maxQuestions +
+    " | EMT Difficulty: Maximum / Level " + currentLevel +
+    " | Score: " + score +
+    " | Partially Correct: " + partialScore;
+
+  document.getElementById("question").innerHTML =
+    "<strong>" + currentQuestion.question + "</strong>";
+
+  document.getElementById("answers").innerHTML = "";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "none";
+  document.getElementById("submitBtn").style.display = "none";
+
+  if (currentQuestion.type === "single") {
+    loadSingleQuestion();
+  } else if (currentQuestion.type === "multi") {
+    loadMultiQuestion();
+  } else if (currentQuestion.type === "matching") {
+    loadMatchingQuestion();
+  }
+}
+
+function loadSingleQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  const shuffledAnswers = shuffleArray(
+    currentQuestion.answers.map((answer, index) => ({
+      text: answer,
+      originalIndex: index
+    }))
+  );
+
+  shuffledAnswers.forEach(answerObj => {
+    answersDiv.innerHTML += `
+      <button onclick="checkSingleAnswer(${answerObj.originalIndex}, this)">
+        ${answerObj.text}
+      </button>
+    `;
+  });
+}
+
+function loadMultiQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  const shuffledAnswers = shuffleArray(
+    currentQuestion.answers.map((answer, index) => ({
+      text: answer,
+      originalIndex: index
+    }))
+  );
+
+  shuffledAnswers.forEach(answerObj => {
+    answersDiv.innerHTML += `
+      <label class="checkbox-answer">
+        <input type="checkbox" value="${answerObj.originalIndex}">
+        ${answerObj.text}
+      </label>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function loadMatchingQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
+    const shuffledOptions = shuffleArray(
+      currentQuestion.rightItems.map((rightItem, rightIndex) => ({
+        text: rightItem,
+        originalIndex: rightIndex
+      }))
+    );
+
+    let options = `<option value="">Choose match</option>`;
+
+    shuffledOptions.forEach(option => {
+      options += `
+        <option value="${option.originalIndex}">
+          ${option.text}
+        </option>
+      `;
+    });
+
+    answersDiv.innerHTML += `
+      <div class="matching-row">
+        <div class="matching-left">${leftItem}</div>
+        <select data-left-index="${leftIndex}">
+          ${options}
+        </select>
+      </div>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function checkSingleAnswer(selected, clickedButton) {
+  const feedback = document.getElementById("feedback");
+  const buttons = document.querySelectorAll("#answers button");
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+
+  if (selected === currentQuestion.bestCorrect) {
+    score++;
+    clickedButton.style.background = "darkgreen";
+
+    feedback.innerHTML =
+      "<strong>Most Correct Answer.</strong><br><br>" +
+      "<strong>Reason:</strong> " +
+      currentQuestion.reasonBest;
+  } else if (selected === currentQuestion.partialCorrect) {
+    partialScore++;
+    clickedButton.style.background = "orange";
+
+    buttons.forEach(button => {
+      if (button.innerText.trim() === currentQuestion.answers[currentQuestion.bestCorrect]) {
+        button.style.background = "darkgreen";
+      }
+    });
+
+    feedback.innerHTML =
+      "<strong>Partially Correct, but not the most correct.</strong><br><br>" +
+      currentQuestion.feedbackPartial +
+      "<br><br><strong>Most correct answer:</strong> " +
+      currentQuestion.answers[currentQuestion.bestCorrect] +
+      "<br><br><strong>Reason:</strong> " +
+      currentQuestion.reasonBest;
+  } else {
+    clickedButton.style.background = "darkred";
+
+    buttons.forEach(button => {
+      if (button.innerText.trim() === currentQuestion.answers[currentQuestion.bestCorrect]) {
+        button.style.background = "darkgreen";
+      }
+
+      if (button.innerText.trim() === currentQuestion.answers[currentQuestion.partialCorrect]) {
+        button.style.background = "orange";
+      }
+    });
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br><br>" +
+      currentQuestion.feedbackWrong +
+      "<br><br><strong>Most correct answer:</strong> " +
+      currentQuestion.answers[currentQuestion.bestCorrect] +
+      "<br><br><strong>Reason this is most correct:</strong> " +
+      currentQuestion.reasonBest +
+      "<br><br><strong>Partially correct answer:</strong> " +
+      currentQuestion.answers[currentQuestion.partialCorrect];
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function submitAnswer() {
+  if (currentQuestion.type === "multi") {
+    checkMultiAnswer();
+  } else if (currentQuestion.type === "matching") {
+    checkMatchingAnswer();
+  }
+}
+
+function checkMultiAnswer() {
+  const checked = Array.from(
+    document.querySelectorAll('#answers input[type="checkbox"]:checked')
+  ).map(cb => Number(cb.value));
+
+  const correct =
+    checked.length === currentQuestion.correct.length &&
+    checked.every(value => currentQuestion.correct.includes(value));
+
+  const feedback = document.getElementById("feedback");
+  const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
+
+  checkboxes.forEach(cb => {
+    cb.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br><br>" +
+      currentQuestion.feedback;
+  } else {
+    const correctAnswers = currentQuestion.correct
+      .map(index => currentQuestion.answers[index])
+      .join(", ");
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br><br>" +
+      "<strong>Correct answers:</strong> " +
+      correctAnswers +
+      "<br><br>" +
+      currentQuestion.feedback;
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function checkMatchingAnswer() {
+  const selects = document.querySelectorAll("#answers select");
+  const selectedAnswers = Array.from(selects).map(select => Number(select.value));
+
+  const allAnswered = selectedAnswers.every(answer => !Number.isNaN(answer));
+
+  const correct =
+    allAnswered &&
+    selectedAnswers.length === currentQuestion.correct.length &&
+    selectedAnswers.every((value, index) => value === currentQuestion.correct[index]);
+
+  const feedback = document.getElementById("feedback");
+
+  selects.forEach(select => {
+    select.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+    feedback.innerHTML =
+      "<strong>Correct.</strong><br><br>" +
+      currentQuestion.feedback;
+  } else {
+    let correctText = "";
+
+    currentQuestion.leftItems.forEach((item, index) => {
+      correctText +=
+        item +
+        " = " +
+        currentQuestion.rightItems[currentQuestion.correct[index]] +
+        "<br>";
+    });
+
+    feedback.innerHTML =
+      "<strong>Incorrect.</strong><br><br>" +
+      "<strong>Correct matches:</strong><br>" +
+      correctText +
+      "<br>" +
+      currentQuestion.feedback;
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function nextQuestion() {
+  questionNumber++;
+  loadQuestion();
+}
+
+function finishExam() {
+  document.getElementById("question").innerHTML =
+    "<h2>Exam Complete</h2>";
+
+  document.getElementById("answers").innerHTML = "";
+
+  let result = "";
+
+  if (score >= 51) {
+    result = "Excellent. You demonstrated strong EMT-level critical thinking across behavioral emergencies, CPR, shock, respiratory emergencies, EMS operations, neurology, soft tissue trauma, orthopedic injuries, and GCS scoring.";
+  } else if (score >= 42) {
+    result = "Good. Continue reviewing most-correct decision making, airway and breathing priorities, shock recognition, trauma patterns, stroke/seizure care, and GCS scoring.";
+  } else {
+    result = "Needs remediation. Focus on scene safety, CPR sequence, inadequate breathing, shock signs, stroke recognition, seizure care, hemorrhage control, trauma priorities, splinting, and Glasgow Coma Scale calculations.";
+  }
+
+  document.getElementById("feedback").style.display = "block";
+  document.getElementById("feedback").innerHTML =
+    "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
+    "<br><br><strong>Partially Correct Answers:</strong> " + partialScore +
+    "<br><br><strong>EMT Difficulty:</strong> " + currentLevel +
+    "<br><br>" + result;
+
+  document.getElementById("status").innerText =
+    "60-Question EMT Critical Thinking Exam Finished";
+
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "block";
+}
+
+function restartExam() {
+  currentLevel = 100;
+  questionNumber = 0;
+  score = 0;
+  partialScore = 0;
+  usedQuestions = [];
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
