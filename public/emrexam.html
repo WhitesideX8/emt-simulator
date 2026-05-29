@@ -1,0 +1,2216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>100-Question EMR  Exam </title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #222;
+      color: white;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: #333;
+      padding: 25px;
+      border-radius: 10px;
+    }
+    h1, h2 { text-align: center; }
+    .question-box {
+      background: #d9d9d9;
+      color: black;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    .category {
+      font-size: 14px;
+      font-style: italic;
+      color: #444;
+      margin-bottom: 10px;
+    }
+    button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      font-size: 16px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+    }
+    button:hover { background: darkgreen; }
+    #submitBtn, #nextBtn, #restartBtn {
+      background: #0066cc;
+      text-align: center;
+      display: none;
+    }
+    #feedback {
+      margin-top: 15px;
+      padding: 15px;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      display: none;
+      line-height: 1.5;
+    }
+    #status {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 18px;
+    }
+    .checkbox-answer {
+      display: block;
+      background: #eeeeee;
+      color: black;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .checkbox-answer input {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+    .matching-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 12px 0;
+      background: #eeeeee;
+      padding: 12px;
+      border-radius: 6px;
+    }
+    .matching-left {
+      flex: 1;
+      font-weight: bold;
+    }
+    .matching-row select {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>100-Question EMR Exam </h2>
+  <div id="status"></div>
+  <div class="question-box">
+    <div id="question"></div>
+    <div id="answers"></div>
+    <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
+    <div id="feedback"></div>
+    <button id="nextBtn" onclick="nextQuestion()">Next Question</button>
+    <button id="restartBtn" onclick="restartExam()">Restart Exam</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 1: EMS Systems",
+    "question": "Q1. You arrive before the ambulance at a crash with moving traffic and a screaming patient. What is the EMR's FIRST priority?",
+    "answers": [
+      "Ensure scene safety and request appropriate resources",
+      "Run to the patient immediately",
+      "Begin a detailed SAMPLE history",
+      "Move the patient before checking hazards"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 2,
+    "reasonBest": "Scene safety is always first; request resources before entering danger.",
+    "feedbackPartial": "History is important but comes after scene safety and life threats.",
+    "feedbackWrong": "Entering an unsafe scene can create more patients."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 1: EMS Systems",
+    "question": "Q2. A patient needs care beyond EMR training. What is MOST appropriate?",
+    "answers": [
+      "Perform advanced procedures anyway",
+      "Request higher-level EMS while providing care within EMR scope",
+      "Wait without providing any care",
+      "Transport by private car"
+    ],
+    "bestCorrect": 1,
+    "partialCorrect": 2,
+    "reasonBest": "EMRs request appropriate EMS resources and provide care within scope.",
+    "feedbackPartial": "Waiting may delay lifesaving care that is within EMR scope.",
+    "feedbackWrong": "Never exceed training or protocol."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 1: EMS Systems",
+    "question": "Q3. Which best describes the EMR role?",
+    "answers": [
+      "Replacing EMTs and paramedics",
+      "Providing immediate lifesaving care until higher-level EMS arrives",
+      "Diagnosing illness at the scene",
+      "Choosing hospital billing codes"
+    ],
+    "bestCorrect": 1,
+    "partialCorrect": 2,
+    "reasonBest": "The EMR provides early lifesaving care and assists the EMS system.",
+    "feedbackPartial": "EMRs recognize problems but do not make formal medical diagnoses.",
+    "feedbackWrong": "EMRs function as part of a larger EMS system."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 1: EMS Systems",
+    "question": "Q4. At a multiple-patient incident, what should the first EMR do after scene safety?",
+    "answers": [
+      "Request additional resources and begin triage per protocol",
+      "Treat the loudest patient first",
+      "Move all patients into one car",
+      "Tell bystanders to transport"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Multiple-patient incidents require resources and triage.",
+    "feedbackPartial": "The loudest patient may not be the sickest.",
+    "feedbackWrong": "Triage and resource activation are EMS priorities."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 1: EMS Systems",
+    "question": "Q5. Why is a clear report to arriving EMTs important?",
+    "answers": [
+      "It improves continuity of care",
+      "It replaces reassessment",
+      "It prevents documentation",
+      "It allows immediate abandonment"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "A clear handoff improves continuity and patient safety.",
+    "feedbackPartial": "Reassessment is still needed by receiving providers.",
+    "feedbackWrong": "Communication is essential in EMS."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 2: Workforce Safety and Wellness",
+    "question": "Q6. A febrile patient is coughing heavily. What should the EMR do before close contact?",
+    "answers": [
+      "Use appropriate PPE and limit exposure",
+      "Avoid PPE to look friendly",
+      "Ask patient to remove any mask",
+      "Place your face close to listen"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 3,
+    "reasonBest": "PPE and standard precautions protect responders and patients.",
+    "feedbackPartial": "Assessment should be performed safely.",
+    "feedbackWrong": "Provider safety is a priority."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 2: Workforce Safety and Wellness",
+    "question": "Q7. After a difficult pediatric death call, an EMR cannot sleep and feels irritable. What is BEST?",
+    "answers": [
+      "Recognize a stress reaction and seek support",
+      "Ignore it forever",
+      "Post details online",
+      "Quit immediately"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Stress reactions can occur; peer or professional support is appropriate.",
+    "feedbackPartial": "Ignoring stress may worsen it.",
+    "feedbackWrong": "Responder wellness matters."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 2: Workforce Safety and Wellness",
+    "question": "Q8. You smell gasoline at a crash. What should you do?",
+    "answers": [
+      "Stay back, keep others away, and request appropriate resources",
+      "Walk closer to identify the leak",
+      "Use road flares nearby",
+      "Start care inside the vehicle"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Gasoline creates fire/explosion risk; control hazards first.",
+    "feedbackPartial": "Identifying hazards should not put you at risk.",
+    "feedbackWrong": "Unsafe scenes must be controlled."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 2: Workforce Safety and Wellness",
+    "question": "Q9. Which lifting technique is safest?",
+    "answers": [
+      "Keep the load close and lift with legs",
+      "Twist while lifting",
+      "Lift alone to save time",
+      "Keep arms fully extended"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 2,
+    "reasonBest": "Safe lifting uses legs, straight back, load close, and enough help.",
+    "feedbackPartial": "Even small patients may need help depending on situation.",
+    "feedbackWrong": "Poor lifting causes responder injury."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 2: Workforce Safety and Wellness",
+    "question": "Q10. There is blood around a patient. What is the safest first approach?",
+    "answers": [
+      "Put on gloves and appropriate PPE",
+      "Touch blood to see if fresh",
+      "Skip gloves because bleeding is urgent",
+      "Ask bystanders to clean first"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 2,
+    "reasonBest": "Blood/body fluids require standard precautions.",
+    "feedbackPartial": "Urgency does not remove PPE needs.",
+    "feedbackWrong": "Infection control protects responders and patients."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 3: Medical, Legal, and Ethical Issues",
+    "question": "Q11. A confused stroke-like patient refuses help but cannot explain risks. What should the EMR do?",
+    "answers": [
+      "Treat as possible impaired capacity and follow protocol",
+      "Accept the refusal immediately",
+      "Leave because all refusals are valid",
+      "Argue until agreement"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Refusal requires decision-making capacity; confusion may require implied consent/protocol.",
+    "feedbackPartial": "A refusal is not valid without capacity.",
+    "feedbackWrong": "Consent decisions follow law/protocol."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 3: Medical, Legal, and Ethical Issues",
+    "question": "Q12. A competent adult refuses care after a minor injury. What should the EMR do?",
+    "answers": [
+      "Explain risks and follow refusal/documentation protocol",
+      "Force care",
+      "Leave without reporting",
+      "Tell patient refusal is illegal"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Competent adults may refuse; explain risks and follow protocol.",
+    "feedbackPartial": "Force is inappropriate for a competent adult unless specific legal exceptions apply.",
+    "feedbackWrong": "Patient autonomy matters."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 3: Medical, Legal, and Ethical Issues",
+    "question": "Q13. Posting call details online without the patient's name but with unique location details is a concern because:",
+    "answers": [
+      "It may violate confidentiality",
+      "It is fine if no name is used",
+      "It is required public education",
+      "It only affects billing"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Unique details can identify the patient even without a name.",
+    "feedbackPartial": "Removing the name alone may not protect privacy.",
+    "feedbackWrong": "Confidentiality must be protected."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 3: Medical, Legal, and Ethical Issues",
+    "question": "Q14. Which is implied consent?",
+    "answers": [
+      "Emergency care for an unconscious patient",
+      "A signed refusal",
+      "A bystander giving permission for an alert adult",
+      "A patient verbally agreeing"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 3,
+    "reasonBest": "Implied consent applies when a patient cannot consent and emergency care is needed.",
+    "feedbackPartial": "Verbal agreement is expressed consent.",
+    "feedbackWrong": "Consent must come from the patient or proper authority."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 3: Medical, Legal, and Ethical Issues",
+    "question": "Q15. An EMR knowingly performs a skill outside training and harms the patient. What is the concern?",
+    "answers": [
+      "Acting beyond scope",
+      "Proper delegation",
+      "Mandatory reporting only",
+      "Routine documentation"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 3,
+    "reasonBest": "EMRs must stay within scope, training, and protocol.",
+    "feedbackPartial": "Documentation does not make out-of-scope care acceptable.",
+    "feedbackWrong": "Scope protects patients and responders."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 4: Communications and Documentation",
+    "question": "Q16. Which radio report is BEST for an unstable patient?",
+    "answers": [
+      "Age/sex, chief complaint, mental status, vitals, care, ETA",
+      "Only patient's name",
+      "Full life history first",
+      "Insurance first"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 2,
+    "reasonBest": "Radio reports should prioritize useful clinical information.",
+    "feedbackPartial": "Detailed history is secondary for unstable patients.",
+    "feedbackWrong": "Communication supports preparedness."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 4: Communications and Documentation",
+    "question": "Q17. During handoff, what should the EMR include?",
+    "answers": [
+      "Findings, changes, care provided, and response",
+      "Final diagnosis only",
+      "Only address",
+      "Personal opinions"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Handoff includes assessment findings, interventions, and response.",
+    "feedbackPartial": "EMRs do not provide final diagnosis.",
+    "feedbackWrong": "Accurate handoff improves care."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 4: Communications and Documentation",
+    "question": "Q18. If a documented time is wrong, what should be done?",
+    "answers": [
+      "Correct it according to agency policy",
+      "Erase secretly",
+      "Ignore it",
+      "Guess a replacement"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 3,
+    "reasonBest": "Documentation errors should be corrected honestly per policy.",
+    "feedbackPartial": "Guessing creates inaccurate records.",
+    "feedbackWrong": "Documentation should be accurate."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 4: Communications and Documentation",
+    "question": "Q19. A patient speaks limited English. What communication approach is best?",
+    "answers": [
+      "Use qualified interpreter/approved method if available",
+      "Speak louder",
+      "Avoid questions",
+      "Use a child for all sensitive questions"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 3,
+    "reasonBest": "Qualified interpretation improves accuracy and privacy.",
+    "feedbackPartial": "Children are often inappropriate for sensitive interpretation.",
+    "feedbackWrong": "Communication affects safety."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 4: Communications and Documentation",
+    "question": "Q20. Which documentation statement should be avoided?",
+    "answers": [
+      "Patient states, 'I feel dizzy.'",
+      "Patient found seated on floor.",
+      "Patient is drunk and stupid.",
+      "Skin cool and pale."
+    ],
+    "bestCorrect": 2,
+    "partialCorrect": 0,
+    "reasonBest": "Documentation must be objective and professional, not insulting.",
+    "feedbackPartial": "Direct patient quotes can be appropriate.",
+    "feedbackWrong": "Avoid judgmental language."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 5: Medical Terminology",
+    "question": "Q21. What does cyanosis mean?",
+    "answers": [
+      "Bluish discoloration of skin/mucous membranes",
+      "Rapid breathing",
+      "Sweating",
+      "Low blood sugar"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Cyanosis is bluish discoloration often related to oxygenation problems.",
+    "feedbackPartial": "Rapid breathing is tachypnea.",
+    "feedbackWrong": "Use terms accurately."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 5: Medical Terminology",
+    "question": "Q22. Substernal chest pressure means pressure:",
+    "answers": [
+      "Behind or beneath the breastbone",
+      "In the lower back",
+      "In the ankle",
+      "Behind the ear"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Substernal means behind or beneath the sternum.",
+    "feedbackPartial": "Back pain can be radiation but is not substernal.",
+    "feedbackWrong": "Anatomic terms locate symptoms."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 5: Medical Terminology",
+    "question": "Q23. What does hypo- mean in hypoglycemia?",
+    "answers": [
+      "Low",
+      "High",
+      "Fast",
+      "Painful"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Hypo- means low.",
+    "feedbackPartial": "Hyper- means high.",
+    "feedbackWrong": "Prefixes matter."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 5: Medical Terminology",
+    "question": "Q24. What is tachypnea?",
+    "answers": [
+      "Fast breathing",
+      "Slow pulse",
+      "Low blood pressure",
+      "No breathing"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 3,
+    "reasonBest": "Tachypnea means rapid breathing.",
+    "feedbackPartial": "No breathing is apnea.",
+    "feedbackWrong": "Respiratory terms guide reports."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 5: Medical Terminology",
+    "question": "Q25. A patient is diaphoretic. This means:",
+    "answers": [
+      "Sweating",
+      "Pale",
+      "Confused",
+      "Vomiting"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Diaphoretic means sweating.",
+    "feedbackPartial": "Pale is skin color, not sweating.",
+    "feedbackWrong": "Accurate terms improve handoff."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 6: Anatomy and Physiology",
+    "question": "Q26. Poor perfusion causes confusion because which system is sensitive to low oxygen/glucose?",
+    "answers": [
+      "Nervous system",
+      "Skeletal system",
+      "Digestive system",
+      "Skin only"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 3,
+    "reasonBest": "The brain is highly sensitive to oxygen/glucose problems.",
+    "feedbackPartial": "Skin signs may occur but confusion reflects neurologic compromise.",
+    "feedbackWrong": "Mental status is key."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 6: Anatomy and Physiology",
+    "question": "Q27. Which structure helps prevent food from entering the airway?",
+    "answers": [
+      "Epiglottis",
+      "Alveolus",
+      "Diaphragm",
+      "Femur"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 2,
+    "reasonBest": "The epiglottis helps protect the airway during swallowing.",
+    "feedbackPartial": "The diaphragm helps breathing.",
+    "feedbackWrong": "Airway anatomy matters."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 6: Anatomy and Physiology",
+    "question": "Q28. Ventilation means:",
+    "answers": [
+      "Moving air in and out of lungs",
+      "Moving blood through arteries",
+      "Digesting food",
+      "Filtering urine"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Ventilation is movement of air into and out of lungs.",
+    "feedbackPartial": "Circulation is blood movement.",
+    "feedbackWrong": "Differentiate ventilation and perfusion."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 6: Anatomy and Physiology",
+    "question": "Q29. Which pulse is commonly checked in an unresponsive adult?",
+    "answers": [
+      "Carotid",
+      "Radial only",
+      "Pedal only",
+      "Temporal only"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "The carotid is a central pulse used in unresponsive adults.",
+    "feedbackPartial": "A radial pulse may be absent in shock.",
+    "feedbackWrong": "Central pulse assessment matters."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 6: Anatomy and Physiology",
+    "question": "Q30. Main function of red blood cells is to:",
+    "answers": [
+      "Carry oxygen",
+      "Digest fat",
+      "Produce insulin",
+      "Control balance"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Red blood cells carry oxygen via hemoglobin.",
+    "feedbackPartial": "Digesting fat is not their role.",
+    "feedbackWrong": "Oxygen transport supports perfusion."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 7: Life Span Development",
+    "question": "Q31. An infant with respiratory distress may show:",
+    "answers": [
+      "Poor feeding",
+      "Clear full sentences",
+      "Chest pain complaint",
+      "Normal adult behavior"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Poor feeding can signal illness or respiratory distress in infants.",
+    "feedbackPartial": "Infants do not speak full sentences.",
+    "feedbackWrong": "Development affects assessment."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 7: Life Span Development",
+    "question": "Q32. A frightened preschool child is best approached by:",
+    "answers": [
+      "Calm approach with caregiver when appropriate",
+      "Separating immediately every time",
+      "Starting with painful procedures",
+      "Using complex terms"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Caregiver presence and calm approach often improve cooperation.",
+    "feedbackPartial": "Separation may worsen fear.",
+    "feedbackWrong": "Adapt to age."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 7: Life Span Development",
+    "question": "Q33. A teenager may give better sensitive history when:",
+    "answers": [
+      "Appropriate privacy is provided",
+      "Parents answer everything",
+      "Assessment stops",
+      "They are ignored"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Adolescents may need privacy for sensitive questions when safe.",
+    "feedbackPartial": "Parents are important but may limit disclosure.",
+    "feedbackWrong": "Respect privacy."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 7: Life Span Development",
+    "question": "Q34. An older adult with infection may present with:",
+    "answers": [
+      "Sudden confusion or weakness",
+      "Always high fever",
+      "No symptoms ever",
+      "Only rash"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Older adults may show atypical infection signs such as confusion/weakness.",
+    "feedbackPartial": "High fever may be absent.",
+    "feedbackWrong": "Geriatric assessment requires suspicion."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 7: Life Span Development",
+    "question": "Q35. Children lose heat faster partly because they have:",
+    "answers": [
+      "Larger surface area compared with body mass",
+      "No blood vessels",
+      "No ability to get hypothermia",
+      "No metabolism"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Children have proportionally larger surface area and lose heat faster.",
+    "feedbackPartial": "They have blood vessels and can become hypothermic.",
+    "feedbackWrong": "Prevent heat loss."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 8: Lifting and Moving Patients",
+    "question": "Q36. Which situation justifies an emergency move?",
+    "answers": [
+      "Immediate danger such as fire",
+      "Patient wants another room",
+      "Better lighting only",
+      "Minor ankle pain"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 2,
+    "reasonBest": "Emergency moves are for immediate danger or inability to provide lifesaving care.",
+    "feedbackPartial": "Better lighting alone usually does not justify it.",
+    "feedbackWrong": "Movement can worsen injury."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 8: Lifting and Moving Patients",
+    "question": "Q37. Possible spine injury, no immediate danger. Best approach?",
+    "answers": [
+      "Limit movement and wait for appropriate resources/equipment",
+      "Drag quickly",
+      "Have patient twist to stand",
+      "Sit upright immediately"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Minimize movement in possible spine injury.",
+    "feedbackPartial": "Dragging is for emergency danger only.",
+    "feedbackWrong": "Protect spine when possible."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 8: Lifting and Moving Patients",
+    "question": "Q38. Safest lifting technique is:",
+    "answers": [
+      "Back straight, lift with legs, load close",
+      "Twist while lifting",
+      "Reach far away",
+      "Lift alone to save time"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 3,
+    "reasonBest": "Safe lifting uses legs, straight back, load close, and enough help.",
+    "feedbackPartial": "Saving time does not justify unsafe lifting.",
+    "feedbackWrong": "Prevent responder injury."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 8: Lifting and Moving Patients",
+    "question": "Q39. Patient too heavy for two responders to move safely. What should EMR do?",
+    "answers": [
+      "Request additional help/equipment",
+      "Attempt anyway",
+      "Ask patient to crawl",
+      "Cancel the call"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Request help/equipment for safe movement.",
+    "feedbackPartial": "Unsafe lifts injure responders/patients.",
+    "feedbackWrong": "Safety comes first."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 8: Lifting and Moving Patients",
+    "question": "Q40. Why explain movement before moving a conscious patient?",
+    "answers": [
+      "Reduces fear and improves cooperation",
+      "Replaces consent",
+      "Proves no injury",
+      "Only needed for children"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Explaining helps cooperation and safety.",
+    "feedbackPartial": "It does not replace consent.",
+    "feedbackWrong": "Communication matters."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 9: Patient Assessment",
+    "question": "Q41. Unresponsive patient not breathing normally. Priority?",
+    "answers": [
+      "Open airway, assess breathing/pulse, begin resuscitation as indicated",
+      "Complete SAMPLE first",
+      "Search insurance card",
+      "Wait without action"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Primary assessment addresses life threats first.",
+    "feedbackPartial": "History comes later.",
+    "feedbackWrong": "EMRs act within training."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 9: Patient Assessment",
+    "question": "Q42. Awake patient with cool clammy skin and weak radial pulses suggests:",
+    "answers": [
+      "Poor perfusion",
+      "Normal rest",
+      "Mild anxiety only",
+      "No need to reassess"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 2,
+    "reasonBest": "Cool clammy skin and weak pulses suggest poor perfusion/shock.",
+    "feedbackPartial": "Anxiety may coexist but not explain weak pulses.",
+    "feedbackWrong": "Perfusion is critical."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 9: Patient Assessment",
+    "question": "Q43. Which is an OPQRST question for chest pain?",
+    "answers": [
+      "What were you doing when it started?",
+      "What is your Social Security number?",
+      "Who is your employer?",
+      "Favorite food?"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 2,
+    "reasonBest": "OPQRST includes onset, provocation, quality, radiation, severity, time.",
+    "feedbackPartial": "Employer isn't part of pain assessment.",
+    "feedbackWrong": "OPQRST structures symptoms."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 9: Patient Assessment",
+    "question": "Q44. Mental status changes from alert to responsive to pain. What should the EMR do?",
+    "answers": [
+      "Reassess ABCs and expedite EMS",
+      "Let patient sleep",
+      "Stop assessment",
+      "Assume fatigue"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 3,
+    "reasonBest": "Declining mental status is serious and requires reassessment.",
+    "feedbackPartial": "Do not assume fatigue.",
+    "feedbackWrong": "Trends matter."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 9: Patient Assessment",
+    "question": "Q45. Most immediate life threat?",
+    "answers": [
+      "Severe airway obstruction",
+      "Old scar",
+      "Mild chronic knee pain",
+      "Medication allergy in wallet"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 3,
+    "reasonBest": "Airway obstruction is an immediate threat.",
+    "feedbackPartial": "Allergies matter but not before airway obstruction.",
+    "feedbackWrong": "Primary assessment identifies life threats."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 10: Airway Management",
+    "question": "Q46. Gurgling respirations and vomit in mouth. First airway action?",
+    "answers": [
+      "Suction/clear airway as trained",
+      "Apply bandage",
+      "Give oral glucose",
+      "Ask allergies"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 3,
+    "reasonBest": "Gurgling suggests fluid in airway; clear it.",
+    "feedbackPartial": "Allergies are secondary to airway threats.",
+    "feedbackWrong": "Airway first."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 10: Airway Management",
+    "question": "Q47. Unresponsive patient without gag reflex may need:",
+    "answers": [
+      "Oropharyngeal airway if trained/allowed",
+      "Oral glucose",
+      "Aspirin",
+      "Bandage roll"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "An OPA is for unresponsive patient without gag reflex.",
+    "feedbackPartial": "Oral glucose requires swallowing.",
+    "feedbackWrong": "Use adjuncts appropriately."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 10: Airway Management",
+    "question": "Q48. Breathing 6/min with poor chest rise. What should EMR do?",
+    "answers": [
+      "Assist ventilations with barrier/BVM if trained",
+      "Apply bandage",
+      "Wait",
+      "Give water"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 2,
+    "reasonBest": "Slow shallow breathing needs ventilation support.",
+    "feedbackPartial": "Waiting risks hypoxia.",
+    "feedbackWrong": "Ventilation support can be lifesaving."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 10: Airway Management",
+    "question": "Q49. Which suggests upper airway obstruction?",
+    "answers": [
+      "Stridor",
+      "Normal speech",
+      "Warm dry skin only",
+      "Ankle swelling"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Stridor suggests upper airway obstruction.",
+    "feedbackPartial": "Normal speech suggests adequate current air movement.",
+    "feedbackWrong": "Stridor is serious."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 10: Airway Management",
+    "question": "Q50. Responsive choking adult cannot speak/cough. What should EMR do?",
+    "answers": [
+      "Abdominal thrusts per training/protocol",
+      "Give water",
+      "Blind finger sweep",
+      "Wait until unconscious"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 3,
+    "reasonBest": "Severe obstruction in responsive adult requires abdominal thrusts per training.",
+    "feedbackPartial": "Do not wait for deterioration.",
+    "feedbackWrong": "Avoid blind sweeps."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 11: Resuscitation",
+    "question": "Q51. Adult unresponsive, not breathing normally, pulseless. What should EMR do?",
+    "answers": [
+      "Start CPR and use AED ASAP",
+      "Wait for paramedics",
+      "Check BP first",
+      "Give oral fluids"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Cardiac arrest requires CPR and AED.",
+    "feedbackPartial": "Waiting delays lifesaving care.",
+    "feedbackWrong": "CPR/AED are critical."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 11: Resuscitation",
+    "question": "Q52. After AED shock, next action?",
+    "answers": [
+      "Resume CPR immediately unless signs of life",
+      "Check pulse for 30 seconds",
+      "Remove pads",
+      "Stop and wait"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Resume CPR after shock to maintain perfusion.",
+    "feedbackPartial": "Pulse checks should be brief.",
+    "feedbackWrong": "Minimize pauses."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 11: Resuscitation",
+    "question": "Q53. Which improves CPR quality?",
+    "answers": [
+      "Allow full chest recoil",
+      "Lean on chest",
+      "Ventilate as fast as possible",
+      "Pause frequently"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 2,
+    "reasonBest": "Full recoil allows cardiac filling.",
+    "feedbackPartial": "Overventilation can reduce venous return.",
+    "feedbackWrong": "Quality matters."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 11: Resuscitation",
+    "question": "Q54. Gasping with no pulse means:",
+    "answers": [
+      "Not normal breathing; begin CPR",
+      "Adequate breathing",
+      "AED not needed",
+      "Recovery complete"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Agonal gasps are not normal breathing.",
+    "feedbackPartial": "Gasping is not adequate.",
+    "feedbackWrong": "Start CPR if pulseless."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 11: Resuscitation",
+    "question": "Q55. One rescuer doing compressions becomes tired. What should happen?",
+    "answers": [
+      "Switch compressors about every 2 minutes with minimal pause",
+      "Continue poor compressions",
+      "Stop for long rest",
+      "Switch after 10 minutes"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Switching helps maintain compression quality.",
+    "feedbackPartial": "Poor compressions reduce perfusion.",
+    "feedbackWrong": "Teamwork improves CPR."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 12: Pharmacology",
+    "question": "Q56. EMR assists medication only when:",
+    "answers": [
+      "Within training, protocol, and authorization",
+      "Patient asks for anything",
+      "Bystander recommends it",
+      "Medication looks familiar"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Medication assistance must follow scope/training/protocol.",
+    "feedbackPartial": "Patient request alone isn't enough.",
+    "feedbackWrong": "Safety requires protocol."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 12: Pharmacology",
+    "question": "Q57. Low blood sugar patient awake and able to swallow may receive:",
+    "answers": [
+      "Oral glucose if allowed",
+      "Aspirin",
+      "Nitroglycerin",
+      "Epinephrine for all"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Oral glucose may be appropriate for hypoglycemia if patient can swallow.",
+    "feedbackPartial": "Aspirin isn't for hypoglycemia.",
+    "feedbackWrong": "Indication matters."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 12: Pharmacology",
+    "question": "Q58. Severe allergic reaction with prescribed auto-injector. EMR should:",
+    "answers": [
+      "Assist according to protocol/training",
+      "Use it for any rash",
+      "Ignore all meds",
+      "Give it orally"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Auto-injector assistance may be indicated for anaphylaxis per protocol.",
+    "feedbackPartial": "Simple rash alone may not qualify.",
+    "feedbackWrong": "Follow protocol."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 12: Pharmacology",
+    "question": "Q59. Important medication safety step:",
+    "answers": [
+      "Check right patient, medication, dose, route, and time as trained",
+      "Ignore expiration",
+      "Use another patient's medication",
+      "Guess dose"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Medication checks reduce errors.",
+    "feedbackPartial": "Expiration matters.",
+    "feedbackWrong": "Medication errors can harm."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 12: Pharmacology",
+    "question": "Q60. Unconscious patient cannot swallow. Avoid:",
+    "answers": [
+      "Oral medication/fluids",
+      "Opening airway",
+      "Calling EMS",
+      "Checking breathing"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Unconscious patients can aspirate oral substances.",
+    "feedbackPartial": "Airway care is appropriate.",
+    "feedbackWrong": "Route safety matters."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 13: Shock",
+    "question": "Q61. Pale, cool, weak, confused patient after bleeding suggests:",
+    "answers": [
+      "Shock from poor perfusion",
+      "Normal anxiety only",
+      "No problem if awake",
+      "Skin problem only"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "These signs suggest shock.",
+    "feedbackPartial": "Anxiety may occur but perfusion signs are serious.",
+    "feedbackWrong": "Shock is inadequate perfusion."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 13: Shock",
+    "question": "Q62. Priority for external bleeding with shock signs?",
+    "answers": [
+      "Control bleeding and activate/expedite EMS",
+      "Give food",
+      "Delay for full history",
+      "Have patient walk"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 2,
+    "reasonBest": "Bleeding control and EMS response are priorities.",
+    "feedbackPartial": "History shouldn't delay hemorrhage control.",
+    "feedbackWrong": "Shock can worsen."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 13: Shock",
+    "question": "Q63. Hives, wheezing, low BP after bee sting suggests:",
+    "answers": [
+      "Anaphylactic/distributive shock",
+      "Emotional shock only",
+      "Cardiac arrest only",
+      "Normal itch"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Anaphylaxis can cause airway, breathing, and circulation compromise.",
+    "feedbackPartial": "Emotional stress doesn't explain the pattern.",
+    "feedbackWrong": "Recognize anaphylaxis."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 13: Shock",
+    "question": "Q64. Why keep shock patient warm?",
+    "answers": [
+      "Hypothermia worsens condition and clotting",
+      "Warmth cures all shock",
+      "Replaces bleeding control",
+      "Prevents EMS need"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 2,
+    "reasonBest": "Preventing heat loss is part of shock care.",
+    "feedbackPartial": "Warmth doesn't replace bleeding control.",
+    "feedbackWrong": "Use multiple priorities."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 13: Shock",
+    "question": "Q65. Which is often a late shock sign?",
+    "answers": [
+      "Falling blood pressure",
+      "Mild anxiety only",
+      "Normal mentation",
+      "Warm dry skin"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Hypotension often occurs after compensation fails.",
+    "feedbackPartial": "Anxiety can be early/nonspecific.",
+    "feedbackWrong": "Don't wait for hypotension."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 14: Respiratory Emergencies",
+    "question": "Q66. Respirations 32/min, accessory muscles, one-word sentences. Priority?",
+    "answers": [
+      "Assess/support breathing and oxygenation/ventilation as trained",
+      "Insurance info",
+      "Family history only",
+      "Lie flat immediately"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 2,
+    "reasonBest": "Severe respiratory distress requires immediate breathing support.",
+    "feedbackPartial": "History is secondary.",
+    "feedbackWrong": "Position of comfort may help."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 14: Respiratory Emergencies",
+    "question": "Q67. Asthma patient was wheezing but now quiet, drowsy, and slow breathing. Concern?",
+    "answers": [
+      "Worsening respiratory failure",
+      "Improvement",
+      "Normal sleep",
+      "No EMS needed"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Quiet/drowsy after distress may mean fatigue and poor air movement.",
+    "feedbackPartial": "Less wheeze isn't always better.",
+    "feedbackWrong": "Watch trends."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 14: Respiratory Emergencies",
+    "question": "Q68. Shortness of breath after allergen exposure suggests:",
+    "answers": [
+      "Anaphylaxis/severe allergic reaction",
+      "Indigestion only",
+      "No emergency without rash",
+      "Cold symptoms"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 2,
+    "reasonBest": "Breathing symptoms after allergen exposure can be anaphylaxis.",
+    "feedbackPartial": "Rash may be absent/delayed.",
+    "feedbackWrong": "Airway and breathing are high priority."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 14: Respiratory Emergencies",
+    "question": "Q69. Which suggests inadequate breathing?",
+    "answers": [
+      "Poor chest rise with altered mental status",
+      "Full sentences comfortably",
+      "Normal skin",
+      "Mild anxiety only"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Poor chest rise and AMS suggest inadequate ventilation/oxygenation.",
+    "feedbackPartial": "Full sentences suggest adequate air movement for now.",
+    "feedbackWrong": "Assess adequacy."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 14: Respiratory Emergencies",
+    "question": "Q70. Why is gurgling dangerous?",
+    "answers": [
+      "Fluid can obstruct airway and impair breathing",
+      "Always cardiac arrest",
+      "Means stable",
+      "Prevents bleeding"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Fluids/secretions can obstruct airflow.",
+    "feedbackPartial": "Not always arrest, but serious.",
+    "feedbackWrong": "Clear airway."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 15: Cardiac Emergencies",
+    "question": "Q71. Chest pressure, nausea, sweating. What should EMR suspect?",
+    "answers": [
+      "Possible cardiac emergency",
+      "Muscle soreness only",
+      "No concern if mild",
+      "Always anxiety"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 3,
+    "reasonBest": "These can indicate cardiac emergency.",
+    "feedbackPartial": "Anxiety can mimic but shouldn't be assumed.",
+    "feedbackWrong": "Cardiac symptoms vary."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 15: Cardiac Emergencies",
+    "question": "Q72. Chest pain patient becomes unresponsive and pulseless. Priority?",
+    "answers": [
+      "CPR and AED",
+      "Continue OPQRST",
+      "Give oral aspirin",
+      "Place in chair"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 2,
+    "reasonBest": "Cardiac arrest requires CPR/AED.",
+    "feedbackPartial": "Oral meds unsafe/not priority in pulseless arrest.",
+    "feedbackWrong": "Resuscitation first."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 15: Cardiac Emergencies",
+    "question": "Q73. Why is early AED important?",
+    "answers": [
+      "May correct shockable rhythms",
+      "Replaces CPR",
+      "Diagnoses all chest pain",
+      "Prevents all heart attacks"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "AED can defibrillate shockable rhythms.",
+    "feedbackPartial": "CPR is still required.",
+    "feedbackWrong": "AED is for arrest care."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 15: Cardiac Emergencies",
+    "question": "Q74. Chest pain patient denies SOB but is pale/diaphoretic. EMR should:",
+    "answers": [
+      "Treat as potentially serious and continue EMS care",
+      "Dismiss because no SOB",
+      "Tell to sleep",
+      "Wait for severe pain"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 1,
+    "reasonBest": "Cardiac events may occur without SOB.",
+    "feedbackPartial": "Absence of one symptom doesn't rule it out.",
+    "feedbackWrong": "Early recognition matters."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 15: Cardiac Emergencies",
+    "question": "Q75. Repeated long CPR pauses are harmful because:",
+    "answers": [
+      "They reduce blood flow to heart/brain",
+      "They improve oxygen",
+      "They make AED unnecessary",
+      "They prevent fatigue"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 3,
+    "reasonBest": "Pauses reduce perfusion.",
+    "feedbackPartial": "Manage fatigue by switching compressors.",
+    "feedbackWrong": "Minimize interruptions."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 16: Medical Emergencies",
+    "question": "Q76. Diabetic patient confused, sweaty, can swallow. EMR should consider:",
+    "answers": [
+      "Oral glucose if allowed",
+      "Aspirin for all confusion",
+      "Water only",
+      "Wait until unconscious"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 2,
+    "reasonBest": "Oral glucose may be used for suspected hypoglycemia if patient can swallow.",
+    "feedbackPartial": "Water doesn't correct hypoglycemia.",
+    "feedbackWrong": "Treat reversible causes."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 16: Medical Emergencies",
+    "question": "Q77. One-sided weakness and slurred speech suggests:",
+    "answers": [
+      "Stroke",
+      "Sprained ankle",
+      "Rash",
+      "Normal aging only"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 3,
+    "reasonBest": "These are stroke warning signs.",
+    "feedbackPartial": "Do not dismiss sudden neurologic deficits as aging.",
+    "feedbackWrong": "Recognize stroke."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 16: Medical Emergencies",
+    "question": "Q78. Seizure stopped; patient confused but breathing. What should EMR do?",
+    "answers": [
+      "Protect from injury, assess ABCs, monitor",
+      "Put object in mouth",
+      "Restrain forcefully",
+      "Give food immediately"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 3,
+    "reasonBest": "Postictal care includes ABCs, safety, and monitoring.",
+    "feedbackPartial": "Food unsafe until alert/swallowing.",
+    "feedbackWrong": "No objects in mouth."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 16: Medical Emergencies",
+    "question": "Q79. Severe abdominal pain with cool clammy skin suggests:",
+    "answers": [
+      "Potential serious emergency with shock",
+      "Normal hunger",
+      "Anxiety only",
+      "No issue without vomiting"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 2,
+    "reasonBest": "Severe pain with perfusion signs is serious.",
+    "feedbackPartial": "Anxiety doesn't explain shock signs.",
+    "feedbackWrong": "Medical emergencies can cause shock."
+  },
+  {
+    "level": 120,
+    "type": "single",
+    "category": "Chapter 16: Medical Emergencies",
+    "question": "Q80. Confused patient with hot dry skin after working outside suggests:",
+    "answers": [
+      "Heat emergency",
+      "Frostbite",
+      "Normal fatigue only",
+      "Low-priority rash"
+    ],
+    "bestCorrect": 0,
+    "partialCorrect": 2,
+    "reasonBest": "Confusion with hot dry skin after heat exposure is serious.",
+    "feedbackPartial": "Do not assume fatigue with altered mental status.",
+    "feedbackWrong": "Environmental illness can be life-threatening."
+  },
+  {
+    "level": 120,
+    "type": "multi",
+    "category": "Level 120 EMR Select-All",
+    "question": "Q81. Which findings suggest inadequate breathing? Select all that apply.",
+    "answers": [
+      "Respirations 6/min and shallow",
+      "Poor chest rise",
+      "Cyanosis",
+      "Altered mental status with hypoxia",
+      "Speaking normally in full sentences"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "feedback": "Inadequate breathing includes poor rate, depth, chest rise, oxygenation, or mental status."
+  },
+  {
+    "level": 120,
+    "type": "multi",
+    "category": "Level 120 EMR Select-All",
+    "question": "Q82. Which are appropriate EMR actions for severe external bleeding? Select all that apply.",
+    "answers": [
+      "Apply direct pressure",
+      "Use tourniquet when indicated by training/protocol",
+      "Use PPE",
+      "Activate/continue EMS response",
+      "Delay care for full history"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "feedback": "Severe bleeding care includes PPE, immediate bleeding control, tourniquet when indicated, and EMS activation."
+  },
+  {
+    "level": 120,
+    "type": "multi",
+    "category": "Level 120 EMR Select-All",
+    "question": "Q83. Which findings may suggest shock? Select all that apply.",
+    "answers": [
+      "Cool clammy skin",
+      "Weak rapid pulse",
+      "Altered mental status",
+      "Pale skin",
+      "Warm dry skin with normal mental status"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "feedback": "Shock commonly presents with cool clammy skin, weak pulse, pallor, and altered mental status."
+  },
+  {
+    "level": 120,
+    "type": "multi",
+    "category": "Level 120 EMR Select-All",
+    "question": "Q84. Which are components of high-quality CPR? Select all that apply.",
+    "answers": [
+      "Correct rate and depth",
+      "Allow full recoil",
+      "Minimize interruptions",
+      "Use AED as soon as available",
+      "Stop compressions for long pulse checks"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "feedback": "High-quality CPR includes correct compressions, recoil, minimal pauses, and early AED."
+  },
+  {
+    "level": 120,
+    "type": "multi",
+    "category": "Level 120 EMR Select-All",
+    "question": "Q85. Which findings may indicate stroke? Select all that apply.",
+    "answers": [
+      "Facial droop",
+      "Arm weakness",
+      "Speech difficulty",
+      "Sudden confusion",
+      "Minor chronic knee pain"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "feedback": "Stroke may present with facial droop, arm weakness, speech difficulty, or confusion."
+  },
+  {
+    "level": 120,
+    "type": "multi",
+    "category": "Level 120 EMR Select-All",
+    "question": "Q86. Which actions are appropriate for responsive choking adult unable to speak? Select all that apply.",
+    "answers": [
+      "Recognize severe airway obstruction",
+      "Begin abdominal thrusts per training",
+      "Activate EMS if not already done",
+      "Continue until object clears or patient becomes unresponsive",
+      "Give water first"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "feedback": "Severe choking requires obstruction care and EMS activation; do not give water."
+  },
+  {
+    "level": 120,
+    "type": "multi",
+    "category": "Level 120 EMR Select-All",
+    "question": "Q87. Which are appropriate for a seizure patient? Select all that apply.",
+    "answers": [
+      "Move dangerous objects away",
+      "Protect head if possible",
+      "Time the seizure",
+      "Do not place objects in mouth",
+      "Forcefully restrain"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "feedback": "Seizure care focuses on safety, timing, airway monitoring, and avoiding forceful restraint."
+  },
+  {
+    "level": 120,
+    "type": "multi",
+    "category": "Level 120 EMR Select-All",
+    "question": "Q88. Which actions help prevent disease transmission? Select all that apply.",
+    "answers": [
+      "Hand hygiene",
+      "Gloves for blood/body fluids",
+      "Eye protection if splashing possible",
+      "Proper sharps precautions if applicable",
+      "Skipping PPE when urgent"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "feedback": "Standard precautions reduce disease transmission."
+  },
+  {
+    "level": 120,
+    "type": "multi",
+    "category": "Level 120 EMR Select-All",
+    "question": "Q89. Which information is useful in handoff? Select all that apply.",
+    "answers": [
+      "Chief complaint",
+      "Mental status",
+      "Vital signs if obtained",
+      "Care provided and response",
+      "Personal opinion"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "feedback": "Handoff should include objective assessment, care, and response."
+  },
+  {
+    "level": 120,
+    "type": "multi",
+    "category": "Level 120 EMR Select-All",
+    "question": "Q90. Which findings suggest anaphylaxis? Select all that apply.",
+    "answers": [
+      "Wheezing after allergen exposure",
+      "Hives",
+      "Facial/tongue swelling",
+      "Low blood pressure or weakness",
+      "Isolated old scar"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "feedback": "Anaphylaxis may involve skin, airway, breathing, and circulation."
+  },
+  {
+    "level": 120,
+    "type": "matching",
+    "category": "Level 120 EMR Matching",
+    "question": "Q91. Match the assessment term with its meaning.",
+    "leftItems": [
+      "Cyanosis",
+      "Tachypnea",
+      "Diaphoresis",
+      "Hypoglycemia"
+    ],
+    "rightItems": [
+      "Bluish skin/mucous membranes",
+      "Rapid breathing",
+      "Sweating",
+      "Low blood sugar",
+      "High blood pressure"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "feedback": "Medical terms must be used accurately."
+  },
+  {
+    "level": 120,
+    "type": "matching",
+    "category": "Level 120 EMR Matching",
+    "question": "Q92. Match the EMS concept with the description.",
+    "leftItems": [
+      "EMR",
+      "EMT",
+      "Medical direction",
+      "Handoff report"
+    ],
+    "rightItems": [
+      "Immediate lifesaving care within scope",
+      "Higher-level provider than EMR",
+      "Physician oversight/protocol guidance",
+      "Transfer of patient information",
+      "Billing system"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "feedback": "EMS roles and communication support coordinated care."
+  },
+  {
+    "level": 120,
+    "type": "matching",
+    "category": "Level 120 EMR Matching",
+    "question": "Q93. Match the airway sound with the concern.",
+    "leftItems": [
+      "Gurgling",
+      "Stridor",
+      "Wheezing",
+      "Snoring"
+    ],
+    "rightItems": [
+      "Fluid/secretions in airway",
+      "Upper airway obstruction",
+      "Lower airway narrowing",
+      "Tongue/soft tissue obstruction",
+      "Normal breathing"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "feedback": "Airway sounds identify airway problems."
+  },
+  {
+    "level": 120,
+    "type": "matching",
+    "category": "Level 120 EMR Matching",
+    "question": "Q94. Match finding with likely concern.",
+    "leftItems": [
+      "Weak rapid pulse",
+      "Facial droop",
+      "Hot dry skin after heat exposure",
+      "Hives with wheezing"
+    ],
+    "rightItems": [
+      "Shock/poor perfusion",
+      "Stroke",
+      "Heat emergency",
+      "Anaphylaxis",
+      "Normal finding"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "feedback": "Pattern recognition helps identify high-priority conditions."
+  },
+  {
+    "level": 120,
+    "type": "matching",
+    "category": "Level 120 EMR Matching",
+    "question": "Q95. Match CPR concept with purpose.",
+    "leftItems": [
+      "Chest recoil",
+      "AED",
+      "Compression interruptions",
+      "Ventilations"
+    ],
+    "rightItems": [
+      "Allows heart to refill",
+      "Analyzes rhythm and may advise shock",
+      "Should be minimized",
+      "Support oxygenation/ventilation",
+      "Replaces all compressions"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "feedback": "CPR quality depends on recoil, AED, minimal pauses, and ventilations."
+  },
+  {
+    "level": 120,
+    "type": "matching",
+    "category": "Level 120 EMR Matching",
+    "question": "Q96. Match consent term with example.",
+    "leftItems": [
+      "Expressed consent",
+      "Implied consent",
+      "Refusal",
+      "Confidentiality"
+    ],
+    "rightItems": [
+      "Patient verbally agrees",
+      "Unconscious patient needs emergency care",
+      "Competent patient declines care",
+      "Protecting private information",
+      "Diagnosing disease"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "feedback": "Legal concepts guide emergency care."
+  },
+  {
+    "level": 120,
+    "type": "matching",
+    "category": "Level 120 EMR Matching",
+    "question": "Q97. Match age group with assessment consideration.",
+    "leftItems": [
+      "Infant",
+      "Preschool child",
+      "Adolescent",
+      "Older adult"
+    ],
+    "rightItems": [
+      "Poor feeding may signal illness",
+      "Caregiver presence may help",
+      "Privacy may improve sensitive history",
+      "May present atypically with illness",
+      "Always unable to consent"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "feedback": "Life span affects assessment."
+  },
+  {
+    "level": 120,
+    "type": "matching",
+    "category": "Level 120 EMR Matching",
+    "question": "Q98. Match emergency with EMR priority.",
+    "leftItems": [
+      "Severe bleeding",
+      "Cardiac arrest",
+      "Choking adult unable to speak",
+      "Possible stroke"
+    ],
+    "rightItems": [
+      "Control hemorrhage",
+      "CPR/AED",
+      "Abdominal thrusts per training",
+      "Recognize signs and activate EMS",
+      "Give oral fluids"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "feedback": "EMR priorities focus on lifesaving actions."
+  },
+  {
+    "level": 120,
+    "type": "matching",
+    "category": "Level 120 EMR Matching",
+    "question": "Q99. Match body system with role.",
+    "leftItems": [
+      "Respiratory system",
+      "Circulatory system",
+      "Nervous system",
+      "Musculoskeletal system"
+    ],
+    "rightItems": [
+      "Moves air and exchanges gases",
+      "Moves blood and oxygen",
+      "Controls body functions",
+      "Provides structure and movement",
+      "Produces urine only"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "feedback": "Basic anatomy supports assessment."
+  },
+  {
+    "level": 120,
+    "type": "matching",
+    "category": "Level 120 EMR Matching",
+    "question": "Q100. Match medication/support with common EMR concern.",
+    "leftItems": [
+      "Oral glucose",
+      "Epinephrine auto-injector",
+      "Aspirin",
+      "Oxygen/ventilation support"
+    ],
+    "rightItems": [
+      "Hypoglycemia if able to swallow",
+      "Severe allergic reaction per protocol",
+      "Possible cardiac chest pain if allowed",
+      "Respiratory distress/inadequate breathing",
+      "All abdominal pain"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "feedback": "Medication/support decisions follow EMR training and protocol."
+  }
+];
+
+let currentLevel = 120;
+let questionNumber = 0;
+let score = 0;
+let partialScore = 0;
+let maxQuestions = 100;
+let currentQuestion;
+let usedQuestions = [];
+
+function shuffleArray(array) {
+  return array
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+}
+
+function getQuestionByLevel(level) {
+  let available = questions.filter(q =>
+    q.level === level && !usedQuestions.includes(q.question)
+  );
+
+  if (available.length === 0) {
+    available = questions.filter(q => !usedQuestions.includes(q.question));
+  }
+
+  if (available.length === 0) {
+    finishExam();
+    return null;
+  }
+
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+function loadQuestion() {
+  if (questionNumber >= maxQuestions) {
+    finishExam();
+    return;
+  }
+
+  currentQuestion = getQuestionByLevel(currentLevel);
+  if (!currentQuestion) return;
+
+  usedQuestions.push(currentQuestion.question);
+
+  document.getElementById("status").innerText =
+    "Question " + (questionNumber + 1) +
+    " of " + maxQuestions +
+    " | EMR Difficulty: Level " + currentLevel +
+    " | Score: " + score +
+    " | Partially Correct: " + partialScore;
+
+  document.getElementById("question").innerHTML =
+    "<div class='category'>Category: " + (currentQuestion.category || "EMR") + "</div>" +
+    "<strong>" + currentQuestion.question + "</strong>";
+
+  document.getElementById("answers").innerHTML = "";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "none";
+  document.getElementById("submitBtn").style.display = "none";
+
+  if (currentQuestion.type === "single") {
+    loadSingleQuestion();
+  } else if (currentQuestion.type === "multi") {
+    loadMultiQuestion();
+  } else if (currentQuestion.type === "matching") {
+    loadMatchingQuestion();
+  }
+}
+
+function loadSingleQuestion() {
+  const answersDiv = document.getElementById("answers");
+  const shuffledAnswers = shuffleArray(
+    currentQuestion.answers.map((answer, index) => ({
+      text: answer,
+      originalIndex: index
+    }))
+  );
+
+  shuffledAnswers.forEach(answerObj => {
+    answersDiv.innerHTML += `
+      <button onclick="checkSingleAnswer(${answerObj.originalIndex}, this)">
+        ${answerObj.text}
+      </button>
+    `;
+  });
+}
+
+function loadMultiQuestion() {
+  const answersDiv = document.getElementById("answers");
+  const shuffledAnswers = shuffleArray(
+    currentQuestion.answers.map((answer, index) => ({
+      text: answer,
+      originalIndex: index
+    }))
+  );
+
+  shuffledAnswers.forEach(answerObj => {
+    answersDiv.innerHTML += `
+      <label class="checkbox-answer">
+        <input type="checkbox" value="${answerObj.originalIndex}">
+        ${answerObj.text}
+      </label>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function loadMatchingQuestion() {
+  const answersDiv = document.getElementById("answers");
+
+  currentQuestion.leftItems.forEach((leftItem, leftIndex) => {
+    const shuffledOptions = shuffleArray(
+      currentQuestion.rightItems.map((rightItem, rightIndex) => ({
+        text: rightItem,
+        originalIndex: rightIndex
+      }))
+    );
+
+    let options = `<option value="">Choose match</option>`;
+
+    shuffledOptions.forEach(option => {
+      options += `
+        <option value="${option.originalIndex}">
+          ${option.text}
+        </option>
+      `;
+    });
+
+    answersDiv.innerHTML += `
+      <div class="matching-row">
+        <div class="matching-left">${leftItem}</div>
+        <select data-left-index="${leftIndex}">
+          ${options}
+        </select>
+      </div>
+    `;
+  });
+
+  document.getElementById("submitBtn").style.display = "block";
+}
+
+function checkSingleAnswer(selected, clickedButton) {
+  const feedback = document.getElementById("feedback");
+  const buttons = document.querySelectorAll("#answers button");
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+
+  if (selected === currentQuestion.bestCorrect) {
+    score++;
+    clickedButton.style.background = "darkgreen";
+    feedback.innerHTML = "<strong>Answer submitted.</strong>";
+  } else if (selected === currentQuestion.partialCorrect) {
+    partialScore++;
+    clickedButton.style.background = "orange";
+    feedback.innerHTML = "<strong>Answer submitted.</strong>";
+  } else {
+    clickedButton.style.background = "darkred";
+    feedback.innerHTML = "<strong>Answer submitted.</strong>";
+  }
+
+  feedback.style.display = "block";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function submitAnswer() {
+  if (currentQuestion.type === "multi") {
+    checkMultiAnswer();
+  } else if (currentQuestion.type === "matching") {
+    checkMatchingAnswer();
+  }
+}
+
+function checkMultiAnswer() {
+  const checked = Array.from(
+    document.querySelectorAll('#answers input[type="checkbox"]:checked')
+  ).map(cb => Number(cb.value));
+
+  const correct =
+    checked.length === currentQuestion.correct.length &&
+    checked.every(value => currentQuestion.correct.includes(value));
+
+  const feedback = document.getElementById("feedback");
+  const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
+
+  checkboxes.forEach(cb => {
+    cb.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+  }
+
+  feedback.innerHTML = "<strong>Answer submitted.</strong>";
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function checkMatchingAnswer() {
+  const selects = document.querySelectorAll("#answers select");
+  const selectedAnswers = Array.from(selects).map(select => Number(select.value));
+
+  const allAnswered = selectedAnswers.every(answer => !Number.isNaN(answer));
+
+  const correct =
+    allAnswered &&
+    selectedAnswers.length === currentQuestion.correct.length &&
+    selectedAnswers.every((value, index) => value === currentQuestion.correct[index]);
+
+  const feedback = document.getElementById("feedback");
+
+  selects.forEach(select => {
+    select.disabled = true;
+  });
+
+  if (correct) {
+    score++;
+  }
+
+  feedback.innerHTML = "<strong>Answer submitted.</strong>";
+  feedback.style.display = "block";
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function nextQuestion() {
+  questionNumber++;
+  loadQuestion();
+}
+
+function finishExam() {
+  document.getElementById("question").innerHTML =
+    "<h2>Exam Complete</h2>";
+
+  document.getElementById("answers").innerHTML = "";
+
+  let result = "";
+
+  if (score >= 85) {
+    result = "Excellent. You demonstrated strong EMR-level critical thinking across Chapters 1 through 16.";
+  } else if (score >= 70) {
+    result = "Good. Continue reviewing assessment sequence, airway, CPR/AED, shock, respiratory emergencies, cardiac emergencies, medical emergencies, and EMR scope.";
+  } else {
+    result = "Needs remediation. Focus on scene safety, consent, communication, patient assessment, airway, CPR/AED, shock recognition, and early EMS activation.";
+  }
+
+  document.getElementById("feedback").style.display = "block";
+  document.getElementById("feedback").innerHTML =
+    "<strong>Final Score:</strong> " + score + " / " + maxQuestions +
+    "<br><br><strong>Partially Correct Answers:</strong> " + partialScore +
+    "<br><br><strong>EMR Difficulty:</strong> Level " + currentLevel +
+    "<br><br>" + result;
+
+  document.getElementById("status").innerText =
+    "100-Question EMR Level 120 Exam Finished";
+
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("restartBtn").style.display = "block";
+}
+
+function restartExam() {
+  currentLevel = 120;
+  questionNumber = 0;
+  score = 0;
+  partialScore = 0;
+  usedQuestions = [];
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
