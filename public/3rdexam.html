@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>120-Question EMT Level 180 Exam</title>
+  <title>120-Question EMT Exam</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -39,7 +39,7 @@
       text-align: left;
     }
     button:hover { background: darkgreen; }
-    #submitBtn, #nextBtn, #restartBtn {
+    #submitBtn, #nextBtn {
       background: #0066cc;
       text-align: center;
       display: none;
@@ -108,8 +108,7 @@
     <div id="answers"></div>
     <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
     <div id="feedback"></div>
-    <button id="nextBtn" onclick="nextQuestion()">Next Question</button>
-    <button id="restartBtn" onclick="restartExam()">Restart Exam</button>
+    <button id="nextBtn" onclick="nextQuestion()" style="display:none;">Next Question</button>
   </div>
 </div>
 
@@ -127,10 +126,7 @@ const questions = [
       "Move the patient before assessing hazards"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 2,
-    "reasonBest": "Scene safety is the first priority. EMTs should not enter an unsafe scene and should request appropriate resources.",
-    "feedbackPartial": "SAMPLE history is useful later, but it does not come before scene safety.",
-    "feedbackWrong": "Entering an unsafe scene can create more patients."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -144,10 +140,7 @@ const questions = [
       "Ignore the concern and transport without treatment"
     ],
     "bestCorrect": 1,
-    "partialCorrect": 3,
-    "reasonBest": "EMTs must operate within scope, training, local protocol, and medical direction.",
-    "feedbackPartial": "Transport is important, but it does not replace protocol-based decision making.",
-    "feedbackWrong": "Patient or family request does not authorize care outside scope."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -161,10 +154,7 @@ const questions = [
       "Transport without reassessment"
     ],
     "bestCorrect": 1,
-    "partialCorrect": 3,
-    "reasonBest": "When ALS may benefit the patient, request ALS while continuing BLS care and transport decisions according to protocol.",
-    "feedbackPartial": "Transport may still be needed, but reassessment and appropriate resources matter.",
-    "feedbackWrong": "Do not delay or cancel needed resources without reason."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -178,10 +168,7 @@ const questions = [
       "Place your face close to hear breath sounds"
     ],
     "bestCorrect": 1,
-    "partialCorrect": 3,
-    "reasonBest": "Provider safety requires appropriate PPE and limiting exposure while still caring for the patient.",
-    "feedbackPartial": "Assessment is important, but it should be done safely.",
-    "feedbackWrong": "Avoid unnecessary exposure to infectious droplets or aerosols."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -195,10 +182,7 @@ const questions = [
       "This proves the EMT made a clinical error"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 2,
-    "reasonBest": "Stress reactions can occur after difficult calls. Early support, peer resources, and professional help when needed are appropriate.",
-    "feedbackPartial": "Time alone may not resolve significant stress; support should be encouraged.",
-    "feedbackWrong": "Stress symptoms do not automatically mean incompetence or error."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -212,10 +196,7 @@ const questions = [
       "Complete the lift quickly despite poor mechanics"
     ],
     "bestCorrect": 1,
-    "partialCorrect": 3,
-    "reasonBest": "Safe lifting protects providers and patients. Stop if safe and correct technique.",
-    "feedbackPartial": "Finishing quickly does not reduce injury risk.",
-    "feedbackWrong": "Poor body mechanics increase injury risk."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -229,10 +210,7 @@ const questions = [
       "Argue until the patient agrees"
     ],
     "bestCorrect": 1,
-    "partialCorrect": 2,
-    "reasonBest": "A patient must have decision-making capacity to refuse. Confusion may require implied consent and medical direction/police assistance per protocol.",
-    "feedbackPartial": "Family input matters but does not automatically make an unsafe refusal valid.",
-    "feedbackWrong": "A confused patient may not have capacity for informed refusal."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -246,10 +224,7 @@ const questions = [
       "Tell the patient they are legally required to go"
     ],
     "bestCorrect": 1,
-    "partialCorrect": 0,
-    "reasonBest": "A competent patient may refuse care. EMTs should assess capacity, explain risks, involve protocol resources, and document.",
-    "feedbackPartial": "Chest pain is serious, but competent adults can refuse care.",
-    "feedbackWrong": "Do not abandon documentation or misstate legal authority."
+    "partialCorrect": 0
   },
   {
     "level": 180,
@@ -263,10 +238,7 @@ const questions = [
       "Required public education"
     ],
     "bestCorrect": 1,
-    "partialCorrect": 0,
-    "reasonBest": "Patient-identifying details can violate confidentiality even without the patient's name.",
-    "feedbackPartial": "Removing a name alone may not protect privacy.",
-    "feedbackWrong": "EMS providers must protect confidentiality."
+    "partialCorrect": 0
   },
   {
     "level": 180,
@@ -280,10 +252,7 @@ const questions = [
       "Names of all bystanders"
     ],
     "bestCorrect": 1,
-    "partialCorrect": 2,
-    "reasonBest": "A concise report should include information that helps the receiving facility prepare for care.",
-    "feedbackPartial": "History can be useful, but unstable trauma reports prioritize critical findings.",
-    "feedbackWrong": "Nonclinical details should not replace critical patient information."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -297,10 +266,7 @@ const questions = [
       "Ignore it because verbal report was given"
     ],
     "bestCorrect": 1,
-    "partialCorrect": 3,
-    "reasonBest": "Documentation should be accurate and corrected according to policy.",
-    "feedbackPartial": "Verbal report does not replace accurate written documentation.",
-    "feedbackWrong": "Do not falsify or ignore documentation errors."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -314,10 +280,7 @@ const questions = [
       "Only the patient's medications"
     ],
     "bestCorrect": 1,
-    "partialCorrect": 0,
-    "reasonBest": "Receiving facilities need updated changes, current vitals, and response to treatment.",
-    "feedbackPartial": "The original complaint alone is incomplete when the condition changes.",
-    "feedbackWrong": "Failure to update may affect continuity of care."
+    "partialCorrect": 0
   },
   {
     "level": 180,
@@ -331,10 +294,7 @@ const questions = [
       "Normal skin, normal breathing, and anxiety"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 2,
-    "reasonBest": "Cyanosis is bluish discoloration, tachypnea is rapid breathing, and diaphoresis is sweating.",
-    "feedbackPartial": "Some symptoms may coexist, but the terms have specific meanings.",
-    "feedbackWrong": "Medical terminology must be interpreted precisely."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -348,10 +308,7 @@ const questions = [
       "Between the shoulder blades only"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Substernal refers to pain beneath or behind the sternum.",
-    "feedbackPartial": "Radiation may go elsewhere, but substernal identifies the chest location.",
-    "feedbackWrong": "Substernal is a specific anatomic location."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -365,10 +322,7 @@ const questions = [
       "Painful"
     ],
     "bestCorrect": 1,
-    "partialCorrect": 0,
-    "reasonBest": "Hypo- means low; hypoglycemia means low blood glucose.",
-    "feedbackPartial": "Hyper- means high, not hypo-.",
-    "feedbackWrong": "Prefixes change the meaning of medical terms."
+    "partialCorrect": 0
   },
   {
     "level": 180,
@@ -382,10 +336,7 @@ const questions = [
       "Reproductive system"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 2,
-    "reasonBest": "The brain is highly sensitive to poor oxygen and glucose delivery, causing altered mental status.",
-    "feedbackPartial": "Skin changes may also occur, but confusion reflects neurologic compromise.",
-    "feedbackWrong": "Altered mental status is a major perfusion warning sign."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -399,10 +350,7 @@ const questions = [
       "Carina"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "The epiglottis helps cover the tracheal opening during swallowing.",
-    "feedbackPartial": "The carina is where the trachea branches, not the swallowing guard.",
-    "feedbackWrong": "Airway anatomy is important for aspiration risk."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -416,10 +364,7 @@ const questions = [
       "Digest carbohydrates"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Ventilation is the movement of air into and out of the lungs.",
-    "feedbackPartial": "Oxygen transport by blood matters, but ventilation is air movement.",
-    "feedbackWrong": "Inadequate ventilation can lead to hypoxia and hypercarbia."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -433,10 +378,7 @@ const questions = [
       "Only chest pain"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Older adults may show infection with confusion, weakness, or functional decline, sometimes without high fever.",
-    "feedbackPartial": "Chest pain can occur, but confusion/weakness may be key in geriatrics.",
-    "feedbackWrong": "Atypical presentations are common in older adults."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -450,10 +392,7 @@ const questions = [
       "Use complex medical explanations"
     ],
     "bestCorrect": 1,
-    "partialCorrect": 0,
-    "reasonBest": "Young children often cooperate better with a calm approach and caregiver support.",
-    "feedbackPartial": "Separation may increase anxiety unless necessary.",
-    "feedbackWrong": "Developmental stage affects assessment technique."
+    "partialCorrect": 0
   },
   {
     "level": 180,
@@ -467,10 +406,7 @@ const questions = [
       "Assessment should stop"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 2,
-    "reasonBest": "Adolescents may disclose sensitive information more accurately with appropriate privacy.",
-    "feedbackPartial": "Parents are important, but sensitive history may require privacy.",
-    "feedbackWrong": "Development and privacy affect patient assessment."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -484,10 +420,7 @@ const questions = [
       "Simple anxiety"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Sepsis can cause distributive shock from vasodilation and capillary leak.",
-    "feedbackPartial": "Anxiety may coexist, but hypotension with infection suggests shock.",
-    "feedbackWrong": "Pathophysiology helps identify shock type."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -501,10 +434,7 @@ const questions = [
       "Wheezing volume always reflects improvement"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Less wheezing with declining mental status may indicate poor air movement and impending respiratory failure.",
-    "feedbackPartial": "Less noise can be dangerous when airflow is decreasing.",
-    "feedbackWrong": "Trends matter more than one isolated finding."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -518,10 +448,7 @@ const questions = [
       "Become stronger without perfusion"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Shock is inadequate tissue perfusion, causing poor oxygen/nutrient delivery and waste removal.",
-    "feedbackPartial": "Excess oxygen is not the primary issue in shock.",
-    "feedbackWrong": "Cellular hypoxia leads to organ dysfunction."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -535,10 +462,7 @@ const questions = [
       "Lift using your back because space is limited"
     ],
     "bestCorrect": 1,
-    "partialCorrect": 0,
-    "reasonBest": "Non-emergency moves should be planned with adequate help and safe technique.",
-    "feedbackPartial": "Dragging is reserved for urgent danger or life threat, not convenience.",
-    "feedbackWrong": "Safe movement prevents injury."
+    "partialCorrect": 0
   },
   {
     "level": 180,
@@ -552,10 +476,7 @@ const questions = [
       "Minor ankle pain"
     ],
     "bestCorrect": 1,
-    "partialCorrect": 2,
-    "reasonBest": "Emergency moves are for immediate threats such as fire, explosion, or inability to access life-saving care.",
-    "feedbackPartial": "Convenience or history-taking is not enough.",
-    "feedbackWrong": "Emergency moves carry risk and require justification."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -569,10 +490,7 @@ const questions = [
       "Lift alone if the patient is small"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Keeping the load close and lifting with legs reduces injury risk.",
-    "feedbackPartial": "Even small patients may require help depending on situation.",
-    "feedbackWrong": "Body mechanics are essential for EMS safety."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -586,10 +504,7 @@ const questions = [
       "Insurance information"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Severe respiratory distress requires immediate airway and breathing assessment/intervention.",
-    "feedbackPartial": "Medication history is useful but not first in an unstable patient.",
-    "feedbackWrong": "Life threats are addressed before detailed history."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -603,10 +518,7 @@ const questions = [
       "Allowing the patient to sleep"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 2,
-    "reasonBest": "Declining mental status may indicate hypoxia, shock, or brain injury and requires reassessment.",
-    "feedbackPartial": "Fatigue is possible but must not be assumed.",
-    "feedbackWrong": "Trends in mental status are critical."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -620,10 +532,7 @@ const questions = [
       "No need for vital signs"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 2,
-    "reasonBest": "Absent radial pulse with central pulse and altered mental status suggests poor perfusion.",
-    "feedbackPartial": "Anxiety does not explain absent radial pulses by itself.",
-    "feedbackWrong": "Pulse quality and location provide perfusion clues."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -637,10 +546,7 @@ const questions = [
       "Obtain blood pressure"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Gurgling and vomit indicate airway contamination; suction is needed.",
-    "feedbackPartial": "Oxygen may be needed after clearing the airway.",
-    "feedbackWrong": "Airway obstruction is an immediate life threat."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -654,10 +560,7 @@ const questions = [
       "Aspirin"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "An OPA is used in unresponsive patients without a gag reflex.",
-    "feedbackPartial": "Oral glucose requires the ability to swallow.",
-    "feedbackWrong": "Airway adjunct choice depends on responsiveness and gag reflex."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -671,10 +574,7 @@ const questions = [
       "Only obtain SAMPLE history"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Airway contamination and inadequate breathing require suction, airway management, and ventilation support.",
-    "feedbackPartial": "History is delayed until immediate life threats are managed.",
-    "feedbackWrong": "Airway and breathing come first."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -688,10 +588,7 @@ const questions = [
       "Respiratory arrest"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 2,
-    "reasonBest": "Early shock may present with tachycardia, restlessness, pale cool skin, and normal BP.",
-    "feedbackPartial": "Anxiety may be present but does not explain poor perfusion signs.",
-    "feedbackWrong": "Do not wait for hypotension to recognize shock."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -705,10 +602,7 @@ const questions = [
       "Neurogenic shock only"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Anaphylaxis is a distributive shock process involving vasodilation, capillary leak, and bronchoconstriction.",
-    "feedbackPartial": "Neurogenic shock is also distributive but is not the cause here.",
-    "feedbackWrong": "Allergic exposure with hives/wheezing/hypotension suggests anaphylaxis."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -722,10 +616,7 @@ const questions = [
       "Pain decreasing after splinting"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Rising heart rate and worsening mental status indicate worsening perfusion.",
-    "feedbackPartial": "Pain reduction is good but does not outweigh shock trends.",
-    "feedbackWrong": "Trending vitals is essential."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -739,10 +630,7 @@ const questions = [
       "Ignore the medication history"
     ],
     "bestCorrect": 1,
-    "partialCorrect": 0,
-    "reasonBest": "Recent erectile dysfunction medication is a contraindication to nitroglycerin due to risk of severe hypotension.",
-    "feedbackPartial": "Persistent chest pain does not override contraindications.",
-    "feedbackWrong": "Medication history affects EMT decisions."
+    "partialCorrect": 0
   },
   {
     "level": 180,
@@ -756,10 +644,7 @@ const questions = [
       "Epinephrine auto-injector"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Aspirin may be indicated for suspected ACS if no contraindications and protocol allows.",
-    "feedbackPartial": "Oral glucose is for hypoglycemia, not routine ACS.",
-    "feedbackWrong": "Medication assistance must follow protocol."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -773,10 +658,7 @@ const questions = [
       "Nothing until unconscious"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Oral glucose is appropriate for hypoglycemia when the patient can swallow and protocol allows.",
-    "feedbackPartial": "Waiting may allow deterioration.",
-    "feedbackWrong": "Treat reversible causes when safe."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -790,10 +672,7 @@ const questions = [
       "Ask a full SAMPLE history first"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Inadequate breathing requires assisted ventilation with oxygen.",
-    "feedbackPartial": "Oxygen alone may not correct inadequate ventilation.",
-    "feedbackWrong": "COPD is not a reason to withhold oxygen."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -807,10 +686,7 @@ const questions = [
       "Mild bronchitis"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Sudden dyspnea, pleuritic pain, tachycardia, and DVT signs suggest pulmonary embolism.",
-    "feedbackPartial": "Anxiety can mimic dyspnea, but the risk pattern is concerning for PE.",
-    "feedbackWrong": "This is a high-risk presentation."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -824,10 +700,7 @@ const questions = [
       "Resolved bronchospasm"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Decreasing respiratory effort and drowsiness after severe distress suggest fatigue and respiratory failure.",
-    "feedbackPartial": "Quiet chest may mean poor airflow, not improvement.",
-    "feedbackWrong": "Do not mistake fatigue for recovery."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -841,10 +714,7 @@ const questions = [
       "Have the patient stand to raise BP"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Hypotension is a contraindication to additional nitroglycerin. Treat poor perfusion and transport.",
-    "feedbackPartial": "Persistent pain does not override hypotension.",
-    "feedbackWrong": "Nitroglycerin can worsen hypotension."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -858,10 +728,7 @@ const questions = [
       "No need for aspirin consideration"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "ACS symptoms can improve and still represent a serious cardiac event.",
-    "feedbackPartial": "Medication decisions depend on protocol and contraindications, not denial alone.",
-    "feedbackWrong": "Do not dismiss transient cardiac symptoms."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -875,10 +742,7 @@ const questions = [
       "Obtain blood pressure"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "After shock, resume CPR immediately unless signs of life are present.",
-    "feedbackPartial": "Pulse checks should be brief and timed per protocol.",
-    "feedbackWrong": "Minimizing compression interruption is critical."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -892,10 +756,7 @@ const questions = [
       "Have the patient walk"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 2,
-    "reasonBest": "Stroke recognition, last known well, glucose consideration, and rapid transport are priorities.",
-    "feedbackPartial": "Glucose matters, but oral glucose requires indication and safe swallowing.",
-    "feedbackWrong": "Do not delay suspected stroke care."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -909,10 +770,7 @@ const questions = [
       "Give water immediately"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Postictal care includes ABCs, safety, glucose consideration, and monitoring.",
-    "feedbackPartial": "Oral intake is unsafe until fully alert and able to swallow.",
-    "feedbackWrong": "Do not place objects in the mouth or restrain forcefully."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -926,10 +784,7 @@ const questions = [
       "Only intoxication"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Unequal pupils, vomiting, and declining GCS suggest neurologic deterioration.",
-    "feedbackPartial": "Intoxication can coexist, but trauma deterioration must be treated seriously.",
-    "feedbackWrong": "This patient is high priority."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -943,10 +798,7 @@ const questions = [
       "Urinary tract infection"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 2,
-    "reasonBest": "Hematemesis with poor perfusion signs suggests GI bleeding and shock.",
-    "feedbackPartial": "Vomiting can be benign, but blood and shock signs are high risk.",
-    "feedbackWrong": "Perfusion status determines priority."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -960,10 +812,7 @@ const questions = [
       "Routine transport with no monitoring"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Missed dialysis can cause fluid overload and dangerous electrolyte imbalance.",
-    "feedbackPartial": "Transport may be needed, but monitoring and reassessment are important.",
-    "feedbackWrong": "Renal failure patients can deteriorate quickly."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -977,10 +826,7 @@ const questions = [
       "Delay transport for full meal history"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Guarding with shock signs suggests a potentially serious abdominal emergency requiring shock care and transport.",
-    "feedbackPartial": "History matters but should not delay care.",
-    "feedbackWrong": "Do not give oral fluids to unstable abdominal pain patients."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -994,10 +840,7 @@ const questions = [
       "Treat only as stroke"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Hypoglycemia with safe swallowing can be treated with oral glucose per protocol.",
-    "feedbackPartial": "Stroke can mimic hypoglycemia, but the low glucose should be addressed.",
-    "feedbackWrong": "Hypoglycemia is a reversible cause of altered mental status."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -1011,10 +854,7 @@ const questions = [
       "Give no oxygen regardless of SpO2"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 2,
-    "reasonBest": "Sickle cell crisis can involve pain, hypoxia, and serious complications. Support ABCs and transport.",
-    "feedbackPartial": "Pain assessment matters, but ABCs and oxygenation are priority.",
-    "feedbackWrong": "Do not dismiss reported pain."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -1028,10 +868,7 @@ const questions = [
       "Ignore diabetes history"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Unconscious patients require ABC assessment and glucose check if available. Oral glucose is unsafe if unable to swallow.",
-    "feedbackPartial": "Oral glucose requires an awake patient who can swallow.",
-    "feedbackWrong": "ABCs come first."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -1045,10 +882,7 @@ const questions = [
       "Give oral fluids first"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Airway, breathing, and perfusion findings after allergen exposure indicate anaphylaxis.",
-    "feedbackPartial": "Anxiety may occur, but wheezing and hypotension make anaphylaxis high priority.",
-    "feedbackWrong": "Do not delay anaphylaxis care."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -1062,10 +896,7 @@ const questions = [
       "Remove oxygen"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Anaphylaxis can recur or worsen. Continued monitoring and transport are indicated.",
-    "feedbackPartial": "Improvement does not eliminate the need for evaluation.",
-    "feedbackWrong": "Do not assume the emergency is over."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -1079,10 +910,7 @@ const questions = [
       "Sneezing with normal breathing"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Hoarseness and trouble swallowing may indicate airway swelling.",
-    "feedbackPartial": "Localized itching is less concerning than airway involvement.",
-    "feedbackWrong": "Airway involvement is high priority."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -1096,10 +924,7 @@ const questions = [
       "Have the patient walk"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 2,
-    "reasonBest": "Opioid overdose priority is airway and ventilation support, with naloxone according to protocol.",
-    "feedbackPartial": "Glucose may be considered, but ventilation is the immediate threat.",
-    "feedbackWrong": "Respiratory depression kills quickly."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -1113,10 +938,7 @@ const questions = [
       "Simple anxiety"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "SLUDGE-like findings with bronchorrhea/wheezing suggest cholinergic poisoning.",
-    "feedbackPartial": "Opioids cause respiratory depression and miosis, but not the full cholinergic pattern.",
-    "feedbackWrong": "Toxidrome recognition guides safety and care."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -1130,10 +952,7 @@ const questions = [
       "Delay oxygen until CO level is measured"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "CO is dangerous to patients and providers. Remove from exposure, use PPE/resources, and provide oxygen per protocol.",
-    "feedbackPartial": "CO measurement helps but should not delay removal and care.",
-    "feedbackWrong": "Multiple similar symptoms in one location suggest environmental exposure."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -1147,10 +966,7 @@ const questions = [
       "Valid refusal"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Abnormal vital signs and confusion suggest medical causes such as infection, hypoxia, hypoglycemia, or toxidrome.",
-    "feedbackPartial": "Psychiatric causes are possible but not the only concern.",
-    "feedbackWrong": "Medical causes must not be missed."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -1164,10 +980,7 @@ const questions = [
       "Tell the patient it is illegal to say that"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 2,
-    "reasonBest": "Suicidal threats require serious assessment, safety precautions, and appropriate resources.",
-    "feedbackPartial": "Family may help but does not eliminate EMT responsibility.",
-    "feedbackWrong": "Do not dismiss suicide risk."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -1181,10 +994,7 @@ const questions = [
       "Argue that the fear is irrational"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "De-escalation uses calm communication, distance, non-threatening posture, and safety.",
-    "feedbackPartial": "Arguing usually escalates paranoia.",
-    "feedbackWrong": "Provider safety comes first."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -1198,10 +1008,7 @@ const questions = [
       "No emergency if bleeding is light"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Abdominal pain and bleeding after missed period may indicate ectopic pregnancy, which can cause life-threatening internal bleeding.",
-    "feedbackPartial": "Bleeding amount may not reflect internal hemorrhage.",
-    "feedbackWrong": "Treat as potentially serious."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -1215,10 +1022,7 @@ const questions = [
       "Allow showering before assessment"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Care should be trauma-informed, medically focused, evidence-conscious, and consistent with laws/protocols.",
-    "feedbackPartial": "Detailed questioning can worsen trauma and is not the EMT role beyond necessary medical assessment.",
-    "feedbackWrong": "Respect, safety, and protocol matter."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -1232,10 +1036,7 @@ const questions = [
       "Place supine regardless of gestational age"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Maternal stabilization is the best way to protect the fetus. Treat maternal ABCs and shock.",
-    "feedbackPartial": "Positioning may need left lateral tilt to reduce vena cava compression.",
-    "feedbackWrong": "Maternal life threats come first."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -1249,10 +1050,7 @@ const questions = [
       "Breech birth"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Turtle sign after head delivery suggests shoulder dystocia.",
-    "feedbackPartial": "This is not normal progression and requires urgent protocol-based action and rapid transport.",
-    "feedbackWrong": "Recognizing complications is critical."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -1266,10 +1064,7 @@ const questions = [
       "Give oral fluids only"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Left lateral positioning can relieve vena cava compression and improve venous return.",
-    "feedbackPartial": "Oral fluids alone do not correct vena cava compression.",
-    "feedbackWrong": "Supine hypotensive syndrome is an EMT concern."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -1283,10 +1078,7 @@ const questions = [
       "Start chest compressions immediately before ventilation"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 2,
-    "reasonBest": "Newborn with apnea and HR below 100 needs positive-pressure ventilation.",
-    "feedbackPartial": "Drying/warming is important but insufficient if apneic with HR 80.",
-    "feedbackWrong": "Ventilation is the priority in neonatal resuscitation."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -1300,10 +1092,7 @@ const questions = [
       "Anxiety only"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Bradycardia and lethargy in a distressed child are late signs of respiratory failure/hypoxia.",
-    "feedbackPartial": "Quiet behavior may represent exhaustion, not improvement.",
-    "feedbackWrong": "Pediatric deterioration can be rapid."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -1317,10 +1106,7 @@ const questions = [
       "No concern if crying"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Nasal flaring, grunting, retractions, and poor feeding are signs of respiratory distress in infants.",
-    "feedbackPartial": "Crying does not rule out distress.",
-    "feedbackWrong": "Pediatric respiratory signs may be subtle."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -1334,10 +1120,7 @@ const questions = [
       "Wait for ALS"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Unresponsive pulseless choking patients require CPR; remove visible objects when seen.",
-    "feedbackPartial": "Blind finger sweeps can push an object deeper.",
-    "feedbackWrong": "Do not delay CPR."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -1351,10 +1134,7 @@ const questions = [
       "Refusal is automatically valid"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Anticoagulants increase risk of serious bleeding after falls, and confusion may indicate head injury.",
-    "feedbackPartial": "Confusion may impair refusal capacity.",
-    "feedbackWrong": "Geriatric trauma can be subtle."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -1368,10 +1148,7 @@ const questions = [
       "Tachycardia"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 2,
-    "reasonBest": "Older adults may have serious infection without high fever.",
-    "feedbackPartial": "Weakness and altered mental status may be prominent.",
-    "feedbackWrong": "Atypical presentation is common."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -1385,10 +1162,7 @@ const questions = [
       "Ignore medication list"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Multiple medications can cause dizziness, hypotension, confusion, or interactions.",
-    "feedbackPartial": "Medication history is important in geriatrics.",
-    "feedbackWrong": "Polypharmacy affects assessment."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -1402,10 +1176,7 @@ const questions = [
       "Ignore pain if the patient cannot describe it"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Caregivers can help determine baseline, but the EMT still performs assessment for illness/injury.",
-    "feedbackPartial": "Baseline behavior must be confirmed, not assumed.",
-    "feedbackWrong": "Communication barriers do not eliminate pain or emergency risk."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -1419,10 +1190,7 @@ const questions = [
       "Remove the tube without protocol"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "A tracheostomy can obstruct with secretions. Assessment and suction/oxygen per protocol may be needed.",
-    "feedbackPartial": "Oxygen delivery may need to address the stoma/trach.",
-    "feedbackWrong": "Special airway devices require adapted assessment."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -1436,10 +1204,7 @@ const questions = [
       "Transport without ventilatory support"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 2,
-    "reasonBest": "Patient oxygenation and ventilation are the priority; use BVM if ventilator failure or inadequate breathing occurs.",
-    "feedbackPartial": "Family may help, but EMTs must treat life threats.",
-    "feedbackWrong": "Device alarms require patient assessment."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -1453,10 +1218,7 @@ const questions = [
       "Isolated muscle strain"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 2,
-    "reasonBest": "Internal hemorrhage can cause shock without visible bleeding.",
-    "feedbackPartial": "Anxiety may accompany shock but should not explain perfusion signs.",
-    "feedbackWrong": "Hidden bleeding is a major trauma concern."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -1470,10 +1232,7 @@ const questions = [
       "Low blood sugar only"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Unequal breath sounds with respiratory distress and shock after chest trauma suggests life-threatening chest injury.",
-    "feedbackPartial": "Rib injury may exist, but the physiologic compromise is more serious.",
-    "feedbackWrong": "Transport and supportive care are priorities."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -1487,10 +1246,7 @@ const questions = [
       "Give oral fluids"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Impaled objects are generally stabilized in place and removed at the hospital unless they obstruct CPR/airway.",
-    "feedbackPartial": "Removal can worsen bleeding.",
-    "feedbackWrong": "Field care minimizes movement and contamination."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -1504,10 +1260,7 @@ const questions = [
       "Patient age"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Absent distal pulse indicates possible limb-threatening neurovascular compromise.",
-    "feedbackPartial": "Pain matters, but circulation is the priority concern.",
-    "feedbackWrong": "Assess pulse, motor, sensation before/after splinting."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -1521,10 +1274,7 @@ const questions = [
       "Minor bruise only"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Femur fractures can cause significant internal blood loss even when closed.",
-    "feedbackPartial": "Bruising may exist, but perfusion signs suggest shock.",
-    "feedbackWrong": "Closed fractures can still be serious."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -1538,10 +1288,7 @@ const questions = [
       "Only pupil size"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "PMS should be checked before and after splinting.",
-    "feedbackPartial": "Pain is important but not enough.",
-    "feedbackWrong": "Neurovascular status must be tracked."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -1555,10 +1302,7 @@ const questions = [
       "12"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "Eyes to pain = 2, inappropriate words = 3, withdraws = 4. Total = 9.",
-    "feedbackPartial": "A score of 10 would require one higher component.",
-    "feedbackWrong": "Add eye, verbal, and motor responses."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -1572,10 +1316,7 @@ const questions = [
       "No concern if pulse is normal"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Falling GCS and vomiting after head injury suggest worsening neurologic status.",
-    "feedbackPartial": "Normal pulse does not rule out brain injury.",
-    "feedbackWrong": "Trend changes are critical."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -1589,10 +1330,7 @@ const questions = [
       "8"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 1,
-    "reasonBest": "No eye opening = 1, incomprehensible sounds = 2, extension = 2. Total = 5.",
-    "feedbackPartial": "A score of 6 would require one component to be higher.",
-    "feedbackWrong": "Calculate E + V + M."
+    "partialCorrect": 1
   },
   {
     "level": 180,
@@ -1611,8 +1349,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Inadequate breathing involves poor rate, depth, oxygenation, chest rise, or mental status."
+    ]
   },
   {
     "level": 180,
@@ -1631,8 +1368,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Shock is identified by trends in perfusion, pulse, skin, BP, and mental status."
+    ]
   },
   {
     "level": 180,
@@ -1651,8 +1387,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Major trauma priorities are life threats, hemorrhage control, oxygenation/ventilation, shock, and transport."
+    ]
   },
   {
     "level": 180,
@@ -1671,8 +1406,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Confidentiality includes limiting disclosure, securing records, and avoiding identifiable online details."
+    ]
   },
   {
     "level": 180,
@@ -1692,8 +1426,7 @@ const questions = [
       2,
       3,
       4
-    ],
-    "feedback": "Stroke may cause facial droop, arm drift, speech problems, severe headache, vision changes, weakness, or altered mental status."
+    ]
   },
   {
     "level": 180,
@@ -1712,8 +1445,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "BVM is indicated for absent or inadequate ventilation."
+    ]
   },
   {
     "level": 180,
@@ -1732,8 +1464,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Anaphylaxis can involve skin, airway, breathing, and perfusion findings."
+    ]
   },
   {
     "level": 180,
@@ -1752,8 +1483,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Neurovascular status should be assessed before and after splinting."
+    ]
   },
   {
     "level": 180,
@@ -1772,8 +1502,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Behavioral changes may result from hypoxia, hypoglycemia, trauma, infection, stroke, seizures, or toxins."
+    ]
   },
   {
     "level": 180,
@@ -1792,8 +1521,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "High-quality CPR emphasizes compressions, recoil, minimal pauses, and controlled ventilation."
+    ]
   },
   {
     "level": 180,
@@ -1812,8 +1540,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Pediatric respiratory distress may show nasal flaring, retractions, grunting, fatigue, and poor feeding."
+    ]
   },
   {
     "level": 180,
@@ -1832,8 +1559,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Seizure care focuses on safety, airway monitoring, timing, and avoiding forceful restraint."
+    ]
   },
   {
     "level": 180,
@@ -1852,8 +1578,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Internal bleeding may present through mechanism, tenderness, pelvic injury, and shock signs."
+    ]
   },
   {
     "level": 180,
@@ -1872,8 +1597,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "EMS systems include access, dispatch, care, medical oversight, education, and quality improvement."
+    ]
   },
   {
     "level": 180,
@@ -1892,8 +1616,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Ventilation is the priority; naloxone is used according to protocol."
+    ]
   },
   {
     "level": 180,
@@ -1918,8 +1641,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Breath sounds help identify airway, bronchospasm, secretions, or fluid."
+    ]
   },
   {
     "level": 180,
@@ -1944,8 +1666,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Shock is classified by the cause of inadequate perfusion."
+    ]
   },
   {
     "level": 180,
@@ -1970,8 +1691,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "GCS maximum is E4 V5 M6 total 15."
+    ]
   },
   {
     "level": 180,
@@ -1996,8 +1716,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Trauma clues may indicate hidden life threats."
+    ]
   },
   {
     "level": 180,
@@ -2022,8 +1741,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Toxidrome patterns help identify threats and safety issues."
+    ]
   },
   {
     "level": 180,
@@ -2048,8 +1766,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "OB emergencies require recognizing maternal positioning, newborn ventilation, dystocia, and bleeding threats."
+    ]
   },
   {
     "level": 180,
@@ -2074,8 +1791,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Orthopedic assessment includes neurovascular status, bleeding risk, and open injuries."
+    ]
   },
   {
     "level": 180,
@@ -2100,8 +1816,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Neurologic findings guide stroke, seizure, trauma, and glucose assessment."
+    ]
   },
   {
     "level": 180,
@@ -2126,8 +1841,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Assessment follows scene safety, primary survey, history, secondary exam, and reassessment."
+    ]
   },
   {
     "level": 180,
@@ -2152,8 +1866,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Soft tissue terms describe wound pattern and mechanism."
+    ]
   },
   {
     "level": 180,
@@ -2178,8 +1891,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Communication supports safety, continuity, documentation, and medical oversight."
+    ]
   },
   {
     "level": 180,
@@ -2204,8 +1916,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Assessment must account for developmental and geriatric differences."
+    ]
   },
   {
     "level": 180,
@@ -2230,8 +1941,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Medication decisions depend on indications, contraindications, and protocol."
+    ]
   },
   {
     "level": 180,
@@ -2256,8 +1966,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "Special populations require adapting assessment while treating life threats."
+    ]
   },
   {
     "level": 180,
@@ -2282,8 +1991,7 @@ const questions = [
       1,
       2,
       3
-    ],
-    "feedback": "CPR quality affects perfusion and survival."
+    ]
   },
   {
     "level": 180,
@@ -2297,10 +2005,7 @@ const questions = [
       "Delay transport for pain resolution"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 2,
-    "reasonBest": "Hypotension is a contraindication to further nitroglycerin; manage perfusion and transport.",
-    "feedbackPartial": "Oxygen may be needed if hypoxic or distressed, but the priority issue is hypotension and rapid care.",
-    "feedbackWrong": "Do not give more nitroglycerin to a hypotensive patient."
+    "partialCorrect": 2
   },
   {
     "level": 180,
@@ -2314,10 +2019,7 @@ const questions = [
       "Pain relief"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Falling BP, rising pulse, and cool skin suggest worsening perfusion.",
-    "feedbackPartial": "Pain relief would not explain worsening perfusion trends.",
-    "feedbackWrong": "Trend changes are often more important than one vital sign."
+    "partialCorrect": 3
   },
   {
     "level": 180,
@@ -2331,10 +2033,7 @@ const questions = [
       "Minor dehydration only"
     ],
     "bestCorrect": 0,
-    "partialCorrect": 3,
-    "reasonBest": "Fever, confusion, weakness, and hypotension suggest sepsis and shock.",
-    "feedbackPartial": "Dehydration may contribute, but sepsis/shock is more comprehensive and dangerous.",
-    "feedbackWrong": "Do not dismiss sudden confusion in older adults."
+    "partialCorrect": 3
   }
 ];
 
@@ -2390,7 +2089,6 @@ function loadQuestion() {
   document.getElementById("answers").innerHTML = "";
   document.getElementById("feedback").style.display = "none";
   document.getElementById("nextBtn").style.display = "none";
-  document.getElementById("restartBtn").style.display = "none";
   document.getElementById("submitBtn").style.display = "none";
 
   if (currentQuestion.type === "single") {
@@ -2468,52 +2166,26 @@ function loadMatchingQuestion() {
 }
 
 function checkSingleAnswer(selected, clickedButton) {
-  const feedback = document.getElementById("feedback");
   const buttons = document.querySelectorAll("#answers button");
-  buttons.forEach(button => button.disabled = true);
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
 
   if (selected === currentQuestion.bestCorrect) {
     score++;
     clickedButton.style.background = "darkgreen";
-    feedback.innerHTML =
-      "<strong>Most Correct Answer.</strong><br><br>" +
-      "<strong>Reason:</strong> " + currentQuestion.reasonBest;
   } else if (selected === currentQuestion.partialCorrect) {
     partialScore++;
     clickedButton.style.background = "orange";
-    buttons.forEach(button => {
-      if (button.innerText.trim() === currentQuestion.answers[currentQuestion.bestCorrect]) {
-        button.style.background = "darkgreen";
-      }
-    });
-    feedback.innerHTML =
-      "<strong>Partially Correct, but not the most correct.</strong><br><br>" +
-      currentQuestion.feedbackPartial +
-      "<br><br><strong>Most correct answer:</strong> " +
-      currentQuestion.answers[currentQuestion.bestCorrect] +
-      "<br><br><strong>Reason:</strong> " + currentQuestion.reasonBest;
   } else {
     clickedButton.style.background = "darkred";
-    buttons.forEach(button => {
-      if (button.innerText.trim() === currentQuestion.answers[currentQuestion.bestCorrect]) {
-        button.style.background = "darkgreen";
-      }
-      if (button.innerText.trim() === currentQuestion.answers[currentQuestion.partialCorrect]) {
-        button.style.background = "orange";
-      }
-    });
-    feedback.innerHTML =
-      "<strong>Incorrect.</strong><br><br>" +
-      currentQuestion.feedbackWrong +
-      "<br><br><strong>Most correct answer:</strong> " +
-      currentQuestion.answers[currentQuestion.bestCorrect] +
-      "<br><br><strong>Reason this is most correct:</strong> " +
-      currentQuestion.reasonBest +
-      "<br><br><strong>Partially correct answer:</strong> " +
-      currentQuestion.answers[currentQuestion.partialCorrect];
   }
-  feedback.style.display = "block";
-  document.getElementById("nextBtn").style.display = "block";
+
+  setTimeout(() => {
+    questionNumber++;
+    loadQuestion();
+  }, 350);
 }
 
 function submitAnswer() {
@@ -2533,56 +2205,49 @@ function checkMultiAnswer() {
     checked.length === currentQuestion.correct.length &&
     checked.every(value => currentQuestion.correct.includes(value));
 
-  const feedback = document.getElementById("feedback");
   const checkboxes = document.querySelectorAll('#answers input[type="checkbox"]');
-  checkboxes.forEach(cb => cb.disabled = true);
+
+  checkboxes.forEach(cb => {
+    cb.disabled = true;
+  });
 
   if (correct) {
     score++;
-    feedback.innerHTML = "<strong>Correct.</strong><br><br>" + currentQuestion.feedback;
-  } else {
-    const correctAnswers = currentQuestion.correct
-      .map(index => currentQuestion.answers[index])
-      .join(", ");
-    feedback.innerHTML =
-      "<strong>Incorrect.</strong><br><br>" +
-      "<strong>Correct answers:</strong> " + correctAnswers +
-      "<br><br>" + currentQuestion.feedback;
   }
-  feedback.style.display = "block";
+
   document.getElementById("submitBtn").style.display = "none";
-  document.getElementById("nextBtn").style.display = "block";
+
+  setTimeout(() => {
+    questionNumber++;
+    loadQuestion();
+  }, 350);
 }
 
 function checkMatchingAnswer() {
   const selects = document.querySelectorAll("#answers select");
   const selectedAnswers = Array.from(selects).map(select => Number(select.value));
+
   const allAnswered = selectedAnswers.every(answer => !Number.isNaN(answer));
+
   const correct =
     allAnswered &&
     selectedAnswers.length === currentQuestion.correct.length &&
     selectedAnswers.every((value, index) => value === currentQuestion.correct[index]);
 
-  const feedback = document.getElementById("feedback");
-  selects.forEach(select => select.disabled = true);
+  selects.forEach(select => {
+    select.disabled = true;
+  });
 
   if (correct) {
     score++;
-    feedback.innerHTML = "<strong>Correct.</strong><br><br>" + currentQuestion.feedback;
-  } else {
-    let correctText = "";
-    currentQuestion.leftItems.forEach((item, index) => {
-      correctText += item + " = " +
-        currentQuestion.rightItems[currentQuestion.correct[index]] + "<br>";
-    });
-    feedback.innerHTML =
-      "<strong>Incorrect.</strong><br><br>" +
-      "<strong>Correct matches:</strong><br>" +
-      correctText + "<br>" + currentQuestion.feedback;
   }
-  feedback.style.display = "block";
+
   document.getElementById("submitBtn").style.display = "none";
-  document.getElementById("nextBtn").style.display = "block";
+
+  setTimeout(() => {
+    questionNumber++;
+    loadQuestion();
+  }, 350);
 }
 
 function nextQuestion() {
@@ -2615,17 +2280,8 @@ function finishExam() {
 
   document.getElementById("submitBtn").style.display = "none";
   document.getElementById("nextBtn").style.display = "none";
-  document.getElementById("restartBtn").style.display = "block";
 }
 
-function restartExam() {
-  currentLevel = 180;
-  questionNumber = 0;
-  score = 0;
-  partialScore = 0;
-  usedQuestions = [];
-  loadQuestion();
-}
 
 loadQuestion();
 </script>
