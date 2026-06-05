@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>EMT Medical Quiz</title>
+<title>EMT Quiz #5</title>
 
 <style>
 body {
@@ -85,8 +85,15 @@ const fillOptions = [
     "life-threatening", "shock", "raccoon", "sign", "pneumothorax",
     "fracture", "sprain", "strain", "contusion", "hematoma", "burn",
     "area", "circumferential", "swelling", "superficial", "system",
-    "injury", "fluid", "pressure"
+    "injury", "fluid", "pressure", "cerebrum", "postictal", "atlas",
+    "axis", "cerebrospinal", "parasympathetic"
 ];
+
+function normalizeType(type) {
+    if (type === "fib") return "fill";
+    if (type === "matching") return "match";
+    return type;
+}
 
 const questions = [
 {
@@ -229,13 +236,11 @@ a:["Internal hemorrhage","Anxiety-induced hyperventilation","Minor musculoskelet
 c:"A",
 e:"Significant blunt trauma with shock and abdominal findings suggests internal bleeding."
 },
-
 {type:"fill",q:"Severe bleeding that can rapidly cause death is called __________ hemorrhage.",c:"life-threatening"},
 {type:"fill",q:"Poor tissue perfusion after trauma is called __________.",c:"shock"},
 {type:"fill",q:"Bruising around the eyes after head trauma is called __________ eyes.",c:"raccoon"},
 {type:"fill",q:"Bruising behind the ears after head trauma is called Battle’s __________.",c:"sign"},
 {type:"fill",q:"Air in the pleural space is called a __________.",c:"pneumothorax"},
-
 {
 type:"match",
 q:"Match the trauma finding with the highest EMT concern.",
@@ -249,273 +254,153 @@ q:"Match the bleeding control method with the best use.",
 left:["Direct pressure","Tourniquet","Hemostatic dressing","Pressure dressing"],
 right:["Initial control of most external bleeding","Life-threatening extremity hemorrhage","Severe bleeding where protocol allows","Maintains pressure after bleeding is controlled"],
 c:["Initial control of most external bleeding","Life-threatening extremity hemorrhage","Severe bleeding where protocol allows","Maintains pressure after bleeding is controlled"]
-}
-    {
+},
+{
 type: "mc",
 q: "A 58-year-old male suddenly develops severe shortness of breath after chest trauma. Breath sounds are absent on the left side. What should the EMT suspect?",
-a: [
-"Pulmonary edema",
-"Tension pneumothorax",
-"Asthma exacerbation",
-"Bronchitis"
-],
+a: ["Pulmonary edema","Tension pneumothorax","Asthma exacerbation","Bronchitis"],
 c: "B",
 e: "Unilateral absent breath sounds following trauma strongly suggest a pneumothorax."
 },
-
 {
 type: "mc",
 q: "A patient with respiratory distress is becoming increasingly agitated. What is the most likely explanation?",
-a: [
-"Improving oxygenation",
-"Early hypoxia",
-"Normal stress response",
-"Pain only"
-],
+a: ["Improving oxygenation","Early hypoxia","Normal stress response","Pain only"],
 c: "B",
 e: "Agitation is often an early sign of hypoxia."
 },
-
 {
 type: "mc",
 q: "Which finding best indicates impending respiratory failure?",
-a: [
-"Respiratory rate of 26/min",
-"Tripod positioning",
-"Decreasing respiratory effort despite severe distress",
-"Mild wheezing"
-],
+a: ["Respiratory rate of 26/min","Tripod positioning","Decreasing respiratory effort despite severe distress","Mild wheezing"],
 c: "C",
 e: "Patients becoming fatigued and decreasing their respiratory effort are at risk for respiratory failure."
 },
-
 {
 type: "mc",
 q: "An unconscious patient requires an NPA. Which finding is a contraindication?",
-a: [
-"Unresponsiveness",
-"Snoring respirations",
-"Suspected basilar skull fracture",
-"Need for suctioning"
-],
+a: ["Unresponsiveness","Snoring respirations","Suspected basilar skull fracture","Need for suctioning"],
 c: "C",
 e: "An NPA should be avoided when a basilar skull fracture is suspected."
 },
-
 {
 type: "mc",
 q: "A patient with COPD is breathing rapidly and has diminished breath sounds. Which assessment finding would be most concerning?",
-a: [
-"Barrel chest",
-"Home oxygen use",
-"Altered mental status",
-"Productive cough"
-],
+a: ["Barrel chest","Home oxygen use","Altered mental status","Productive cough"],
 c: "C",
 e: "Altered mental status may indicate worsening hypoxia or hypercapnia."
 },
-
 {
 type: "mc",
 q: "A patient has severe respiratory distress and cannot complete a sentence. What does this indicate?",
-a: [
-"Mild distress",
-"Moderate distress",
-"Severe respiratory compromise",
-"Normal breathing"
-],
+a: ["Mild distress","Moderate distress","Severe respiratory compromise","Normal breathing"],
 c: "C",
 e: "Inability to speak full sentences is a sign of severe respiratory distress."
 },
-
 {
 type: "mc",
 q: "A patient complains of shortness of breath after exposure to peanuts. Wheezing and facial swelling are present. What is the priority?",
-a: [
-"Monitor only",
-"Administer oxygen and assist with epinephrine if indicated",
-"Encourage oral fluids",
-"Place patient supine"
-],
+a: ["Monitor only","Administer oxygen and assist with epinephrine if indicated","Encourage oral fluids","Place patient supine"],
 c: "B",
 e: "This patient is showing signs of anaphylaxis requiring immediate intervention."
 },
-
 {
 type: "mc",
 q: "What is the primary purpose of oxygen therapy?",
-a: [
-"Increase respiratory rate",
-"Improve oxygen delivery to tissues",
-"Reduce heart rate",
-"Eliminate carbon dioxide"
-],
+a: ["Increase respiratory rate","Improve oxygen delivery to tissues","Reduce heart rate","Eliminate carbon dioxide"],
 c: "B",
 e: "Oxygen therapy improves oxygen delivery to body tissues."
 },
-
 {
 type: "mc",
 q: "A patient with pulmonary edema suddenly becomes unresponsive. What should the EMT do first?",
-a: [
-"Apply CPAP",
-"Assist ventilations with a BVM",
-"Perform abdominal thrusts",
-"Place in recovery position"
-],
+a: ["Apply CPAP","Assist ventilations with a BVM","Perform abdominal thrusts","Place in recovery position"],
 c: "B",
 e: "Unresponsiveness indicates inability to maintain the airway and ventilate adequately."
 },
-
 {
 type: "mc",
 q: "Which breath sound is most commonly associated with fluid in the alveoli?",
-a: [
-"Stridor",
-"Crackles",
-"Rhonchi",
-"Wheezing"
-],
+a: ["Stridor","Crackles","Rhonchi","Wheezing"],
 c: "B",
 e: "Crackles are commonly associated with pulmonary edema or pneumonia."
 },
-
 {
 type: "mc",
 q: "A patient suddenly develops inspiratory stridor after choking on food. What does stridor indicate?",
-a: [
-"Lower airway narrowing",
-"Fluid in the lungs",
-"Upper airway obstruction",
-"Normal airflow"
-],
+a: ["Lower airway narrowing","Fluid in the lungs","Upper airway obstruction","Normal airflow"],
 c: "C",
 e: "Stridor is a high-pitched sound associated with upper airway obstruction."
 },
-
 {
 type: "mc",
 q: "A patient with severe asthma has an SpO₂ of 86% despite oxygen therapy. What should the EMT anticipate may be needed?",
-a: [
-"Reduction of oxygen",
-"Ventilatory support",
-"Removal of oxygen",
-"Oral glucose"
-],
+a: ["Reduction of oxygen","Ventilatory support","Removal of oxygen","Oral glucose"],
 c: "B",
 e: "Persistent hypoxia may indicate worsening respiratory failure requiring ventilatory support."
 },
-
 {
 type: "mc",
 q: "Which patient is experiencing respiratory arrest?",
-a: [
-"RR 6 and shallow",
-"RR 30 and labored",
-"No respirations but pulse present",
-"RR 24 and wheezing"
-],
+a: ["RR 6 and shallow","RR 30 and labored","No respirations but pulse present","RR 24 and wheezing"],
 c: "C",
 e: "Respiratory arrest is the absence of breathing despite a pulse."
 },
-
 {
 type: "mc",
 q: "When ventilating an adult with a BVM, what is the preferred ventilation rate?",
-a: [
-"4 breaths/min",
-"10–12 breaths/min",
-"20–24 breaths/min",
-"30 breaths/min"
-],
+a: ["4 breaths/min","10–12 breaths/min","20–24 breaths/min","30 breaths/min"],
 c: "B",
 e: "Adults should generally be ventilated approximately every 5–6 seconds."
 },
-
 {
 type: "mc",
 q: "A patient with pneumonia has crackles, fever, and productive cough. What process is impairing oxygenation?",
-a: [
-"Airway obstruction",
-"Fluid and inflammation interfering with gas exchange",
-"Cardiac dysrhythmia",
-"Hyperventilation"
-],
+a: ["Airway obstruction","Fluid and inflammation interfering with gas exchange","Cardiac dysrhythmia","Hyperventilation"],
 c: "B",
 e: "Pneumonia impairs gas exchange through inflammation and fluid accumulation."
 },
-
 {
 type: "mc",
 q: "A patient with a severe asthma attack suddenly stops wheezing. What should the EMT suspect?",
-a: [
-"Improvement",
-"Exhaustion and decreased air movement",
-"Resolution of bronchospasm",
-"Equipment failure"
-],
+a: ["Improvement","Exhaustion and decreased air movement","Resolution of bronchospasm","Equipment failure"],
 c: "B",
 e: "A silent chest may indicate critical airway compromise."
 },
-    {
+{
 type:"mc",
 q:"A 67-year-old male suddenly develops left arm weakness, slurred speech, and facial droop while eating lunch. His wife states he was normal 15 minutes ago. Blood glucose is 118 mg/dL. Which action is MOST appropriate?",
-a:[
-"Administer oral glucose",
-"Determine last known well time and begin rapid transport",
-"Place the patient supine and reassess in 15 minutes",
-"Administer aspirin"
-],
+a:["Administer oral glucose","Determine last known well time and begin rapid transport","Place the patient supine and reassess in 15 minutes","Administer aspirin"],
 c:"B",
 e:"The patient has findings consistent with acute stroke. Determining last known well time and rapid transport are priorities."
 },
-
 {
 type:"mc",
 q:"A 58-year-old female suddenly becomes unresponsive. She has snoring respirations and a pulse of 84/min. What should the EMT do FIRST?",
-a:[
-"Apply a stroke scale",
-"Administer oxygen via nasal cannula",
-"Open and maintain the airway",
-"Check for motor deficits"
-],
+a:["Apply a stroke scale","Administer oxygen via nasal cannula","Open and maintain the airway","Check for motor deficits"],
 c:"C",
 e:"Airway management always takes priority."
 },
-
 {
 type:"mc",
 q:"A diabetic patient presents with slurred speech, confusion, and right arm weakness. Which finding would MOST strongly suggest hypoglycemia rather than stroke?",
-a:[
-"Facial droop",
-"Blood glucose of 38 mg/dL",
-"Sudden onset symptoms",
-"History of hypertension"
-],
+a:["Facial droop","Blood glucose of 38 mg/dL","Sudden onset symptoms","History of hypertension"],
 c:"B",
 e:"Severe hypoglycemia commonly mimics stroke."
 },
-
 {
 type:"fib",
 q:"The largest portion of the brain responsible for higher thought and voluntary movement is the ________.",
 c:"cerebrum",
 e:"The cerebrum controls higher cognitive function and voluntary activity."
 },
-
 {
 type:"mc",
 q:"A patient has unequal pupils, vomiting, hypertension, and bradycardia following head trauma. What should the EMT suspect?",
-a:[
-"Spinal shock",
-"Increased intracranial pressure",
-"Hypoglycemia",
-"Shock due to blood loss"
-],
+a:["Spinal shock","Increased intracranial pressure","Hypoglycemia","Shock due to blood loss"],
 c:"B",
 e:"These findings are consistent with increased ICP and Cushing's response."
 },
-
 {
 type:"matching",
 q:"Match the brain structure with its primary function.",
@@ -527,93 +412,59 @@ pairs:[
 ],
 e:"Knowledge of neuro anatomy is important for localizing deficits."
 },
-
 {
 type:"mc",
 q:"A patient involved in a diving accident reports numbness in both arms and legs. He denies neck pain. Which finding MOST strongly indicates spinal injury?",
-a:[
-"Absence of neck pain",
-"Bilateral neurologic deficits",
-"Patient age",
-"Normal blood pressure"
-],
+a:["Absence of neck pain","Bilateral neurologic deficits","Patient age","Normal blood pressure"],
 c:"B",
 e:"Neurologic deficits following trauma strongly suggest spinal injury."
 },
-
 {
 type:"mc",
 q:"A patient experiences a generalized seizure lasting seven minutes. What condition should the EMT suspect?",
-a:[
-"Syncope",
-"Status epilepticus",
-"Postictal state",
-"Transient ischemic attack"
-],
+a:["Syncope","Status epilepticus","Postictal state","Transient ischemic attack"],
 c:"B",
 e:"A prolonged seizure may represent status epilepticus."
 },
-
 {
 type:"fib",
 q:"The period of confusion and altered mental status following a seizure is called the ________ phase.",
 c:"postictal",
 e:"Patients commonly experience a postictal period following seizures."
 },
-
 {
 type:"mc",
 q:"A patient has a sudden severe headache described as the 'worst headache of my life.' Which condition should be suspected?",
-a:[
-"Cluster headache",
-"Subarachnoid hemorrhage",
-"Transient ischemic attack",
-"Sinus infection"
-],
+a:["Cluster headache","Subarachnoid hemorrhage","Transient ischemic attack","Sinus infection"],
 c:"B",
 e:"This classic presentation may indicate subarachnoid hemorrhage."
 },
-
 {
 type:"mc",
 q:"Which patient should receive the HIGHEST transport priority?",
-a:[
-"Patient with chronic migraine and normal neurologic exam",
-"Patient with facial droop and arm weakness beginning 20 minutes ago",
-"Patient with dizziness after standing quickly",
-"Patient with chronic numbness in both feet"
-],
+a:["Patient with chronic migraine and normal neurologic exam","Patient with facial droop and arm weakness beginning 20 minutes ago","Patient with dizziness after standing quickly","Patient with chronic numbness in both feet"],
 c:"B",
 e:"Acute stroke symptoms require rapid transport."
 },
-
 {
 type:"fib",
 q:"The first cervical vertebra is known as the ________.",
 c:"atlas",
 e:"C1 is called the atlas."
 },
-
 {
 type:"fib",
 q:"The second cervical vertebra is known as the ________.",
 c:"axis",
 e:"C2 is called the axis."
 },
-
 {
 type:"mc",
 q:"Following a seizure, a patient remains confused and has weakness only in the right arm. What should the EMT suspect?",
-a:[
-"Postictal weakness only",
-"Possible stroke or focal neurologic deficit",
-"Anxiety",
-"Hyperventilation syndrome"
-],
+a:["Postictal weakness only","Possible stroke or focal neurologic deficit","Anxiety","Hyperventilation syndrome"],
 c:"B",
 e:"Persistent unilateral deficits require evaluation for stroke."
 },
-
 {
 type:"matching",
 q:"Match the neurological term with its definition.",
@@ -625,66 +476,40 @@ pairs:[
 ],
 e:"These terms commonly appear on EMT examinations."
 },
-
 {
 type:"mc",
 q:"A patient suffered head trauma and briefly lost consciousness. He now repeatedly asks the same questions. What injury should be suspected?",
-a:[
-"Concussion",
-"Transient ischemic attack",
-"Hypoglycemia",
-"Heat exhaustion"
-],
+a:["Concussion","Transient ischemic attack","Hypoglycemia","Heat exhaustion"],
 c:"A",
 e:"Repetitive questioning is a common sign of concussion."
 },
-
 {
 type:"mc",
 q:"Which assessment finding is MOST concerning after head trauma?",
-a:[
-"Small scalp abrasion",
-"Brief dizziness",
-"Unequal pupils",
-"Mild headache"
-],
+a:["Small scalp abrasion","Brief dizziness","Unequal pupils","Mild headache"],
 c:"C",
 e:"Unequal pupils may indicate serious intracranial injury."
 },
-
 {
 type:"fib",
 q:"Clear fluid draining from the nose following head trauma may indicate leakage of ________ fluid.",
 c:"cerebrospinal",
 e:"CSF leakage can occur with skull fractures."
 },
-
 {
 type:"mc",
 q:"Which structure primarily protects the spinal cord?",
-a:[
-"Ribs",
-"Vertebrae",
-"Pelvis",
-"Scapula"
-],
+a:["Ribs","Vertebrae","Pelvis","Scapula"],
 c:"B",
 e:"The vertebral column protects the spinal cord."
 },
-
 {
 type:"mc",
 q:"A patient with suspected stroke becomes increasingly lethargic during transport. What should the EMT reassess FIRST?",
-a:[
-"Insurance information",
-"Airway and breathing",
-"Past medical history",
-"Family history"
-],
+a:["Insurance information","Airway and breathing","Past medical history","Family history"],
 c:"B",
 e:"Airway and breathing remain the highest priorities."
 },
-
 {
 type:"matching",
 q:"Match the spinal region with its location.",
@@ -696,49 +521,30 @@ pairs:[
 ],
 e:"Understanding spinal anatomy assists with injury localization."
 },
-
 {
 type:"mc",
 q:"A patient with a severe head injury develops hypertension, bradycardia, and irregular respirations. These findings are known as:",
-a:[
-"Cushing's triad",
-"Beck's triad",
-"Virchow's triad",
-"Monro-Kellie triad"
-],
+a:["Cushing's triad","Beck's triad","Virchow's triad","Monro-Kellie triad"],
 c:"A",
 e:"Cushing's triad suggests increased intracranial pressure."
 },
-
 {
 type:"fib",
 q:"The autonomic nervous system consists of sympathetic and ________ divisions.",
 c:"parasympathetic",
 e:"The parasympathetic system opposes sympathetic responses."
 },
-
 {
 type:"mc",
 q:"A patient with sudden facial droop, arm weakness, and abnormal speech should be evaluated using a:",
-a:[
-"Trauma score",
-"Stroke screening tool",
-"Pediatric assessment triangle",
-"Rule of nines"
-],
+a:["Trauma score","Stroke screening tool","Pediatric assessment triangle","Rule of nines"],
 c:"B",
 e:"Stroke scales help identify potential strokes rapidly."
 },
-
 {
 type:"mc",
 q:"Which finding would MOST strongly support a diagnosis of spinal cord injury?",
-a:[
-"Localized back pain only",
-"Numbness and paralysis below the injury site",
-"Bruising over the chest",
-"Elevated blood pressure"
-],
+a:["Localized back pain only","Numbness and paralysis below the injury site","Bruising over the chest","Elevated blood pressure"],
 c:"B",
 e:"Motor and sensory deficits are classic findings of spinal cord injury."
 }
@@ -748,7 +554,7 @@ function shuffle(array) {
     return array.sort(() => Math.random() - 0.5);
 }
 
-const shuffledQuestions = shuffle([...questions]);
+const shuffledQuestions = shuffle([...questions]).slice(0, 50);
 
 let currentQuestion = 0;
 let studentAnswers = [];
@@ -760,13 +566,14 @@ function buildQuiz() {
 function showQuestion() {
     const form = document.getElementById("quizForm");
     const item = shuffledQuestions[currentQuestion];
+    const type = normalizeType(item.type);
 
     document.getElementById("progress").innerHTML =
         `Question ${currentQuestion + 1} of ${shuffledQuestions.length}`;
 
     let html = `<div class="question"><p><b>${item.q}</b></p>`;
 
-    if (item.type === "mc") {
+    if (type === "mc") {
         const letters = ["A", "B", "C", "D"];
 
         item.a.forEach((ans, i) => {
@@ -778,7 +585,7 @@ function showQuestion() {
         });
     }
 
-    if (item.type === "fill") {
+    if (type === "fill") {
         let distractors = fillOptions.filter(option =>
             option.toLowerCase() !== item.c.toLowerCase()
         );
@@ -793,9 +600,12 @@ function showQuestion() {
         </select>`;
     }
 
-    if (item.type === "match") {
-        item.left.forEach((left, i) => {
-            let shuffledRight = shuffle([...item.right]);
+    if (type === "match") {
+        const leftItems = item.left || item.pairs.map(pair => pair.left);
+        const rightItems = item.right || item.pairs.map(pair => pair.right);
+
+        leftItems.forEach((left) => {
+            let shuffledRight = shuffle([...rightItems]);
 
             html += `<p>${left}</p>
             <select name="matchAnswer">
@@ -815,9 +625,10 @@ function showQuestion() {
 
 function nextQuestion() {
     const item = shuffledQuestions[currentQuestion];
+    const type = normalizeType(item.type);
     let answer;
 
-    if (item.type === "mc") {
+    if (type === "mc") {
         let selected = document.querySelector(`input[name="currentAnswer"]:checked`);
 
         if (!selected) {
@@ -828,7 +639,7 @@ function nextQuestion() {
         answer = selected.value;
     }
 
-    if (item.type === "fill") {
+    if (type === "fill") {
         let selected = document.querySelector(`select[name="currentAnswer"]`).value;
 
         if (selected === "") {
@@ -839,7 +650,7 @@ function nextQuestion() {
         answer = selected;
     }
 
-    if (item.type === "match") {
+    if (type === "match") {
         let selects = document.querySelectorAll(`select[name="matchAnswer"]`);
         answer = [];
 
@@ -876,9 +687,10 @@ function gradeQuiz() {
     let key = "";
 
     shuffledQuestions.forEach((item, index) => {
+        const type = normalizeType(item.type);
         let answer = studentAnswers[index];
 
-        if (item.type === "mc") {
+        if (type === "mc") {
             total++;
 
             if (answer === item.c) {
@@ -888,32 +700,35 @@ function gradeQuiz() {
             key += `<p>${index + 1}. Correct answer: ${item.c}<br>${item.e || ""}</p>`;
         }
 
-        if (item.type === "fill") {
+        if (type === "fill") {
             total++;
 
             if (answer.toLowerCase() === item.c.toLowerCase()) {
                 score++;
             }
 
-            key += `<p>${index + 1}. Correct answer: ${item.c}</p>`;
+            key += `<p>${index + 1}. Correct answer: ${item.c}<br>${item.e || ""}</p>`;
         }
 
-        if (item.type === "match") {
-            item.left.forEach((left, i) => {
+        if (type === "match") {
+            const leftItems = item.left || item.pairs.map(pair => pair.left);
+            const correctItems = item.c || item.pairs.map(pair => pair.right);
+
+            leftItems.forEach((left, i) => {
                 total++;
 
-                if (answer[i] === item.c[i]) {
+                if (answer[i] === correctItems[i]) {
                     score++;
                 }
             });
 
             let correctList = "";
 
-            item.left.forEach((left, i) => {
-                correctList += `${left} = ${item.c[i]}<br>`;
+            leftItems.forEach((left, i) => {
+                correctList += `${left} = ${correctItems[i]}<br>`;
             });
 
-            key += `<p>${index + 1}.<br>${correctList}</p>`;
+            key += `<p>${index + 1}.<br>${correctList}${item.e || ""}</p>`;
         }
     });
 
@@ -935,3 +750,4 @@ buildQuiz();
 
 </body>
 </html>
+```
