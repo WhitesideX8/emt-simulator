@@ -70,66 +70,82 @@ select {
 <body>
 
 <div class="container">
-<h1>EMT Medical Quiz</h1>
-<h2>Advanced NREMT Style</h2>
+    <h1>EMT Medical Quiz</h1>
+    <h2>Advanced NREMT Style</h2>
 
-<form id="quizForm"></form>
+    <form id="quizForm"></form>
 
-<button type="button" onclick="gradeQuiz()">Submit Quiz</button>
+    <button type="button" onclick="gradeQuiz()">Submit Quiz</button>
 
-<h2 id="score"></h2>
+    <h2 id="score"></h2>
 
-<div class="answer-key" id="answerKey">
-<h2>Answer Key</h2>
-<div id="keyContent"></div>
+    <div class="answer-key" id="answerKey">
+        <h2>Answer Key</h2>
+        <div id="keyContent"></div>
+    </div>
 </div>
-</div>
 
-<!-- 
-Put your question bank file here.
-Example:
-<script src="medical-bank.js"></script>
-or:
-<script src="banks/medical-bank.js"></script>
--->
 <script src="/js/quiz-trauma.js"></script>
 <script src="/js/1cardioquiz.js"></script>
 <script src="/js/2cardioquiz.js"></script>
-<script src="/medical-questions.js"></script>    
+<script src="/medical-questions.js"></script>
+
 <script>
 function shuffle(array) {
     return array.sort(() => Math.random() - 0.5);
 }
 
+const fillOptions = [
+    "Asthma",
+    "COPD",
+    "CHF",
+    "Sepsis",
+    "Stroke",
+    "Hypoglycemia",
+    "Anaphylaxis",
+    "Pulmonary embolism",
+    "Myocardial infarction",
+    "Pneumonia",
+    "Cardiogenic shock",
+    "Hypovolemic shock"
+];
+
 const questions = [
-    ...shuffle([...traumaBank]).slice(0, 10),
-    ...shuffle([...cardioBank]).slice(0,10 ),
-    ...shuffle([...medicalBank]).slice(0, 10),
+    ...shuffle([...(typeof traumaBank !== "undefined" ? traumaBank : [])]).slice(0, 10),
+    ...shuffle([...(typeof cardioBank !== "undefined" ? cardioBank : [])]).slice(0, 10),
+    ...shuffle([...(typeof medicalBank !== "undefined" ? medicalBank : [])]).slice(0, 10)
 ];
 
 shuffle(questions);
 
 function buildQuiz() {
-    ...
-}
-
-function buildQuiz() {
     const form = document.getElementById("quizForm");
-
     form.innerHTML = "";
 
+    if (questions.length === 0) {
+        form.innerHTML = `
+            <div class="question">
+                <p><b>No questions loaded.</b></p>
+                <p>Check that your question bank files are in the correct folders and use the correct names:</p>
+                <p><b>traumaBank</b>, <b>cardioBank</b>, and <b>medicalBank</b></p>
+            </div>
+        `;
+        return;
+    }
+
     questions.forEach((item, index) => {
-        let html = `<div class="question"><p><b>${item.q}</b></p>`;
+        let html = `<div class="question"><p><b>${index + 1}. ${item.q}</b></p>`;
 
         if (item.type === "mc") {
             const letters = ["A", "B", "C", "D"];
 
             item.a.forEach((ans, i) => {
                 html += `
-                <label>
-                    <input type="radio" name="q${index}" value="${letters[i]}">
-                    ${letters[i]}. ${ans}
-                </label><br>`;
+                    <label>
+                        <input type="radio" name="q${index}" value="${letters[i]}">
+                        ${letters[i]}. ${ans}
+                    </label><br>
+                `;
             });
         }
 
@@ -146,27 +162,28 @@ function buildQuiz() {
             ]);
 
             html += `
-            <select name="q${index}">
-                <option value="">Select Answer</option>
-                ${options.map(option =>
-                    `<option value="${option}">${option}</option>`
-                ).join("")}
-            </select>`;
+                <select name="q${index}">
+                    <option value="">Select Answer</option>
+                    ${options.map(option =>
+                        `<option value="${option}">${option}</option>`
+                    ).join("")}
+                </select>
+            `;
         }
 
         if (item.type === "match") {
             item.left.forEach((left, i) => {
                 let shuffledRight = shuffle([...item.right]);
 
-                html += `<p>${left}</p>
-                <select name="q${index}_${i}">
-                    <option value="">Choose</option>`;
-
-                shuffledRight.forEach(right => {
-                    html += `<option value="${right}">${right}</option>`;
-                });
-
-                html += `</select>`;
+                html += `
+                    <p>${left}</p>
+                    <select name="q${index}_${i}">
+                        <option value="">Choose</option>
+                        ${shuffledRight.map(right =>
+                            `<option value="${right}">${right}</option>`
+                        ).join("")}
+                    </select>
+                `;
             });
         }
 
@@ -191,11 +208,9 @@ function gradeQuiz() {
 
             if (selected && selected.value === item.c) {
                 score++;
-                feedback.innerHTML =
-                    `<span class="correct">Correct.</span> ${item.e || ""}`;
+                feedback.innerHTML = `<span class="correct">Correct.</span> ${item.e || ""}`;
             } else {
-                feedback.innerHTML =
-                    `<span class="incorrect">Incorrect.</span> Most correct answer: <b>${item.c}</b>. ${item.e || ""}`;
+                feedback.innerHTML = `<span class="incorrect">Incorrect.</span> Most correct answer: <b>${item.c}</b>. ${item.e || ""}`;
             }
 
             key += `<p>${index + 1}. ${item.c}</p>`;
@@ -208,11 +223,9 @@ function gradeQuiz() {
 
             if (selected.toLowerCase() === item.c.toLowerCase()) {
                 score++;
-                feedback.innerHTML =
-                    `<span class="correct">Correct.</span>`;
+                feedback.innerHTML = `<span class="correct">Correct.</span>`;
             } else {
-                feedback.innerHTML =
-                    `<span class="incorrect">Incorrect.</span> Correct answer: <b>${item.c}</b>`;
+                feedback.innerHTML = `<span class="incorrect">Incorrect.</span> Correct answer: <b>${item.c}</b>`;
             }
 
             key += `<p>${index + 1}. ${item.c}</p>`;
@@ -224,8 +237,7 @@ function gradeQuiz() {
             item.left.forEach((left, i) => {
                 total++;
 
-                let selected =
-                    document.querySelector(`select[name="q${index}_${i}"]`).value;
+                let selected = document.querySelector(`select[name="q${index}_${i}"]`).value;
 
                 if (selected === item.c[i]) {
                     score++;
@@ -240,11 +252,9 @@ function gradeQuiz() {
             });
 
             if (correctCount === item.left.length) {
-                feedback.innerHTML =
-                    `<span class="correct">Correct.</span><br>${correctList}`;
+                feedback.innerHTML = `<span class="correct">Correct.</span><br>${correctList}`;
             } else {
-                feedback.innerHTML =
-                    `<span class="incorrect">Incorrect.</span><br><b>Correct matches:</b><br>${correctList}`;
+                feedback.innerHTML = `<span class="incorrect">Incorrect.</span><br><b>Correct matches:</b><br>${correctList}`;
             }
 
             key += `<p>${index + 1}.<br>${correctList}</p>`;
