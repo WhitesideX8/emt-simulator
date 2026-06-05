@@ -93,10 +93,24 @@ or:
 <script src="banks/medical-bank.js"></script>
 -->
 <script src="/js/quiz-trauma.js"></script>
-
+<script src="/js/1cardioquiz.js"></script>
+<script src="/js/2cardioquiz.js"></script>
+<script src="/medical-questions.js"></script>    
 <script>
 function shuffle(array) {
     return array.sort(() => Math.random() - 0.5);
+}
+
+const questions = [
+    ...shuffle([...traumaBank]).slice(0, 10),
+    ...shuffle([...cardioBank]).slice(0,10 ),
+    ...shuffle([...medicalBank]).slice(0, 10),
+];
+
+shuffle(questions);
+
+function buildQuiz() {
+    ...
 }
 
 function buildQuiz() {
