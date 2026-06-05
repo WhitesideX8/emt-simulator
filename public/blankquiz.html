@@ -86,20 +86,83 @@ select {
 </div>
 
 <script>
-<script src="testbank1.js"></script>
+const fillOptions = [
+    "Asthma",
+    "COPD",
+    "CHF",
+    "Hypoglycemia",
+    "Stroke",
+    "Sepsis",
+    "Anaphylaxis",
+    "Pneumonia",
+    "Pulmonary embolism",
+    "Hyperglycemia"
+];
 
-<script>
+const questions = [
+    {
+        type: "mc",
+        q: "A patient has wheezing and shortness of breath. What is the most likely problem?",
+        a: ["Stroke", "Asthma", "Hypoglycemia", "Cardiac arrest"],
+        c: "B",
+        e: "Wheezing is commonly caused by bronchospasm."
+    },
+
+    {
+        type: "mc",
+        q: "A confused diabetic patient is pale, cool, and diaphoretic. What should you suspect?",
+        a: ["Stroke", "Hypoglycemia", "COPD", "Pulmonary embolism"],
+        c: "B",
+        e: "Cool, pale, sweaty skin with altered mental status suggests hypoglycemia."
+    },
+
+    {
+        type: "mc",
+        q: "A patient with chest pressure, shortness of breath, and nausea should be treated first as having which condition?",
+        a: ["A cardiac emergency", "A behavioral emergency", "A minor illness", "A muscle strain"],
+        c: "A",
+        e: "Chest pressure with shortness of breath and nausea is concerning for a cardiac emergency."
+    },
+
+    {
+        type: "mc",
+        q: "A patient has hives, wheezing, and swelling of the lips after eating peanuts. What should the EMT suspect?",
+        a: ["Stroke", "Anaphylaxis", "Hypoglycemia", "Pneumonia"],
+        c: "B",
+        e: "Skin findings plus respiratory involvement after an exposure strongly suggest anaphylaxis."
+    },
+
+    {
+        type: "fill",
+        q: "Low blood sugar is called:",
+        c: "Hypoglycemia"
+    },
+
+    {
+        type: "fill",
+        q: "A severe allergic reaction involving respiratory or circulatory compromise is called:",
+        c: "Anaphylaxis"
+    },
+
+    {
+        type: "match",
+        q: "Match each condition with the most likely finding.",
+        left: ["Asthma", "CHF", "Hypoglycemia"],
+        right: ["Wheezing", "Crackles", "Altered mental status", "Unequal pupils"],
+        c: ["Wheezing", "Crackles", "Altered mental status"]
+    }
+];
+
 function shuffle(array) {
     return array.sort(() => Math.random() - 0.5);
 }
 
 function buildQuiz() {
     const form = document.getElementById("quizForm");
-
     form.innerHTML = "";
 
     questions.forEach((item, index) => {
-        let html = `<div class="question"><p><b>${item.q}</b></p>`;
+        let html = `<div class="question"><p><b>${index + 1}. ${item.q}</b></p>`;
 
         if (item.type === "mc") {
             const letters = ["A", "B", "C", "D"];
@@ -118,7 +181,7 @@ function buildQuiz() {
                 option.toLowerCase() !== item.c.toLowerCase()
             );
 
-            distractors = shuffle(distractors).slice(0, 4);
+            distractors = shuffle([...distractors]).slice(0, 4);
 
             let options = shuffle([
                 item.c,
