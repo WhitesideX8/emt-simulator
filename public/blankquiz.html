@@ -85,14 +85,24 @@ select {
 </div>
 </div>
 
-<!-- 
-Put your question bank file here.
-Example:
-<script src="medical-bank.js"></script>
-or:
-<script src="banks/medical-bank.js"></script>
--->
-<script src="./js/medical-questions.js"></script>
+<script>
+const fillOptions = [
+  "Asthma",
+  "COPD",
+  "CHF",
+  "Hypoglycemia"
+];
+
+const questions = [
+  {
+    type: "mc",
+    q: "A patient has wheezing and shortness of breath. What is the most likely problem?",
+    a: ["Stroke", "Asthma", "Hypoglycemia", "Cardiac arrest"],
+    c: "B",
+    e: "Wheezing is commonly caused by bronchospasm."
+  }
+];
+</script>
 
 <script>
 function shuffle(array) {
