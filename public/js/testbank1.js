@@ -23,6 +23,110 @@ a: [
 c: "B",
 e: "Nitroglycerin is contraindicated after recent erectile dysfunction medication use because severe hypotension may occur."
 },
+{
+type:"mc",
+q:"1. A 27-year-old female who is 38 weeks pregnant reports contractions every 2 minutes lasting 60 seconds. She states she feels an urge to have a bowel movement. What should the EMT do NEXT?",
+a:[
+"Begin transport immediately without assessment",
+"Assess for crowning and prepare for delivery",
+"Place the patient supine",
+"Delay assessment until arrival at the hospital"
+],
+c:"B",
+e:"Frequent contractions and the urge to defecate suggest imminent delivery. Check for crowning."
+},
+
+{
+type:"mc",
+q:"2. During delivery, the infant's head delivers and retracts tightly against the perineum. What complication should be suspected?",
+a:[
+"Prolapsed cord",
+"Breech presentation",
+"Shoulder dystocia",
+"Placenta previa"
+],
+c:"C",
+e:"The 'turtle sign' is characteristic of shoulder dystocia."
+},
+
+{
+type:"mc",
+q:"3. A 32-year-old pregnant female at 34 weeks has painless bright-red vaginal bleeding. Which condition is MOST likely?",
+a:[
+"Abruptio placentae",
+"Placenta previa",
+"Ectopic pregnancy",
+"Ruptured uterus"
+],
+c:"B",
+e:"Placenta previa classically presents with painless bright-red bleeding."
+},
+
+{
+type:"mc",
+q:"4. A 29-year-old female at 36 weeks gestation reports severe abdominal pain and dark vaginal bleeding. Her abdomen is rigid and tender. What should the EMT suspect?",
+a:[
+"Placenta previa",
+"Abruptio placentae",
+"Normal labor",
+"Round ligament pain"
+],
+c:"B",
+e:"Painful bleeding with a rigid abdomen suggests placental abruption."
+},
+
+{
+type:"mc",
+q:"5. During delivery, the umbilical cord is visible before the infant's head. What is the EMT's priority?",
+a:[
+"Pull on the cord",
+"Push the cord back into the vagina",
+"Relieve pressure on the cord and transport rapidly",
+"Clamp the cord immediately"
+],
+c:"C",
+e:"A prolapsed cord can compromise fetal oxygenation and requires immediate intervention."
+},
+
+{
+type:"mc",
+q:"6. A pregnant patient develops a severe headache, hypertension, and visual disturbances. What condition should the EMT suspect?",
+a:[
+"Placenta previa",
+"Preeclampsia",
+"Normal pregnancy",
+"Hyperemesis gravidarum"
+],
+c:"B",
+e:"Headache, hypertension, and visual changes are classic signs of preeclampsia."
+},
+
+{
+type:"mc",
+q:"7. A pregnant patient experiences a generalized seizure. Which condition is MOST likely?",
+a:[
+"Eclampsia",
+"Hypoglycemia",
+"Placenta previa",
+"Miscarriage"
+],
+c:"A",
+e:"Eclampsia is preeclampsia with seizure activity."
+},
+
+{
+type:"mc",
+q:"8. A woman who delivered 10 minutes ago continues to bleed heavily. What is the EMT's BEST action?",
+a:[
+"Pull on the umbilical cord",
+"Massage the uterine fundus if protocol allows",
+"Place ice on the abdomen",
+"Encourage walking"
+],
+c:"B",
+e:"Postpartum hemorrhage may be reduced by uterine massage if permitted by protocol."
+},
+
 
 {
 type: "mc",
