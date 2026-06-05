@@ -1,4 +1,3 @@
-```js
 {
 type: "mc",
 q: "A 58-year-old male suddenly develops severe shortness of breath after chest trauma. Breath sounds are absent on the left side. What should the EMT suspect?",
