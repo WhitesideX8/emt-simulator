@@ -88,7 +88,7 @@ select {
 <script src="/js/quiz-trauma.js"></script>
 <script src="/js/1cardioquiz.js"></script>
 <script src="/js/2cardioquiz.js"></script>
-<script src="/medical-questions.js"></script>
+<script src="/js/medical-questions.js"></script>
 
 <script>
 function shuffle(array) {
@@ -107,16 +107,27 @@ const fillOptions = [
     "Myocardial infarction",
     "Pneumonia",
     "Cardiogenic shock",
-    "Hypovolemic shock"
+    "Hypovolemic shock",
+    "Seizure",
+    "Syncope",
+    "Respiratory failure"
 ];
 
-const questions = [
-    ...shuffle([...(typeof traumaBank !== "undefined" ? traumaBank : [])]).slice(0, 10),
-    ...shuffle([...(typeof cardioBank !== "undefined" ? cardioBank : [])]).slice(0, 10),
-    ...shuffle([...(typeof medicalBank !== "undefined" ? medicalBank : [])]).slice(0, 10)
-];
+let questions = [];
 
-shuffle(questions);
+if (typeof traumaBank !== "undefined") {
+    questions.push(...shuffle([...traumaBank]).slice(0, 10));
+}
+
+if (typeof cardioBank !== "undefined") {
+    questions.push(...shuffle([...cardioBank]).slice(0, 10));
+}
+
+if (typeof medicalBank !== "undefined") {
+    questions.push(...shuffle([...medicalBank]).slice(0, 10));
+}
+
+questions = shuffle(questions);
 
 function buildQuiz() {
     const form = document.getElementById("quizForm");
@@ -126,7 +137,12 @@ function buildQuiz() {
         form.innerHTML = `
             <div class="question">
                 <p><b>No questions loaded.</b></p>
-                <p>Check that your question bank files are in the correct folders and use the correct names:</p>
+                <p>Check that these files exist:</p>
+                <p><b>/js/quiz-trauma.js</b></p>
+                <p><b>/js/1cardioquiz.js</b></p>
+                <p><b>/js/2cardioquiz.js</b></p>
+                <p><b>/js/medical-questions.js</b></p>
+                <p>Also make sure the files contain these variable names:</p>
                 <p><b>traumaBank</b>, <b>cardioBank</b>, and <b>medicalBank</b></p>
             </div>
         `;
@@ -208,9 +224,11 @@ function gradeQuiz() {
 
             if (selected && selected.value === item.c) {
                 score++;
-                feedback.innerHTML = `<span class="correct">Correct.</span> ${item.e || ""}`;
+                feedback.innerHTML =
+                    `<span class="correct">Correct.</span> ${item.e || ""}`;
             } else {
-                feedback.innerHTML = `<span class="incorrect">Incorrect.</span> Most correct answer: <b>${item.c}</b>. ${item.e || ""}`;
+                feedback.innerHTML =
+                    `<span class="incorrect">Incorrect.</span> Correct answer: <b>${item.c}</b>. ${item.e || ""}`;
             }
 
             key += `<p>${index + 1}. ${item.c}</p>`;
@@ -223,9 +241,11 @@ function gradeQuiz() {
 
             if (selected.toLowerCase() === item.c.toLowerCase()) {
                 score++;
-                feedback.innerHTML = `<span class="correct">Correct.</span>`;
+                feedback.innerHTML =
+                    `<span class="correct">Correct.</span> ${item.e || ""}`;
             } else {
-                feedback.innerHTML = `<span class="incorrect">Incorrect.</span> Correct answer: <b>${item.c}</b>`;
+                feedback.innerHTML =
+                    `<span class="incorrect">Incorrect.</span> Correct answer: <b>${item.c}</b>. ${item.e || ""}`;
             }
 
             key += `<p>${index + 1}. ${item.c}</p>`;
@@ -237,7 +257,8 @@ function gradeQuiz() {
             item.left.forEach((left, i) => {
                 total++;
 
-                let selected = document.querySelector(`select[name="q${index}_${i}"]`).value;
+                let selected =
+                    document.querySelector(`select[name="q${index}_${i}"]`).value;
 
                 if (selected === item.c[i]) {
                     score++;
@@ -252,14 +273,21 @@ function gradeQuiz() {
             });
 
             if (correctCount === item.left.length) {
-                feedback.innerHTML = `<span class="correct">Correct.</span><br>${correctList}`;
+                feedback.innerHTML =
+                    `<span class="correct">Correct.</span><br>${correctList}`;
             } else {
-                feedback.innerHTML = `<span class="incorrect">Incorrect.</span><br><b>Correct matches:</b><br>${correctList}`;
+                feedback.innerHTML =
+                    `<span class="incorrect">Incorrect.</span><br><b>Correct matches:</b><br>${correctList}`;
             }
 
             key += `<p>${index + 1}.<br>${correctList}</p>`;
         }
     });
+
+    if (total === 0) {
+        document.getElementById("score").innerHTML = "No questions to grade.";
+        return;
+    }
 
     let percent = Math.round((score / total) * 100);
 
