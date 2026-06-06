@@ -766,42 +766,9 @@ function gradeQuiz() {
 
     window.scrollTo(0, document.body.scrollHeight);
 }
-            let correctList = "";
-
-            leftItems.forEach((left, i) => {
-                correctList += `${left} = ${correctItems[i]}<br>`;
-            });
-
-            key += `<p>${index + 1}.<br>${correctList}${item.e || ""}</p>`;
-        }
-    });
-
-    let percent = Math.round((score / total) * 100);
-
-// Save score to Hostinger database
-fetch("https://emsinfo.org/save_score.php", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-    },
-    credentials: "include",
-    body:
-        "quiz_name=" + encodeURIComponent("blankquiz") +
-        "&score=" + encodeURIComponent(score) +
-        "&total=" + encodeURIComponent(total) +
-        "&percent=" + encodeURIComponent(percent)
-})
-.then(response => response.text())
-.then(data => console.log("Score Save Result:", data))
-.catch(error => console.error("Save Error:", error));
-
-document.getElementById("score").innerHTML =
-    "Score: " + score + " / " + total + " (" + percent + "%)";
-}
 
 buildQuiz();
 </script>
 
 </body>
 </html>
-```
