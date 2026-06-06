@@ -734,6 +734,50 @@ function gradeQuiz() {
 
     let percent = Math.round((score / total) * 100);
 
+    fetch("https://emsinfo.org/save_score.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        credentials: "include",
+        body:
+            "quiz_name=" + encodeURIComponent("blankquiz") +
+            "&score=" + encodeURIComponent(score) +
+            "&total=" + encodeURIComponent(total) +
+            "&percent=" + encodeURIComponent(percent)
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log("Score Save Result:", data);
+        alert("Score Save Result: " + data);
+    })
+    .catch(error => {
+        console.error("Save Error:", error);
+        alert("Save Error: " + error);
+    });
+
+    document.getElementById("score").innerHTML =
+        "Score: " + score + " / " + total + " (" + percent + "%)";
+
+    document.getElementById("keyContent").innerHTML = key;
+    document.getElementById("answerKey").style.display = "block";
+
+    document.getElementById("submitBtn").disabled = true;
+
+    window.scrollTo(0, document.body.scrollHeight);
+}
+            let correctList = "";
+
+            leftItems.forEach((left, i) => {
+                correctList += `${left} = ${correctItems[i]}<br>`;
+            });
+
+            key += `<p>${index + 1}.<br>${correctList}${item.e || ""}</p>`;
+        }
+    });
+
+    let percent = Math.round((score / total) * 100);
+
 // Save score to Hostinger database
 fetch("https://emsinfo.org/save_score.php", {
     method: "POST",
