@@ -11,9 +11,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-const upload = multer({
-  dest: "uploads/"
-});
+const upload = multer({ dest: "uploads/" });
 
 app.use(express.json());
 app.use(express.static("public"));
@@ -26,11 +24,10 @@ You have pressure in the center of your chest.
 The pain started about 20 minutes ago while carrying groceries.
 The pain radiates to your left arm.
 You feel nauseated and short of breath.
-You have a history of high blood pressure and high cholesterol.
+You have high blood pressure and high cholesterol.
 You take lisinopril and atorvastatin.
 You are allergic to penicillin.
 Only answer as the patient.
-Do not give instructor advice.
 Keep answers short and realistic.
 `
 };
@@ -38,16 +35,12 @@ Keep answers short and realistic.
 app.post("/ask", async (req, res) => {
   try {
     const { studentQuestion, history, scenario } = req.body;
-
     const scenarioText = scenarios[scenario] || scenarios.chestPain;
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4.1-mini",
       messages: [
-        {
-          role: "system",
-          content: scenarioText
-        },
+        { role: "system", content: scenarioText },
         {
           role: "user",
           content: `Conversation so far:\n${history || ""}\nStudent asks: ${studentQuestion}`
@@ -55,15 +48,11 @@ app.post("/ask", async (req, res) => {
       ]
     });
 
-    res.json({
-      reply: completion.choices[0].message.content
-    });
+    res.json({ reply: completion.choices[0].message.content });
 
   } catch (error) {
     console.error("ASK ERROR:", error);
-    res.status(500).json({
-      reply: "Server error contacting AI patient."
-    });
+    res.status(500).json({ reply: "Server error contacting AI patient." });
   }
 });
 
@@ -89,16 +78,7 @@ app.post("/voice-ask", upload.single("audio"), async (req, res) => {
 
     if (req.file.originalname) {
       const originalExtension = path.extname(req.file.originalname).toLowerCase();
-
-      if (
-        originalExtension === ".mp3" ||
-        originalExtension === ".mp4" ||
-        originalExtension === ".mpeg" ||
-        originalExtension === ".mpga" ||
-        originalExtension === ".m4a" ||
-        originalExtension === ".wav" ||
-        originalExtension === ".webm"
-      ) {
+      if ([".mp3", ".mp4", ".mpeg", ".mpga", ".m4a", ".wav", ".webm"].includes(originalExtension)) {
         extension = originalExtension;
       }
     }
@@ -111,7 +91,6 @@ app.post("/voice-ask", upload.single("audio"), async (req, res) => {
     }
 
     audioPathWithExtension = `${originalPath}${extension}`;
-
     fs.renameSync(originalPath, audioPathWithExtension);
 
     const transcription = await openai.audio.transcriptions.create({
@@ -133,10 +112,7 @@ app.post("/voice-ask", upload.single("audio"), async (req, res) => {
     const completion = await openai.chat.completions.create({
       model: "gpt-4.1-mini",
       messages: [
-        {
-          role: "system",
-          content: scenarioText
-        },
+        { role: "system", content: scenarioText },
         {
           role: "user",
           content: `Conversation so far:\n${history || ""}\nStudent asks: ${studentQuestion}`
@@ -152,13 +128,8 @@ app.post("/voice-ask", upload.single("audio"), async (req, res) => {
   } catch (error) {
     console.error("VOICE ASK ERROR:", error);
 
-    if (originalPath && fs.existsSync(originalPath)) {
-      fs.unlink(originalPath, () => {});
-    }
-
-    if (audioPathWithExtension && fs.existsSync(audioPathWithExtension)) {
-      fs.unlink(audioPathWithExtension, () => {});
-    }
+    if (originalPath && fs.existsSync(originalPath)) fs.unlink(originalPath, () => {});
+    if (audioPathWithExtension && fs.existsSync(audioPathWithExtension)) fs.unlink(audioPathWithExtension, () => {});
 
     res.status(500).json({
       transcript: "",
@@ -166,51 +137,37 @@ app.post("/voice-ask", upload.single("audio"), async (req, res) => {
     });
   }
 });
-let patientAudio = null;
 
-async function speak(text) {
+app.post("/patient-voice", async (req, res) => {
   try {
-    stopSpeaking();
+    const { text } = req.body;
 
-    document.getElementById("voiceStatus").innerText =
-      "Voice status: Creating realistic patient voice...";
-
-    const res = await fetch("/patient-voice", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        text: text,
-        scenario: scenario
-      })
-    });
-
-    if (!res.ok) {
-      throw new Error("Voice failed");
+    if (!text) {
+      return res.status(400).json({ error: "No text provided." });
     }
 
-    const audioBlob = await res.blob();
-    const audioUrl = URL.createObjectURL(audioBlob);
+    const audio = await openai.audio.speech.create({
+      model: "gpt-4o-mini-tts",
+      voice: "onyx",
+      input: text,
+      instructions:
+        "Use a deep adult male voice. Speak slowly, anxiously, and slightly short of breath like a 58-year-old man having chest pain."
+    });
 
-    patientAudio = new Audio(audioUrl);
+    const buffer = Buffer.from(await audio.arrayBuffer());
 
-    patientAudio.onended = function () {
-      URL.revokeObjectURL(audioUrl);
-      document.getElementById("voiceStatus").innerText =
-        "Voice status: Patient answered.";
-    };
+    res.set({
+      "Content-Type": "audio/mpeg",
+      "Content-Length": buffer.length
+    });
 
-    await patientAudio.play();
-
-    document.getElementById("voiceStatus").innerText =
-      "Voice status: Patient speaking.";
+    res.send(buffer);
 
   } catch (error) {
-    document.getElementById("voiceStatus").innerText =
-      "Realistic voice failed. Showing text response only.";
+    console.error("PATIENT VOICE ERROR:", error);
+    res.status(500).json({ error: "Patient voice generation failed." });
   }
-}
+});
 
 app.post("/instructor", async (req, res) => {
   try {
@@ -221,8 +178,7 @@ app.post("/instructor", async (req, res) => {
       messages: [
         {
           role: "system",
-          content:
-            "You are an EMT instructor. Answer briefly and directly for a skills simulation."
+          content: "You are an EMT instructor. Answer briefly and directly for a skills simulation."
         },
         {
           role: "user",
@@ -231,15 +187,11 @@ app.post("/instructor", async (req, res) => {
       ]
     });
 
-    res.json({
-      reply: completion.choices[0].message.content
-    });
+    res.json({ reply: completion.choices[0].message.content });
 
   } catch (error) {
     console.error("INSTRUCTOR ERROR:", error);
-    res.status(500).json({
-      reply: "Instructor server error."
-    });
+    res.status(500).json({ reply: "Instructor server error." });
   }
 });
 
@@ -268,15 +220,11 @@ ${treatmentPlan || ""}`
       ]
     });
 
-    res.json({
-      feedback: completion.choices[0].message.content
-    });
+    res.json({ feedback: completion.choices[0].message.content });
 
   } catch (error) {
     console.error("GRADE ERROR:", error);
-    res.status(500).json({
-      feedback: "Grading server error."
-    });
+    res.status(500).json({ feedback: "Grading server error." });
   }
 });
 
