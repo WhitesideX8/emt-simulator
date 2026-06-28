@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Chest Pain Scenario</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: url('https://raw.githubusercontent.com/WhitesideX8/emt-simulator/main/public/IMG_0989.jpg')
+        no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 0;
+}
+
+.container {
+    width: 90%;
+    max-width: 1000px;
+    margin: 15px auto;
+    position: relative;
+    z-index: 1;
+}
+
+h1 {
+    text-align: center;
+    color: white;
+    margin: 10px 0;
+}
+
+.box {
+    background: rgba(255,255,255,0.95);
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 10px;
+}
+
+.scenario {
+    text-align: center;
+    font-size: 18px;
+}
+
+.patient-response-container {
+    display: flex;
+    gap: 15px;
+    align-items: stretch;
+}
+
+.avatar-box {
+    width: 170px;
+    background: #eef2f7;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.avatar-box img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.avatar-name {
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+.patient-response {
+    flex: 1;
+    min-height: 160px;
+    background: white;
+    border-left: 6px solid #2b6cb0;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 20px;
+    line-height: 1.5;
+}
+
+.talking {
+    animation: talkingPulse 0.5s infinite;
+}
+
+@keyframes talkingPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+    100% { transform: scale(1); }
+}
+
+.input-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+input {
+    flex: 1;
+    padding: 12px;
+    font-size: 17px;
+}
+
+button {
+    padding: 12px 18px;
+    font-size: 17px;
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    background: #2b6cb0;
+    color: white;
+}
+
+button:hover {
+    background: #1f4f82;
+}
+
+.two-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+textarea {
+    width: 100%;
+    height: 130px;
+    font-size: 16px;
+    padding: 10px;
+}
+
+.response-box {
+    min-height: 140px;
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 5px solid #555;
+}
+
+@media(max-width: 700px) {
+    .patient-response-container,
+    .two-column,
+    .input-row {
+        display: block;
+    }
+
+    .avatar-box {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .avatar-box img {
+        max-width: 170px;
+    }
+
+    button {
+        margin-top: 8px;
+        width: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Chest Pain Scenario</h1>
+
+    <div class="box scenario">
+        <strong>Scenario:</strong><br>
+        You are dispatched to a private residence for a 58-year-old male complaining of chest pain.
+    </div>
+
+    <div class="box">
+        <h2>Patient Response</h2>
+
+        <div class="patient-response-container">
+
+            <div class="avatar-box">
+                <img 
+                    id="patientAvatar"
+                    src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
+                    alt="Patient Avatar"
+                >
+                <div class="avatar-name">Patient</div>
+            </div>
+
+            <div class="patient-response" id="patientResponse">
+                Ask the patient a question.
+            </div>
+
+        </div>
+    </div>
+
+    <div class="box">
+        <h2>Ask Patient</h2>
+
+        <div class="input-row">
+            <input 
+                type="text" 
+                id="patientQuestion" 
+                placeholder="Example: What is your chief complaint?"
+            >
+
+            <button onclick="askPatient()">Ask Patient</button>
+            <button onclick="startVoiceQuestion()">🎤 Voice</button>
+        </div>
+    </div>
+
+    <div class="box">
+        <h2>Ask Instructor</h2>
+
+        <div class="input-row">
+            <input 
+                type="text" 
+                id="instructorQuestion" 
+                placeholder="Example: What are the vital signs?"
+            >
+
+            <button onclick="askInstructor()">Ask Instructor</button>
+        </div>
+    </div>
+
+    <div class="two-column">
+
+        <div class="box">
+            <h2>EMT Treatment Plan</h2>
+            <textarea id="treatmentPlan" placeholder="Enter EMT treatment plan here..."></textarea>
+            <br><br>
+            <button onclick="submitTreatmentPlan()">Submit Plan</button>
+        </div>
+
+        <div class="box">
+            <h2>Instructor Feedback</h2>
+            <div class="response-box" id="instructorResponse">
+                Instructor feedback will appear here.
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+const API_URL = "https://emt-simulator.onrender.com/ask";
+
+const scenario = `
+Chest Pain Scenario:
+The patient is a 58-year-old male.
+He is complaining of chest pressure.
+The pain started while doing yard work.
+The pain is in the center of the chest and radiates to the left arm.
+He has nausea and shortness of breath.
+He has a history of hypertension and high cholesterol.
+`;
+
+function speakPatient(text) {
+    const avatar = document.getElementById("patientAvatar");
+
+    if (!window.speechSynthesis) {
+        return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.rate = 0.9;
+    speech.pitch = 0.9;
+    speech.volume = 1;
+
+    avatar.classList.add("talking");
+
+    speech.onend = function() {
+        avatar.classList.remove("talking");
+    };
+
+    speech.onerror = function() {
+        avatar.classList.remove("talking");
+    };
+
+    window.speechSynthesis.speak(speech);
+}
+
+async function askPatient() {
+    const questionInput = document.getElementById("patientQuestion");
+    const question = questionInput.value.trim();
+    const responseBox = document.getElementById("patientResponse");
+
+    if (!question) {
+        alert("Please enter a patient question.");
+        return;
+    }
+
+    responseBox.innerHTML = "Patient is responding...";
+
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                role: "patient",
+                scenario: scenario,
+                question: question
+            })
+        });
+
+        const data = await response.json();
+
+        const answer = data.answer || data.response || "No patient response received.";
+
+        responseBox.innerHTML = answer;
+        speakPatient(answer);
+
+        questionInput.value = "";
+
+    } catch (error) {
+        responseBox.innerHTML = "Error contacting patient simulator.";
+        console.error(error);
+    }
+}
+
+async function askInstructor() {
+    const questionInput = document.getElementById("instructorQuestion");
+    const question = questionInput.value.trim();
+    const responseBox = document.getElementById("instructorResponse");
+
+    if (!question) {
+        alert("Please enter an instructor question.");
+        return;
+    }
+
+    responseBox.innerHTML = "Instructor is responding...";
+
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                role: "instructor",
+                scenario: scenario,
+                question: question
+            })
+        });
+
+        const data = await response.json();
+
+        responseBox.innerHTML = data.answer || data.response || "No instructor response received.";
+
+        questionInput.value = "";
+
+    } catch (error) {
+        responseBox.innerHTML = "Error contacting instructor simulator.";
+        console.error(error);
+    }
+}
+
+async function submitTreatmentPlan() {
+    const plan = document.getElementById("treatmentPlan").value.trim();
+    const responseBox = document.getElementById("instructorResponse");
+
+    if (!plan) {
+        alert("Please enter an EMT treatment plan.");
+        return;
+    }
+
+    responseBox.innerHTML = "Reviewing treatment plan...";
+
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                role: "instructor",
+                scenario: scenario,
+                question: "Review this EMT treatment plan and give feedback: " + plan
+            })
+        });
+
+        const data = await response.json();
+
+        responseBox.innerHTML = data.answer || data.response || "No feedback received.";
+
+    } catch (error) {
+        responseBox.innerHTML = "Error reviewing treatment plan.";
+        console.error(error);
+    }
+}
+
+function startVoiceQuestion() {
+    if (!("webkitSpeechRecognition" in window)) {
+        alert("Voice input works best in Google Chrome or Microsoft Edge.");
+        return;
+    }
+
+    const recognition = new webkitSpeechRecognition();
+
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.start();
+
+    recognition.onresult = function(event) {
+        const spokenQuestion = event.results[0][0].transcript;
+        document.getElementById("patientQuestion").value = spokenQuestion;
+        askPatient();
+    };
+
+    recognition.onerror = function() {
+        alert("Voice question was not recognized.");
+    };
+}
+</script>
+
+</body>
+</html>
