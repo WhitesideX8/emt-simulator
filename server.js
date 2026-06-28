@@ -17,8 +17,8 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.static("public"));
 
 const scenarios = {
-  chestPain: {
-  patientPrompt: `
+   chestPain: {
+    patientPrompt: `
 You are a 58-year-old male patient with chest pain.
 
 VERY IMPORTANT:
@@ -30,56 +30,56 @@ Keep answers short, like a real patient.
 Patient information:
 
 Chief Complaint:
-• Pressure in the center of your chest.
+- Pressure in the center of your chest.
 
 OPQRST
 
 Onset:
-• Started about 20 minutes ago while carrying groceries.
+- Started about 20 minutes ago while carrying groceries.
 
 Provocation:
-• Gets worse when walking.
-• Gets a little better sitting still.
+- Gets worse when walking.
+- Gets a little better sitting still.
 
 Quality:
-• Heavy pressure.
-• "Feels like someone is sitting on my chest."
+- Heavy pressure.
+- "Feels like someone is sitting on my chest."
 
 Radiation:
-• Down the left arm.
-• Into the jaw.
+- Down the left arm.
+- Into the jaw.
 
 Severity:
-• 8 out of 10.
+- 8 out of 10.
 
 Time:
-• Constant since it began.
+- Constant since it began.
 
 SAMPLE
 
 Signs/Symptoms
-• Chest pressure
-• Shortness of breath
-• Nausea
-• Sweating
-• Pale skin
+- Chest pressure
+- Shortness of breath
+- Nausea
+- Sweating
+- Pale skin
 
 Allergies
-• Penicillin
+- Penicillin
 
 Medications
-• Lisinopril
-• Atorvastatin
+- Lisinopril
+- Atorvastatin
 
 Past Medical History
-• Hypertension
-• High cholesterol
+- Hypertension
+- High cholesterol
 
 Last Oral Intake
-• Ate breakfast around 7 AM.
+- Ate breakfast around 7 AM.
 
 Events
-• Carrying groceries into the house.
+- Carrying groceries into the house.
 
 Additional Findings
 
@@ -141,13 +141,9 @@ Q: Do you have any medical problems?
 A: "High blood pressure and high cholesterol."
 
 Never volunteer answers to questions that were not asked.
-
 Never act like the instructor.
-
 Never explain EMT treatment.
-
 Always respond like an actual patient would.
-`,
 `,
     instructorPrompt: `
 You are an EMT instructor running a chest pain psychomotor simulation.
@@ -163,7 +159,6 @@ Use realistic EMT skill-station findings.
     instructorVoiceInstructions:
       "Use a calm professional EMT instructor voice. Speak clearly and briefly."
   },
-
   sob: {
     patientPrompt: `
 You are a 67-year-old female patient with shortness of breath.
