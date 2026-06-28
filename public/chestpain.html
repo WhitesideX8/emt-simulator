@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,7 +27,7 @@
     .container {
       text-align: center;
       width: 90%;
-      max-width: 900px;
+      max-width: 950px;
       margin: 10px auto;
       position: relative;
       z-index: 1;
@@ -43,15 +42,14 @@
     h2 { font-size: 22px; }
     h3 { font-size: 16px; }
 
-    textarea,
-    button {
+    textarea, button {
       font-size: 15px;
-      padding: 6px;
+      padding: 7px;
       margin-top: 4px;
     }
 
     textarea {
-      width: 50%;
+      width: 55%;
       height: 55px;
       margin: 6px auto;
       display: block;
@@ -63,7 +61,7 @@
     }
 
     #treatmentPlan {
-      width: 50%;
+      width: 55%;
       height: 70px;
       background-color: #e6ffe6;
       border: 2px solid green;
@@ -79,35 +77,26 @@
       margin: 3px;
     }
 
-    button:hover {
-      background: darkgreen;
-    }
+    button:hover { background: darkgreen; }
 
     button:disabled {
       opacity: 0.55;
       cursor: not-allowed;
     }
 
-    .record-btn {
-      background: #004aad;
-    }
+    .record-btn { background: #004aad; }
+    .record-btn:hover { background: #00337a; }
 
-    .record-btn:hover {
-      background: #00337a;
-    }
+    .instructor-btn { background: #663399; }
+    .instructor-btn:hover { background: #4b2673; }
 
-    .stop-btn {
-      background: #990000;
-    }
-
-    .stop-btn:hover {
-      background: #660000;
-    }
+    .stop-btn { background: #990000; }
+    .stop-btn:hover { background: #660000; }
 
     .box {
       width: 100%;
-      min-height: 40px;
-      max-height: 90px;
+      min-height: 45px;
+      max-height: 100px;
       overflow-y: auto;
       border: 1px solid #ccc;
       background: #cfcfcf;
@@ -120,7 +109,7 @@
     }
 
     #scenarioInfo {
-      width: 55%;
+      width: 60%;
       margin: 6px auto;
       min-height: 80px;
       max-height: 120px;
@@ -129,8 +118,8 @@
     #voiceStatus {
       color: white;
       font-weight: bold;
-      margin: 5px;
-      min-height: 20px;
+      margin: 6px;
+      min-height: 22px;
     }
 
     .response-row {
@@ -142,14 +131,14 @@
     }
 
     .response-column {
-      width: 35%;
+      width: 40%;
     }
 
     #feedback {
-      width: 70%;
-      max-width: 700px;
-      min-height: 90px;
-      max-height: 180px;
+      width: 75%;
+      max-width: 750px;
+      min-height: 100px;
+      max-height: 190px;
       background: #f4f4f4;
       border: 2px solid #333;
       font-size: 15px;
@@ -192,7 +181,7 @@
 
     <textarea
       id="studentQuestion"
-      placeholder="Type a question, or click Ask Patient and speak..."
+      placeholder="Type a question, or click Ask Patient / Ask Instructor and speak..."
     ></textarea>
 
     <div id="voiceStatus">Voice status: Ready</div>
@@ -202,8 +191,8 @@
         🎤 Ask Patient
       </button>
 
-      <button onclick="askInstructor()">
-        Ask Instructor
+      <button id="askInstructorBtn" class="instructor-btn" onclick="askInstructorButton()">
+        🎤 Ask Instructor
       </button>
 
       <button onclick="gradeStudent()">
@@ -215,12 +204,11 @@
       </button>
 
       <button class="stop-btn" onclick="stopSpeaking()">
-        🔇 Stop Patient Voice
+        🔇 Stop Voice
       </button>
     </div>
 
     <div class="response-row">
-
       <div class="response-column">
         <h3>Patient Response:</h3>
         <div id="patientResponse" class="box">
@@ -234,7 +222,6 @@
           Instructor answer will appear here.
         </div>
       </div>
-
     </div>
 
     <h3>EMT Treatment Plan:</h3>
@@ -259,8 +246,27 @@
     let mediaRecorder = null;
     let audioChunks = [];
     let currentStream = null;
-    let patientAudio = null;
+    let activeAudio = null;
+
     let recording = false;
+    let recordingTarget = null;
+    let lastRecordingTarget = null;
+
+    function setStatus(message) {
+      document.getElementById("voiceStatus").innerText = message;
+    }
+
+    function setButtonsReady() {
+      recording = false;
+      recordingTarget = null;
+      lastRecordingTarget = null;
+
+      document.getElementById("askPatientBtn").innerHTML = "🎤 Ask Patient";
+      document.getElementById("askInstructorBtn").innerHTML = "🎤 Ask Instructor";
+
+      document.getElementById("askPatientBtn").disabled = false;
+      document.getElementById("askInstructorBtn").disabled = false;
+    }
 
     async function askPatientButton() {
       const typedQuestion = document.getElementById("studentQuestion").value.trim();
@@ -272,49 +278,58 @@
 
       if (!recording) {
         recording = true;
+        recordingTarget = "patient";
+        lastRecordingTarget = "patient";
 
-        document.getElementById("askPatientBtn").innerHTML =
-          "⏹ Stop Recording";
+        document.getElementById("askPatientBtn").innerHTML = "⏹ Stop Patient Recording";
+        document.getElementById("askInstructorBtn").disabled = true;
 
         await startRecording();
+        return;
+      }
 
-      } else {
+      if (recordingTarget === "patient") {
+        lastRecordingTarget = "patient";
         recording = false;
+        recordingTarget = null;
 
-        document.getElementById("askPatientBtn").innerHTML =
-          "🎤 Ask Patient";
+        document.getElementById("askPatientBtn").innerHTML = "🎤 Ask Patient";
+        document.getElementById("askInstructorBtn").disabled = false;
 
         stopRecording();
       }
     }
 
-    function resetScenario() {
-      history = "";
+    async function askInstructorButton() {
+      const typedQuestion = document.getElementById("studentQuestion").value.trim();
 
-      recording = false;
+      if (typedQuestion && !recording) {
+        await askInstructorTyped();
+        return;
+      }
 
-      stopSpeaking();
-      stopAllTracks();
+      if (!recording) {
+        recording = true;
+        recordingTarget = "instructor";
+        lastRecordingTarget = "instructor";
 
-      document.getElementById("patientResponse").innerText =
-        "Patient response will appear here.";
+        document.getElementById("askInstructorBtn").innerHTML = "⏹ Stop Instructor Recording";
+        document.getElementById("askPatientBtn").disabled = true;
 
-      document.getElementById("instructorResponse").innerText =
-        "Instructor answer will appear here.";
+        await startRecording();
+        return;
+      }
 
-      document.getElementById("feedback").innerText =
-        "Feedback will appear here.";
+      if (recordingTarget === "instructor") {
+        lastRecordingTarget = "instructor";
+        recording = false;
+        recordingTarget = null;
 
-      document.getElementById("studentQuestion").value = "";
-      document.getElementById("treatmentPlan").value = "";
+        document.getElementById("askInstructorBtn").innerHTML = "🎤 Ask Instructor";
+        document.getElementById("askPatientBtn").disabled = false;
 
-      document.getElementById("voiceStatus").innerText =
-        "Voice status: Ready";
-
-      document.getElementById("askPatientBtn").innerHTML =
-        "🎤 Ask Patient";
-
-      document.getElementById("askPatientBtn").disabled = false;
+        stopRecording();
+      }
     }
 
     async function startRecording() {
@@ -322,8 +337,8 @@
         stopSpeaking();
 
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          document.getElementById("voiceStatus").innerText =
-            "This browser does not support microphone recording.";
+          setStatus("This browser does not support microphone recording.");
+          setButtonsReady();
           return;
         }
 
@@ -353,6 +368,8 @@
         };
 
         mediaRecorder.onstop = async function () {
+          const target = lastRecordingTarget || "patient";
+
           const actualMimeType =
             mediaRecorder.mimeType || mimeType || "audio/webm";
 
@@ -362,31 +379,34 @@
 
           stopAllTracks();
 
-          await sendVoiceToServer(audioBlob, actualMimeType);
+          if (target === "instructor") {
+            await sendVoiceToInstructor(audioBlob, actualMimeType);
+          } else {
+            await sendVoiceToPatient(audioBlob, actualMimeType);
+          }
         };
 
         mediaRecorder.start();
 
-        document.getElementById("voiceStatus").innerText =
-          "Voice status: Recording. Ask your question now.";
+        if (recordingTarget === "instructor") {
+          setStatus("Voice status: Recording instructor question. Speak now.");
+        } else {
+          setStatus("Voice status: Recording patient question. Speak now.");
+        }
 
       } catch (error) {
-        recording = false;
-
-        document.getElementById("askPatientBtn").innerHTML =
-          "🎤 Ask Patient";
-
-        document.getElementById("voiceStatus").innerText =
-          "Microphone blocked or unavailable. Click the lock icon and allow microphone.";
+        console.error(error);
+        setButtonsReady();
+        setStatus("Microphone blocked or unavailable. Click the lock icon and allow microphone.");
       }
     }
 
     function stopRecording() {
       if (mediaRecorder && mediaRecorder.state === "recording") {
-        document.getElementById("voiceStatus").innerText =
-          "Voice status: Sending audio to server...";
-
+        setStatus("Voice status: Sending audio to server...");
         mediaRecorder.stop();
+      } else {
+        setButtonsReady();
       }
     }
 
@@ -397,34 +417,25 @@
       }
     }
 
-    async function sendVoiceToServer(audioBlob, mimeType) {
-      try {
-        recording = false;
+    function getAudioFileName(mimeType, prefix) {
+      if (mimeType.includes("mp4")) return prefix + ".mp4";
+      if (mimeType.includes("mpeg")) return prefix + ".mp3";
+      if (mimeType.includes("wav")) return prefix + ".wav";
+      if (mimeType.includes("webm")) return prefix + ".webm";
+      return prefix + ".webm";
+    }
 
-        document.getElementById("askPatientBtn").innerHTML =
-          "🎤 Ask Patient";
+    async function sendVoiceToPatient(audioBlob, mimeType) {
+      try {
+        setButtonsReady();
 
         if (!audioBlob || audioBlob.size === 0) {
-          document.getElementById("voiceStatus").innerText =
-            "No audio was recorded. Try again.";
+          setStatus("No audio was recorded. Try again.");
           return;
         }
 
         const formData = new FormData();
-
-        let fileName = "student-question.webm";
-
-        if (mimeType.includes("mp4")) {
-          fileName = "student-question.mp4";
-        } else if (mimeType.includes("mpeg")) {
-          fileName = "student-question.mp3";
-        } else if (mimeType.includes("wav")) {
-          fileName = "student-question.wav";
-        } else if (mimeType.includes("webm")) {
-          fileName = "student-question.webm";
-        }
-
-        formData.append("audio", audioBlob, fileName);
+        formData.append("audio", audioBlob, getAudioFileName(mimeType, "patient-question"));
         formData.append("scenario", scenario);
         formData.append("history", history);
 
@@ -437,59 +448,92 @@
 
         if (!res.ok) {
           document.getElementById("patientResponse").innerText =
-            data.reply || "Voice server error.";
-
-          document.getElementById("voiceStatus").innerText =
-            "Voice status: Server error.";
-
+            data.reply || "Voice patient server error.";
+          setStatus("Voice status: Patient server error.");
           return;
         }
 
         const transcript = data.transcript || "";
-        const patientReply =
-          data.reply || "The patient did not respond.";
+        const patientReply = data.reply || "The patient did not respond.";
 
         if (transcript) {
-          history += `Student: ${transcript}\n`;
+          history += `Student to patient: ${transcript}\n`;
         } else {
-          history += "Student: [Voice unclear]\n";
+          history += "Student to patient: [Voice unclear]\n";
         }
 
         history += `Patient: ${patientReply}\n\n`;
 
         document.getElementById("studentQuestion").value = transcript;
+        document.getElementById("patientResponse").innerText = patientReply;
 
-        document.getElementById("patientResponse").innerText =
-          patientReply;
-
-        document.getElementById("voiceStatus").innerText =
-          "Voice status: Creating realistic patient voice...";
-
-        await speak(patientReply);
+        await speakPatient(patientReply);
 
         document.getElementById("studentQuestion").value = "";
 
       } catch (error) {
-        recording = false;
-
-        document.getElementById("askPatientBtn").innerHTML =
-          "🎤 Ask Patient";
-
+        console.error(error);
+        setButtonsReady();
         document.getElementById("patientResponse").innerText =
-          "Voice server error. Check Render logs and OPENAI_API_KEY.";
+          "Voice patient server error. Check Render logs and OPENAI_API_KEY.";
+        setStatus("Voice status: Patient server error.");
+      }
+    }
 
-        document.getElementById("voiceStatus").innerText =
-          "Voice status: Server error.";
+    async function sendVoiceToInstructor(audioBlob, mimeType) {
+      try {
+        setButtonsReady();
+
+        if (!audioBlob || audioBlob.size === 0) {
+          setStatus("No audio was recorded. Try again.");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("audio", audioBlob, getAudioFileName(mimeType, "instructor-question"));
+        formData.append("scenario", scenario);
+
+        const res = await fetch("/voice-instructor", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          document.getElementById("instructorResponse").innerText =
+            data.reply || "Voice instructor server error.";
+          setStatus("Voice status: Instructor server error.");
+          return;
+        }
+
+        const transcript = data.transcript || "";
+        const instructorReply = data.reply || "Instructor did not respond.";
+
+        history += `Student to instructor: ${transcript || "[Voice unclear]"}\n`;
+        history += `Instructor: ${instructorReply}\n\n`;
+
+        document.getElementById("studentQuestion").value = transcript;
+        document.getElementById("instructorResponse").innerText = instructorReply;
+
+        await speakInstructor(instructorReply);
+
+        document.getElementById("studentQuestion").value = "";
+
+      } catch (error) {
+        console.error(error);
+        setButtonsReady();
+        document.getElementById("instructorResponse").innerText =
+          "Voice instructor server error. Check Render logs and OPENAI_API_KEY.";
+        setStatus("Voice status: Instructor server error.");
       }
     }
 
     async function askPatientTyped() {
-      const question =
-        document.getElementById("studentQuestion").value.trim();
+      const question = document.getElementById("studentQuestion").value.trim();
 
       if (!question) {
-        document.getElementById("patientResponse").innerText =
-          "Ask a question first.";
+        document.getElementById("patientResponse").innerText = "Ask a question first.";
         return;
       }
 
@@ -507,39 +551,29 @@
         });
 
         const data = await res.json();
+        const patientReply = data.reply || data.answer || "The patient did not respond.";
 
-        const patientReply =
-          data.reply || data.answer || "The patient did not respond.";
-
-        history += `Student: ${question}\n`;
+        history += `Student to patient: ${question}\n`;
         history += `Patient: ${patientReply}\n\n`;
 
-        document.getElementById("patientResponse").innerText =
-          patientReply;
+        document.getElementById("patientResponse").innerText = patientReply;
 
-        document.getElementById("voiceStatus").innerText =
-          "Voice status: Creating realistic patient voice...";
-
-        await speak(patientReply);
+        await speakPatient(patientReply);
 
         document.getElementById("studentQuestion").value = "";
 
       } catch (err) {
-        document.getElementById("patientResponse").innerText =
-          "Error contacting server.";
-
-        document.getElementById("voiceStatus").innerText =
-          "Voice status: Server error.";
+        console.error(err);
+        document.getElementById("patientResponse").innerText = "Error contacting patient server.";
+        setStatus("Voice status: Patient server error.");
       }
     }
 
-    async function askInstructor() {
-      const question =
-        document.getElementById("studentQuestion").value.trim();
+    async function askInstructorTyped() {
+      const question = document.getElementById("studentQuestion").value.trim();
 
       if (!question) {
-        document.getElementById("instructorResponse").innerText =
-          "Ask a question first.";
+        document.getElementById("instructorResponse").innerText = "Ask a question first.";
         return;
       }
 
@@ -556,25 +590,30 @@
         });
 
         const data = await res.json();
+        const instructorReply = data.reply || data.answer || "Instructor did not respond.";
 
-        document.getElementById("instructorResponse").innerText =
-          data.reply || data.answer || "Instructor did not respond.";
+        history += `Student to instructor: ${question}\n`;
+        history += `Instructor: ${instructorReply}\n\n`;
+
+        document.getElementById("instructorResponse").innerText = instructorReply;
+
+        await speakInstructor(instructorReply);
 
         document.getElementById("studentQuestion").value = "";
 
       } catch (err) {
-        document.getElementById("instructorResponse").innerText =
-          "Error contacting instructor.";
+        console.error(err);
+        document.getElementById("instructorResponse").innerText = "Error contacting instructor.";
+        setStatus("Voice status: Instructor server error.");
       }
     }
 
     async function gradeStudent() {
-      const treatmentPlan =
-        document.getElementById("treatmentPlan").value.trim();
+      const treatmentPlan = document.getElementById("treatmentPlan").value.trim();
 
       if (!history && !treatmentPlan) {
         document.getElementById("feedback").innerText =
-          "Ask patient questions or enter a treatment plan first.";
+          "Ask patient/instructor questions or enter a treatment plan first.";
         return;
       }
 
@@ -597,19 +636,18 @@
           data.feedback || "No feedback returned.";
 
       } catch (err) {
-        document.getElementById("feedback").innerText =
-          "Error grading.";
+        console.error(err);
+        document.getElementById("feedback").innerText = "Error grading.";
       }
     }
 
-    async function speak(text) {
+    async function playOpenAIVoice(text, endpoint, statusText) {
       stopSpeaking();
 
       try {
-        document.getElementById("voiceStatus").innerText =
-          "Generating realistic patient voice...";
+        setStatus(statusText);
 
-        const response = await fetch("/patient-voice", {
+        const response = await fetch(endpoint, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -627,32 +665,45 @@
         const blob = await response.blob();
         const url = URL.createObjectURL(blob);
 
-        patientAudio = new Audio(url);
+        activeAudio = new Audio(url);
 
-        patientAudio.onended = function () {
+        activeAudio.onended = function () {
           URL.revokeObjectURL(url);
-          document.getElementById("voiceStatus").innerText =
-            "Voice status: Ready";
+          activeAudio = null;
+          setStatus("Voice status: Ready");
         };
 
-        await patientAudio.play();
+        await activeAudio.play();
 
-        document.getElementById("voiceStatus").innerText =
-          "Patient speaking with OpenAI voice...";
+        setStatus("Voice status: Speaking...");
 
       } catch (error) {
         console.error(error);
-
-        document.getElementById("voiceStatus").innerText =
-          "Realistic voice unavailable. Text response shown.";
+        setStatus("Voice unavailable. Text response shown.");
       }
     }
 
+    async function speakPatient(text) {
+      await playOpenAIVoice(
+        text,
+        "/patient-voice",
+        "Generating realistic patient voice..."
+      );
+    }
+
+    async function speakInstructor(text) {
+      await playOpenAIVoice(
+        text,
+        "/instructor-voice",
+        "Generating instructor voice..."
+      );
+    }
+
     function stopSpeaking() {
-      if (patientAudio) {
-        patientAudio.pause();
-        patientAudio.currentTime = 0;
-        patientAudio = null;
+      if (activeAudio) {
+        activeAudio.pause();
+        activeAudio.currentTime = 0;
+        activeAudio = null;
       }
 
       if ("speechSynthesis" in window) {
@@ -660,9 +711,33 @@
       }
     }
 
+    function resetScenario() {
+      history = "";
+      recording = false;
+      recordingTarget = null;
+      lastRecordingTarget = null;
+
+      stopSpeaking();
+      stopAllTracks();
+
+      document.getElementById("patientResponse").innerText =
+        "Patient response will appear here.";
+
+      document.getElementById("instructorResponse").innerText =
+        "Instructor answer will appear here.";
+
+      document.getElementById("feedback").innerText =
+        "Feedback will appear here.";
+
+      document.getElementById("studentQuestion").value = "";
+      document.getElementById("treatmentPlan").value = "";
+
+      setButtonsReady();
+      setStatus("Voice status: Ready");
+    }
+
     window.addEventListener("DOMContentLoaded", resetScenario);
   </script>
 
 </body>
 </html>
-```
