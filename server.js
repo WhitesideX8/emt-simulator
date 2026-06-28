@@ -166,6 +166,51 @@ app.post("/voice-ask", upload.single("audio"), async (req, res) => {
     });
   }
 });
+let patientAudio = null;
+
+async function speak(text) {
+  try {
+    stopSpeaking();
+
+    document.getElementById("voiceStatus").innerText =
+      "Voice status: Creating realistic patient voice...";
+
+    const res = await fetch("/patient-voice", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        text: text,
+        scenario: scenario
+      })
+    });
+
+    if (!res.ok) {
+      throw new Error("Voice failed");
+    }
+
+    const audioBlob = await res.blob();
+    const audioUrl = URL.createObjectURL(audioBlob);
+
+    patientAudio = new Audio(audioUrl);
+
+    patientAudio.onended = function () {
+      URL.revokeObjectURL(audioUrl);
+      document.getElementById("voiceStatus").innerText =
+        "Voice status: Patient answered.";
+    };
+
+    await patientAudio.play();
+
+    document.getElementById("voiceStatus").innerText =
+      "Voice status: Patient speaking.";
+
+  } catch (error) {
+    document.getElementById("voiceStatus").innerText =
+      "Realistic voice failed. Showing text response only.";
+  }
+}
 
 app.post("/instructor", async (req, res) => {
   try {
