@@ -90,11 +90,11 @@
       background: darkgreen;
     }
 
-    .voice-btn {
+    .record-btn {
       background: #004aad;
     }
 
-    .voice-btn:hover {
+    .record-btn:hover {
       background: #00337a;
     }
 
@@ -109,7 +109,7 @@
     .box {
       width: 100%;
       min-height: 40px;
-      max-height: 80px;
+      max-height: 90px;
       overflow-y: auto;
       border: 1px solid #ccc;
       background: #cfcfcf;
@@ -177,8 +177,9 @@
     ></textarea>
 
     <div>
-      <button class="voice-btn" onclick="startVoice()">🎤 Talk to Patient</button>
-      <button class="stop-btn" onclick="stopSpeaking()">🔇 Stop Voice</button>
+      <button class="record-btn" id="recordBtn" onclick="startRecording()">🎤 Start Recording</button>
+      <button class="stop-btn" id="stopRecordBtn" onclick="stopRecording()" disabled>⏹ Stop & Ask Patient</button>
+      <button class="stop-btn" onclick="stopSpeaking()">🔇 Stop Patient Voice</button>
     </div>
 
     <div id="voiceStatus">Voice status: Ready</div>
@@ -191,7 +192,6 @@
     </div>
 
     <div class="response-row">
-
       <div class="response-column">
         <h3>Patient Response:</h3>
         <div id="patientResponse" class="box">
@@ -205,7 +205,6 @@
           Instructor answer will appear here.
         </div>
       </div>
-
     </div>
 
     <h3>EMT Treatment Plan:</h3>
@@ -227,114 +226,8 @@
     let history = "";
     const scenario = "chestPain";
 
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    let recognition = null;
-
-    function setupVoiceRecognition() {
-      if (!SpeechRecognition) {
-        document.getElementById("voiceStatus").innerText =
-          "Voice recognition is not supported. Use Google Chrome or Microsoft Edge.";
-        return;
-      }
-
-      recognition = new SpeechRecognition();
-      recognition.lang = "en-US";
-      recognition.continuous = false;
-      recognition.interimResults = false;
-
-      recognition.onstart = function () {
-        document.getElementById("voiceStatus").innerText =
-          "Voice status: Listening now. Speak clearly.";
-      };
-
-      recognition.onresult = function (event) {
-        const spokenQuestion = event.results[0][0].transcript;
-
-        document.getElementById("studentQuestion").value = spokenQuestion;
-
-        document.getElementById("voiceStatus").innerText =
-          "Voice status: Question received. Sending to patient...";
-
-        askPatient();
-      };
-
-      recognition.onerror = function (event) {
-        let message = "Voice error: " + event.error;
-
-        if (event.error === "network") {
-          message =
-            "Voice error: network. Allow microphone, check internet, and use Chrome or Edge.";
-        }
-
-        if (event.error === "not-allowed") {
-          message =
-            "Microphone blocked. Click the lock icon near the address bar and allow microphone.";
-        }
-
-        if (event.error === "no-speech") {
-          message =
-            "No speech heard. Click Talk to Patient and speak clearly.";
-        }
-
-        if (event.error === "audio-capture") {
-          message =
-            "No microphone found. Check your Windows microphone settings.";
-        }
-
-        document.getElementById("voiceStatus").innerText = message;
-      };
-
-      recognition.onend = function () {
-        const status = document.getElementById("voiceStatus").innerText;
-
-        if (status.includes("Listening")) {
-          document.getElementById("voiceStatus").innerText =
-            "Voice status: Ready";
-        }
-      };
-    }
-
-    function startVoice() {
-      if (!recognition) {
-        setupVoiceRecognition();
-      }
-
-      if (!recognition) {
-        return;
-      }
-
-      stopSpeaking();
-
-      try {
-        recognition.start();
-      } catch (error) {
-        document.getElementById("voiceStatus").innerText =
-          "Voice status: Already listening. Speak now.";
-      }
-    }
-
-    function speak(text) {
-      if (!("speechSynthesis" in window)) {
-        return;
-      }
-
-      stopSpeaking();
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      utterance.rate = 0.9;
-      utterance.pitch = 1;
-
-      speechSynthesis.speak(utterance);
-    }
-
-    function stopSpeaking() {
-      if ("speechSynthesis" in window) {
-        speechSynthesis.cancel();
-      }
-    }
+    let mediaRecorder;
+    let audioChunks = [];
 
     function resetScenario() {
       history = "";
@@ -354,6 +247,99 @@
 
       document.getElementById("voiceStatus").innerText =
         "Voice status: Ready";
+    }
+
+    async function startRecording() {
+      try {
+        stopSpeaking();
+
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+        audioChunks = [];
+
+        mediaRecorder = new MediaRecorder(stream, {
+          mimeType: "audio/webm"
+        });
+
+        mediaRecorder.ondataavailable = function (event) {
+          if (event.data.size > 0) {
+            audioChunks.push(event.data);
+          }
+        };
+
+        mediaRecorder.onstop = async function () {
+          stream.getTracks().forEach(track => track.stop());
+
+          const audioBlob = new Blob(audioChunks, {
+            type: "audio/webm"
+          });
+
+          await sendVoiceToServer(audioBlob);
+        };
+
+        mediaRecorder.start();
+
+        document.getElementById("voiceStatus").innerText =
+          "Voice status: Recording. Ask your question now.";
+
+        document.getElementById("recordBtn").disabled = true;
+        document.getElementById("stopRecordBtn").disabled = false;
+
+      } catch (error) {
+        document.getElementById("voiceStatus").innerText =
+          "Microphone blocked or unavailable. Allow microphone permission in the browser.";
+      }
+    }
+
+    function stopRecording() {
+      if (mediaRecorder && mediaRecorder.state === "recording") {
+        document.getElementById("voiceStatus").innerText =
+          "Voice status: Sending audio to server...";
+
+        mediaRecorder.stop();
+
+        document.getElementById("recordBtn").disabled = false;
+        document.getElementById("stopRecordBtn").disabled = true;
+      }
+    }
+
+    async function sendVoiceToServer(audioBlob) {
+      try {
+        const formData = new FormData();
+
+        formData.append("audio", audioBlob, "student-question.webm");
+        formData.append("scenario", scenario);
+        formData.append("history", history);
+
+        const res = await fetch("/voice-ask", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        const transcript = data.transcript || "";
+        const patientReply = data.reply || "The patient did not respond.";
+
+        document.getElementById("studentQuestion").value = transcript;
+
+        history += `Student: ${transcript}\n`;
+        history += `Patient: ${patientReply}\n\n`;
+
+        document.getElementById("patientResponse").innerText =
+          patientReply;
+
+        document.getElementById("voiceStatus").innerText =
+          "Voice status: Patient answered.";
+
+        speak(patientReply);
+
+        document.getElementById("studentQuestion").value = "";
+
+      } catch (error) {
+        document.getElementById("voiceStatus").innerText =
+          "Voice server error. Check Render logs.";
+      }
     }
 
     async function askPatient() {
@@ -390,9 +376,6 @@
         document.getElementById("patientResponse").innerText =
           patientReply;
 
-        document.getElementById("voiceStatus").innerText =
-          "Voice status: Patient answered.";
-
         speak(patientReply);
 
         document.getElementById("studentQuestion").value = "";
@@ -400,9 +383,6 @@
       } catch (err) {
         document.getElementById("patientResponse").innerText =
           "Error contacting server.";
-
-        document.getElementById("voiceStatus").innerText =
-          "Server error. Make sure your Render server is running.";
       }
     }
 
@@ -475,10 +455,28 @@
       }
     }
 
-    window.addEventListener("DOMContentLoaded", function () {
-      setupVoiceRecognition();
-      resetScenario();
-    });
+    function speak(text) {
+      if (!("speechSynthesis" in window)) {
+        return;
+      }
+
+      stopSpeaking();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+
+      speechSynthesis.speak(utterance);
+    }
+
+    function stopSpeaking() {
+      if ("speechSynthesis" in window) {
+        speechSynthesis.cancel();
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", resetScenario);
   </script>
 
 </body>
