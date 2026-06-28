@@ -11,7 +11,9 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-const upload = multer({ dest: "uploads/" });
+const upload = multer({
+  dest: "uploads/"
+});
 
 app.use(express.json());
 app.use(express.static("public"));
@@ -28,9 +30,57 @@ You have high blood pressure and high cholesterol.
 You take lisinopril and atorvastatin.
 You are allergic to penicillin.
 Only answer as the patient.
+Do not give instructor advice.
 Keep answers short and realistic.
 `
 };
+
+function getAudioExtension(file) {
+  let extension = ".webm";
+
+  if (file.originalname) {
+    const originalExtension = path.extname(file.originalname).toLowerCase();
+
+    if (
+      [".mp3", ".mp4", ".mpeg", ".mpga", ".m4a", ".wav", ".webm"].includes(
+        originalExtension
+      )
+    ) {
+      extension = originalExtension;
+    }
+  }
+
+  if (file.mimetype) {
+    if (file.mimetype.includes("mp4")) extension = ".mp4";
+    if (file.mimetype.includes("mpeg")) extension = ".mp3";
+    if (file.mimetype.includes("wav")) extension = ".wav";
+    if (file.mimetype.includes("webm")) extension = ".webm";
+    if (file.mimetype.includes("m4a")) extension = ".m4a";
+  }
+
+  return extension;
+}
+
+async function transcribeUploadedAudio(file) {
+  const originalPath = file.path;
+  const extension = getAudioExtension(file);
+  const audioPathWithExtension = `${originalPath}${extension}`;
+
+  fs.renameSync(originalPath, audioPathWithExtension);
+
+  try {
+    const transcription = await openai.audio.transcriptions.create({
+      file: fs.createReadStream(audioPathWithExtension),
+      model: "whisper-1"
+    });
+
+    return transcription.text || "";
+  } finally {
+    if (fs.existsSync(audioPathWithExtension)) {
+      fs.unlink(audioPathWithExtension, () => {});
+    }
+  }
+}
 
 app.post("/ask", async (req, res) => {
   try {
@@ -40,7 +90,10 @@ app.post("/ask", async (req, res) => {
     const completion = await openai.chat.completions.create({
       model: "gpt-4.1-mini",
       messages: [
-        { role: "system", content: scenarioText },
+        {
+          role: "system",
+          content: scenarioText
+        },
         {
           role: "user",
           content: `Conversation so far:\n${history || ""}\nStudent asks: ${studentQuestion}`
@@ -48,18 +101,19 @@ app.post("/ask", async (req, res) => {
       ]
     });
 
-    res.json({ reply: completion.choices[0].message.content });
+    res.json({
+      reply: completion.choices[0].message.content
+    });
 
   } catch (error) {
     console.error("ASK ERROR:", error);
-    res.status(500).json({ reply: "Server error contacting AI patient." });
+    res.status(500).json({
+      reply: "Server error contacting AI patient."
+    });
   }
 });
 
 app.post("/voice-ask", upload.single("audio"), async (req, res) => {
-  let originalPath = null;
-  let audioPathWithExtension = null;
-
   try {
     const scenario = req.body.scenario || "chestPain";
     const history = req.body.history || "";
@@ -72,35 +126,7 @@ app.post("/voice-ask", upload.single("audio"), async (req, res) => {
       });
     }
 
-    originalPath = req.file.path;
-
-    let extension = ".webm";
-
-    if (req.file.originalname) {
-      const originalExtension = path.extname(req.file.originalname).toLowerCase();
-      if ([".mp3", ".mp4", ".mpeg", ".mpga", ".m4a", ".wav", ".webm"].includes(originalExtension)) {
-        extension = originalExtension;
-      }
-    }
-
-    if (req.file.mimetype) {
-      if (req.file.mimetype.includes("mp4")) extension = ".mp4";
-      if (req.file.mimetype.includes("mpeg")) extension = ".mp3";
-      if (req.file.mimetype.includes("wav")) extension = ".wav";
-      if (req.file.mimetype.includes("webm")) extension = ".webm";
-    }
-
-    audioPathWithExtension = `${originalPath}${extension}`;
-    fs.renameSync(originalPath, audioPathWithExtension);
-
-    const transcription = await openai.audio.transcriptions.create({
-      file: fs.createReadStream(audioPathWithExtension),
-      model: "whisper-1"
-    });
-
-    const studentQuestion = transcription.text || "";
-
-    fs.unlink(audioPathWithExtension, () => {});
+    const studentQuestion = await transcribeUploadedAudio(req.file);
 
     if (!studentQuestion.trim()) {
       return res.json({
@@ -112,7 +138,10 @@ app.post("/voice-ask", upload.single("audio"), async (req, res) => {
     const completion = await openai.chat.completions.create({
       model: "gpt-4.1-mini",
       messages: [
-        { role: "system", content: scenarioText },
+        {
+          role: "system",
+          content: scenarioText
+        },
         {
           role: "user",
           content: `Conversation so far:\n${history || ""}\nStudent asks: ${studentQuestion}`
@@ -128,12 +157,67 @@ app.post("/voice-ask", upload.single("audio"), async (req, res) => {
   } catch (error) {
     console.error("VOICE ASK ERROR:", error);
 
-    if (originalPath && fs.existsSync(originalPath)) fs.unlink(originalPath, () => {});
-    if (audioPathWithExtension && fs.existsSync(audioPathWithExtension)) fs.unlink(audioPathWithExtension, () => {});
+    if (req.file && req.file.path && fs.existsSync(req.file.path)) {
+      fs.unlink(req.file.path, () => {});
+    }
 
     res.status(500).json({
       transcript: "",
       reply: "Voice server error. Check Render logs and OPENAI_API_KEY."
+    });
+  }
+});
+
+app.post("/voice-instructor", upload.single("audio"), async (req, res) => {
+  try {
+    const scenario = req.body.scenario || "chestPain";
+
+    if (!req.file) {
+      return res.status(400).json({
+        transcript: "",
+        reply: "No audio file was received."
+      });
+    }
+
+    const instructorQuestion = await transcribeUploadedAudio(req.file);
+
+    if (!instructorQuestion.trim()) {
+      return res.json({
+        transcript: "",
+        reply: "I could not hear the instructor question clearly."
+      });
+    }
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4.1-mini",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are an EMT instructor running a chest pain skills scenario. Answer briefly and directly. Give findings only when the student asks appropriate assessment questions. Do not coach unless asked."
+        },
+        {
+          role: "user",
+          content: `Scenario: ${scenario}\nStudent asks instructor: ${instructorQuestion}`
+        }
+      ]
+    });
+
+    res.json({
+      transcript: instructorQuestion,
+      reply: completion.choices[0].message.content
+    });
+
+  } catch (error) {
+    console.error("VOICE INSTRUCTOR ERROR:", error);
+
+    if (req.file && req.file.path && fs.existsSync(req.file.path)) {
+      fs.unlink(req.file.path, () => {});
+    }
+
+    res.status(500).json({
+      transcript: "",
+      reply: "Voice instructor server error. Check Render logs."
     });
   }
 });
@@ -143,7 +227,9 @@ app.post("/patient-voice", async (req, res) => {
     const { text } = req.body;
 
     if (!text) {
-      return res.status(400).json({ error: "No text provided." });
+      return res.status(400).json({
+        error: "No text provided."
+      });
     }
 
     const audio = await openai.audio.speech.create({
@@ -165,7 +251,9 @@ app.post("/patient-voice", async (req, res) => {
 
   } catch (error) {
     console.error("PATIENT VOICE ERROR:", error);
-    res.status(500).json({ error: "Patient voice generation failed." });
+    res.status(500).json({
+      error: "Patient voice generation failed."
+    });
   }
 });
 
@@ -178,7 +266,8 @@ app.post("/instructor", async (req, res) => {
       messages: [
         {
           role: "system",
-          content: "You are an EMT instructor. Answer briefly and directly for a skills simulation."
+          content:
+            "You are an EMT instructor. Answer briefly and directly for a skills simulation."
         },
         {
           role: "user",
@@ -187,11 +276,15 @@ app.post("/instructor", async (req, res) => {
       ]
     });
 
-    res.json({ reply: completion.choices[0].message.content });
+    res.json({
+      reply: completion.choices[0].message.content
+    });
 
   } catch (error) {
     console.error("INSTRUCTOR ERROR:", error);
-    res.status(500).json({ reply: "Instructor server error." });
+    res.status(500).json({
+      reply: "Instructor server error."
+    });
   }
 });
 
@@ -220,11 +313,15 @@ ${treatmentPlan || ""}`
       ]
     });
 
-    res.json({ feedback: completion.choices[0].message.content });
+    res.json({
+      feedback: completion.choices[0].message.content
+    });
 
   } catch (error) {
     console.error("GRADE ERROR:", error);
-    res.status(500).json({ feedback: "Grading server error." });
+    res.status(500).json({
+      feedback: "Grading server error."
+    });
   }
 });
 
