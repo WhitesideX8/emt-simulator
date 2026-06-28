@@ -33,22 +33,21 @@
       z-index: 1;
     }
 
-    h1 {
-      margin: 10px 0 4px;
-      font-size: 28px;
+    h1, h2, h3 {
       color: white;
+      margin: 6px 0;
+    }
+
+    h1 {
+      font-size: 28px;
     }
 
     h2 {
-      margin: 6px 0;
       font-size: 22px;
-      color: white;
     }
 
     h3 {
-      margin: 5px 0 3px;
       font-size: 16px;
-      color: white;
     }
 
     textarea,
@@ -114,7 +113,7 @@
       overflow-y: auto;
       border: 1px solid #ccc;
       background: #cfcfcf;
-      padding: 6px;
+      padding: 8px;
       white-space: pre-wrap;
       text-align: left;
       box-sizing: border-box;
@@ -133,6 +132,7 @@
       color: white;
       font-weight: bold;
       margin: 5px;
+      min-height: 20px;
     }
 
     .response-row {
@@ -194,7 +194,6 @@
 
       <div class="response-column">
         <h3>Patient Response:</h3>
-
         <div id="patientResponse" class="box">
           Patient response will appear here.
         </div>
@@ -202,7 +201,6 @@
 
       <div class="response-column">
         <h3>Instructor Response:</h3>
-
         <div id="instructorResponse" class="box">
           Instructor answer will appear here.
         </div>
@@ -232,9 +230,15 @@
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
 
-    let recognition;
+    let recognition = null;
 
-    if (SpeechRecognition) {
+    function setupVoiceRecognition() {
+      if (!SpeechRecognition) {
+        document.getElementById("voiceStatus").innerText =
+          "Voice recognition is not supported. Use Google Chrome or Microsoft Edge.";
+        return;
+      }
+
       recognition = new SpeechRecognition();
       recognition.lang = "en-US";
       recognition.continuous = false;
@@ -242,7 +246,7 @@
 
       recognition.onstart = function () {
         document.getElementById("voiceStatus").innerText =
-          "Voice status: Listening...";
+          "Voice status: Listening now. Speak clearly.";
       };
 
       recognition.onresult = function (event) {
@@ -251,36 +255,53 @@
         document.getElementById("studentQuestion").value = spokenQuestion;
 
         document.getElementById("voiceStatus").innerText =
-          "Voice status: Question received";
+          "Voice status: Question received. Sending to patient...";
 
         askPatient();
       };
 
       recognition.onerror = function (event) {
-        document.getElementById("voiceStatus").innerText =
-          "Voice error: " + event.error;
+        let message = "Voice error: " + event.error;
+
+        if (event.error === "network") {
+          message =
+            "Voice error: network. Allow microphone, check internet, and use Chrome or Edge.";
+        }
+
+        if (event.error === "not-allowed") {
+          message =
+            "Microphone blocked. Click the lock icon near the address bar and allow microphone.";
+        }
+
+        if (event.error === "no-speech") {
+          message =
+            "No speech heard. Click Talk to Patient and speak clearly.";
+        }
+
+        if (event.error === "audio-capture") {
+          message =
+            "No microphone found. Check your Windows microphone settings.";
+        }
+
+        document.getElementById("voiceStatus").innerText = message;
       };
 
       recognition.onend = function () {
-        if (
-          document.getElementById("voiceStatus").innerText ===
-          "Voice status: Listening..."
-        ) {
+        const status = document.getElementById("voiceStatus").innerText;
+
+        if (status.includes("Listening")) {
           document.getElementById("voiceStatus").innerText =
             "Voice status: Ready";
         }
       };
-    } else {
-      window.addEventListener("DOMContentLoaded", function () {
-        document.getElementById("voiceStatus").innerText =
-          "Voice recognition is not supported in this browser. Use Chrome or Edge.";
-      });
     }
 
     function startVoice() {
       if (!recognition) {
-        document.getElementById("voiceStatus").innerText =
-          "Voice recognition is not supported in this browser.";
+        setupVoiceRecognition();
+      }
+
+      if (!recognition) {
         return;
       }
 
@@ -290,7 +311,7 @@
         recognition.start();
       } catch (error) {
         document.getElementById("voiceStatus").innerText =
-          "Voice status: Already listening";
+          "Voice status: Already listening. Speak now.";
       }
     }
 
@@ -317,7 +338,6 @@
 
     function resetScenario() {
       history = "";
-
       stopSpeaking();
 
       document.getElementById("patientResponse").innerText =
@@ -361,20 +381,28 @@
 
         const data = await res.json();
 
+        const patientReply =
+          data.reply || data.answer || "The patient did not respond.";
+
         history += `Student: ${question}\n`;
-        history += `Patient: ${data.reply}\n\n`;
+        history += `Patient: ${patientReply}\n\n`;
 
         document.getElementById("patientResponse").innerText =
-          data.reply;
+          patientReply;
 
-        speak(data.reply);
+        document.getElementById("voiceStatus").innerText =
+          "Voice status: Patient answered.";
+
+        speak(patientReply);
 
         document.getElementById("studentQuestion").value = "";
 
       } catch (err) {
-
         document.getElementById("patientResponse").innerText =
           "Error contacting server.";
+
+        document.getElementById("voiceStatus").innerText =
+          "Server error. Make sure your Render server is running.";
       }
     }
 
@@ -403,12 +431,11 @@
         const data = await res.json();
 
         document.getElementById("instructorResponse").innerText =
-          data.reply;
+          data.reply || data.answer || "Instructor did not respond.";
 
         document.getElementById("studentQuestion").value = "";
 
       } catch (err) {
-
         document.getElementById("instructorResponse").innerText =
           "Error contacting instructor.";
       }
@@ -419,10 +446,8 @@
         document.getElementById("treatmentPlan").value.trim();
 
       if (!history && !treatmentPlan) {
-
         document.getElementById("feedback").innerText =
           "Ask patient questions or enter a treatment plan first.";
-
         return;
       }
 
@@ -442,16 +467,18 @@
         const data = await res.json();
 
         document.getElementById("feedback").innerText =
-          data.feedback;
+          data.feedback || "No feedback returned.";
 
       } catch (err) {
-
         document.getElementById("feedback").innerText =
           "Error grading.";
       }
     }
 
-    window.addEventListener("DOMContentLoaded", resetScenario);
+    window.addEventListener("DOMContentLoaded", function () {
+      setupVoiceRecognition();
+      resetScenario();
+    });
   </script>
 
 </body>
