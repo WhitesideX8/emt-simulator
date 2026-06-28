@@ -470,10 +470,11 @@
     }
 
     function getAudioFileName(mimeType, prefix) {
+      if (!mimeType) return prefix + ".webm";
+      if (mimeType.includes("webm")) return prefix + ".webm";
       if (mimeType.includes("mp4")) return prefix + ".mp4";
       if (mimeType.includes("mpeg")) return prefix + ".mp3";
       if (mimeType.includes("wav")) return prefix + ".wav";
-      if (mimeType.includes("webm")) return prefix + ".webm";
       return prefix + ".webm";
     }
 
