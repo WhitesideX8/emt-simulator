@@ -56,6 +56,9 @@ app.post("/ask", async (req, res) => {
 });
 
 app.post("/voice-ask", upload.single("audio"), async (req, res) => {
+  let audioPath = null;
+  let fixedAudioPath = null;
+
   try {
     const scenario = req.body.scenario || "chestPain";
     const history = req.body.history || "";
@@ -66,6 +69,70 @@ app.post("/voice-ask", upload.single("audio"), async (req, res) => {
         transcript: "",
         reply: "No audio file was received."
       });
+    }
+
+    audioPath = req.file.path;
+
+    let ext = ".webm";
+
+    if (req.file.mimetype.includes("mp4")) {
+      ext = ".mp4";
+    } else if (req.file.mimetype.includes("mpeg")) {
+      ext = ".mp3";
+    } else if (req.file.mimetype.includes("wav")) {
+      ext = ".wav";
+    } else if (req.file.mimetype.includes("webm")) {
+      ext = ".webm";
+    }
+
+    fixedAudioPath = audioPath + ext;
+
+    fs.renameSync(audioPath, fixedAudioPath);
+
+    const transcription = await openai.audio.transcriptions.create({
+      file: fs.createReadStream(fixedAudioPath),
+      model: "whisper-1"
+    });
+
+    const studentQuestion = transcription.text || "";
+
+    fs.unlink(fixedAudioPath, () => {});
+
+    if (!studentQuestion.trim()) {
+      return res.json({
+        transcript: "",
+        reply: "I could not hear the question clearly."
+      });
+    }
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4.1-mini",
+      messages: [
+        { role: "system", content: scenarioText },
+        {
+          role: "user",
+          content: `Conversation so far:\n${history}\nStudent asks: ${studentQuestion}`
+        }
+      ]
+    });
+
+    res.json({
+      transcript: studentQuestion,
+      reply: completion.choices[0].message.content
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    if (audioPath) fs.unlink(audioPath, () => {});
+    if (fixedAudioPath) fs.unlink(fixedAudioPath, () => {});
+
+    res.status(500).json({
+      transcript: "",
+      reply: "Voice server error. Check Render logs and OPENAI_API_KEY."
+    });
+  }
+});
     }
 
     const audioPath = req.file.path;
