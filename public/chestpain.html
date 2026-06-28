@@ -91,6 +91,22 @@
       background: darkgreen;
     }
 
+    .voice-btn {
+      background: #004aad;
+    }
+
+    .voice-btn:hover {
+      background: #00337a;
+    }
+
+    .stop-btn {
+      background: #990000;
+    }
+
+    .stop-btn:hover {
+      background: #660000;
+    }
+
     .box {
       width: 100%;
       min-height: 40px;
@@ -111,6 +127,12 @@
       margin: 6px auto;
       min-height: 80px;
       max-height: 120px;
+    }
+
+    #voiceStatus {
+      color: white;
+      font-weight: bold;
+      margin: 5px;
     }
 
     .response-row {
@@ -153,6 +175,13 @@
       id="studentQuestion"
       placeholder="Ask the patient or instructor a question..."
     ></textarea>
+
+    <div>
+      <button class="voice-btn" onclick="startVoice()">🎤 Talk to Patient</button>
+      <button class="stop-btn" onclick="stopSpeaking()">🔇 Stop Voice</button>
+    </div>
+
+    <div id="voiceStatus">Voice status: Ready</div>
 
     <div>
       <button onclick="askPatient()">Ask Patient</button>
@@ -200,8 +229,96 @@
     let history = "";
     const scenario = "chestPain";
 
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    let recognition;
+
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.lang = "en-US";
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onstart = function () {
+        document.getElementById("voiceStatus").innerText =
+          "Voice status: Listening...";
+      };
+
+      recognition.onresult = function (event) {
+        const spokenQuestion = event.results[0][0].transcript;
+
+        document.getElementById("studentQuestion").value = spokenQuestion;
+
+        document.getElementById("voiceStatus").innerText =
+          "Voice status: Question received";
+
+        askPatient();
+      };
+
+      recognition.onerror = function (event) {
+        document.getElementById("voiceStatus").innerText =
+          "Voice error: " + event.error;
+      };
+
+      recognition.onend = function () {
+        if (
+          document.getElementById("voiceStatus").innerText ===
+          "Voice status: Listening..."
+        ) {
+          document.getElementById("voiceStatus").innerText =
+            "Voice status: Ready";
+        }
+      };
+    } else {
+      window.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("voiceStatus").innerText =
+          "Voice recognition is not supported in this browser. Use Chrome or Edge.";
+      });
+    }
+
+    function startVoice() {
+      if (!recognition) {
+        document.getElementById("voiceStatus").innerText =
+          "Voice recognition is not supported in this browser.";
+        return;
+      }
+
+      stopSpeaking();
+
+      try {
+        recognition.start();
+      } catch (error) {
+        document.getElementById("voiceStatus").innerText =
+          "Voice status: Already listening";
+      }
+    }
+
+    function speak(text) {
+      if (!("speechSynthesis" in window)) {
+        return;
+      }
+
+      stopSpeaking();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+
+      speechSynthesis.speak(utterance);
+    }
+
+    function stopSpeaking() {
+      if ("speechSynthesis" in window) {
+        speechSynthesis.cancel();
+      }
+    }
+
     function resetScenario() {
       history = "";
+
+      stopSpeaking();
 
       document.getElementById("patientResponse").innerText =
         "Patient response will appear here.";
@@ -214,6 +331,9 @@
 
       document.getElementById("studentQuestion").value = "";
       document.getElementById("treatmentPlan").value = "";
+
+      document.getElementById("voiceStatus").innerText =
+        "Voice status: Ready";
     }
 
     async function askPatient() {
@@ -247,7 +367,8 @@
         document.getElementById("patientResponse").innerText =
           data.reply;
 
-        // Clear question box
+        speak(data.reply);
+
         document.getElementById("studentQuestion").value = "";
 
       } catch (err) {
@@ -284,7 +405,6 @@
         document.getElementById("instructorResponse").innerText =
           data.reply;
 
-        // Clear question box
         document.getElementById("studentQuestion").value = "";
 
       } catch (err) {
