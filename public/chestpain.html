@@ -1,3 +1,6 @@
+Replace your entire **`public/chestpain.html`** with this code.
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -191,30 +194,31 @@
 
     <textarea
       id="studentQuestion"
-      placeholder="Ask the patient or instructor a question..."
+      placeholder="Type a question, or click Ask Patient and speak..."
     ></textarea>
 
+    <div id="voiceStatus">Voice status: Ready</div>
+
     <div>
-      <button class="record-btn" id="recordBtn" onclick="startRecording()">
-        🎤 Start Recording
+      <button id="askPatientBtn" class="record-btn" onclick="askPatientButton()">
+        🎤 Ask Patient
       </button>
 
-      <button class="stop-btn" id="stopRecordBtn" onclick="stopRecording()" disabled>
-        ⏹ Stop & Ask Patient
+      <button onclick="askInstructor()">
+        Ask Instructor
+      </button>
+
+      <button onclick="gradeStudent()">
+        Submit for Grading
+      </button>
+
+      <button onclick="resetScenario()">
+        Reset
       </button>
 
       <button class="stop-btn" onclick="stopSpeaking()">
         🔇 Stop Patient Voice
       </button>
-    </div>
-
-    <div id="voiceStatus">Voice status: Ready</div>
-
-    <div>
-      <button onclick="askPatient()">Ask Patient</button>
-      <button onclick="askInstructor()">Ask Instructor</button>
-      <button onclick="gradeStudent()">Submit for Grading</button>
-      <button onclick="resetScenario()">Reset</button>
     </div>
 
     <div class="response-row">
@@ -258,9 +262,38 @@
     let audioChunks = [];
     let currentStream = null;
     let patientAudio = null;
+    let recording = false;
+
+    async function askPatientButton() {
+      const typedQuestion = document.getElementById("studentQuestion").value.trim();
+
+      if (typedQuestion && !recording) {
+        await askPatientTyped();
+        return;
+      }
+
+      if (!recording) {
+        recording = true;
+
+        document.getElementById("askPatientBtn").innerHTML =
+          "⏹ Stop Recording";
+
+        await startRecording();
+
+      } else {
+        recording = false;
+
+        document.getElementById("askPatientBtn").innerHTML =
+          "🎤 Ask Patient";
+
+        stopRecording();
+      }
+    }
 
     function resetScenario() {
       history = "";
+
+      recording = false;
 
       stopSpeaking();
       stopAllTracks();
@@ -280,8 +313,10 @@
       document.getElementById("voiceStatus").innerText =
         "Voice status: Ready";
 
-      document.getElementById("recordBtn").disabled = false;
-      document.getElementById("stopRecordBtn").disabled = true;
+      document.getElementById("askPatientBtn").innerHTML =
+        "🎤 Ask Patient";
+
+      document.getElementById("askPatientBtn").disabled = false;
     }
 
     async function startRecording() {
@@ -295,7 +330,6 @@
         }
 
         currentStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
         audioChunks = [];
 
         let mimeType = "";
@@ -338,15 +372,14 @@
         document.getElementById("voiceStatus").innerText =
           "Voice status: Recording. Ask your question now.";
 
-        document.getElementById("recordBtn").disabled = true;
-        document.getElementById("stopRecordBtn").disabled = false;
-
       } catch (error) {
+        recording = false;
+
+        document.getElementById("askPatientBtn").innerHTML =
+          "🎤 Ask Patient";
+
         document.getElementById("voiceStatus").innerText =
           "Microphone blocked or unavailable. Click the lock icon and allow microphone.";
-
-        document.getElementById("recordBtn").disabled = false;
-        document.getElementById("stopRecordBtn").disabled = true;
       }
     }
 
@@ -356,9 +389,6 @@
           "Voice status: Sending audio to server...";
 
         mediaRecorder.stop();
-
-        document.getElementById("recordBtn").disabled = false;
-        document.getElementById("stopRecordBtn").disabled = true;
       }
     }
 
@@ -371,6 +401,11 @@
 
     async function sendVoiceToServer(audioBlob, mimeType) {
       try {
+        recording = false;
+
+        document.getElementById("askPatientBtn").innerHTML =
+          "🎤 Ask Patient";
+
         if (!audioBlob || audioBlob.size === 0) {
           document.getElementById("voiceStatus").innerText =
             "No audio was recorded. Try again.";
@@ -437,6 +472,11 @@
         document.getElementById("studentQuestion").value = "";
 
       } catch (error) {
+        recording = false;
+
+        document.getElementById("askPatientBtn").innerHTML =
+          "🎤 Ask Patient";
+
         document.getElementById("patientResponse").innerText =
           "Voice server error. Check Render logs and OPENAI_API_KEY.";
 
@@ -445,7 +485,7 @@
       }
     }
 
-    async function askPatient() {
+    async function askPatientTyped() {
       const question =
         document.getElementById("studentQuestion").value.trim();
 
@@ -627,3 +667,4 @@
 
 </body>
 </html>
+```
