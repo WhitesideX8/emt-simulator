@@ -78,18 +78,30 @@
       margin: 3px;
     }
 
-    button:hover { background: darkgreen; }
+    button:hover {
+      background: darkgreen;
+    }
 
     button:disabled {
       opacity: 0.55;
       cursor: not-allowed;
     }
 
-    .record-btn { background: #004aad; }
-    .record-btn:hover { background: #00337a; }
+    .record-btn {
+      background: #004aad;
+    }
 
-    .stop-btn { background: #990000; }
-    .stop-btn:hover { background: #660000; }
+    .record-btn:hover {
+      background: #00337a;
+    }
+
+    .stop-btn {
+      background: #990000;
+    }
+
+    .stop-btn:hover {
+      background: #660000;
+    }
 
     .box {
       width: 100%;
@@ -245,9 +257,11 @@
     let mediaRecorder = null;
     let audioChunks = [];
     let currentStream = null;
+    let patientAudio = null;
 
     function resetScenario() {
       history = "";
+
       stopSpeaking();
       stopAllTracks();
 
@@ -295,7 +309,7 @@
         }
 
         if (mimeType) {
-          mediaRecorder = new MediaRecorder(currentStream, { mimeType });
+          mediaRecorder = new MediaRecorder(currentStream, { mimeType: mimeType });
         } else {
           mediaRecorder = new MediaRecorder(currentStream);
         }
@@ -307,7 +321,8 @@
         };
 
         mediaRecorder.onstop = async function () {
-          const actualMimeType = mediaRecorder.mimeType || mimeType || "audio/webm";
+          const actualMimeType =
+            mediaRecorder.mimeType || mimeType || "audio/webm";
 
           const audioBlob = new Blob(audioChunks, {
             type: actualMimeType
@@ -390,13 +405,16 @@
         if (!res.ok) {
           document.getElementById("patientResponse").innerText =
             data.reply || "Voice server error.";
+
           document.getElementById("voiceStatus").innerText =
             "Voice status: Server error.";
+
           return;
         }
 
         const transcript = data.transcript || "";
-        const patientReply = data.reply || "The patient did not respond.";
+        const patientReply =
+          data.reply || "The patient did not respond.";
 
         if (transcript) {
           history += `Student: ${transcript}\n`;
@@ -412,9 +430,9 @@
           patientReply;
 
         document.getElementById("voiceStatus").innerText =
-          "Voice status: Patient answered.";
+          "Voice status: Creating realistic patient voice...";
 
-        speak(patientReply);
+        await speak(patientReply);
 
         document.getElementById("studentQuestion").value = "";
 
@@ -462,9 +480,9 @@
           patientReply;
 
         document.getElementById("voiceStatus").innerText =
-          "Voice status: Patient answered.";
+          "Voice status: Creating realistic patient voice...";
 
-        speak(patientReply);
+        await speak(patientReply);
 
         document.getElementById("studentQuestion").value = "";
 
@@ -546,22 +564,59 @@
       }
     }
 
-    function speak(text) {
-      if (!("speechSynthesis" in window)) {
-        return;
-      }
-
+    async function speak(text) {
       stopSpeaking();
 
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      utterance.rate = 0.9;
-      utterance.pitch = 1;
+      try {
+        document.getElementById("voiceStatus").innerText =
+          "Generating realistic patient voice...";
 
-      speechSynthesis.speak(utterance);
+        const response = await fetch("/patient-voice", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            text: text,
+            scenario: scenario
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error("Voice failed");
+        }
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+
+        patientAudio = new Audio(url);
+
+        patientAudio.onended = function () {
+          URL.revokeObjectURL(url);
+          document.getElementById("voiceStatus").innerText =
+            "Voice status: Ready";
+        };
+
+        await patientAudio.play();
+
+        document.getElementById("voiceStatus").innerText =
+          "Patient speaking with OpenAI voice...";
+
+      } catch (error) {
+        console.error(error);
+
+        document.getElementById("voiceStatus").innerText =
+          "Realistic voice unavailable. Text response shown.";
+      }
     }
 
     function stopSpeaking() {
+      if (patientAudio) {
+        patientAudio.pause();
+        patientAudio.currentTime = 0;
+        patientAudio = null;
+      }
+
       if ("speechSynthesis" in window) {
         speechSynthesis.cancel();
       }
