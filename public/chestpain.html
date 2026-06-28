@@ -62,7 +62,7 @@
 
     #treatmentPlan {
       width: 55%;
-      height: 70px;
+      height: 80px;
       background-color: #e6ffe6;
       border: 2px solid green;
       font-weight: bold;
@@ -89,6 +89,9 @@
 
     .instructor-btn { background: #663399; }
     .instructor-btn:hover { background: #4b2673; }
+
+    .treatment-btn { background: #b36b00; }
+    .treatment-btn:hover { background: #804d00; }
 
     .stop-btn { background: #990000; }
     .stop-btn:hover { background: #660000; }
@@ -231,6 +234,10 @@
       placeholder="Student enters EMT treatment plan here..."
     ></textarea>
 
+    <button id="treatmentPlanBtn" class="treatment-btn" onclick="treatmentPlanButton()">
+      🎤 Dictate Treatment Plan
+    </button>
+
     <h3>Feedback (Grading Report):</h3>
 
     <div id="feedback" class="box">
@@ -266,6 +273,12 @@
 
       document.getElementById("askPatientBtn").disabled = false;
       document.getElementById("askInstructorBtn").disabled = false;
+
+      const treatmentBtn = document.getElementById("treatmentPlanBtn");
+      if (treatmentBtn) {
+        treatmentBtn.innerHTML = "🎤 Dictate Treatment Plan";
+        treatmentBtn.disabled = false;
+      }
     }
 
     async function askPatientButton() {
@@ -283,6 +296,7 @@
 
         document.getElementById("askPatientBtn").innerHTML = "⏹ Stop Patient Recording";
         document.getElementById("askInstructorBtn").disabled = true;
+        document.getElementById("treatmentPlanBtn").disabled = true;
 
         await startRecording();
         return;
@@ -295,6 +309,7 @@
 
         document.getElementById("askPatientBtn").innerHTML = "🎤 Ask Patient";
         document.getElementById("askInstructorBtn").disabled = false;
+        document.getElementById("treatmentPlanBtn").disabled = false;
 
         stopRecording();
       }
@@ -315,6 +330,7 @@
 
         document.getElementById("askInstructorBtn").innerHTML = "⏹ Stop Instructor Recording";
         document.getElementById("askPatientBtn").disabled = true;
+        document.getElementById("treatmentPlanBtn").disabled = true;
 
         await startRecording();
         return;
@@ -327,6 +343,38 @@
 
         document.getElementById("askInstructorBtn").innerHTML = "🎤 Ask Instructor";
         document.getElementById("askPatientBtn").disabled = false;
+        document.getElementById("treatmentPlanBtn").disabled = false;
+
+        stopRecording();
+      }
+    }
+
+    async function treatmentPlanButton() {
+      if (!recording) {
+        recording = true;
+        recordingTarget = "treatment";
+        lastRecordingTarget = "treatment";
+
+        document.getElementById("treatmentPlanBtn").innerHTML =
+          "⏹ Stop Treatment Plan Recording";
+
+        document.getElementById("askPatientBtn").disabled = true;
+        document.getElementById("askInstructorBtn").disabled = true;
+
+        await startRecording();
+        return;
+      }
+
+      if (recordingTarget === "treatment") {
+        lastRecordingTarget = "treatment";
+        recording = false;
+        recordingTarget = null;
+
+        document.getElementById("treatmentPlanBtn").innerHTML =
+          "🎤 Dictate Treatment Plan";
+
+        document.getElementById("askPatientBtn").disabled = false;
+        document.getElementById("askInstructorBtn").disabled = false;
 
         stopRecording();
       }
@@ -381,6 +429,8 @@
 
           if (target === "instructor") {
             await sendVoiceToInstructor(audioBlob, actualMimeType);
+          } else if (target === "treatment") {
+            await sendVoiceToTreatmentPlan(audioBlob, actualMimeType);
           } else {
             await sendVoiceToPatient(audioBlob, actualMimeType);
           }
@@ -390,6 +440,8 @@
 
         if (recordingTarget === "instructor") {
           setStatus("Voice status: Recording instructor question. Speak now.");
+        } else if (recordingTarget === "treatment") {
+          setStatus("Voice status: Recording treatment plan. Speak now.");
         } else {
           setStatus("Voice status: Recording patient question. Speak now.");
         }
@@ -526,6 +578,58 @@
         document.getElementById("instructorResponse").innerText =
           "Voice instructor server error. Check Render logs and OPENAI_API_KEY.";
         setStatus("Voice status: Instructor server error.");
+      }
+    }
+
+    async function sendVoiceToTreatmentPlan(audioBlob, mimeType) {
+      try {
+        setButtonsReady();
+
+        if (!audioBlob || audioBlob.size === 0) {
+          setStatus("No audio was recorded. Try again.");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("audio", audioBlob, getAudioFileName(mimeType, "treatment-plan"));
+        formData.append("scenario", scenario);
+        formData.append("history", history);
+
+        const res = await fetch("/voice-ask", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          setStatus("Voice status: Treatment plan transcription error.");
+          return;
+        }
+
+        const transcript = data.transcript || "";
+
+        if (!transcript) {
+          setStatus("Could not hear treatment plan clearly.");
+          return;
+        }
+
+        const treatmentBox = document.getElementById("treatmentPlan");
+
+        if (treatmentBox.value.trim()) {
+          treatmentBox.value += "\n" + transcript;
+        } else {
+          treatmentBox.value = transcript;
+        }
+
+        history += `Treatment plan dictated: ${transcript}\n\n`;
+
+        setStatus("Voice status: Treatment plan added.");
+
+      } catch (error) {
+        console.error(error);
+        setButtonsReady();
+        setStatus("Voice status: Treatment plan voice error.");
       }
     }
 
