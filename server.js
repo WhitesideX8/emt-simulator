@@ -546,24 +546,31 @@ app.post("/voice-instructor", upload.single("audio"), async (req, res) => {
 
     const transcript = await cleanTranscript(transcription.text || "");
 
-    const reply = await chatResponse(
+    const history = req.body.history || "";
+
+const reply = await chatResponse(
   `
 You are an experienced EMT instructor helping a student through this patient simulation.
 
 Rules:
-- Answer the student's spoken question.
-- Use the patient information below when answering.
+- Answer the student's question directly.
+- Use the patient information below.
+- Use the conversation history below.
 - Explain your reasoning briefly.
-- If the student asks about the patient's condition, symptoms, history, medications, allergies, or assessment findings, answer from the scenario.
-- Do NOT act as the patient.
-- Do NOT invent information that is not in the scenario. If the information isn't available, say so.
-- Keep answers concise (1-3 sentences).
+- If asked about assessment findings, medications, allergies, history, treatment priorities, or why a treatment is indicated, answer as an instructor.
+- Never act as the patient.
+- Never invent information not contained in the scenario.
+- If the information is unavailable, state that clearly.
+- Keep answers to 1–3 concise sentences.
 
 Scenario:
 ${scenarioData.name}
 
 Patient information:
 ${scenarioData.patient}
+
+Conversation history:
+${history}
 `,
   transcript
 );
