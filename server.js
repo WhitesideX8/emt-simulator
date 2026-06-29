@@ -444,7 +444,7 @@ app.post("/voice-ask", upload.single("audio"), async (req, res) => {
       model: TRANSCRIBE_MODEL
     });
 
-    const transcript = transcription.text || "";
+    const transcript = await cleanTranscript(transcription.text || "");
 
     const reply = await chatResponse(
       `
@@ -508,7 +508,7 @@ app.post("/voice-instructor", upload.single("audio"), async (req, res) => {
       model: TRANSCRIBE_MODEL
     });
 
-    const transcript = transcription.text || "";
+    const transcript = await cleanTranscript(transcription.text || "");
 
     const reply = await chatResponse(
       `
