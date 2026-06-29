@@ -382,16 +382,20 @@ app.post("/instructor", async (req, res) => {
 
     const reply = await chatResponse(
       `
-You are an EMT instructor.
+You are an EMT instructor in a training simulator.
 
 Rules:
-- Give short, direct coaching.
-- Do not complete the whole scenario for the student.
-- Do not give a grade unless asked.
-- Keep advice appropriate for EMT level.
+- Answer the student's question about this patient scenario.
+- You may use the patient scenario information below.
+- Keep answers short and direct.
+- Do not give away the entire scenario unless the student asks directly.
+- Do not act as the patient.
 
 Scenario:
 ${scenarioData.name}
+
+Patient information:
+${scenarioData.patient}
 `,
       studentQuestion || ""
     );
@@ -402,7 +406,6 @@ ${scenarioData.name}
     res.status(500).json({ reply: "Instructor server error." });
   }
 });
-
 app.post("/grade", async (req, res) => {
   try {
     const { studentAnswer, treatmentPlan, scenario } = req.body;
@@ -544,20 +547,26 @@ app.post("/voice-instructor", upload.single("audio"), async (req, res) => {
     const transcript = await cleanTranscript(transcription.text || "");
 
     const reply = await chatResponse(
-      `
-You are an EMT instructor.
+  `
+You are an experienced EMT instructor helping a student through this patient simulation.
 
 Rules:
-- Answer directly.
-- Keep answers short.
-- Do not give away the entire scenario.
-- Use EMT-level explanations.
+- Answer the student's spoken question.
+- Use the patient information below when answering.
+- Explain your reasoning briefly.
+- If the student asks about the patient's condition, symptoms, history, medications, allergies, or assessment findings, answer from the scenario.
+- Do NOT act as the patient.
+- Do NOT invent information that is not in the scenario. If the information isn't available, say so.
+- Keep answers concise (1-3 sentences).
 
 Scenario:
 ${scenarioData.name}
+
+Patient information:
+${scenarioData.patient}
 `,
-      transcript
-    );
+  transcript
+);
 
     res.json({ transcript, reply });
   } catch (error) {
