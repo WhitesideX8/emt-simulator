@@ -306,6 +306,39 @@ async function chatResponse(systemPrompt, userPrompt) {
 
   return completion.choices[0].message.content;
 }
+async function cleanTranscript(rawText) {
+  const completion = await openai.chat.completions.create({
+    model: CHAT_MODEL,
+    messages: [
+      {
+        role: "system",
+        content: `
+You are an EMT terminology corrector.
+
+Correct obvious speech-to-text mistakes involving EMS terminology.
+
+Examples:
+sample -> SAMPLE
+op qrst -> OPQRST
+nitro -> nitroglycerin
+spo2 -> SpO2
+bag valve mask -> bag-valve mask
+non rebreather -> nonrebreather
+
+DO NOT add information.
+DO NOT change the meaning.
+Return only the corrected transcript.
+`
+      },
+      {
+        role: "user",
+        content: rawText
+      }
+    ]
+  });
+
+  return completion.choices[0].message.content.trim();
+}
 
 app.post("/ask", async (req, res) => {
   try {
