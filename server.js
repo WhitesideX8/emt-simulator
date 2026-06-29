@@ -431,15 +431,14 @@ app.post("/voice-ask", upload.single("audio"), async (req, res) => {
 
     audioPath = req.file.path;
 
-    const scenarioName = req.body.scenario || "chestPain";
-    const history = req.body.history || "";
-    const scenarioData = getScenario(scenarioName);
+const fixedAudioPath = audioPath + ".webm";
+fs.renameSync(audioPath, fixedAudioPath);
+audioPath = fixedAudioPath;
 
-    const transcription = await openai.audio.transcriptions.create({
-      file: fs.createReadStream(audioPath),
-      model: TRANSCRIBE_MODEL
-    });
-
+const transcription = await openai.audio.transcriptions.create({
+  file: fs.createReadStream(audioPath),
+  model: TRANSCRIBE_MODEL
+});
     const transcript = transcription.text || "";
 
     const reply = await chatResponse(
@@ -492,13 +491,18 @@ app.post("/voice-instructor", upload.single("audio"), async (req, res) => {
 
     audioPath = req.file.path;
 
-    const scenarioName = req.body.scenario || "chestPain";
-    const scenarioData = getScenario(scenarioName);
+// Rename the uploaded file so it has a .webm extension
+const fixedAudioPath = audioPath + ".webm";
+fs.renameSync(audioPath, fixedAudioPath);
+audioPath = fixedAudioPath;
 
-    const transcription = await openai.audio.transcriptions.create({
-      file: fs.createReadStream(audioPath),
-      model: TRANSCRIBE_MODEL
-    });
+const scenarioName = req.body.scenario || "chestPain";
+const scenarioData = getScenario(scenarioName);
+
+const transcription = await openai.audio.transcriptions.create({
+  file: fs.createReadStream(audioPath),
+  model: TRANSCRIBE_MODEL
+});
 
     const transcript = transcription.text || "";
 
