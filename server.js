@@ -26,7 +26,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 const CHAT_MODEL = process.env.CHAT_MODEL || "gpt-4o-mini";
-const TRANSCRIBE_MODEL = process.env.TRANSCRIBE_MODEL || "whisper-1";
+const TRANSCRIBE_MODEL =
+  process.env.TRANSCRIBE_MODEL || "gpt-4o-mini-transcribe";
 const TTS_MODEL = process.env.TTS_MODEL || "tts-1";
 
 const scenarios = {
@@ -117,6 +118,53 @@ function includesAny(text, terms) {
   return terms.some(term => text.includes(term));
 }
 
+async function chatResponse(systemPrompt, userPrompt) {
+  const completion = await openai.chat.completions.create({
+    model: CHAT_MODEL,
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt }
+    ]
+  });
+
+  return completion.choices[0].message.content;
+}
+
+async function cleanTranscript(rawText) {
+  if (!rawText) return "";
+
+  const completion = await openai.chat.completions.create({
+    model: CHAT_MODEL,
+    messages: [
+      {
+        role: "system",
+        content: `
+You are an EMT terminology corrector.
+
+Correct obvious speech-to-text mistakes involving EMS terminology.
+
+Examples:
+sample -> SAMPLE
+op qrst -> OPQRST
+nitro -> nitroglycerin
+spo2 -> SpO2
+bag valve mask -> bag-valve mask
+non rebreather -> nonrebreather
+o two -> O2
+BP -> blood pressure
+
+DO NOT add information.
+DO NOT change the meaning.
+Return only the corrected transcript.
+`
+      },
+      { role: "user", content: rawText }
+    ]
+  });
+
+  return completion.choices[0].message.content.trim();
+}
+
 function ctPsychomotorGrade(history, treatmentPlan, scenarioName) {
   const scenario = getScenario(scenarioName);
   const text = normalize(`${history}\n${treatmentPlan}`);
@@ -139,65 +187,65 @@ function ctPsychomotorGrade(history, treatmentPlan, scenarioName) {
     if (passed) sections[section].earned += 1;
   }
 
-  check("sceneSizeUp", "BSI / PPE", ["bsi", "ppe", "gloves", "body substance"]);
-  check("sceneSizeUp", "Scene safety", ["scene safe", "scene is safe", "safe scene"]);
-  check("sceneSizeUp", "Nature of illness", ["noi", "nature of illness", "medical"]);
-  check("sceneSizeUp", "Number of patients", ["number of patients", "one patient", "single patient"]);
-  check("sceneSizeUp", "Additional resources", ["als", "paramedic", "additional resources", "backup"]);
-  check("sceneSizeUp", "Spinal precautions considered", ["spinal", "c-spine", "trauma ruled out", "no trauma"]);
+  check("sceneSizeUp", "BSI / PPE", ["bsi", "ppe", "gloves"]);
+  check("sceneSizeUp", "Scene safety", ["scene safe", "safe scene"]);
+  check("sceneSizeUp", "Nature of illness", ["noi", "nature of illness"]);
+  check("sceneSizeUp", "Number of patients", ["number of patients", "one patient"]);
+  check("sceneSizeUp", "Additional resources", ["als", "paramedic", "backup"]);
+  check("sceneSizeUp", "Spinal precautions considered", ["spinal", "c-spine", "no trauma"]);
 
-  check("primaryAssessment", "General impression", ["general impression", "appears", "sick", "not sick"]);
-  check("primaryAssessment", "LOC / AVPU", ["avpu", "alert", "verbal", "painful", "unresponsive", "loc"]);
-  check("primaryAssessment", "Chief complaint", ["chief complaint", "complaint", "chest pain", "shortness of breath", "weakness"]);
+  check("primaryAssessment", "General impression", ["general impression", "appears"]);
+  check("primaryAssessment", "LOC / AVPU", ["avpu", "alert", "loc"]);
+  check("primaryAssessment", "Chief complaint", ["chief complaint", "chest pain", "shortness of breath"]);
   check("primaryAssessment", "Airway", ["airway"]);
-  check("primaryAssessment", "Breathing", ["breathing", "respirations", "respiratory"]);
+  check("primaryAssessment", "Breathing", ["breathing", "respirations"]);
   check("primaryAssessment", "Circulation", ["pulse", "circulation"]);
-  check("primaryAssessment", "Skin", ["skin", "pale", "cool", "diaphoretic", "sweating"]);
-  check("primaryAssessment", "Oxygen considered/provided", ["oxygen", "o2", "nasal cannula", "nonrebreather"]);
-  check("primaryAssessment", "Patient priority", ["priority", "unstable", "stable", "high priority"]);
-  check("primaryAssessment", "Transport decision", ["transport", "hospital", "load and go", "emergency department"]);
+  check("primaryAssessment", "Skin", ["skin", "pale", "cool", "diaphoretic"]);
+  check("primaryAssessment", "Oxygen", ["oxygen", "o2", "nonrebreather", "nasal cannula"]);
+  check("primaryAssessment", "Priority", ["priority", "unstable", "stable"]);
+  check("primaryAssessment", "Transport", ["transport", "hospital"]);
 
-  check("historyTaking", "OPQRST", ["opqrst", "onset", "provocation", "quality", "radiation", "severity", "time"]);
-  check("historyTaking", "SAMPLE", ["sample", "signs", "symptoms", "allergies", "medications", "past medical"]);
-  check("historyTaking", "Allergies", ["allergies", "allergic"]);
+  check("historyTaking", "OPQRST", ["opqrst", "onset", "provocation", "quality", "radiation", "severity"]);
+  check("historyTaking", "SAMPLE", ["sample", "signs", "symptoms", "allergies", "medications"]);
+  check("historyTaking", "Allergies", ["allergies"]);
   check("historyTaking", "Medications", ["medications", "meds"]);
-  check("historyTaking", "Past medical history", ["past medical", "history", "hypertension", "copd", "diabetes"]);
+  check("historyTaking", "Past history", ["past medical", "history"]);
   check("historyTaking", "Last oral intake", ["last oral", "last ate", "last meal"]);
-  check("historyTaking", "Events leading up", ["events", "what happened", "leading up"]);
-  check("historyTaking", "Pain onset", ["onset", "started", "began"]);
-  check("historyTaking", "Pain radiation", ["radiates", "radiating", "left arm", "jaw", "back"]);
-  check("historyTaking", "Pain severity", ["severity", "scale", "0-10", "1-10", "pain level"]);
+  check("historyTaking", "Events", ["events", "what happened"]);
+  check("historyTaking", "Onset", ["onset", "started"]);
+  check("historyTaking", "Radiation", ["radiates", "left arm", "jaw"]);
+  check("historyTaking", "Severity", ["severity", "scale", "pain level"]);
 
   check("secondaryAssessment", "Focused exam", ["focused exam", "secondary assessment"]);
-  check("secondaryAssessment", "Lung sounds", ["lung sounds", "breath sounds", "clear", "wheezes", "crackles"]);
-  check("secondaryAssessment", "Cardiac / chest assessment", ["cardiac", "heart", "chest"]);
-  check("secondaryAssessment", "Associated symptoms", ["nausea", "sob", "shortness of breath", "sweating", "diaphoretic"]);
-  check("secondaryAssessment", "Pertinent negatives", ["denies", "no trauma", "no allergies"]);
+  check("secondaryAssessment", "Lung sounds", ["lung sounds", "breath sounds"]);
+  check("secondaryAssessment", "Chest/cardiac", ["cardiac", "heart", "chest"]);
+  check("secondaryAssessment", "Associated symptoms", ["nausea", "sweating", "shortness of breath"]);
+  check("secondaryAssessment", "Pertinent negatives", ["denies", "no allergies"]);
 
   check("vitals", "Blood pressure", ["blood pressure", "bp"]);
   check("vitals", "Pulse", ["pulse", "heart rate"]);
   check("vitals", "Respirations", ["respirations", "respiratory rate"]);
-  check("vitals", "SpO2", ["spo2", "pulse ox", "oxygen saturation"]);
-  check("vitals", "Repeat vitals", ["repeat vitals", "reassess vitals", "ongoing vitals"]);
+  check("vitals", "SpO2", ["spo2", "pulse ox"]);
+  check("vitals", "Repeat vitals", ["repeat vitals", "reassess vitals"]);
 
-  check("treatment", "Oxygen therapy", ["oxygen", "o2", "nasal cannula", "nonrebreather"]);
+  check("treatment", "Oxygen therapy", ["oxygen", "o2"]);
   check("treatment", "Aspirin", ["aspirin", "asa"]);
   check("treatment", "Nitroglycerin considered", ["nitro", "nitroglycerin"]);
-  check("treatment", "Rapid transport", ["transport", "hospital", "emergency department"]);
-  check("treatment", "ALS requested", ["als", "paramedic", "intercept"]);
-  check("treatment", "Position of comfort", ["position of comfort", "semi-fowler", "sitting"]);
-  check("treatment", "Continued monitoring", ["monitor", "reassess", "cardiac monitor"]);
+  check("treatment", "Rapid transport", ["transport", "hospital"]);
+  check("treatment", "ALS requested", ["als", "paramedic"]);
+  check("treatment", "Position of comfort", ["position of comfort", "semi-fowler"]);
+  check("treatment", "Monitoring", ["monitor", "reassess"]);
 
-  check("reassessment", "Reassess airway", ["reassess airway", "airway reassessment"]);
-  check("reassessment", "Reassess breathing", ["reassess breathing", "breathing reassessment"]);
-  check("reassessment", "Reassess circulation", ["reassess circulation", "pulse reassessment"]);
-  check("reassessment", "Verbal report", ["verbal report", "handoff", "report to hospital"]);
+  check("reassessment", "Reassess airway", ["reassess airway"]);
+  check("reassessment", "Reassess breathing", ["reassess breathing"]);
+  check("reassessment", "Reassess circulation", ["reassess circulation"]);
+  check("reassessment", "Verbal report", ["verbal report", "handoff"]);
 
   if (!includesAny(text, ["bsi", "ppe", "gloves"])) {
     criticalFailures.push("Failure to verbalize BSI/PPE precautions.");
   }
 
-  if (!includesAny(text, ["scene safe", "scene is safe", "safe scene"])) {
+  if (!includesAny(text, ["scene safe", "safe scene"])) {
     criticalFailures.push("Failure to determine scene safety.");
   }
 
@@ -205,7 +253,7 @@ function ctPsychomotorGrade(history, treatmentPlan, scenarioName) {
     criticalFailures.push("Failure to assess/manage airway.");
   }
 
-  if (!includesAny(text, ["breathing", "respirations", "respiratory"])) {
+  if (!includesAny(text, ["breathing", "respirations"])) {
     criticalFailures.push("Failure to assess/manage breathing.");
   }
 
@@ -222,13 +270,9 @@ function ctPsychomotorGrade(history, treatmentPlan, scenarioName) {
 
   if (
     scenario.patientCritical &&
-    !includesAny(text, ["transport", "hospital", "load and go", "emergency department"])
+    !includesAny(text, ["transport", "hospital", "emergency department"])
   ) {
     criticalFailures.push("Failure to make appropriate transport decision.");
-  }
-
-  if (includesAny(text, ["refuse transport", "leave patient", "no transport needed"])) {
-    criticalFailures.push("Dangerous decision: no transport for a potentially unstable patient.");
   }
 
   let totalEarned = 0;
@@ -240,12 +284,8 @@ function ctPsychomotorGrade(history, treatmentPlan, scenarioName) {
   }
 
   const percent = Math.round((totalEarned / totalPossible) * 100);
-  const minimumPassingPercent = 78;
-
   const result =
-    criticalFailures.length === 0 && percent >= minimumPassingPercent
-      ? "PASS"
-      : "FAIL";
+    criticalFailures.length === 0 && percent >= 78 ? "PASS" : "FAIL";
 
   return {
     scenario: scenario.name,
@@ -254,7 +294,7 @@ function ctPsychomotorGrade(history, treatmentPlan, scenarioName) {
     totalEarned,
     totalPossible,
     percent,
-    minimumPassingPercent,
+    minimumPassingPercent: 78,
     result
   };
 }
@@ -295,51 +335,6 @@ ${aiFeedback}
 `.trim();
 }
 
-async function chatResponse(systemPrompt, userPrompt) {
-  const completion = await openai.chat.completions.create({
-    model: CHAT_MODEL,
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt }
-    ]
-  });
-
-  return completion.choices[0].message.content;
-}
-async function cleanTranscript(rawText) {
-  const completion = await openai.chat.completions.create({
-    model: CHAT_MODEL,
-    messages: [
-      {
-        role: "system",
-        content: `
-You are an EMT terminology corrector.
-
-Correct obvious speech-to-text mistakes involving EMS terminology.
-
-Examples:
-sample -> SAMPLE
-op qrst -> OPQRST
-nitro -> nitroglycerin
-spo2 -> SpO2
-bag valve mask -> bag-valve mask
-non rebreather -> nonrebreather
-
-DO NOT add information.
-DO NOT change the meaning.
-Return only the corrected transcript.
-`
-      },
-      {
-        role: "user",
-        content: rawText
-      }
-    ]
-  });
-
-  return completion.choices[0].message.content.trim();
-}
-
 app.post("/ask", async (req, res) => {
   try {
     const { studentQuestion, history, scenario } = req.body;
@@ -348,13 +343,10 @@ app.post("/ask", async (req, res) => {
     const reply = await chatResponse(
       `
 You are the patient in an EMT training simulation.
-
-Rules:
-- Answer only as the patient.
-- Do not act as the instructor.
-- Do not explain EMT treatment.
-- Do not give information unless asked.
-- Keep responses realistic and brief.
+Answer only as the patient.
+Do not act as the instructor.
+Do not explain EMT treatment.
+Only answer what the EMT asks.
 
 Patient information:
 ${scenarioData.patient}
@@ -377,25 +369,29 @@ ${studentQuestion || ""}
 
 app.post("/instructor", async (req, res) => {
   try {
-    const { studentQuestion, scenario } = req.body;
+    const { studentQuestion, scenario, history } = req.body;
     const scenarioData = getScenario(scenario);
 
     const reply = await chatResponse(
       `
-You are an EMT instructor in a training simulator.
+You are an experienced EMT instructor helping a student through this patient simulation.
 
 Rules:
-- Answer the student's question about this patient scenario.
-- You may use the patient scenario information below.
-- Keep answers short and direct.
-- Do not give away the entire scenario unless the student asks directly.
-- Do not act as the patient.
+- Answer the student's question.
+- Use BOTH the patient information and conversation history.
+- Answer questions about the patient's symptoms, history, medications, allergies, assessment findings, and EMT treatment.
+- Do NOT act as the patient.
+- Do NOT invent information.
+- Keep answers to 1-3 sentences.
 
 Scenario:
 ${scenarioData.name}
 
 Patient information:
 ${scenarioData.patient}
+
+Conversation history:
+${history || ""}
 `,
       studentQuestion || ""
     );
@@ -406,6 +402,7 @@ ${scenarioData.patient}
     res.status(500).json({ reply: "Instructor server error." });
   }
 });
+
 app.post("/grade", async (req, res) => {
   try {
     const { studentAnswer, treatmentPlan, scenario } = req.body;
@@ -419,16 +416,8 @@ app.post("/grade", async (req, res) => {
     const aiFeedback = await chatResponse(
       `
 You are an EMT instructor giving feedback after a Connecticut-style EMT psychomotor practice station.
-
-Rules:
-- Do NOT change the score.
-- Do NOT decide pass or fail.
-- Do NOT invent points.
-- Do NOT say this is the official CT OEMS exam.
-- Give clear practical feedback.
-- Mention what was done well.
-- Mention what was missed.
-- Keep it concise.
+Do not change the score.
+Give clear, concise feedback.
 `,
       `
 Student conversation history:
@@ -439,8 +428,6 @@ ${treatmentPlan || ""}
 
 Objective grade:
 ${JSON.stringify(objectiveGrade, null, 2)}
-
-Write instructor feedback only.
 `
     );
 
@@ -485,13 +472,10 @@ app.post("/voice-ask", upload.single("audio"), async (req, res) => {
     const reply = await chatResponse(
       `
 You are the patient in an EMT training simulation.
-
-Rules:
-- Answer only as the patient.
-- Do not teach.
-- Do not explain treatment.
-- Do not give information unless asked.
-- Keep the answer brief and realistic.
+Answer only as the patient.
+Do not teach.
+Do not explain treatment.
+Only answer what the EMT asks.
 
 Patient information:
 ${scenarioData.patient}
@@ -537,6 +521,7 @@ app.post("/voice-instructor", upload.single("audio"), async (req, res) => {
     audioPath = fixedAudioPath;
 
     const scenarioName = req.body.scenario || "chestPain";
+    const history = req.body.history || "";
     const scenarioData = getScenario(scenarioName);
 
     const transcription = await openai.audio.transcriptions.create({
@@ -546,22 +531,20 @@ app.post("/voice-instructor", upload.single("audio"), async (req, res) => {
 
     const transcript = await cleanTranscript(transcription.text || "");
 
-    const history = req.body.history || "";
-
-const reply = await chatResponse(
-  `
+    const reply = await chatResponse(
+      `
 You are an experienced EMT instructor helping a student through this patient simulation.
 
 Rules:
-- Answer the student's question directly.
-- Use the patient information below.
-- Use the conversation history below.
+- Answer the student's spoken question.
+- Use BOTH the patient information and conversation history.
 - Explain your reasoning briefly.
-- If asked about assessment findings, medications, allergies, history, treatment priorities, or why a treatment is indicated, answer as an instructor.
-- Never act as the patient.
-- Never invent information not contained in the scenario.
-- If the information is unavailable, state that clearly.
-- Keep answers to 1–3 concise sentences.
+- Answer questions about symptoms, history, medications, allergies, assessment findings, and appropriate EMT treatment.
+- If the student asks if they missed something, tell them.
+- If information is not available, say so.
+- Do NOT act as the patient.
+- Do NOT invent information.
+- Keep answers to 1-3 concise sentences.
 
 Scenario:
 ${scenarioData.name}
@@ -572,8 +555,8 @@ ${scenarioData.patient}
 Conversation history:
 ${history}
 `,
-  transcript
-);
+      transcript
+    );
 
     res.json({ transcript, reply });
   } catch (error) {
