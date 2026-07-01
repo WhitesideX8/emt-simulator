@@ -3,124 +3,232 @@ import multer from "multer";
 import fs from "fs";
 import path from "path";
 import OpenAI from "openai";
-import { fileURLToPath } from "url";
 
 const app = express();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const uploadsDir = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir);
-}
-
-const upload = multer({ dest: uploadsDir });
+const PORT = process.env.PORT || 3000;
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
+const upload = multer({ dest: "uploads/" });
 
-const CHAT_MODEL = process.env.CHAT_MODEL || "gpt-4o-mini";
-const TRANSCRIBE_MODEL =
-  process.env.TRANSCRIBE_MODEL || "gpt-4o-mini-transcribe";
-const TTS_MODEL = process.env.TTS_MODEL || "tts-1";
+app.use(express.json({ limit: "10mb" }));
+app.use(express.static("public"));
 
 const scenarios = {
   chestPain: {
-    name: "Chest Pain",
-    dispatch: "You are dispatched to a home for chest pain.",
-    patient: `
-You are a 58-year-old male.
-Chief complaint: chest pressure.
-Pain: substernal pressure, radiates to left arm.
-Onset: started about 30 minutes ago while sitting.
-Severity: 8/10.
-Associated symptoms: shortness of breath, nausea, sweating.
-History: hypertension and high cholesterol.
-Medications: lisinopril and atorvastatin.
-Allergies: no known drug allergies.
-Last oral intake: lunch about 3 hours ago.
-Events: watching TV when pain started.
-You are anxious but alert.
-Only answer what the EMT asks.
-Do not volunteer everything at once.
+    title: "Chest Pain",
+    initialInfo: "You are dispatched to a home for chest pain.",
+    patientPrompt: `
+You are a 58-year-old male patient with chest pain.
+
+VERY IMPORTANT:
+Only answer the specific question the EMT asks.
+Do NOT volunteer additional information unless the EMT asks.
+Do NOT give your entire history at once.
+Keep answers short, like a real patient.
+
+Patient information:
+Chief complaint: Pressure in the center of the chest.
+Onset: Started about 20 minutes ago while carrying groceries.
+Provocation: Worse when walking, a little better sitting still.
+Quality: Heavy pressure, like someone sitting on the chest.
+Radiation: Down the left arm and into the jaw.
+Severity: 8 out of 10.
+Time: Constant since it began.
+Signs/symptoms: Chest pressure, shortness of breath, nausea, sweating, pale skin.
+Allergies: Penicillin.
+Medications: Lisinopril and atorvastatin.
+Past history: Hypertension and high cholesterol.
+Last oral intake: Breakfast around 7 AM.
+Events: Carrying groceries into the house.
+Additional: No previous heart attacks, no cardiac surgeries, no aspirin today, no nitroglycerin.
+
+Rules:
+Only answer what was asked.
+Never act like the instructor.
+Never explain EMT treatment.
+Always respond like an actual patient would.
 `,
-    patientNeedsOxygen: true,
-    patientCritical: true
+    instructorPrompt: `
+You are an EMT instructor running a chest pain psychomotor simulation.
+Answer briefly and directly.
+Give assessment findings only when the student asks appropriate questions.
+Do not coach unless the student specifically asks for help.
+
+Instructor findings:
+General impression: anxious 58-year-old male sitting upright, pale and diaphoretic.
+Airway: patent.
+Breathing: mildly labored, speaks in full sentences.
+Circulation: radial pulse present, skin pale/cool/diaphoretic.
+Lung sounds: clear bilaterally.
+Vital signs: BP 168/96, HR 104, RR 22, SpO2 94% on room air.
+ECG/monitor if asked: sinus tachycardia.
+12-lead if requested: concern for possible inferior STEMI.
+Blood glucose if asked: 118 mg/dL.
+Pupils: equal and reactive.
+No trauma noted.
+`,
+    patientVoice: "onyx",
+    patientVoiceInstructions:
+      "Use a deep adult male voice. Speak slowly, anxiously, and slightly short of breath like a 58-year-old man having chest pain.",
+    instructorVoice: "sage",
+    instructorVoiceInstructions:
+      "Use a calm professional EMT instructor voice. Speak clearly and briefly."
   },
 
   sob: {
-    name: "Shortness of Breath",
-    dispatch: "You are dispatched for difficulty breathing.",
-    patient: `
-You are a 67-year-old female.
-Chief complaint: shortness of breath.
-History: COPD.
-Medications: rescue inhaler and home oxygen at night.
-Allergies: no known drug allergies.
-You have a cough and wheezing.
-You deny chest pain unless asked.
-You are alert but speaking in short sentences.
-Only answer what the EMT asks.
+    title: "Shortness of Breath",
+    initialInfo: "You are dispatched to a residence for difficulty breathing.",
+    patientPrompt: `
+You are a 67-year-old female patient with shortness of breath.
+Only answer the specific question asked.
+Do not volunteer a full history unless asked.
+
+Facts:
+COPD history.
+Sitting forward and speaking in short sentences.
+Wheezing.
+Very short of breath.
+Used inhaler twice with little relief.
+Denies chest pain.
+Productive cough.
+Allergic to sulfa.
+Takes albuterol and tiotropium.
 `,
-    patientNeedsOxygen: true,
-    patientCritical: true
+    instructorPrompt: `
+You are an EMT instructor running a shortness of breath scenario.
+Give findings only when asked.
+Vitals if asked: BP 150/88, HR 112, RR 28, SpO2 88% room air.
+Lung sounds if asked: wheezing bilaterally.
+`,
+    patientVoice: "coral",
+    patientVoiceInstructions: "Use an older female voice. Speak with mild respiratory distress and short phrases.",
+    instructorVoice: "sage",
+    instructorVoiceInstructions: "Use a calm professional EMT instructor voice. Speak clearly and briefly."
   },
 
   stroke: {
-    name: "Stroke",
-    dispatch: "You are dispatched for possible stroke.",
-    patient: `
-You are a 72-year-old male.
-Chief complaint: right-sided weakness and slurred speech.
-Onset: about 20 minutes ago.
-History: hypertension and atrial fibrillation.
-Medications: blood thinner.
-Allergies: none known.
-You are awake but speech is slurred.
-Only answer what the EMT asks.
+    title: "Stroke",
+    initialInfo: "You are dispatched to a home for possible stroke symptoms.",
+    patientPrompt: `
+You are a 72-year-old male patient with possible stroke symptoms.
+Only answer the specific question asked.
+You have right-sided weakness and slurred speech.
+Symptoms started about 20 minutes ago.
+You are confused and frustrated.
+You have no pain.
 `,
-    patientNeedsOxygen: false,
-    patientCritical: true
+    instructorPrompt: `
+You are an EMT instructor running a stroke scenario.
+Give findings only when asked.
+Findings: right arm drift, facial droop, slurred speech.
+Vitals if asked: BP 190/104, HR 88, RR 18, SpO2 96%.
+Blood glucose if asked: 132 mg/dL.
+`,
+    patientVoice: "echo",
+    patientVoiceInstructions: "Use an older male voice. Speak slowly with slight difficulty forming words.",
+    instructorVoice: "sage",
+    instructorVoiceInstructions: "Use a calm professional EMT instructor voice. Speak clearly and briefly."
   },
 
   diabetic: {
-    name: "Diabetic Emergency",
-    dispatch: "You are dispatched for altered mental status.",
-    patient: `
-You are a 45-year-old diabetic patient.
-Chief complaint: weakness, sweating, confusion.
-History: diabetes.
-Medications: insulin.
+    title: "Diabetic Emergency",
+    initialInfo: "You are dispatched for a confused diabetic patient.",
+    patientPrompt: `
+You are a diabetic patient with altered mental status.
+Only answer the specific question asked.
+You are confused, sweaty, and weak.
 You have not eaten today.
-You are confused but able to answer simple questions.
-Only answer what the EMT asks.
+You take insulin.
+You feel shaky.
 `,
-    patientNeedsOxygen: false,
-    patientCritical: false
+    instructorPrompt: `
+You are an EMT instructor running a diabetic emergency scenario.
+Give findings only when asked.
+Vitals if asked: BP 138/82, HR 110, RR 18, SpO2 97%.
+Blood glucose if asked: 42 mg/dL.
+`,
+    patientVoice: "ash",
+    patientVoiceInstructions: "Use a weak, confused adult voice. Speak slowly and softly.",
+    instructorVoice: "sage",
+    instructorVoiceInstructions: "Use a calm professional EMT instructor voice. Speak clearly and briefly."
   }
 };
 
-function getScenario(name) {
-  return scenarios[name] || scenarios.chestPain;
+function getScenario(scenarioName) {
+  return scenarios[scenarioName] || scenarios.chestPain;
 }
 
-function normalize(text) {
-  return String(text || "").toLowerCase();
+function deterministicChecklist(history = "", treatmentPlan = "") {
+  const text = `${history}\n${treatmentPlan}`.toLowerCase();
+
+  const checks = [
+    { name: "BSI Precautions", pass: text.includes("bsi") || text.includes("gloves") || text.includes("ppe") },
+    { name: "Scene Safety", pass: text.includes("scene safe") || text.includes("scene safety") },
+    { name: "Chief Complaint", pass: text.includes("chief complaint") || text.includes("what's wrong") || text.includes("what is wrong") || text.includes("why did you call") || text.includes("chest pain") || text.includes("shortness of breath") || text.includes("weakness") || text.includes("confused") },
+    { name: "General Impression", pass: text.includes("general impression") || text.includes("appearance") || text.includes("how does") || text.includes("pale") || text.includes("diaphoretic") },
+    { name: "Mental Status", pass: text.includes("mental status") || text.includes("avpu") || text.includes("alert") || text.includes("oriented") || text.includes("level of consciousness") },
+    { name: "Airway", pass: text.includes("airway") },
+    { name: "Breathing", pass: text.includes("breathing") || text.includes("respirations") || text.includes("lung sounds") || text.includes("short of breath") || text.includes("spo2") || text.includes("oxygen saturation") },
+    { name: "Circulation", pass: text.includes("circulation") || text.includes("pulse") || text.includes("skin") || text.includes("cap refill") || text.includes("radial") },
+    { name: "OPQRST", pass: text.includes("opqrst") || text.includes("onset") || text.includes("provocation") || text.includes("quality") || text.includes("radiation") || text.includes("severity") || text.includes("time") || text.includes("when did it start") || text.includes("does it go anywhere") || text.includes("how bad") },
+    { name: "SAMPLE", pass: text.includes("sample") || text.includes("allergies") || text.includes("medications") || text.includes("medical history") || text.includes("last oral") || text.includes("last ate") || text.includes("events") },
+    { name: "Vital Signs", pass: text.includes("vital") || text.includes("blood pressure") || text.includes("bp") || text.includes("heart rate") || text.includes("respiratory rate") || text.includes("spo2") || text.includes("oxygen saturation") },
+    { name: "Appropriate Treatment / Transport", pass: text.includes("transport") || text.includes("als") || text.includes("oxygen") || text.includes("aspirin") || text.includes("cardiac monitor") || text.includes("12 lead") || text.includes("oral glucose") },
+    { name: "Reassessment", pass: text.includes("reassess") || text.includes("repeat vital") || text.includes("recheck") || text.includes("continue to monitor") }
+  ];
+
+  return checks;
 }
 
-function includesAny(text, terms) {
-  return terms.some(term => text.includes(term));
+function getAudioExtension(file) {
+  let extension = ".webm";
+
+  if (file.originalname) {
+    const originalExtension = path.extname(file.originalname).toLowerCase();
+    if ([".mp3", ".mp4", ".mpeg", ".mpga", ".m4a", ".wav", ".webm"].includes(originalExtension)) {
+      extension = originalExtension;
+    }
+  }
+
+  if (file.mimetype) {
+    if (file.mimetype.includes("mp4")) extension = ".mp4";
+    if (file.mimetype.includes("mpeg")) extension = ".mp3";
+    if (file.mimetype.includes("wav")) extension = ".wav";
+    if (file.mimetype.includes("webm")) extension = ".webm";
+    if (file.mimetype.includes("m4a")) extension = ".m4a";
+  }
+
+  return extension;
 }
 
-async function chatResponse(systemPrompt, userPrompt) {
+async function transcribeUploadedAudio(file) {
+  const originalPath = file.path;
+  const extension = getAudioExtension(file);
+  const audioPathWithExtension = `${originalPath}${extension}`;
+
+  fs.renameSync(originalPath, audioPathWithExtension);
+
+  try {
+    const transcription = await openai.audio.transcriptions.create({
+      file: fs.createReadStream(audioPathWithExtension),
+      model: "whisper-1"
+    });
+
+    return transcription.text || "";
+  } finally {
+    if (fs.existsSync(audioPathWithExtension)) {
+      fs.unlink(audioPathWithExtension, () => {});
+    }
+  }
+}
+
+async function createChatReply(systemPrompt, userPrompt) {
   const completion = await openai.chat.completions.create({
-    model: CHAT_MODEL,
+    model: "gpt-4.1-mini",
+    temperature: 0.2,
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt }
@@ -130,270 +238,58 @@ async function chatResponse(systemPrompt, userPrompt) {
   return completion.choices[0].message.content;
 }
 
-async function cleanTranscript(rawText) {
-  if (!rawText) return "";
-
-  const completion = await openai.chat.completions.create({
-    model: CHAT_MODEL,
-    messages: [
-      {
-        role: "system",
-        content: `
-You are an EMT terminology corrector.
-
-Correct obvious speech-to-text mistakes involving EMS terminology.
-
-Examples:
-sample -> SAMPLE
-op qrst -> OPQRST
-nitro -> nitroglycerin
-spo2 -> SpO2
-bag valve mask -> bag-valve mask
-non rebreather -> nonrebreather
-o two -> O2
-BP -> blood pressure
-
-DO NOT add information.
-DO NOT change the meaning.
-Return only the corrected transcript.
-`
-      },
-      { role: "user", content: rawText }
-    ]
+async function createSpeechAudio(text, voice, instructions) {
+  const audio = await openai.audio.speech.create({
+    model: "gpt-4o-mini-tts",
+    voice,
+    input: text,
+    instructions
   });
 
-  return completion.choices[0].message.content.trim();
+  return Buffer.from(await audio.arrayBuffer());
 }
 
-function ctPsychomotorGrade(history, treatmentPlan, scenarioName) {
-  const scenario = getScenario(scenarioName);
-  const text = normalize(`${history}\n${treatmentPlan}`);
+app.get("/", (req, res) => {
+  res.redirect("/index.html");
+});
 
-  const sections = {
-    sceneSizeUp: { earned: 0, possible: 6, items: [] },
-    primaryAssessment: { earned: 0, possible: 10, items: [] },
-    historyTaking: { earned: 0, possible: 10, items: [] },
-    secondaryAssessment: { earned: 0, possible: 5, items: [] },
-    vitals: { earned: 0, possible: 5, items: [] },
-    treatment: { earned: 0, possible: 7, items: [] },
-    reassessment: { earned: 0, possible: 4, items: [] }
-  };
-
-  const criticalFailures = [];
-
-  function check(section, label, terms) {
-    const passed = includesAny(text, terms);
-    sections[section].items.push({ label, passed });
-    if (passed) sections[section].earned += 1;
-  }
-
-  check("sceneSizeUp", "BSI / PPE", ["bsi", "ppe", "gloves"]);
-  check("sceneSizeUp", "Scene safety", ["scene safe", "safe scene"]);
-  check("sceneSizeUp", "Nature of illness", ["noi", "nature of illness"]);
-  check("sceneSizeUp", "Number of patients", ["number of patients", "one patient"]);
-  check("sceneSizeUp", "Additional resources", ["als", "paramedic", "backup"]);
-  check("sceneSizeUp", "Spinal precautions considered", ["spinal", "c-spine", "no trauma"]);
-
-  check("primaryAssessment", "General impression", ["general impression", "appears"]);
-  check("primaryAssessment", "LOC / AVPU", ["avpu", "alert", "loc"]);
-  check("primaryAssessment", "Chief complaint", ["chief complaint", "chest pain", "shortness of breath"]);
-  check("primaryAssessment", "Airway", ["airway"]);
-  check("primaryAssessment", "Breathing", ["breathing", "respirations"]);
-  check("primaryAssessment", "Circulation", ["pulse", "circulation"]);
-  check("primaryAssessment", "Skin", ["skin", "pale", "cool", "diaphoretic"]);
-  check("primaryAssessment", "Oxygen", ["oxygen", "o2", "nonrebreather", "nasal cannula"]);
-  check("primaryAssessment", "Priority", ["priority", "unstable", "stable"]);
-  check("primaryAssessment", "Transport", ["transport", "hospital"]);
-
-  check("historyTaking", "OPQRST", ["opqrst", "onset", "provocation", "quality", "radiation", "severity"]);
-  check("historyTaking", "SAMPLE", ["sample", "signs", "symptoms", "allergies", "medications"]);
-  check("historyTaking", "Allergies", ["allergies"]);
-  check("historyTaking", "Medications", ["medications", "meds"]);
-  check("historyTaking", "Past history", ["past medical", "history"]);
-  check("historyTaking", "Last oral intake", ["last oral", "last ate", "last meal"]);
-  check("historyTaking", "Events", ["events", "what happened"]);
-  check("historyTaking", "Onset", ["onset", "started"]);
-  check("historyTaking", "Radiation", ["radiates", "left arm", "jaw"]);
-  check("historyTaking", "Severity", ["severity", "scale", "pain level"]);
-
-  check("secondaryAssessment", "Focused exam", ["focused exam", "secondary assessment"]);
-  check("secondaryAssessment", "Lung sounds", ["lung sounds", "breath sounds"]);
-  check("secondaryAssessment", "Chest/cardiac", ["cardiac", "heart", "chest"]);
-  check("secondaryAssessment", "Associated symptoms", ["nausea", "sweating", "shortness of breath"]);
-  check("secondaryAssessment", "Pertinent negatives", ["denies", "no allergies"]);
-
-  check("vitals", "Blood pressure", ["blood pressure", "bp"]);
-  check("vitals", "Pulse", ["pulse", "heart rate"]);
-  check("vitals", "Respirations", ["respirations", "respiratory rate"]);
-  check("vitals", "SpO2", ["spo2", "pulse ox"]);
-  check("vitals", "Repeat vitals", ["repeat vitals", "reassess vitals"]);
-
-  check("treatment", "Oxygen therapy", ["oxygen", "o2"]);
-  check("treatment", "Aspirin", ["aspirin", "asa"]);
-  check("treatment", "Nitroglycerin considered", ["nitro", "nitroglycerin"]);
-  check("treatment", "Rapid transport", ["transport", "hospital"]);
-  check("treatment", "ALS requested", ["als", "paramedic"]);
-  check("treatment", "Position of comfort", ["position of comfort", "semi-fowler"]);
-  check("treatment", "Monitoring", ["monitor", "reassess"]);
-
-  check("reassessment", "Reassess airway", ["reassess airway"]);
-  check("reassessment", "Reassess breathing", ["reassess breathing"]);
-  check("reassessment", "Reassess circulation", ["reassess circulation"]);
-  check("reassessment", "Verbal report", ["verbal report", "handoff"]);
-
-  if (!includesAny(text, ["bsi", "ppe", "gloves"])) {
-    criticalFailures.push("Failure to verbalize BSI/PPE precautions.");
-  }
-
-  if (!includesAny(text, ["scene safe", "safe scene"])) {
-    criticalFailures.push("Failure to determine scene safety.");
-  }
-
-  if (!includesAny(text, ["airway"])) {
-    criticalFailures.push("Failure to assess/manage airway.");
-  }
-
-  if (!includesAny(text, ["breathing", "respirations"])) {
-    criticalFailures.push("Failure to assess/manage breathing.");
-  }
-
-  if (!includesAny(text, ["pulse", "circulation"])) {
-    criticalFailures.push("Failure to assess circulation.");
-  }
-
-  if (
-    scenario.patientNeedsOxygen &&
-    !includesAny(text, ["oxygen", "o2", "nasal cannula", "nonrebreather"])
-  ) {
-    criticalFailures.push("Failure to provide or consider oxygen when indicated.");
-  }
-
-  if (
-    scenario.patientCritical &&
-    !includesAny(text, ["transport", "hospital", "emergency department"])
-  ) {
-    criticalFailures.push("Failure to make appropriate transport decision.");
-  }
-
-  let totalEarned = 0;
-  let totalPossible = 0;
-
-  for (const section of Object.values(sections)) {
-    totalEarned += section.earned;
-    totalPossible += section.possible;
-  }
-
-  const percent = Math.round((totalEarned / totalPossible) * 100);
-  const result =
-    criticalFailures.length === 0 && percent >= 78 ? "PASS" : "FAIL";
-
-  return {
-    scenario: scenario.name,
-    sections,
-    criticalFailures,
-    totalEarned,
-    totalPossible,
-    percent,
-    minimumPassingPercent: 78,
-    result
-  };
-}
-
-function formatScoreReport(grade, aiFeedback) {
-  const s = grade.sections;
-
-  const criticalText =
-    grade.criticalFailures.length === 0
-      ? "✔ No Critical Criteria failures."
-      : grade.criticalFailures.map(f => `✘ ${f}`).join("\n");
-
-  return `
-CTOEMS-STYLE EMT PSYCHOMOTOR PRACTICE EVALUATION
-
-Scenario: ${grade.scenario}
-
-RESULT: ${grade.result}
-
-Critical Criteria:
-${criticalText}
-
-Skill Sheet Score:
-Scene Size-Up: ${s.sceneSizeUp.earned}/${s.sceneSizeUp.possible}
-Primary Assessment: ${s.primaryAssessment.earned}/${s.primaryAssessment.possible}
-History Taking: ${s.historyTaking.earned}/${s.historyTaking.possible}
-Secondary Assessment: ${s.secondaryAssessment.earned}/${s.secondaryAssessment.possible}
-Vital Signs: ${s.vitals.earned}/${s.vitals.possible}
-Treatment: ${s.treatment.earned}/${s.treatment.possible}
-Reassessment: ${s.reassessment.earned}/${s.reassessment.possible}
-
-TOTAL SCORE: ${grade.totalEarned}/${grade.totalPossible}
-PERCENT: ${grade.percent}%
-MINIMUM PASSING: ${grade.minimumPassingPercent}%
-
-Instructor Feedback:
-${aiFeedback}
-`.trim();
-}
+app.get("/scenario-data/:scenario", (req, res) => {
+  const selectedScenario = getScenario(req.params.scenario);
+  res.json({
+    title: selectedScenario.title,
+    initialInfo: selectedScenario.initialInfo
+  });
+});
 
 app.post("/ask", async (req, res) => {
   try {
     const { studentQuestion, history, scenario } = req.body;
-    const scenarioData = getScenario(scenario);
+    const selectedScenario = getScenario(scenario);
 
-    const reply = await chatResponse(
-      `
-You are the patient in an EMT training simulation.
-Answer only as the patient.
-Do not act as the instructor.
-Do not explain EMT treatment.
-Only answer what the EMT asks.
+    if (!studentQuestion) return res.status(400).json({ reply: "No question was provided." });
 
-Patient information:
-${scenarioData.patient}
-`,
-      `
-Conversation so far:
-${history || ""}
-
-Student asks:
-${studentQuestion || ""}
-`
+    const reply = await createChatReply(
+      selectedScenario.patientPrompt,
+      `Conversation so far:\n${history || ""}\n\nStudent asks patient:\n${studentQuestion}\n\nAnswer only this question as the patient.`
     );
 
     res.json({ reply });
   } catch (error) {
     console.error("ASK ERROR:", error);
-    res.status(500).json({ reply: "Patient server error." });
+    res.status(500).json({ reply: "Server error contacting AI patient." });
   }
 });
 
 app.post("/instructor", async (req, res) => {
   try {
-    const { studentQuestion, scenario, history } = req.body;
-    const scenarioData = getScenario(scenario);
+    const { studentQuestion, scenario } = req.body;
+    const selectedScenario = getScenario(scenario);
 
-    const reply = await chatResponse(
-      `
-You are an experienced EMT instructor helping a student through this patient simulation.
+    if (!studentQuestion) return res.status(400).json({ reply: "No instructor question was provided." });
 
-Rules:
-- Answer the student's question.
-- Use BOTH the patient information and conversation history.
-- Answer questions about the patient's symptoms, history, medications, allergies, assessment findings, and EMT treatment.
-- Do NOT act as the patient.
-- Do NOT invent information.
-- Keep answers to 1-3 sentences.
-
-Scenario:
-${scenarioData.name}
-
-Patient information:
-${scenarioData.patient}
-
-Conversation history:
-${history || ""}
-`,
-      studentQuestion || ""
+    const reply = await createChatReply(
+      selectedScenario.instructorPrompt,
+      `Scenario: ${scenario}\nStudent asks instructor: ${studentQuestion}`
     );
 
     res.json({ reply });
@@ -403,206 +299,171 @@ ${history || ""}
   }
 });
 
-app.post("/grade", async (req, res) => {
-  try {
-    const { studentAnswer, treatmentPlan, scenario } = req.body;
-
-    const objectiveGrade = ctPsychomotorGrade(
-      studentAnswer || "",
-      treatmentPlan || "",
-      scenario || "chestPain"
-    );
-
-    const aiFeedback = await chatResponse(
-      `
-You are an EMT instructor giving feedback after a Connecticut-style EMT psychomotor practice station.
-Do not change the score.
-Give clear, concise feedback.
-`,
-      `
-Student conversation history:
-${studentAnswer || ""}
-
-Student treatment plan:
-${treatmentPlan || ""}
-
-Objective grade:
-${JSON.stringify(objectiveGrade, null, 2)}
-`
-    );
-
-    res.json({
-      feedback: formatScoreReport(objectiveGrade, aiFeedback),
-      grade: objectiveGrade
-    });
-  } catch (error) {
-    console.error("GRADE ERROR:", error);
-    res.status(500).json({ feedback: "Error grading student." });
-  }
-});
-
 app.post("/voice-ask", upload.single("audio"), async (req, res) => {
-  let audioPath = null;
-
   try {
+    const scenario = req.body.scenario || "chestPain";
+    const history = req.body.history || "";
+    const selectedScenario = getScenario(scenario);
+
     if (!req.file) {
-      return res.status(400).json({
-        transcript: "",
-        reply: "No audio file received."
-      });
+      return res.status(400).json({ transcript: "", reply: "No audio file was received." });
     }
 
-    audioPath = req.file.path;
+    const studentQuestion = await transcribeUploadedAudio(req.file);
 
-    const fixedAudioPath = audioPath + ".webm";
-    fs.renameSync(audioPath, fixedAudioPath);
-    audioPath = fixedAudioPath;
+    if (!studentQuestion.trim()) {
+      return res.json({ transcript: "", reply: "I could not hear the question clearly." });
+    }
 
-    const scenarioName = req.body.scenario || "chestPain";
-    const history = req.body.history || "";
-    const scenarioData = getScenario(scenarioName);
-
-    const transcription = await openai.audio.transcriptions.create({
-      file: fs.createReadStream(audioPath),
-      model: TRANSCRIBE_MODEL
-    });
-
-    const transcript = await cleanTranscript(transcription.text || "");
-
-    const reply = await chatResponse(
-      `
-You are the patient in an EMT training simulation.
-Answer only as the patient.
-Do not teach.
-Do not explain treatment.
-Only answer what the EMT asks.
-
-Patient information:
-${scenarioData.patient}
-`,
-      `
-Conversation so far:
-${history}
-
-Student asks:
-${transcript}
-`
+    const reply = await createChatReply(
+      selectedScenario.patientPrompt,
+      `Conversation so far:\n${history}\n\nStudent asks patient:\n${studentQuestion}\n\nAnswer only this question as the patient.`
     );
 
-    res.json({ transcript, reply });
+    res.json({ transcript: studentQuestion, reply });
   } catch (error) {
     console.error("VOICE ASK ERROR:", error);
-    res.status(500).json({
-      transcript: "",
-      reply: "Voice patient server error."
-    });
-  } finally {
-    if (audioPath && fs.existsSync(audioPath)) {
-      fs.unlinkSync(audioPath);
-    }
+    if (req.file && req.file.path && fs.existsSync(req.file.path)) fs.unlink(req.file.path, () => {});
+    res.status(500).json({ transcript: "", reply: "Voice patient server error. Check Render logs and OPENAI_API_KEY." });
   }
 });
 
 app.post("/voice-instructor", upload.single("audio"), async (req, res) => {
-  let audioPath = null;
-
   try {
+    const scenario = req.body.scenario || "chestPain";
+    const selectedScenario = getScenario(scenario);
+
     if (!req.file) {
-      return res.status(400).json({
-        transcript: "",
-        reply: "No audio file received."
-      });
+      return res.status(400).json({ transcript: "", reply: "No audio file was received." });
     }
 
-    audioPath = req.file.path;
+    const instructorQuestion = await transcribeUploadedAudio(req.file);
 
-    const fixedAudioPath = audioPath + ".webm";
-    fs.renameSync(audioPath, fixedAudioPath);
-    audioPath = fixedAudioPath;
+    if (!instructorQuestion.trim()) {
+      return res.json({ transcript: "", reply: "I could not hear the instructor question clearly." });
+    }
 
-    const scenarioName = req.body.scenario || "chestPain";
-    const history = req.body.history || "";
-    const scenarioData = getScenario(scenarioName);
-
-    const transcription = await openai.audio.transcriptions.create({
-      file: fs.createReadStream(audioPath),
-      model: TRANSCRIBE_MODEL
-    });
-
-    const transcript = await cleanTranscript(transcription.text || "");
-
-    const reply = await chatResponse(
-      `
-You are an experienced EMT instructor helping a student through this patient simulation.
-
-Rules:
-- Answer the student's spoken question.
-- Use BOTH the patient information and conversation history.
-- Explain your reasoning briefly.
-- Answer questions about symptoms, history, medications, allergies, assessment findings, and appropriate EMT treatment.
-- If the student asks if they missed something, tell them.
-- If information is not available, say so.
-- Do NOT act as the patient.
-- Do NOT invent information.
-- Keep answers to 1-3 concise sentences.
-
-Scenario:
-${scenarioData.name}
-
-Patient information:
-${scenarioData.patient}
-
-Conversation history:
-${history}
-`,
-      transcript
+    const reply = await createChatReply(
+      selectedScenario.instructorPrompt,
+      `Scenario: ${scenario}\nStudent asks instructor: ${instructorQuestion}`
     );
 
-    res.json({ transcript, reply });
+    res.json({ transcript: instructorQuestion, reply });
   } catch (error) {
     console.error("VOICE INSTRUCTOR ERROR:", error);
-    res.status(500).json({
-      transcript: "",
-      reply: "Voice instructor server error."
-    });
-  } finally {
-    if (audioPath && fs.existsSync(audioPath)) {
-      fs.unlinkSync(audioPath);
-    }
+    if (req.file && req.file.path && fs.existsSync(req.file.path)) fs.unlink(req.file.path, () => {});
+    res.status(500).json({ transcript: "", reply: "Voice instructor server error. Check Render logs and OPENAI_API_KEY." });
   }
 });
 
-async function generateVoice(text, res, voiceName) {
+app.post("/transcribe-only", upload.single("audio"), async (req, res) => {
   try {
-    const speech = await openai.audio.speech.create({
-      model: TTS_MODEL,
-      voice: voiceName,
-      input: text || "Please continue."
-    });
-
-    const buffer = Buffer.from(await speech.arrayBuffer());
-
-    res.setHeader("Content-Type", "audio/mpeg");
-    res.send(buffer);
+    if (!req.file) return res.status(400).json({ transcript: "" });
+    const transcript = await transcribeUploadedAudio(req.file);
+    res.json({ transcript });
   } catch (error) {
-    console.error("VOICE GENERATION ERROR:", error);
-    res.status(500).send("Voice generation failed.");
+    console.error("TRANSCRIBE ONLY ERROR:", error);
+    if (req.file && req.file.path && fs.existsSync(req.file.path)) fs.unlink(req.file.path, () => {});
+    res.status(500).json({ transcript: "" });
   }
-}
+});
 
 app.post("/patient-voice", async (req, res) => {
-  await generateVoice(req.body.text, res, "alloy");
+  try {
+    const { text, scenario } = req.body;
+    const selectedScenario = getScenario(scenario);
+
+    if (!text) return res.status(400).json({ error: "No text provided." });
+
+    const buffer = await createSpeechAudio(
+      text,
+      selectedScenario.patientVoice,
+      selectedScenario.patientVoiceInstructions
+    );
+
+    res.set({ "Content-Type": "audio/mpeg", "Content-Length": buffer.length });
+    res.send(buffer);
+  } catch (error) {
+    console.error("PATIENT VOICE ERROR:", error);
+    res.status(500).json({ error: "Patient voice generation failed." });
+  }
 });
 
 app.post("/instructor-voice", async (req, res) => {
-  await generateVoice(req.body.text, res, "echo");
+  try {
+    const { text, scenario } = req.body;
+    const selectedScenario = getScenario(scenario);
+
+    if (!text) return res.status(400).json({ error: "No text provided." });
+
+    const buffer = await createSpeechAudio(
+      text,
+      selectedScenario.instructorVoice,
+      selectedScenario.instructorVoiceInstructions
+    );
+
+    res.set({ "Content-Type": "audio/mpeg", "Content-Length": buffer.length });
+    res.send(buffer);
+  } catch (error) {
+    console.error("INSTRUCTOR VOICE ERROR:", error);
+    res.status(500).json({ error: "Instructor voice generation failed." });
+  }
 });
 
-app.get("/health", (req, res) => {
-  res.send("Server is running.");
-});
+app.post("/grade", async (req, res) => {
+  try {
+    const { studentAnswer, treatmentPlan, scenario } = req.body;
+    const selectedScenario = getScenario(scenario);
 
-const PORT = process.env.PORT || 3000;
+    const checklist = deterministicChecklist(studentAnswer, treatmentPlan);
+    const completed = checklist.filter(c => c.pass).length;
+    const score = `${completed}/${checklist.length}`;
+    const checklistText = checklist.map(item => `${item.pass ? "[✓]" : "[ ]"} ${item.name}`).join("\n");
+
+    const gradingPrompt = `
+You are grading a Connecticut EMT Medical Assessment psychomotor examination.
+
+Use this checklist exactly. Do not change the check marks.
+
+CTOEMS / CT DPH-Style EMT Medical Assessment Checklist
+
+${checklistText}
+
+Score:
+${score}
+
+Scenario:
+${selectedScenario.title}
+
+Patient/instructor conversation:
+${studentAnswer || ""}
+
+Treatment plan:
+${treatmentPlan || ""}
+
+Below the checklist include:
+
+Critical Criteria
+Items Missed
+Instructor Comments
+Overall Result (PASS or FAIL)
+
+Use this rule:
+- PASS only if at least 10 of ${checklist.length} checklist items are completed and there are no major critical criteria.
+- FAIL if airway, breathing, circulation, vital signs, or reassessment are missed.
+`;
+
+    const feedback = await createChatReply(
+      "You are a strict but helpful EMT instructor. Give clear, practical checklist-style feedback.",
+      gradingPrompt
+    );
+
+    res.json({ feedback });
+  } catch (error) {
+    console.error("GRADE ERROR:", error);
+    res.status(500).json({ feedback: "Grading server error." });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`EMT simulator running on port ${PORT}`);
