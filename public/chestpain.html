@@ -74,19 +74,9 @@
     }
 
     button:hover { background: darkgreen; }
-    button:disabled { opacity: 0.55; cursor: not-allowed; }
-
-    .record-btn { background: #004aad; }
-    .record-btn:hover { background: #00337a; }
 
     .instructor-btn { background: #663399; }
     .instructor-btn:hover { background: #4b2673; }
-
-    .treatment-btn { background: #b36b00; }
-    .treatment-btn:hover { background: #804d00; }
-
-    .stop-btn { background: #990000; }
-    .stop-btn:hover { background: #660000; }
 
     .nav-btn { background: #333; }
 
@@ -110,13 +100,6 @@
       margin: 6px auto;
       min-height: 80px;
       max-height: 120px;
-    }
-
-    #voiceStatus {
-      color: white;
-      font-weight: bold;
-      margin: 6px;
-      min-height: 22px;
     }
 
     .response-row {
@@ -170,17 +153,14 @@
 
     <textarea
       id="studentQuestion"
-      placeholder="Type a question, or click Ask Patient / Ask Instructor and speak..."
+      placeholder="Type a question, then click Ask Patient or Ask Instructor..."
     ></textarea>
 
-    <div id="voiceStatus">Voice status: Ready</div>
-
     <div>
-      <button id="askPatientBtn" class="record-btn" onclick="askPatientButton()">🎤 Ask Patient</button>
-      <button id="askInstructorBtn" class="instructor-btn" onclick="askInstructorButton()">🎤 Ask Instructor</button>
+      <button onclick="askPatientTyped()">Ask Patient</button>
+      <button class="instructor-btn" onclick="askInstructorTyped()">Ask Instructor</button>
       <button onclick="gradeStudent()">Submit for Grading</button>
       <button onclick="resetScenario()">Reset</button>
-      <button class="stop-btn" onclick="stopSpeaking()">🔇 Stop Voice</button>
     </div>
 
     <div class="response-row">
@@ -199,10 +179,6 @@
 
     <textarea id="treatmentPlan" placeholder="Student enters EMT treatment plan here..."></textarea>
 
-    <button id="treatmentPlanBtn" class="treatment-btn" onclick="treatmentPlanButton()">
-      🎤 Dictate Treatment Plan
-    </button>
-
     <h3>Feedback (Grading Report):</h3>
     <div id="feedback" class="box">Feedback will appear here.</div>
   </div>
@@ -211,300 +187,9 @@
     let history = "";
     const scenario = "chestPain";
 
-    let mediaRecorder = null;
-    let audioChunks = [];
-    let currentStream = null;
-    let activeAudio = null;
-    let recording = false;
-    let recordingTarget = null;
-    let lastRecordingTarget = null;
-
-    function setStatus(message) {
-      document.getElementById("voiceStatus").innerText = message;
-    }
-
-    function setButtonsReady() {
-      recording = false;
-      recordingTarget = null;
-      lastRecordingTarget = null;
-
-      document.getElementById("askPatientBtn").innerHTML = "🎤 Ask Patient";
-      document.getElementById("askInstructorBtn").innerHTML = "🎤 Ask Instructor";
-      document.getElementById("treatmentPlanBtn").innerHTML = "🎤 Dictate Treatment Plan";
-
-      document.getElementById("askPatientBtn").disabled = false;
-      document.getElementById("askInstructorBtn").disabled = false;
-      document.getElementById("treatmentPlanBtn").disabled = false;
-    }
-
-    async function askPatientButton() {
-      const typedQuestion = document.getElementById("studentQuestion").value.trim();
-      if (typedQuestion && !recording) {
-        await askPatientTyped();
-        return;
-      }
-      await toggleRecording("patient");
-    }
-
-    async function askInstructorButton() {
-      const typedQuestion = document.getElementById("studentQuestion").value.trim();
-      if (typedQuestion && !recording) {
-        await askInstructorTyped();
-        return;
-      }
-      await toggleRecording("instructor");
-    }
-
-    async function treatmentPlanButton() {
-      await toggleRecording("treatment");
-    }
-
-    async function toggleRecording(target) {
-      if (!recording) {
-        recording = true;
-        recordingTarget = target;
-        lastRecordingTarget = target;
-
-        if (target === "patient") {
-          document.getElementById("askPatientBtn").innerHTML = "⏹ Stop Patient Recording";
-          document.getElementById("askInstructorBtn").disabled = true;
-          document.getElementById("treatmentPlanBtn").disabled = true;
-        } else if (target === "instructor") {
-          document.getElementById("askInstructorBtn").innerHTML = "⏹ Stop Instructor Recording";
-          document.getElementById("askPatientBtn").disabled = true;
-          document.getElementById("treatmentPlanBtn").disabled = true;
-        } else {
-          document.getElementById("treatmentPlanBtn").innerHTML = "⏹ Stop Treatment Plan Recording";
-          document.getElementById("askPatientBtn").disabled = true;
-          document.getElementById("askInstructorBtn").disabled = true;
-        }
-
-        await startRecording();
-        return;
-      }
-
-      if (recordingTarget === target) {
-        lastRecordingTarget = target;
-        recording = false;
-        recordingTarget = null;
-        stopRecording();
-      }
-    }
-
-    async function startRecording() {
-      try {
-        stopSpeaking();
-
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          setStatus("This browser does not support microphone recording.");
-          setButtonsReady();
-          return;
-        }
-
-        currentStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        audioChunks = [];
-
-        let mimeType = "";
-        if (MediaRecorder.isTypeSupported("audio/mp4")) {
-          mimeType = "audio/mp4";
-        } else if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) {
-          mimeType = "audio/webm;codecs=opus";
-        } else if (MediaRecorder.isTypeSupported("audio/webm")) {
-          mimeType = "audio/webm";
-        }
-
-        mediaRecorder = mimeType
-          ? new MediaRecorder(currentStream, { mimeType })
-          : new MediaRecorder(currentStream);
-
-        mediaRecorder.ondataavailable = function (event) {
-          if (event.data && event.data.size > 0) audioChunks.push(event.data);
-        };
-
-        mediaRecorder.onstop = async function () {
-          const target = lastRecordingTarget || "patient";
-          const actualMimeType = mediaRecorder.mimeType || mimeType || "audio/webm";
-          const audioBlob = new Blob(audioChunks, { type: actualMimeType });
-
-          stopAllTracks();
-
-          if (target === "instructor") {
-            await sendVoiceToInstructor(audioBlob, actualMimeType);
-          } else if (target === "treatment") {
-            await sendVoiceToTreatmentPlan(audioBlob, actualMimeType);
-          } else {
-            await sendVoiceToPatient(audioBlob, actualMimeType);
-          }
-        };
-
-        mediaRecorder.start();
-
-        if (recordingTarget === "instructor") {
-          setStatus("Voice status: Recording instructor question. Speak now.");
-        } else if (recordingTarget === "treatment") {
-          setStatus("Voice status: Recording treatment plan. Speak now.");
-        } else {
-          setStatus("Voice status: Recording patient question. Speak now.");
-        }
-      } catch (error) {
-        console.error(error);
-        setButtonsReady();
-        setStatus("Microphone blocked or unavailable. Click the lock icon and allow microphone.");
-      }
-    }
-
-    function stopRecording() {
-      if (mediaRecorder && mediaRecorder.state === "recording") {
-        setStatus("Voice status: Sending audio to server...");
-        mediaRecorder.stop();
-      } else {
-        setButtonsReady();
-      }
-    }
-
-    function stopAllTracks() {
-      if (currentStream) {
-        currentStream.getTracks().forEach(track => track.stop());
-        currentStream = null;
-      }
-    }
-
-    function getAudioFileName(mimeType, prefix) {
-      if (mimeType.includes("mp4")) return prefix + ".mp4";
-      if (mimeType.includes("mpeg")) return prefix + ".mp3";
-      if (mimeType.includes("wav")) return prefix + ".wav";
-      if (mimeType.includes("webm")) return prefix + ".webm";
-      return prefix + ".webm";
-    }
-
-    async function sendVoiceToPatient(audioBlob, mimeType) {
-      try {
-        setButtonsReady();
-
-        if (!audioBlob || audioBlob.size === 0) {
-          setStatus("No audio was recorded. Try again.");
-          return;
-        }
-
-        const formData = new FormData();
-        formData.append("audio", audioBlob, getAudioFileName(mimeType, "patient-question"));
-        formData.append("scenario", scenario);
-        formData.append("history", history);
-
-        const res = await fetch("/voice-ask", { method: "POST", body: formData });
-        const data = await res.json();
-
-        if (!res.ok) {
-          document.getElementById("patientResponse").innerText = data.reply || "Voice patient server error.";
-          setStatus("Voice status: Patient server error.");
-          return;
-        }
-
-        const transcript = data.transcript || "";
-        const patientReply = data.reply || "The patient did not respond.";
-
-        history += `Student to patient: ${transcript || "[Voice unclear]"}\n`;
-        history += `Patient: ${patientReply}\n\n`;
-
-        document.getElementById("studentQuestion").value = transcript;
-        document.getElementById("patientResponse").innerText = patientReply;
-
-        await speakPatient(patientReply);
-        document.getElementById("studentQuestion").value = "";
-      } catch (error) {
-        console.error(error);
-        setButtonsReady();
-        document.getElementById("patientResponse").innerText =
-          "Voice patient server error. Check Render logs and OPENAI_API_KEY.";
-        setStatus("Voice status: Patient server error.");
-      }
-    }
-
-    async function sendVoiceToInstructor(audioBlob, mimeType) {
-      try {
-        setButtonsReady();
-
-        if (!audioBlob || audioBlob.size === 0) {
-          setStatus("No audio was recorded. Try again.");
-          return;
-        }
-
-        const formData = new FormData();
-        formData.append("audio", audioBlob, getAudioFileName(mimeType, "instructor-question"));
-        formData.append("scenario", scenario);
-
-        const res = await fetch("/voice-instructor", { method: "POST", body: formData });
-        const data = await res.json();
-
-        if (!res.ok) {
-          document.getElementById("instructorResponse").innerText =
-            data.reply || "Voice instructor server error.";
-          setStatus("Voice status: Instructor server error.");
-          return;
-        }
-
-        const transcript = data.transcript || "";
-        const instructorReply = data.reply || "Instructor did not respond.";
-
-        history += `Student to instructor: ${transcript || "[Voice unclear]"}\n`;
-        history += `Instructor: ${instructorReply}\n\n`;
-
-        document.getElementById("studentQuestion").value = transcript;
-        document.getElementById("instructorResponse").innerText = instructorReply;
-
-        await speakInstructor(instructorReply);
-        document.getElementById("studentQuestion").value = "";
-      } catch (error) {
-        console.error(error);
-        setButtonsReady();
-        document.getElementById("instructorResponse").innerText =
-          "Voice instructor server error. Check Render logs and OPENAI_API_KEY.";
-        setStatus("Voice status: Instructor server error.");
-      }
-    }
-
-    async function sendVoiceToTreatmentPlan(audioBlob, mimeType) {
-      try {
-        setButtonsReady();
-
-        if (!audioBlob || audioBlob.size === 0) {
-          setStatus("No audio was recorded. Try again.");
-          return;
-        }
-
-        const formData = new FormData();
-        formData.append("audio", audioBlob, getAudioFileName(mimeType, "treatment-plan"));
-
-        const res = await fetch("/transcribe-only", { method: "POST", body: formData });
-        const data = await res.json();
-
-        if (!res.ok) {
-          setStatus("Voice status: Treatment plan transcription error.");
-          return;
-        }
-
-        const transcript = data.transcript || "";
-        if (!transcript) {
-          setStatus("Could not hear treatment plan clearly.");
-          return;
-        }
-
-        const treatmentBox = document.getElementById("treatmentPlan");
-        treatmentBox.value = treatmentBox.value.trim()
-          ? treatmentBox.value + "\n" + transcript
-          : transcript;
-
-        history += `Treatment plan dictated: ${transcript}\n\n`;
-        setStatus("Voice status: Treatment plan added.");
-      } catch (error) {
-        console.error(error);
-        setButtonsReady();
-        setStatus("Voice status: Treatment plan voice error.");
-      }
-    }
-
     async function askPatientTyped() {
       const question = document.getElementById("studentQuestion").value.trim();
+
       if (!question) {
         document.getElementById("patientResponse").innerText = "Ask a question first.";
         return;
@@ -514,7 +199,11 @@
         const res = await fetch("/ask", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ studentQuestion: question, history, scenario })
+          body: JSON.stringify({
+            studentQuestion: question,
+            history: history,
+            scenario: scenario
+          })
         });
 
         const data = await res.json();
@@ -524,17 +213,17 @@
         history += `Patient: ${patientReply}\n\n`;
 
         document.getElementById("patientResponse").innerText = patientReply;
-        await speakPatient(patientReply);
         document.getElementById("studentQuestion").value = "";
+
       } catch (err) {
         console.error(err);
         document.getElementById("patientResponse").innerText = "Error contacting patient server.";
-        setStatus("Voice status: Patient server error.");
       }
     }
 
     async function askInstructorTyped() {
       const question = document.getElementById("studentQuestion").value.trim();
+
       if (!question) {
         document.getElementById("instructorResponse").innerText = "Ask a question first.";
         return;
@@ -544,7 +233,10 @@
         const res = await fetch("/instructor", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ studentQuestion: question, scenario })
+          body: JSON.stringify({
+            studentQuestion: question,
+            scenario: scenario
+          })
         });
 
         const data = await res.json();
@@ -554,12 +246,11 @@
         history += `Instructor: ${instructorReply}\n\n`;
 
         document.getElementById("instructorResponse").innerText = instructorReply;
-        await speakInstructor(instructorReply);
         document.getElementById("studentQuestion").value = "";
+
       } catch (err) {
         console.error(err);
         document.getElementById("instructorResponse").innerText = "Error contacting instructor.";
-        setStatus("Voice status: Instructor server error.");
       }
     }
 
@@ -576,83 +267,37 @@
         const res = await fetch("/grade", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ studentAnswer: history, treatmentPlan, scenario })
+          body: JSON.stringify({
+            studentAnswer: history,
+            treatmentPlan: treatmentPlan,
+            scenario: scenario
+          })
         });
 
         const data = await res.json();
-        document.getElementById("feedback").innerText = data.feedback || "No feedback returned.";
+        document.getElementById("feedback").innerText =
+          data.feedback || "No feedback returned.";
+
       } catch (err) {
         console.error(err);
         document.getElementById("feedback").innerText = "Error grading.";
       }
     }
 
-    async function playOpenAIVoice(text, endpoint, statusText) {
-      stopSpeaking();
-
-      try {
-        setStatus(statusText);
-
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text, scenario })
-        });
-
-        if (!response.ok) throw new Error("Voice failed");
-
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-
-        activeAudio = new Audio(url);
-        activeAudio.onended = function () {
-          URL.revokeObjectURL(url);
-          activeAudio = null;
-          setStatus("Voice status: Ready");
-        };
-
-        await activeAudio.play();
-        setStatus("Voice status: Speaking...");
-      } catch (error) {
-        console.error(error);
-        setStatus("Voice unavailable. Text response shown.");
-      }
-    }
-
-    async function speakPatient(text) {
-      await playOpenAIVoice(text, "/patient-voice", "Generating realistic patient voice...");
-    }
-
-    async function speakInstructor(text) {
-      await playOpenAIVoice(text, "/instructor-voice", "Generating instructor voice...");
-    }
-
-    function stopSpeaking() {
-      if (activeAudio) {
-        activeAudio.pause();
-        activeAudio.currentTime = 0;
-        activeAudio = null;
-      }
-      if ("speechSynthesis" in window) speechSynthesis.cancel();
-    }
-
     function resetScenario() {
       history = "";
-      recording = false;
-      recordingTarget = null;
-      lastRecordingTarget = null;
 
-      stopSpeaking();
-      stopAllTracks();
+      document.getElementById("patientResponse").innerText =
+        "Patient response will appear here.";
 
-      document.getElementById("patientResponse").innerText = "Patient response will appear here.";
-      document.getElementById("instructorResponse").innerText = "Instructor answer will appear here.";
-      document.getElementById("feedback").innerText = "Feedback will appear here.";
+      document.getElementById("instructorResponse").innerText =
+        "Instructor answer will appear here.";
+
+      document.getElementById("feedback").innerText =
+        "Feedback will appear here.";
+
       document.getElementById("studentQuestion").value = "";
       document.getElementById("treatmentPlan").value = "";
-
-      setButtonsReady();
-      setStatus("Voice status: Ready");
     }
 
     window.addEventListener("DOMContentLoaded", resetScenario);
