@@ -576,6 +576,4 @@ function gradeCtMedical({
   };
 }
 
-module.exports = {
-  gradeCtMedical
-};
+export { gradeCtMedical };
