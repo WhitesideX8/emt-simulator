@@ -3,6 +3,7 @@ import multer from "multer";
 import fs from "fs";
 import path from "path";
 import OpenAI from "openai";
+import { gradeCtMedical } from "./ctMedicalGrader.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
