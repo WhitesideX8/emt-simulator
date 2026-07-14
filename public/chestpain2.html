@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,19 +6,15 @@
   <title>Chest Pain Scenario</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       min-height: 100vh;
-
       background:
         url("https://raw.githubusercontent.com/WhitesideX8/emt-simulator/main/public/IMG_0989.jpg")
         no-repeat center center fixed;
-
       background-size: cover;
     }
 
@@ -27,1314 +22,650 @@
       content: "";
       position: fixed;
       inset: 0;
-
-      background: rgba(0, 0, 0, 0.5);
-
+      background: rgba(0, 0, 0, 0.52);
       z-index: 0;
     }
 
     .container {
       position: relative;
-
       z-index: 1;
-
       width: 96%;
-
       max-width: 1150px;
-
       margin: 0 auto;
-
-      padding: 8px;
-
+      padding: 8px 8px 30px;
       text-align: center;
     }
 
-    h1,
-    h2,
-    h3 {
-      margin: 4px 0;
-    }
-
-    h1,
-    h2 {
-      color: white;
-    }
-
-    h1 {
-      font-size: 25px;
-    }
-
-    h2 {
-      font-size: 18px;
-    }
-
-    h3 {
-      color: #222;
-
-      font-size: 15px;
-    }
-
-
-    /* BUTTONS */
-
+    h1, h2, h3 { margin: 4px 0; }
+    h1, h2 { color: white; }
+    h1 { font-size: 25px; }
+    h2 { font-size: 18px; }
+    h3 { color: #222; font-size: 15px; }
 
     button {
       padding: 6px 10px;
-
       margin: 2px;
-
       font-size: 13px;
-
       font-weight: bold;
-
       color: white;
-
       border: none;
-
       border-radius: 5px;
-
       cursor: pointer;
     }
 
-    button:hover {
-      opacity: 0.85;
-    }
+    button:hover { opacity: 0.86; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    button:disabled {
-      opacity: 0.6;
-
-      cursor: not-allowed;
-    }
-
-    .nav-btn {
-      background: #333;
-    }
-
-    .patient-btn {
-      background: #087f23;
-    }
-
-    .instructor-btn {
-      background: #663399;
-    }
-
-    .grade-btn {
-      background: #005fa3;
-    }
-
-    .reset-btn {
-      background: #a32626;
-    }
-
-
-    /* GENERAL BOX */
-
+    .nav-btn { background: #333; }
+    .patient-btn { background: #087f23; }
+    .instructor-btn { background: #663399; }
+    .record-btn { background: #087f23; }
+    .undo-btn { background: #b26a00; }
+    .clear-btn, .reset-btn { background: #a32626; }
+    .grade-btn { background: #005fa3; }
 
     .box {
       width: 100%;
-
       padding: 6px;
-
-      background: #eeeeee;
-
+      background: #eee;
       border: 1px solid #999;
-
       border-radius: 5px;
-
       text-align: left;
-
       white-space: pre-wrap;
-
       overflow-y: auto;
-
       font-size: 13px;
-
       line-height: 1.35;
     }
 
-
-    /* SCENARIO INFORMATION */
-
-
     #scenarioInfo {
       width: 50%;
-
       max-width: 520px;
-
       min-height: 38px;
-
-      max-height: 55px;
-
       margin: 4px auto 7px;
-
       background: #d9d9d9;
     }
 
-
-    /* PATIENT + INSTRUCTOR ROW */
-
-
     .question-area {
       display: grid;
-
       grid-template-columns: 360px 360px;
-
       gap: 100px;
-
       width: fit-content;
-
       max-width: 95%;
-
-      margin: 45px auto 0;
-
+      margin: 42px auto 0;
       justify-content: center;
-
       align-items: start;
     }
 
-
-    /* QUESTION CONTAINERS */
-
-
-    .question-column {
-      width: 360px;
-
+    .question-column,
+    .recorder-column {
       padding: 8px;
-
-      background: transparent;
-
+      background: rgba(245,245,245,0.94);
       border: 1px solid #888;
-
       border-radius: 7px;
     }
 
-
-    /* TEXTAREAS */
-
+    .question-column { width: 360px; }
 
     textarea {
       width: 100%;
-
       padding: 6px;
-
-      font-family: Arial, sans-serif;
-
-      font-size: 13px;
-
+      font: 13px Arial, sans-serif;
       border: 1px solid #888;
-
       border-radius: 5px;
-
       resize: vertical;
-
       background: white;
     }
 
     #patientQuestion,
     #instructorQuestion {
       height: 50px;
-
       min-height: 50px;
     }
 
+    #actionEntry {
+      height: 72px;
+      min-height: 62px;
+      border: 2px solid #087f23;
+      background: #f4fff4;
+    }
 
-    /* RESPONSE LABELS */
-
+    .button-row {
+      margin: 4px 0 5px;
+      text-align: center;
+    }
 
     .response-label,
     .section-label {
       margin: 5px 0 3px;
-
       color: #222;
-
       font-size: 12px;
-
       font-weight: bold;
-
       text-align: left;
     }
-
-
-    /* RESPONSE BOXES */
-
 
     #patientResponse,
     #instructorResponse {
       min-height: 85px;
-
       max-height: 140px;
-
       background: white;
     }
 
-
-    /* ASSESSMENT CONTAINER */
-
-
-    .assessment-column {
-      width: 520px;
-
+    .recorder-column {
+      width: 560px;
       max-width: 92%;
-
-      margin: 55px auto 0;
-
-      padding: 8px;
-
-      background: transparent;
-
-      border: 1px solid #888;
-
-      border-radius: 7px;
+      margin: 52px auto 0;
     }
 
-
-    /* ASSESSMENT TEXTAREA */
-
-
-    #assessmentTreatment {
-      height: 125px;
-
-      min-height: 100px;
-
-      background: #f4fff4;
-
+    #actionLog {
+      min-height: 135px;
+      max-height: 230px;
+      padding: 8px 10px;
+      background: white;
       border: 2px solid #087f23;
     }
 
+    #actionLog ol {
+      margin: 0;
+      padding-left: 24px;
+    }
 
-    /* GRADING NOTE */
+    #actionLog li {
+      margin: 0 0 5px;
+      padding-left: 2px;
+    }
 
+    .empty-log {
+      color: #666;
+      font-style: italic;
+    }
 
     .grading-note {
-      margin: 4px 0;
-
-      font-size: 11px;
-
-      line-height: 1.3;
-
+      margin: 5px 0;
       color: #333;
-
+      font-size: 11px;
+      line-height: 1.35;
       text-align: left;
     }
 
-
-    /* BUTTON ROW */
-
-
-    .button-row {
-      margin: 3px 0 5px;
-
-      text-align: center;
-    }
-
-
-    /* FEEDBACK CONTAINER */
-
-
     .grading-section {
-      width: 520px;
-
+      width: 560px;
       max-width: 92%;
-
-      margin: 8px auto 4px;
+      margin: 10px auto 4px;
     }
-
 
     #feedback {
       min-height: 95px;
-
-      max-height: 190px;
-
+      max-height: 210px;
       background: #f4f4f4;
-
       border: 2px solid #333;
     }
 
-
-    /* TABLET */
-
-
     @media (max-width: 900px) {
-
       .question-area {
         grid-template-columns: 330px 330px;
-
         gap: 40px;
       }
-
-      .question-column {
-        width: 330px;
-      }
+      .question-column { width: 330px; }
     }
 
-
-    /* MOBILE */
-
-
     @media (max-width: 750px) {
-
-      .container {
-        width: 98%;
-      }
-
-      #scenarioInfo {
-        width: 92%;
-      }
-
+      .container { width: 98%; }
+      #scenarioInfo { width: 92%; }
       .question-area {
         grid-template-columns: 1fr;
-
         width: 92%;
-
         gap: 22px;
-
         margin-top: 25px;
       }
-
-      .question-column {
-        width: 100%;
-      }
-
-      .assessment-column,
+      .question-column,
+      .recorder-column,
       .grading-section {
         width: 92%;
       }
-
       #patientQuestion,
-      #instructorQuestion {
-        height: 58px;
-      }
-
-      #assessmentTreatment {
-        height: 145px;
-      }
+      #instructorQuestion { height: 58px; }
+      #actionEntry { height: 86px; }
     }
   </style>
 </head>
 
-
 <body>
-
   <div class="container">
-
-
     <h1>Patient Simulation</h1>
 
-
     <div class="navigation">
-
-      <button
-        class="nav-btn"
-        type="button"
-        onclick="location.href='index.html'"
-      >
+      <button class="nav-btn" type="button" onclick="location.href='index.html'">
         Home
       </button>
-
     </div>
-
 
     <h2>Scenario Information</h2>
 
-
     <div id="scenarioInfo" class="box">
-
       You are dispatched to a home for a 65-year-old male experiencing chest pain.
-
     </div>
 
-
-
-    <!-- PATIENT + INSTRUCTOR ROW -->
-
-
     <div class="question-area">
-
-
-      <!-- ASK PATIENT -->
-
-
-      <section class="question-column patient-column">
-
-
+      <section class="question-column">
         <h3>Ask the Patient</h3>
-
 
         <textarea
           id="patientQuestion"
           placeholder="Type a question for the patient..."
         ></textarea>
 
-
         <div class="button-row">
-
-
           <button
             id="patientButton"
             class="patient-btn"
             type="button"
             onclick="askPatientTyped()"
           >
-
             Ask Patient
-
           </button>
-
-
         </div>
 
+        <div class="response-label">Patient Response</div>
 
-        <div class="response-label">
-
-          Patient Response
-
-        </div>
-
-
-        <div
-          id="patientResponse"
-          class="box"
-        >
-
+        <div id="patientResponse" class="box">
           Patient response will appear here.
-
         </div>
-
-
       </section>
 
-
-
-      <!-- ASK INSTRUCTOR -->
-
-
-      <section class="question-column instructor-column">
-
-
+      <section class="question-column">
         <h3>Ask the Instructor</h3>
-
 
         <textarea
           id="instructorQuestion"
           placeholder="Ask the instructor a question about the scenario..."
         ></textarea>
 
-
         <div class="button-row">
-
-
           <button
             id="instructorButton"
             class="instructor-btn"
             type="button"
             onclick="askInstructorTyped()"
           >
-
             Ask Instructor
-
           </button>
-
-
         </div>
 
+        <div class="response-label">Instructor Response</div>
 
-        <div class="response-label">
-
-          Instructor Response
-
-        </div>
-
-
-        <div
-          id="instructorResponse"
-          class="box"
-        >
-
+        <div id="instructorResponse" class="box">
           Instructor answer will appear here.
-
         </div>
-
-
       </section>
-
-
     </div>
 
-
-
-    <!-- CENTERED ASSESSMENT CONTAINER -->
-
-
-    <section class="assessment-column">
-
-
-      <h3>
-
-        Assessment and Treatment for Grading
-
-      </h3>
-
+    <section class="recorder-column">
+      <h3>Assessment and Treatment Recorder</h3>
 
       <div class="section-label">
-
-        Enter what you assessed, found, treated, and your transport decision.
-
+        Enter one assessment, finding, treatment, transport decision, or reassessment at a time.
       </div>
 
-
       <textarea
-        id="assessmentTreatment"
-        placeholder="Enter your assessment, findings, treatment, transport decision, and reassessment..."
+        id="actionEntry"
+        placeholder="Example: Assessed airway; airway is patent."
       ></textarea>
 
+      <div class="button-row">
+        <button
+          id="recordButton"
+          class="record-btn"
+          type="button"
+          onclick="recordAction()"
+        >
+          Record Action
+        </button>
+
+        <button
+          class="undo-btn"
+          type="button"
+          onclick="undoLastAction()"
+        >
+          Undo Last
+        </button>
+
+        <button
+          class="clear-btn"
+          type="button"
+          onclick="clearActionLog()"
+        >
+          Clear Log
+        </button>
+      </div>
+
+      <div class="section-label">Recorded Assessment and Treatment Log</div>
+
+      <div id="actionLog" class="box">
+        <span class="empty-log">No actions have been recorded.</span>
+      </div>
 
       <p class="grading-note">
-
-        Only actions documented here, along with patient questioning,
-        will be considered during grading.
-
+        After an action is recorded, the entry box clears automatically. The full recorded log and patient interview are submitted for grading. Instructor questions are kept separate and are not counted as completed care.
       </p>
 
-
       <div class="button-row">
-
-
         <button
           id="gradeButton"
           class="grade-btn"
           type="button"
           onclick="gradeStudent()"
         >
-
           Submit for Grading
-
         </button>
-
 
         <button
           class="reset-btn"
           type="button"
           onclick="resetScenario()"
         >
-
-          Reset
-
+          Reset Scenario
         </button>
-
-
       </div>
-
-
     </section>
-
-
-
-    <!-- GRADING REPORT -->
-
 
     <section class="grading-section">
+      <h3>Feedback and Grading Report</h3>
 
-
-      <h3>
-
-        Feedback and Grading Report
-
-      </h3>
-
-
-      <div
-        id="feedback"
-        class="box"
-      >
-
+      <div id="feedback" class="box">
         Feedback will appear here.
-
       </div>
-
-
     </section>
-
-
   </div>
 
-
-
   <script>
-
-
     let patientHistory = "";
-
     let instructorHistory = "";
-
+    let assessmentLog = [];
 
     const scenario = "chestPain";
 
-
-
     async function readJsonResponse(response) {
-
-
-      const contentType =
-        response.headers.get("content-type") || "";
-
+      const contentType = response.headers.get("content-type") || "";
 
       if (!response.ok) {
-
-
-        const errorText =
-          await response.text();
-
-
+        const errorText = await response.text();
         throw new Error(
-
-          errorText ||
-
-          `Server returned status ${response.status}.`
-
+          errorText || `Server returned status ${response.status}.`
         );
-
       }
-
 
       if (!contentType.includes("application/json")) {
-
-
-        const responseText =
-          await response.text();
-
-
+        const responseText = await response.text();
         throw new Error(
-
-          responseText ||
-
-          "The server did not return valid JSON."
-
+          responseText || "The server did not return valid JSON."
         );
-
       }
-
 
       return response.json();
-
     }
-
-
 
     async function askPatientTyped() {
-
-
-      const questionBox =
-        document.getElementById("patientQuestion");
-
-
-      const responseBox =
-        document.getElementById("patientResponse");
-
-
-      const patientButton =
-        document.getElementById("patientButton");
-
-
-      const question =
-        questionBox.value.trim();
-
-
+      const questionBox = document.getElementById("patientQuestion");
+      const responseBox = document.getElementById("patientResponse");
+      const patientButton = document.getElementById("patientButton");
+      const question = questionBox.value.trim();
 
       if (!question) {
-
-
-        responseBox.innerText =
-
-          "Type a question for the patient first.";
-
-
+        responseBox.innerText = "Type a question for the patient first.";
         questionBox.focus();
-
-
         return;
-
       }
 
-
-
-      responseBox.innerText =
-
-        "Contacting patient...";
-
-
+      responseBox.innerText = "Contacting patient...";
       patientButton.disabled = true;
 
-
-
       try {
+        const response = await fetch("/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            studentQuestion: question,
+            history: patientHistory,
+            scenario: scenario
+          })
+        });
 
-
-        const response =
-
-          await fetch("/ask", {
-
-
-            method: "POST",
-
-
-            headers: {
-
-              "Content-Type": "application/json"
-
-            },
-
-
-            body: JSON.stringify({
-
-
-              studentQuestion: question,
-
-
-              history: patientHistory,
-
-
-              scenario: scenario
-
-
-            })
-
-
-          });
-
-
-
-        const data =
-
-          await readJsonResponse(response);
-
-
-
+        const data = await readJsonResponse(response);
         const patientReply =
+          data.reply || data.answer || "The patient did not respond.";
 
-          data.reply ||
+        patientHistory += `Student to patient: ${question}\n`;
+        patientHistory += `Patient: ${patientReply}\n\n`;
 
-          data.answer ||
-
-          "The patient did not respond.";
-
-
-
-        patientHistory +=
-
-          `Student to patient: ${question}\n`;
-
-
-        patientHistory +=
-
-          `Patient: ${patientReply}\n\n`;
-
-
-
-        responseBox.innerText =
-
-          patientReply;
-
-
+        responseBox.innerText = patientReply;
         questionBox.value = "";
-
-
         questionBox.focus();
 
-
-
       } catch (error) {
-
-
-        console.error(
-
-          "Patient request error:",
-
-          error
-
-        );
-
-
+        console.error("Patient request error:", error);
         responseBox.innerText =
-
-          "Error contacting patient server.\n\n" +
-
-          error.message;
-
+          "Error contacting patient server.\n\n" + error.message;
 
       } finally {
-
-
         patientButton.disabled = false;
-
-
       }
-
     }
-
-
 
     async function askInstructorTyped() {
-
-
-      const questionBox =
-
-        document.getElementById("instructorQuestion");
-
-
-      const responseBox =
-
-        document.getElementById("instructorResponse");
-
-
-      const instructorButton =
-
-        document.getElementById("instructorButton");
-
-
-      const question =
-
-        questionBox.value.trim();
-
-
+      const questionBox = document.getElementById("instructorQuestion");
+      const responseBox = document.getElementById("instructorResponse");
+      const instructorButton = document.getElementById("instructorButton");
+      const question = questionBox.value.trim();
 
       if (!question) {
-
-
-        responseBox.innerText =
-
-          "Type a question for the instructor first.";
-
-
+        responseBox.innerText = "Type a question for the instructor first.";
         questionBox.focus();
-
-
         return;
-
       }
 
-
-
-      responseBox.innerText =
-
-        "Contacting instructor...";
-
-
+      responseBox.innerText = "Contacting instructor...";
       instructorButton.disabled = true;
 
-
-
       try {
+        const response = await fetch("/instructor", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            studentQuestion: question,
+            history: patientHistory,
+            scenario: scenario
+          })
+        });
 
-
-        const response =
-
-          await fetch("/instructor", {
-
-
-            method: "POST",
-
-
-            headers: {
-
-              "Content-Type": "application/json"
-
-            },
-
-
-            body: JSON.stringify({
-
-
-              studentQuestion: question,
-
-
-              history: patientHistory,
-
-
-              scenario: scenario
-
-
-            })
-
-
-          });
-
-
-
-        const data =
-
-          await readJsonResponse(response);
-
-
-
+        const data = await readJsonResponse(response);
         const instructorReply =
+          data.reply || data.answer || "The instructor did not respond.";
 
-          data.reply ||
+        instructorHistory += `Student to instructor: ${question}\n`;
+        instructorHistory += `Instructor: ${instructorReply}\n\n`;
 
-          data.answer ||
-
-          "The instructor did not respond.";
-
-
-
-        instructorHistory +=
-
-          `Student to instructor: ${question}\n`;
-
-
-        instructorHistory +=
-
-          `Instructor: ${instructorReply}\n\n`;
-
-
-
-        responseBox.innerText =
-
-          instructorReply;
-
-
+        responseBox.innerText = instructorReply;
         questionBox.value = "";
-
-
         questionBox.focus();
 
-
-
       } catch (error) {
-
-
-        console.error(
-
-          "Instructor request error:",
-
-          error
-
-        );
-
-
+        console.error("Instructor request error:", error);
         responseBox.innerText =
-
-          "Error contacting instructor.\n\n" +
-
-          error.message;
-
+          "Error contacting instructor.\n\n" + error.message;
 
       } finally {
-
-
         instructorButton.disabled = false;
-
-
       }
-
     }
 
+    function recordAction() {
+      const entryBox = document.getElementById("actionEntry");
+      const entry = entryBox.value.trim();
 
+      if (!entry) {
+        entryBox.placeholder =
+          "Type an assessment or treatment before recording.";
+        entryBox.focus();
+        return;
+      }
+
+      assessmentLog.push(entry);
+      renderActionLog();
+
+      entryBox.value = "";
+      entryBox.placeholder =
+        "Enter the next assessment, finding, treatment, or decision...";
+      entryBox.focus();
+    }
+
+    function renderActionLog() {
+      const logBox = document.getElementById("actionLog");
+
+      if (assessmentLog.length === 0) {
+        logBox.innerHTML =
+          '<span class="empty-log">No actions have been recorded.</span>';
+        return;
+      }
+
+      const list = document.createElement("ol");
+
+      assessmentLog.forEach(function(action) {
+        const item = document.createElement("li");
+        item.textContent = action;
+        list.appendChild(item);
+      });
+
+      logBox.innerHTML = "";
+      logBox.appendChild(list);
+      logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    function undoLastAction() {
+      if (assessmentLog.length === 0) {
+        document.getElementById("feedback").innerText =
+          "There are no recorded actions to undo.";
+        return;
+      }
+
+      const removedAction = assessmentLog.pop();
+      renderActionLog();
+
+      document.getElementById("feedback").innerText =
+        `Removed the last recorded action: ${removedAction}`;
+    }
+
+    function clearActionLog() {
+      assessmentLog = [];
+      renderActionLog();
+
+      document.getElementById("feedback").innerText =
+        "The assessment and treatment log has been cleared.";
+
+      document.getElementById("actionEntry").focus();
+    }
 
     async function gradeStudent() {
+      const feedbackBox = document.getElementById("feedback");
+      const gradeButton = document.getElementById("gradeButton");
 
-
-      const assessmentTreatment =
-
-        document
-
-          .getElementById("assessmentTreatment")
-
-          .value
-
-          .trim();
-
-
-
-      const feedbackBox =
-
-        document.getElementById("feedback");
-
-
-      const gradeButton =
-
-        document.getElementById("gradeButton");
-
-
-
-      if (!patientHistory && !assessmentTreatment) {
-
-
+      if (assessmentLog.length === 0) {
         feedbackBox.innerText =
-
-          "Ask the patient questions and enter your assessment and treatment before submitting.";
-
-
+          "Record at least one assessment or treatment before submitting.";
+        document.getElementById("actionEntry").focus();
         return;
-
       }
 
-
-
-      if (!assessmentTreatment) {
-
-
-        feedbackBox.innerText =
-
-          "Enter your assessment, findings, treatment, transport decision, and reassessment before submitting.";
-
-
-        document
-
-          .getElementById("assessmentTreatment")
-
-          .focus();
-
-
-        return;
-
-      }
-
-
+      const treatmentPlan = assessmentLog
+        .map(function(action, index) {
+          return `${index + 1}. ${action}`;
+        })
+        .join("\n");
 
       feedbackBox.innerText =
-
-        "Reviewing your assessment and treatment plan...";
-
+        "Reviewing the patient interview and recorded actions...";
 
       gradeButton.disabled = true;
 
-
-
       try {
+        const response = await fetch("/grade", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            studentAnswer: patientHistory,
+            treatmentPlan: treatmentPlan,
+            assessmentLog: assessmentLog,
+            instructorHistory: instructorHistory,
+            scenario: scenario
+          })
+        });
 
-
-        const response =
-
-          await fetch("/grade", {
-
-
-            method: "POST",
-
-
-            headers: {
-
-              "Content-Type": "application/json"
-
-            },
-
-
-            body: JSON.stringify({
-
-
-              studentAnswer: patientHistory,
-
-
-              treatmentPlan: assessmentTreatment,
-
-
-              instructorHistory: instructorHistory,
-
-
-              scenario: scenario
-
-
-            })
-
-
-          });
-
-
-
-        const data =
-
-          await readJsonResponse(response);
-
-
+        const data = await readJsonResponse(response);
 
         feedbackBox.innerText =
-
           data.feedback ||
-
           data.reply ||
-
           "No grading feedback was returned.";
 
-
-
       } catch (error) {
-
-
-        console.error(
-
-          "Grading error:",
-
-          error
-
-        );
-
-
+        console.error("Grading error:", error);
         feedbackBox.innerText =
-
-          "Error grading the scenario.\n\n" +
-
-          error.message;
-
+          "Error grading the scenario.\n\n" + error.message;
 
       } finally {
-
-
         gradeButton.disabled = false;
-
-
       }
-
     }
-
-
 
     function resetScenario() {
-
-
       patientHistory = "";
-
       instructorHistory = "";
+      assessmentLog = [];
 
+      document.getElementById("patientQuestion").value = "";
+      document.getElementById("instructorQuestion").value = "";
+      document.getElementById("actionEntry").value = "";
 
-
-      document
-
-        .getElementById("patientQuestion")
-
-        .value = "";
-
-
-      document
-
-        .getElementById("instructorQuestion")
-
-        .value = "";
-
-
-      document
-
-        .getElementById("assessmentTreatment")
-
-        .value = "";
-
-
-
-      document
-
-        .getElementById("patientResponse")
-
-        .innerText =
-
+      document.getElementById("patientResponse").innerText =
         "Patient response will appear here.";
 
-
-
-      document
-
-        .getElementById("instructorResponse")
-
-        .innerText =
-
+      document.getElementById("instructorResponse").innerText =
         "Instructor answer will appear here.";
 
-
-
-      document
-
-        .getElementById("feedback")
-
-        .innerText =
-
+      document.getElementById("feedback").innerText =
         "Feedback will appear here.";
 
-
-
-      document
-
-        .getElementById("patientQuestion")
-
-        .focus();
-
+      renderActionLog();
+      document.getElementById("patientQuestion").focus();
     }
 
-
-
     document
-
       .getElementById("patientQuestion")
-
-      .addEventListener(
-
-        "keydown",
-
-        function(event) {
-
-
-          if (
-
-            event.key === "Enter" &&
-
-            !event.shiftKey
-
-          ) {
-
-
-            event.preventDefault();
-
-
-            askPatientTyped();
-
-          }
-
+      .addEventListener("keydown", function(event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          askPatientTyped();
         }
-
-      );
-
-
+      });
 
     document
-
       .getElementById("instructorQuestion")
-
-      .addEventListener(
-
-        "keydown",
-
-        function(event) {
-
-
-          if (
-
-            event.key === "Enter" &&
-
-            !event.shiftKey
-
-          ) {
-
-
-            event.preventDefault();
-
-
-            askInstructorTyped();
-
-          }
-
+      .addEventListener("keydown", function(event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          askInstructorTyped();
         }
+      });
 
-      );
+    document
+      .getElementById("actionEntry")
+      .addEventListener("keydown", function(event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          recordAction();
+        }
+      });
 
-
-
-    window.addEventListener(
-
-      "DOMContentLoaded",
-
-      resetScenario
-
-    );
-
-
+    window.addEventListener("DOMContentLoaded", resetScenario);
   </script>
-
-
 </body>
 </html>
