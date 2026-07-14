@@ -420,278 +420,263 @@
     </section>
   </div>
 
-  <script>
-    let patientHistory = "";
-    let instructorHistory = "";
-    let assessmentLog = [];
+  <!-- Replace only your existing <script> block with this updated script. -->
+<script>
+  let patientHistory = "";
+  let instructorHistory = "";
+  let assessmentLog = [];
+  let scenarioStartTime = Date.now();
 
-    const scenario = "chestPain";
+  const scenario = "chestPain";
 
-    async function readJsonResponse(response) {
-      const contentType = response.headers.get("content-type") || "";
+  async function readJsonResponse(response) {
+    const contentType = response.headers.get("content-type") || "";
 
-      if (!response.ok) {
-        const errorText = await response.text();
-
-        throw new Error(
-          errorText || `Server returned status ${response.status}.`
-        );
-      }
-
-      if (!contentType.includes("application/json")) {
-        const responseText = await response.text();
-
-        throw new Error(
-          responseText || "The server did not return valid JSON."
-        );
-      }
-
-      return response.json();
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        errorText || `Server returned status ${response.status}.`
+      );
     }
 
-    async function askPatientTyped() {
-      const questionBox = document.getElementById("patientQuestion");
-      const responseBox = document.getElementById("patientResponse");
-      const patientButton = document.getElementById("patientButton");
-      const question = questionBox.value.trim();
-
-      if (!question) {
-        responseBox.innerText = "Type a question for the patient first.";
-        questionBox.focus();
-        return;
-      }
-
-      responseBox.innerText = "Contacting patient...";
-      patientButton.disabled = true;
-
-      try {
-        const response = await fetch("/ask", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            studentQuestion: question,
-            history: patientHistory,
-            scenario: scenario
-          })
-        });
-
-        const data = await readJsonResponse(response);
-
-        const patientReply =
-          data.reply ||
-          data.answer ||
-          "The patient did not respond.";
-
-        patientHistory += `Student to patient: ${question}\n`;
-        patientHistory += `Patient: ${patientReply}\n\n`;
-
-        responseBox.innerText = patientReply;
-        questionBox.value = "";
-        questionBox.focus();
-
-      } catch (error) {
-        console.error("Patient request error:", error);
-
-        responseBox.innerText =
-          "Error contacting patient server.\n\n" +
-          error.message;
-
-      } finally {
-        patientButton.disabled = false;
-      }
+    if (!contentType.includes("application/json")) {
+      const responseText = await response.text();
+      throw new Error(
+        responseText || "The server did not return valid JSON."
+      );
     }
 
-    async function askInstructorTyped() {
-      const questionBox = document.getElementById("instructorQuestion");
-      const responseBox = document.getElementById("instructorResponse");
-      const instructorButton = document.getElementById("instructorButton");
-      const question = questionBox.value.trim();
+    return response.json();
+  }
 
-      if (!question) {
-        responseBox.innerText =
-          "Type a question for the instructor first.";
+  async function askPatientTyped() {
+    const questionBox = document.getElementById("patientQuestion");
+    const responseBox = document.getElementById("patientResponse");
+    const patientButton = document.getElementById("patientButton");
+    const question = questionBox.value.trim();
 
-        questionBox.focus();
-        return;
-      }
-
-      responseBox.innerText = "Contacting instructor...";
-      instructorButton.disabled = true;
-
-      try {
-        const response = await fetch("/instructor", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            studentQuestion: question,
-            history: patientHistory,
-            scenario: scenario
-          })
-        });
-
-        const data = await readJsonResponse(response);
-
-        const instructorReply =
-          data.reply ||
-          data.answer ||
-          "The instructor did not respond.";
-
-        instructorHistory += `Student to instructor: ${question}\n`;
-        instructorHistory += `Instructor: ${instructorReply}\n\n`;
-
-        responseBox.innerText = instructorReply;
-        questionBox.value = "";
-        questionBox.focus();
-
-      } catch (error) {
-        console.error("Instructor request error:", error);
-
-        responseBox.innerText =
-          "Error contacting instructor.\n\n" +
-          error.message;
-
-      } finally {
-        instructorButton.disabled = false;
-      }
+    if (!question) {
+      responseBox.innerText = "Type a question for the patient first.";
+      questionBox.focus();
+      return;
     }
 
-    function recordAction() {
-      const entryBox = document.getElementById("actionEntry");
-      const statusBox = document.getElementById("recordStatus");
-      const entry = entryBox.value.trim();
+    responseBox.innerText = "Contacting patient...";
+    patientButton.disabled = true;
 
-      if (!entry) {
-        statusBox.innerText =
-          "Type an assessment or treatment before recording.";
-
-        entryBox.focus();
-        return;
-      }
-
-      assessmentLog.push(entry);
-
-      statusBox.innerText =
-        `Assessment recorded. Total recorded: ${assessmentLog.length}`;
-
-      entryBox.value = "";
-      entryBox.placeholder =
-        "Enter the next assessment, finding, treatment, or decision...";
-
-      entryBox.focus();
-    }
-
-    async function gradeStudent() {
-      const feedbackBox = document.getElementById("feedback");
-      const gradeButton = document.getElementById("gradeButton");
-
-      if (assessmentLog.length === 0) {
-        feedbackBox.innerText =
-          "Record at least one assessment or treatment before submitting.";
-
-        document.getElementById("actionEntry").focus();
-        return;
-      }
-
-      const treatmentPlan = assessmentLog
-        .map(function(action, index) {
-          return `${index + 1}. ${action}`;
+    try {
+      const response = await fetch("/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentQuestion: question,
+          history: patientHistory,
+          scenario
         })
-        .join("\n");
+      });
+
+      const data = await readJsonResponse(response);
+      const patientReply =
+        data.reply || data.answer || "The patient did not respond.";
+
+      patientHistory += `Student to patient: ${question}\n`;
+      patientHistory += `Patient: ${patientReply}\n\n`;
+
+      responseBox.innerText = patientReply;
+      questionBox.value = "";
+      questionBox.focus();
+    } catch (error) {
+      console.error("Patient request error:", error);
+      responseBox.innerText =
+        "Error contacting patient server.\n\n" + error.message;
+    } finally {
+      patientButton.disabled = false;
+    }
+  }
+
+  async function askInstructorTyped() {
+    const questionBox = document.getElementById("instructorQuestion");
+    const responseBox = document.getElementById("instructorResponse");
+    const instructorButton = document.getElementById("instructorButton");
+    const question = questionBox.value.trim();
+
+    if (!question) {
+      responseBox.innerText =
+        "Type a question for the instructor first.";
+      questionBox.focus();
+      return;
+    }
+
+    responseBox.innerText = "Contacting instructor...";
+    instructorButton.disabled = true;
+
+    try {
+      const response = await fetch("/instructor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentQuestion: question,
+          history: patientHistory,
+          scenario
+        })
+      });
+
+      const data = await readJsonResponse(response);
+      const instructorReply =
+        data.reply || data.answer || "The instructor did not respond.";
+
+      instructorHistory += `Student to instructor: ${question}\n`;
+      instructorHistory += `Instructor: ${instructorReply}\n\n`;
+
+      responseBox.innerText = instructorReply;
+      questionBox.value = "";
+      questionBox.focus();
+    } catch (error) {
+      console.error("Instructor request error:", error);
+      responseBox.innerText =
+        "Error contacting instructor.\n\n" + error.message;
+    } finally {
+      instructorButton.disabled = false;
+    }
+  }
+
+  function recordAction() {
+    const entryBox = document.getElementById("actionEntry");
+    const statusBox = document.getElementById("recordStatus");
+    const entry = entryBox.value.trim();
+
+    if (!entry) {
+      statusBox.innerText =
+        "Type an assessment or treatment before recording.";
+      entryBox.focus();
+      return;
+    }
+
+    assessmentLog.push(entry);
+
+    statusBox.innerText =
+      `Assessment recorded. Total recorded: ${assessmentLog.length}`;
+
+    entryBox.value = "";
+    entryBox.placeholder =
+      "Enter the next assessment, finding, treatment, or decision...";
+    entryBox.focus();
+  }
+
+  async function gradeStudent() {
+    const feedbackBox = document.getElementById("feedback");
+    const gradeButton = document.getElementById("gradeButton");
+
+    // Automatically record text still sitting in the entry box.
+    const pendingEntry =
+      document.getElementById("actionEntry").value.trim();
+
+    if (pendingEntry) {
+      assessmentLog.push(pendingEntry);
+      document.getElementById("actionEntry").value = "";
+    }
+
+    if (assessmentLog.length === 0 && !patientHistory.trim()) {
+      feedbackBox.innerText =
+        "Record at least one assessment, treatment, or patient interview before submitting.";
+      document.getElementById("actionEntry").focus();
+      return;
+    }
+
+    const treatmentPlan = assessmentLog
+      .map((action, index) => `${index + 1}. ${action}`)
+      .join("\n");
+
+    const elapsedSeconds = Math.floor(
+      (Date.now() - scenarioStartTime) / 1000
+    );
+
+    feedbackBox.innerText =
+      "Scoring against the CT DPH OEMS Medical Assessment sheet...";
+
+    gradeButton.disabled = true;
+
+    try {
+      const response = await fetch("/grade", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentAnswer: patientHistory,
+          treatmentPlan,
+          assessmentLog,
+          instructorHistory,
+          scenario,
+          elapsedSeconds
+        })
+      });
+
+      const data = await readJsonResponse(response);
 
       feedbackBox.innerText =
-        "Reviewing the patient interview and recorded assessments and treatments...";
+        data.feedback ||
+        data.reply ||
+        "No grading feedback was returned.";
+    } catch (error) {
+      console.error("Grading error:", error);
+      feedbackBox.innerText =
+        "Error grading the scenario.\n\n" + error.message;
+    } finally {
+      gradeButton.disabled = false;
+    }
+  }
 
-      gradeButton.disabled = true;
+  function resetScenario() {
+    patientHistory = "";
+    instructorHistory = "";
+    assessmentLog = [];
+    scenarioStartTime = Date.now();
 
-      try {
-        const response = await fetch("/grade", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            studentAnswer: patientHistory,
-            treatmentPlan: treatmentPlan,
-            assessmentLog: assessmentLog,
-            instructorHistory: instructorHistory,
-            scenario: scenario
-          })
-        });
+    document.getElementById("patientQuestion").value = "";
+    document.getElementById("instructorQuestion").value = "";
+    document.getElementById("actionEntry").value = "";
 
-        const data = await readJsonResponse(response);
+    document.getElementById("patientResponse").innerText =
+      "Patient response will appear here.";
 
-        feedbackBox.innerText =
-          data.feedback ||
-          data.reply ||
-          "No grading feedback was returned.";
+    document.getElementById("instructorResponse").innerText =
+      "Instructor answer will appear here.";
 
-      } catch (error) {
-        console.error("Grading error:", error);
+    document.getElementById("recordStatus").innerText = "";
 
-        feedbackBox.innerText =
-          "Error grading the scenario.\n\n" +
-          error.message;
+    document.getElementById("feedback").innerText =
+      "Feedback will appear here.";
 
-      } finally {
-        gradeButton.disabled = false;
+    document.getElementById("patientQuestion").focus();
+  }
+
+  document
+    .getElementById("patientQuestion")
+    .addEventListener("keydown", function(event) {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        askPatientTyped();
       }
-    }
+    });
 
-    function resetScenario() {
-      patientHistory = "";
-      instructorHistory = "";
-      assessmentLog = [];
+  document
+    .getElementById("instructorQuestion")
+    .addEventListener("keydown", function(event) {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        askInstructorTyped();
+      }
+    });
 
-      document.getElementById("patientQuestion").value = "";
-      document.getElementById("instructorQuestion").value = "";
-      document.getElementById("actionEntry").value = "";
+  document
+    .getElementById("actionEntry")
+    .addEventListener("keydown", function(event) {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        recordAction();
+      }
+    });
 
-      document.getElementById("patientResponse").innerText =
-        "Patient response will appear here.";
-
-      document.getElementById("instructorResponse").innerText =
-        "Instructor answer will appear here.";
-
-      document.getElementById("recordStatus").innerText = "";
-
-      document.getElementById("feedback").innerText =
-        "Feedback will appear here.";
-
-      document.getElementById("patientQuestion").focus();
-    }
-
-    document
-      .getElementById("patientQuestion")
-      .addEventListener("keydown", function(event) {
-        if (event.key === "Enter" && !event.shiftKey) {
-          event.preventDefault();
-          askPatientTyped();
-        }
-      });
-
-    document
-      .getElementById("instructorQuestion")
-      .addEventListener("keydown", function(event) {
-        if (event.key === "Enter" && !event.shiftKey) {
-          event.preventDefault();
-          askInstructorTyped();
-        }
-      });
-
-    document
-      .getElementById("actionEntry")
-      .addEventListener("keydown", function(event) {
-        if (event.key === "Enter" && !event.shiftKey) {
-          event.preventDefault();
-          recordAction();
-        }
-      });
-
-    window.addEventListener("DOMContentLoaded", resetScenario);
-  </script>
+  window.addEventListener("DOMContentLoaded", resetScenario);
+</script>
 </body>
 </html>
