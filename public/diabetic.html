@@ -52,16 +52,13 @@
       margin: 4px 0;
     }
 
-    h1,
-    h2 {
-      color: white;
-    }
-
     h1 {
+      color: white;
       font-size: 25px;
     }
 
     h2 {
+      color: white;
       font-size: 18px;
     }
 
@@ -232,12 +229,13 @@
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
     }
 
-    .grading-note {
-      margin: 5px 0;
-      color: #333;
-      font-size: 11px;
-      line-height: 1.35;
-      text-align: left;
+    #completedAssessments {
+      min-height: 55px;
+      max-height: 135px;
+      margin-top: 5px;
+      background: rgba(244, 255, 244, 0.95);
+      border: 2px solid #087f23;
+      color: #163b1d;
     }
 
     .grading-section {
@@ -357,7 +355,7 @@
 
         <textarea
           id="instructorQuestion"
-          placeholder="Ask the instructor a question about the scenario..."
+          placeholder="Ask for an assessment finding, vital sign, or instructor guidance..."
         ></textarea>
 
         <div class="button-row">
@@ -387,11 +385,9 @@
 
       <h3>Assessment and Treatment</h3>
 
-      <div class="section-label"></div>
-
       <textarea
         id="actionEntry"
-        placeholder="Example: Assessed airway; airway is patent."
+        placeholder="Enter an assessment, treatment, or transport decision..."
       ></textarea>
 
       <div class="button-row">
@@ -409,6 +405,14 @@
         id="recordStatus"
         class="record-status"
       ></div>
+
+      <div class="section-label">
+        Automatically Recorded Assessments
+      </div>
+
+      <div id="completedAssessments" class="box">
+        No assessments recorded yet.
+      </div>
 
       <div class="button-row">
 
@@ -452,10 +456,365 @@
     let scenarioStartTime = Date.now();
 
     /*
-      This name must match the diabetic scenario name
-      used in your server.js file.
+      A Set prevents the same assessment from being
+      recorded more than once.
     */
+    let completedSkills = new Set();
+
     const scenario = "diabetic";
+
+    /*
+      The program searches student questions for these phrases.
+
+      Add more phrases to a keywords list whenever needed.
+      The skill name is what is recorded and sent for grading.
+    */
+    const assessmentMap = [
+      {
+        skill: "BSI precautions",
+        keywords: [
+          "bsi",
+          "body substance isolation",
+          "gloves",
+          "ppe",
+          "personal protective equipment"
+        ]
+      },
+      {
+        skill: "Scene safety assessed",
+        keywords: [
+          "scene safe",
+          "scene safety",
+          "is the scene safe",
+          "any hazards",
+          "hazards on scene"
+        ]
+      },
+      {
+        skill: "Mechanism or nature of illness assessed",
+        keywords: [
+          "nature of illness",
+          "noi",
+          "mechanism",
+          "what happened",
+          "why were we called"
+        ]
+      },
+      {
+        skill: "Number of patients determined",
+        keywords: [
+          "number of patients",
+          "how many patients",
+          "any other patients",
+          "other patients"
+        ]
+      },
+      {
+        skill: "Need for additional resources considered",
+        keywords: [
+          "additional resources",
+          "additional units",
+          "need als",
+          "request als",
+          "need paramedic",
+          "request paramedic",
+          "need police",
+          "need fire"
+        ]
+      },
+      {
+        skill: "General impression formed",
+        keywords: [
+          "general impression",
+          "how does the patient look",
+          "patient appearance",
+          "what do i see",
+          "initial impression"
+        ]
+      },
+      {
+        skill: "Mental status assessed",
+        keywords: [
+          "mental status",
+          "level of consciousness",
+          "loc",
+          "avpu",
+          "alert and oriented",
+          "orientation",
+          "oriented",
+          "gcs",
+          "glasgow coma scale",
+          "responsiveness"
+        ]
+      },
+      {
+        skill: "Airway assessed",
+        keywords: [
+          "airway",
+          "is the airway patent",
+          "airway patent",
+          "can he maintain his airway",
+          "can the patient speak"
+        ]
+      },
+      {
+        skill: "Breathing assessed",
+        keywords: [
+          "breathing",
+          "respiratory effort",
+          "work of breathing",
+          "respiratory status",
+          "breathing quality"
+        ]
+      },
+      {
+        skill: "Respiratory rate obtained",
+        keywords: [
+          "respiratory rate",
+          "respiration rate",
+          "respirations",
+          "breathing rate",
+          "how many breaths"
+        ]
+      },
+      {
+        skill: "Lung sounds assessed",
+        keywords: [
+          "lung sounds",
+          "breath sounds",
+          "auscultate",
+          "lungs clear",
+          "wheezing",
+          "rales",
+          "rhonchi"
+        ]
+      },
+      {
+        skill: "Oxygen saturation obtained",
+        keywords: [
+          "oxygen saturation",
+          "pulse oximetry",
+          "pulse ox",
+          "spo2",
+          "o2 saturation",
+          "oxygen level"
+        ]
+      },
+      {
+        skill: "Circulation assessed",
+        keywords: [
+          "circulation",
+          "perfusion",
+          "circulatory status"
+        ]
+      },
+      {
+        skill: "Pulse assessed",
+        keywords: [
+          "pulse",
+          "heart rate",
+          "radial pulse",
+          "carotid pulse",
+          "pulse rate"
+        ]
+      },
+      {
+        skill: "Skin signs assessed",
+        keywords: [
+          "skin",
+          "skin signs",
+          "skin color",
+          "skin temperature",
+          "skin condition",
+          "warm and dry",
+          "cool and clammy",
+          "diaphoretic"
+        ]
+      },
+      {
+        skill: "Major bleeding assessed",
+        keywords: [
+          "major bleeding",
+          "severe bleeding",
+          "uncontrolled bleeding",
+          "hemorrhage",
+          "any bleeding"
+        ]
+      },
+      {
+        skill: "Blood pressure obtained",
+        keywords: [
+          "blood pressure",
+          "what is the bp",
+          "obtain a bp",
+          "check bp",
+          "systolic",
+          "diastolic"
+        ]
+      },
+      {
+        skill: "Blood glucose obtained",
+        keywords: [
+          "blood glucose",
+          "blood sugar",
+          "glucose level",
+          "bgl",
+          "finger stick",
+          "glucometer",
+          "check glucose",
+          "check sugar"
+        ]
+      },
+      {
+        skill: "Pupils assessed",
+        keywords: [
+          "pupils",
+          "perrl",
+          "pupil response",
+          "pupil size",
+          "eyes equal",
+          "eyes reactive"
+        ]
+      },
+      {
+        skill: "SAMPLE history obtained",
+        keywords: [
+          "sample history",
+          "sample",
+          "medical history",
+          "past medical history",
+          "medical problems"
+        ]
+      },
+      {
+        skill: "Signs and symptoms assessed",
+        keywords: [
+          "signs and symptoms",
+          "symptoms",
+          "what is bothering you",
+          "chief complaint",
+          "how do you feel"
+        ]
+      },
+      {
+        skill: "Allergies assessed",
+        keywords: [
+          "allergies",
+          "allergic to",
+          "medication allergies",
+          "any allergies"
+        ]
+      },
+      {
+        skill: "Medications assessed",
+        keywords: [
+          "medications",
+          "medicine",
+          "meds",
+          "prescriptions",
+          "what medications"
+        ]
+      },
+      {
+        skill: "Pertinent medical history assessed",
+        keywords: [
+          "medical history",
+          "past history",
+          "past medical history",
+          "history of diabetes",
+          "are you diabetic",
+          "diabetes history"
+        ]
+      },
+      {
+        skill: "Last oral intake assessed",
+        keywords: [
+          "last oral intake",
+          "last meal",
+          "last ate",
+          "when did you eat",
+          "what did you eat",
+          "food today"
+        ]
+      },
+      {
+        skill: "Events leading to illness assessed",
+        keywords: [
+          "events leading",
+          "what happened before",
+          "what were you doing",
+          "when did this begin",
+          "how did this start"
+        ]
+      },
+      {
+        skill: "OPQRST assessment performed",
+        keywords: [
+          "opqrst",
+          "onset",
+          "provocation",
+          "quality",
+          "radiation",
+          "severity",
+          "time of onset"
+        ]
+      },
+      {
+        skill: "Secondary assessment performed",
+        keywords: [
+          "secondary assessment",
+          "head to toe",
+          "physical exam",
+          "focused exam",
+          "rapid assessment",
+          "body assessment"
+        ]
+      },
+      {
+        skill: "Neurologic assessment performed",
+        keywords: [
+          "neurologic assessment",
+          "neurological assessment",
+          "stroke assessment",
+          "facial droop",
+          "arm drift",
+          "speech",
+          "motor function",
+          "sensation"
+        ]
+      },
+      {
+        skill: "Temperature obtained",
+        keywords: [
+          "temperature",
+          "body temperature",
+          "fever",
+          "check temperature"
+        ]
+      },
+      {
+        skill: "Cardiac rhythm assessed",
+        keywords: [
+          "cardiac rhythm",
+          "heart rhythm",
+          "ecg",
+          "ekg",
+          "cardiac monitor",
+          "monitor rhythm"
+        ]
+      },
+      {
+        skill: "Reassessment performed",
+        keywords: [
+          "reassess",
+          "reassessment",
+          "repeat vitals",
+          "repeat blood pressure",
+          "repeat glucose",
+          "check again"
+        ]
+      }
+    ];
 
     async function readJsonResponse(response) {
       const contentType =
@@ -480,6 +839,75 @@
       }
 
       return response.json();
+    }
+
+    /*
+      Searches the student's question and records each
+      matching assessment.
+
+      source identifies whether it was asked through the
+      patient or instructor section.
+    */
+    function detectAndRecordAssessments(question, source) {
+      const normalizedQuestion = question
+        .toLowerCase()
+        .replace(/[?.!,;:]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      const newlyRecorded = [];
+
+      assessmentMap.forEach(item => {
+        const matched = item.keywords.some(keyword =>
+          normalizedQuestion.includes(keyword.toLowerCase())
+        );
+
+        if (matched && !completedSkills.has(item.skill)) {
+          completedSkills.add(item.skill);
+
+          assessmentLog.push(
+            `${item.skill} — requested through ${source}`
+          );
+
+          newlyRecorded.push(item.skill);
+        }
+      });
+
+      updateCompletedAssessmentsDisplay();
+
+      return newlyRecorded;
+    }
+
+    function updateCompletedAssessmentsDisplay() {
+      const completedBox =
+        document.getElementById("completedAssessments");
+
+      if (completedSkills.size === 0) {
+        completedBox.innerText =
+          "No assessments recorded yet.";
+        return;
+      }
+
+      completedBox.innerText = Array
+        .from(completedSkills)
+        .map((skill, index) => `${index + 1}. ✓ ${skill}`)
+        .join("\n");
+    }
+
+    function showRecordedStatus(newSkills, source) {
+      const statusBox =
+        document.getElementById("recordStatus");
+
+      if (newSkills.length === 0) {
+        statusBox.innerText =
+          `Question sent to ${source}. No new assessment was automatically recorded.`;
+        return;
+      }
+
+      statusBox.innerText =
+        `${newSkills.length} assessment${
+          newSkills.length === 1 ? "" : "s"
+        } automatically recorded.`;
     }
 
     async function askPatientTyped() {
@@ -532,6 +960,21 @@
 
         patientHistory +=
           `Patient: ${patientReply}\n\n`;
+
+        /*
+          Automatically detect assessments contained
+          in the patient question.
+        */
+        const newSkills =
+          detectAndRecordAssessments(
+            question,
+            "patient interview"
+          );
+
+        showRecordedStatus(
+          newSkills,
+          "the patient"
+        );
 
         responseBox.innerText = patientReply;
 
@@ -603,6 +1046,23 @@
         instructorHistory +=
           `Instructor: ${instructorReply}\n\n`;
 
+        /*
+          This is the main requested update.
+
+          Any recognized assessment asked of the instructor
+          is automatically added to assessmentLog.
+        */
+        const newSkills =
+          detectAndRecordAssessments(
+            question,
+            "instructor assessment"
+          );
+
+        showRecordedStatus(
+          newSkills,
+          "the instructor"
+        );
+
         responseBox.innerText = instructorReply;
 
         questionBox.value = "";
@@ -637,10 +1097,30 @@
         return;
       }
 
+      /*
+        Check manually entered actions for recognized assessments.
+      */
+      const detectedSkills =
+        detectAndRecordAssessments(
+          entry,
+          "manual entry"
+        );
+
+      /*
+        Always keep the full manual entry because it may be
+        a treatment or transport decision instead of an assessment.
+      */
       assessmentLog.push(entry);
 
-      statusBox.innerText =
-        `Assessment recorded. Total recorded: ${assessmentLog.length}`;
+      if (detectedSkills.length > 0) {
+        statusBox.innerText =
+          `Action recorded. ${detectedSkills.length} assessment${
+            detectedSkills.length === 1 ? "" : "s"
+          } also recognized.`;
+      } else {
+        statusBox.innerText =
+          `Action recorded. Total entries: ${assessmentLog.length}`;
+      }
 
       entryBox.value = "";
 
@@ -657,10 +1137,6 @@
       const gradeButton =
         document.getElementById("gradeButton");
 
-      /*
-        Automatically record anything still in the
-        assessment-and-treatment box.
-      */
       const pendingEntry =
         document
           .getElementById("actionEntry")
@@ -668,6 +1144,11 @@
           .trim();
 
       if (pendingEntry) {
+        detectAndRecordAssessments(
+          pendingEntry,
+          "manual entry"
+        );
+
         assessmentLog.push(pendingEntry);
 
         document.getElementById("actionEntry").value = "";
@@ -684,12 +1165,19 @@
         return;
       }
 
+      /*
+        All automatic and manual actions are sent in the
+        treatment plan for grading.
+      */
       const treatmentPlan = assessmentLog
         .map(
           (action, index) =>
             `${index + 1}. ${action}`
         )
         .join("\n");
+
+      const completedSkillsArray =
+        Array.from(completedSkills);
 
       const elapsedSeconds = Math.floor(
         (Date.now() - scenarioStartTime) / 1000
@@ -710,9 +1198,11 @@
 
           body: JSON.stringify({
             studentAnswer: patientHistory,
+            patientHistory: patientHistory,
+            instructorHistory: instructorHistory,
             treatmentPlan: treatmentPlan,
             assessmentLog: assessmentLog,
-            instructorHistory: instructorHistory,
+            completedSkills: completedSkillsArray,
             scenario: scenario,
             elapsedSeconds: elapsedSeconds
           })
@@ -741,6 +1231,7 @@
       patientHistory = "";
       instructorHistory = "";
       assessmentLog = [];
+      completedSkills = new Set();
       scenarioStartTime = Date.now();
 
       document.getElementById("patientQuestion").value = "";
@@ -755,11 +1246,14 @@
 
       document.getElementById("recordStatus").innerText = "";
 
+      document.getElementById("completedAssessments").innerText =
+        "No assessments recorded yet.";
+
       document.getElementById("feedback").innerText =
         "Feedback will appear here.";
 
       document.getElementById("actionEntry").placeholder =
-        "Example: Assessed airway; airway is patent.";
+        "Enter an assessment, treatment, or transport decision...";
 
       document.getElementById("patientQuestion").focus();
     }
