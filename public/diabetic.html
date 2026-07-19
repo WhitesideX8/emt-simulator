@@ -473,10 +473,14 @@
         skill: "Scene safety assessed",
         keywords: [
           "is the scene safe",
+          "is scene safe",
           "scene safety",
           "scene is safe",
+          "safe to enter",
+          "safe to approach",
           "check the scene for hazards",
-          "are there any hazards"
+          "are there any hazards",
+          "any scene hazards"
         ]
       },
 
@@ -947,16 +951,93 @@
       return response.json();
     }
 
-    function detectAndRecordAssessments(question, source) {
+    /*
+      Matches exact phrases and reasonable wording variations.
+
+      Example:
+      "Is scene safe?" will match the keyword "is the scene safe"
+      because the important words "scene" and "safe" are present.
+
+      Short or overly broad keywords still require an exact phrase match
+      to reduce accidental credit.
+    */
+    function assessmentPhraseMatches(question, keyword) {
       const normalizedQuestion = normalizeText(question);
+      const normalizedKeyword = normalizeText(keyword);
+
+      if (!normalizedQuestion || !normalizedKeyword) {
+        return false;
+      }
+
+      // First try the original exact-phrase matching.
+      if (
+        normalizedQuestion.includes(normalizedKeyword) ||
+        normalizedKeyword.includes(normalizedQuestion)
+      ) {
+        return true;
+      }
+
+      // Ignore common filler words when comparing wording variations.
+      const ignoredWords = new Set([
+        "a",
+        "an",
+        "and",
+        "any",
+        "are",
+        "be",
+        "did",
+        "do",
+        "does",
+        "for",
+        "has",
+        "have",
+        "he",
+        "his",
+        "how",
+        "i",
+        "in",
+        "is",
+        "it",
+        "my",
+        "of",
+        "on",
+        "or",
+        "our",
+        "patient",
+        "please",
+        "the",
+        "there",
+        "to",
+        "was",
+        "were",
+        "what",
+        "when",
+        "with",
+        "you",
+        "your"
+      ]);
+
+      const importantWords = normalizedKeyword
+        .split(" ")
+        .filter(word => word.length > 2 && !ignoredWords.has(word));
+
+      // Very short phrases must match exactly to avoid false credit.
+      if (importantWords.length < 2) {
+        return false;
+      }
+
+      return importantWords.every(word =>
+        normalizedQuestion.includes(word)
+      );
+    }
+
+    function detectAndRecordAssessments(question, source) {
       const newlyRecorded = [];
 
       assessmentMap.forEach(item => {
-        const matched = item.keywords.some(keyword => {
-          const normalizedKeyword = normalizeText(keyword);
-
-          return normalizedQuestion.includes(normalizedKeyword);
-        });
+        const matched = item.keywords.some(keyword =>
+          assessmentPhraseMatches(question, keyword)
+        );
 
         if (
           matched &&
