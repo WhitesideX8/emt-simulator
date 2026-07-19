@@ -933,9 +933,11 @@
     const newlyRecorded = [];
 
     assessmentMap.forEach(item => {
-      const matched = item.keywords.some(keyword =>
-        normalizedQuestion.includes(normalizeText(keyword))
-      );
+      const matched = item.keywords.some(keyword => {
+    const words = normalizeText(keyword).split(" ");
+
+    return words.every(word => normalizedQuestion.includes(word));
+});
 
       if (matched && !completedSkills.has(item.skill)) {
         completedSkills.add(item.skill);
