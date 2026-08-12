@@ -242,21 +242,7 @@
       line-height: 1.35;
       text-align: left;
     }
-
-    .grading-section {
-      width: 560px;
-      max-width: 92%;
-      margin: 10px auto 4px;
-    }
-
-    #feedback {
-      min-height: 95px;
-      max-height: 210px;
-      background: #f4f4f4;
-      border: 2px solid #333;
-    }
-
-    @media (max-width: 900px) {
+@media (max-width: 900px) {
       .question-area {
         grid-template-columns: 330px 330px;
         gap: 40px;
@@ -284,8 +270,7 @@
       }
 
       .question-column,
-      .recorder-column,
-      .grading-section {
+      .recorder-column {
         width: 92%;
       }
 
@@ -427,14 +412,6 @@
         >
           Reset Scenario
         </button>
-      </div>
-    </section>
-
-    <section class="grading-section">
-      <h3>Feedback and Grading Report</h3>
-
-      <div id="feedback" class="box">
-        Feedback will appear here.
       </div>
     </section>
   </div>
@@ -1132,7 +1109,6 @@
   }
 
   async function gradeStudent() {
-    const feedbackBox = document.getElementById("feedback");
     const gradeButton = document.getElementById("gradeButton");
     const actionEntry = document.getElementById("actionEntry");
     const pendingEntry = actionEntry.value.trim();
@@ -1144,15 +1120,17 @@
     }
 
     if (assessmentLog.length === 0 && !patientHistory.trim()) {
-      feedbackBox.innerText =
-        "Record at least one assessment, treatment, or patient interview before submitting.";
+      alert(
+        "Record at least one assessment, treatment, or patient interview before submitting."
+      );
       actionEntry.focus();
       return;
     }
 
     const treatmentPlan = assessmentLog
       .map((action, index) => `${index + 1}. ${action}`)
-      .join("\n");
+      .join("
+");
 
     const completedSkillsArray = Array.from(completedSkills);
 
@@ -1160,9 +1138,8 @@
       (Date.now() - scenarioStartTime) / 1000
     );
 
-    feedbackBox.innerText =
-      "Scoring the chest pain scenario...";
-
+    const originalButtonText = gradeButton.innerText;
+    gradeButton.innerText = "Scoring...";
     gradeButton.disabled = true;
 
     try {
@@ -1183,15 +1160,36 @@
 
       const data = await readJsonResponse(response);
 
-      feedbackBox.innerText =
-        data.feedback ||
-        data.reply ||
-        "No grading feedback was returned.";
+      const gradingData = {
+        scenario: "Chest Pain Scenario",
+        scenarioCode: scenario,
+        feedback:
+          data.feedback ||
+          data.reply ||
+          "No grading feedback was returned.",
+        treatmentPlan,
+        assessmentLog,
+        completedSkills: completedSkillsArray,
+        patientHistory,
+        instructorHistory,
+        elapsedSeconds,
+        date: new Date().toLocaleString()
+      };
+
+      sessionStorage.setItem(
+        "emtGradingResults",
+        JSON.stringify(gradingData)
+      );
+
+      window.location.href = "feedback.html";
+
     } catch (error) {
       console.error("Grading error:", error);
-      feedbackBox.innerText =
-        "Error grading the scenario.\n\n" + error.message;
-    } finally {
+      alert("Error grading the scenario.
+
+" + error.message);
+
+      gradeButton.innerText = originalButtonText;
       gradeButton.disabled = false;
     }
   }
@@ -1202,6 +1200,7 @@
     assessmentLog = [];
     completedSkills = new Set();
     scenarioStartTime = Date.now();
+    sessionStorage.removeItem("emtGradingResults");
 
     document.getElementById("patientQuestion").value = "";
     document.getElementById("instructorQuestion").value = "";
@@ -1217,11 +1216,7 @@
 
     document.getElementById("completedAssessments").innerText =
       "No assessments recorded yet.";
-
-    document.getElementById("feedback").innerText =
-      "Feedback will appear here.";
-
-    document.getElementById("actionEntry").placeholder =
+document.getElementById("actionEntry").placeholder =
       "Example: Assessed airway; airway is patent.";
 
     document.getElementById("patientQuestion").focus();
