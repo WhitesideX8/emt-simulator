@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>EMT Scenario Grading Report</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #e9ecef;
+      color: #222;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1000px;
+      margin: 30px auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 5px;
+    }
+
+    #scenarioTitle {
+      text-align: center;
+      color: #555;
+      margin-top: 0;
+    }
+
+    .section {
+      background: white;
+      border: 1px solid #bbb;
+      border-radius: 8px;
+      padding: 18px;
+      margin: 18px 0;
+    }
+
+    .section h2 {
+      margin-top: 0;
+      border-bottom: 2px solid #333;
+      padding-bottom: 6px;
+    }
+
+    #feedback {
+      white-space: pre-wrap;
+      line-height: 1.5;
+      font-size: 16px;
+    }
+
+    #treatmentPlan {
+      white-space: pre-wrap;
+      line-height: 1.5;
+    }
+
+    .buttons {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    button {
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 18px;
+      margin: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: darkgreen;
+    }
+
+    .secondary {
+      background: #333;
+    }
+
+    .secondary:hover {
+      background: #111;
+    }
+
+    @media print {
+      .buttons {
+        display: none;
+      }
+
+      body {
+        background: white;
+      }
+
+      .container {
+        width: 100%;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>EMT Scenario Grading Report</h1>
+    <h2 id="scenarioTitle"></h2>
+
+    <div class="section">
+      <h2>Student Treatment Plan</h2>
+      <div id="treatmentPlan"></div>
+    </div>
+
+    <div class="section">
+      <h2>Evaluation</h2>
+      <div id="feedback"></div>
+    </div>
+
+    <div class="buttons">
+
+      <button onclick="returnToScenario()">
+        Return to Scenario
+      </button>
+
+      <button class="secondary" onclick="window.print()">
+        Print Report
+      </button>
+
+      <button class="secondary" onclick="location.href='index.html'">
+        Home
+      </button>
+
+    </div>
+
+  </div>
+
+  <script>
+    const savedData =
+      sessionStorage.getItem("emtGradingResults");
+
+    if (savedData) {
+
+      const data = JSON.parse(savedData);
+
+      document.getElementById("scenarioTitle").innerText =
+        data.scenario || "EMT Scenario";
+
+      document.getElementById("treatmentPlan").innerText =
+        data.treatmentPlan || "No treatment plan entered.";
+
+      document.getElementById("feedback").innerText =
+        data.feedback || "No grading feedback available.";
+
+    } else {
+
+      document.getElementById("scenarioTitle").innerText =
+        "No Scenario Results";
+
+      document.getElementById("feedback").innerText =
+        "No grading information was found. Please complete a scenario first.";
+    }
+
+    function returnToScenario() {
+      window.history.back();
+    }
+  </script>
+
+</body>
+</html>
