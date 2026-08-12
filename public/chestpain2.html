@@ -1129,8 +1129,7 @@
 
     const treatmentPlan = assessmentLog
       .map((action, index) => `${index + 1}. ${action}`)
-      .join("
-");
+      .join("\n");
 
     const completedSkillsArray = Array.from(completedSkills);
 
@@ -1185,9 +1184,7 @@
 
     } catch (error) {
       console.error("Grading error:", error);
-      alert("Error grading the scenario.
-
-" + error.message);
+      alert("Error grading the scenario.\n\n" + error.message);
 
       gradeButton.innerText = originalButtonText;
       gradeButton.disabled = false;
