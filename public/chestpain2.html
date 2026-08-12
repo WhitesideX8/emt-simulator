@@ -1117,10 +1117,14 @@
     gradeButton.innerText = "Scoring...";
     gradeButton.disabled = true;
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
     try {
       const response = await fetch("/grade", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           studentAnswer: patientHistory,
           patientHistory,
@@ -1132,6 +1136,8 @@
           elapsedSeconds
         })
       });
+
+      clearTimeout(timeoutId);
 
       const data = await readJsonResponse(response);
 
@@ -1159,11 +1165,37 @@
       window.location.href = "feedback.html";
 
     } catch (error) {
+      clearTimeout(timeoutId);
       console.error("Grading error:", error);
-      alert("Error grading the scenario.\n\n" + error.message);
+
+      const fallbackFeedback =
+        error.name === "AbortError"
+          ? "The grading server did not respond within 30 seconds. Your assessments and treatments were saved, but the server did not return a grading report."
+          : "The grading server returned an error: " + error.message;
+
+      const gradingData = {
+        scenario: "Chest Pain Scenario",
+        scenarioCode: scenario,
+        feedback: fallbackFeedback,
+        treatmentPlan,
+        assessmentLog,
+        completedSkills: completedSkillsArray,
+        patientHistory,
+        instructorHistory,
+        elapsedSeconds,
+        gradingError: true,
+        date: new Date().toLocaleString()
+      };
+
+      sessionStorage.setItem(
+        "emtGradingResults",
+        JSON.stringify(gradingData)
+      );
 
       gradeButton.innerText = originalButtonText;
       gradeButton.disabled = false;
+
+      alert(fallbackFeedback);
     }
   }
 
