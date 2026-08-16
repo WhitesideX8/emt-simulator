@@ -465,9 +465,31 @@
     {
       skill: "Need for additional resources considered",
       keywords: [
-        "request als", "need als", "request a paramedic", "need a paramedic",
-        "request additional resources", "need additional resources", "call for als",
-        "upgrade to als", "request intercept"
+        "request als",
+        "requesting als",
+        "going to request als",
+        "i am going to request als",
+        "need als",
+        "call als",
+        "call for als",
+        "contact als",
+        "als intercept",
+        "request intercept",
+        "request a paramedic",
+        "request paramedic",
+        "need a paramedic",
+        "request additional resources",
+        "request additional ems resources",
+        "additional ems resources",
+        "need additional resources",
+        "need additional ems resources",
+        "upgrade to als"
+      ],
+      patterns: [
+        /\b(request|call|contact|need|want|consider|activate)\b.*\bals\b/,
+        /\bals\b.*\b(request|intercept|backup|resource|paramedic)\b/,
+        /\b(additional|extra)\b.*\b(ems|medical)?\s*resources?\b/,
+        /\brequest\b.*\b(paramedic|intercept|resources?)\b/
       ]
     },
     {
@@ -952,6 +974,13 @@
       return;
     }
 
+    const newSkills = detectAndRecordAssessments(
+      question,
+      "patient interview"
+    );
+
+    showRecordedStatus(newSkills, "the patient");
+
     responseBox.innerText = "Contacting patient...";
     patientButton.disabled = true;
 
@@ -972,13 +1001,6 @@
 
       patientHistory += `Student to patient: ${question}\n`;
       patientHistory += `Patient: ${patientReply}\n\n`;
-
-      const newSkills = detectAndRecordAssessments(
-        question,
-        "patient interview"
-      );
-
-      showRecordedStatus(newSkills, "the patient");
 
       responseBox.innerText = patientReply;
       questionBox.value = "";
@@ -1008,6 +1030,13 @@
       return;
     }
 
+    const newSkills = detectAndRecordAssessments(
+      question,
+      "instructor assessment"
+    );
+
+    showRecordedStatus(newSkills, "the instructor");
+
     responseBox.innerText = "Contacting instructor...";
     instructorButton.disabled = true;
 
@@ -1028,13 +1057,6 @@
 
       instructorHistory += `Student to instructor: ${question}\n`;
       instructorHistory += `Instructor: ${instructorReply}\n\n`;
-
-      const newSkills = detectAndRecordAssessments(
-        question,
-        "instructor assessment"
-      );
-
-      showRecordedStatus(newSkills, "the instructor");
 
       responseBox.innerText = instructorReply;
       questionBox.value = "";
@@ -1082,17 +1104,6 @@
     entryBox.placeholder =
       "Enter the next assessment, finding, treatment, or decision...";
     entryBox.focus();
-  }
-
-  function removePassFailFromFeedback(feedback) {
-    if (!feedback) return "";
-
-    return feedback
-      .replace(/^\s*(overall\s*)?(result|status|grade)?\s*:?\s*(pass|fail|passed|failed)\s*$/gim, "")
-      .replace(/\b(overall\s+)?(result|status|grade)\s*:\s*(pass|fail|passed|failed)\b/gi, "")
-      .replace(/^\s*(pass|fail|passed|failed)\s*:?\s*$/gim, "")
-      .replace(/\n{3,}/g, "\n\n")
-      .trim();
   }
 
   async function gradeStudent() {
@@ -1155,11 +1166,10 @@
       const gradingData = {
         scenario: "Chest Pain Scenario",
         scenarioCode: scenario,
-        feedback: removePassFailFromFeedback(
+        feedback:
           data.feedback ||
           data.reply ||
-          "No grading feedback was returned."
-        ),
+          "No grading feedback was returned.",
         treatmentPlan,
         assessmentLog,
         completedSkills: completedSkillsArray,
@@ -1188,7 +1198,7 @@
       const gradingData = {
         scenario: "Chest Pain Scenario",
         scenarioCode: scenario,
-        feedback: removePassFailFromFeedback(fallbackFeedback),
+        feedback: fallbackFeedback,
         treatmentPlan,
         assessmentLog,
         completedSkills: completedSkillsArray,
