@@ -1084,6 +1084,17 @@
     entryBox.focus();
   }
 
+  function removePassFailFromFeedback(feedback) {
+    if (!feedback) return "";
+
+    return feedback
+      .replace(/^\s*(overall\s*)?(result|status|grade)?\s*:?\s*(pass|fail|passed|failed)\s*$/gim, "")
+      .replace(/\b(overall\s+)?(result|status|grade)\s*:\s*(pass|fail|passed|failed)\b/gi, "")
+      .replace(/^\s*(pass|fail|passed|failed)\s*:?\s*$/gim, "")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+  }
+
   async function gradeStudent() {
     const gradeButton = document.getElementById("gradeButton");
     const actionEntry = document.getElementById("actionEntry");
@@ -1144,10 +1155,11 @@
       const gradingData = {
         scenario: "Chest Pain Scenario",
         scenarioCode: scenario,
-        feedback:
+        feedback: removePassFailFromFeedback(
           data.feedback ||
           data.reply ||
-          "No grading feedback was returned.",
+          "No grading feedback was returned."
+        ),
         treatmentPlan,
         assessmentLog,
         completedSkills: completedSkillsArray,
@@ -1176,7 +1188,7 @@
       const gradingData = {
         scenario: "Chest Pain Scenario",
         scenarioCode: scenario,
-        feedback: fallbackFeedback,
+        feedback: removePassFailFromFeedback(fallbackFeedback),
         treatmentPlan,
         assessmentLog,
         completedSkills: completedSkillsArray,
