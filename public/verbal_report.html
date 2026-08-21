@@ -338,16 +338,12 @@
         help: "Includes relevant symptoms, allergies, medications, history, or events.",
         patterns: [/\b(sample|opqrst|allerg(?:y|ies|ic)|medication|meds|medical history|past history|history of|onset|provocation|quality|radiat(?:es|ion|ing)|last oral intake|events leading)\b/i]
       },
-      {
-        name: "Assessment findings",
-        help: "Communicates important exam findings or pertinent negatives.",
-        patterns: [/\b(assessment|exam|findings?|upon examination|on examination|denies|no signs? of|negative for|tender|swelling|deformity|bleeding|equal|unequal|stable|unstable)\b/i]
-      },
+      
       {
         name: "Treatment and response",
         help: "States care provided and the patient's response or reassessment.",
         patterns: [
-          /\b(treated|treatment|administered|given|provided|placed|applied|oxygen|aspirin|nitroglycerin|glucose|epinephrine|splint|bandage|dressing|position of comfort)\b/i,
+          /\b(treated|treatment|administered|given|provided|placed|applied|oxygen|aspirin|nitroglycerin|glucose|epinephrine|splint|bandage|dressing)\b/i,
           /\b(response|responded|improved|unchanged|worsened|reassess(?:ed|ment)|after treatment|following treatment|pain is now|repeat vitals?)\b/i
         ],
         requireAll: true
