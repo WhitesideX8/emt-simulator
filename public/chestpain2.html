@@ -774,7 +774,17 @@
       skill: "Signs and symptoms assessed",
       keywords: [
         "what symptoms are you having", "what signs and symptoms", "how are you feeling",
-        "what are you experiencing", "associated symptoms", "other symptoms"
+        "what are you experiencing", "associated symptoms", "other symptoms",
+        "tell me what you are feeling", "what else are you feeling", "any other complaints",
+        "any other discomfort", "are you short of breath", "any trouble breathing",
+        "are you nauseated", "have you vomited", "are you dizzy", "did you pass out",
+        "patient reports", "patient complains of", "denies other symptoms",
+        "signs symptoms", "sample signs and symptoms", "sampl signs and symptoms"
+      ],
+      patterns: [
+        /\b(what|which|any)\b.*\b(symptoms?|complaints?|problems?|discomfort)\b/,
+        /\b(how|what)\b.*\b(feel|feeling|experiencing)\b/,
+        /\b(short of breath|difficulty breathing|nausea|vomiting|dizzy|dizziness|syncope|sweating|diaphoretic)\b/
       ]
     },
     {
@@ -782,7 +792,14 @@
       keywords: [
         "do you have any allergies", "are you allergic to anything", "any medication allergies",
         "what are your allergies", "no known allergies", "no known drug allergies", "nkda",
-        "allergic to"
+        "allergic to", "any known allergies", "do you have drug allergies",
+        "are you allergic to medications", "food allergies", "environmental allergies",
+        "allergy history", "patient has no allergies", "denies allergies",
+        "sample allergies", "sampl allergies"
+      ],
+      patterns: [
+        /\b(allerg(?:y|ies|ic)|nkda|nka)\b/,
+        /\breact(?:ion|ed)\b.*\b(medication|medicine|drug|food)\b/
       ]
     },
     {
@@ -790,7 +807,15 @@
       keywords: [
         "what medications do you take", "are you taking any medications", "what medicines do you take",
         "did you take aspirin", "did you take nitroglycerin", "cardiac medications",
-        "takes lisinopril", "takes atorvastatin", "medication list", "home medications"
+        "takes lisinopril", "takes atorvastatin", "medication list", "home medications",
+        "do you take any medicine", "are you on any medications", "what prescriptions do you take",
+        "what are your daily medications", "what pills do you take", "any over the counter medications",
+        "has not taken medications", "denies taking medications", "patient takes",
+        "sample medications", "sampl medications"
+      ],
+      patterns: [
+        /\b(what|which|any)\b.*\b(medications?|medicines?|prescriptions?|pills?)\b/,
+        /\b(takes?|taking|on|uses?)\b.*\b(medications?|medicine|lisinopril|atorvastatin|aspirin|nitro(?:glycerin)?)\b/
       ]
     },
     {
@@ -799,14 +824,30 @@
         "what is your medical history", "past medical history", "history of heart problems",
         "history of heart attack", "history of angina", "medical problems", "have you had this before",
         "history of hypertension", "history of high blood pressure", "history of high cholesterol",
-        "history includes"
+        "history includes", "do you have any medical conditions", "what medical conditions do you have",
+        "any significant medical history", "any past illnesses", "previous health problems",
+        "have you ever had this problem", "has this happened before", "any prior episodes",
+        "prior heart attack", "prior stroke", "denies medical history", "no medical history",
+        "sample past history", "sampl past history", "pertinent history"
+      ],
+      patterns: [
+        /\b(history|previous|prior|past)\b.*\b(medical|illness|condition|problem|episode|heart attack|stroke|angina)\b/,
+        /\b(has|have)\b.*\b(happened|occurred)\b.*\b(before|previously)\b/
       ]
     },
     {
       skill: "Last oral intake assessed",
       keywords: [
         "when did you last eat", "what did you last eat", "last oral intake", "when was your last meal",
-        "did you eat today", "have you eaten today", "ate breakfast", "last meal was", "last ate"
+        "did you eat today", "have you eaten today", "ate breakfast", "last meal was", "last ate",
+        "when did you last drink", "what did you last drink", "last food or drink",
+        "most recent meal", "what time did you eat", "anything to eat or drink",
+        "last intake", "has not eaten", "has not had anything to drink",
+        "sample last oral intake", "sampl last oral intake"
+      ],
+      patterns: [
+        /\b(when|what|time)\b.*\b(last|most recent)\b.*\b(eat|ate|meal|food|drink|intake)\b/,
+        /\b(last|most recent)\b.*\b(meal|food|drink|oral intake|intake)\b/
       ]
     },
     {
@@ -814,7 +855,28 @@
       keywords: [
         "what happened before this started", "what were you doing when this started",
         "events leading up to this", "what happened prior to the chest pain", "what led up to this",
-        "started while", "began while", "was doing when"
+        "started while", "began while", "was doing when", "tell me what happened",
+        "what happened today", "what were you doing beforehand", "what occurred before this",
+        "what led to the symptoms", "events before the illness", "events before the injury",
+        "symptoms began while", "patient was doing", "onset during activity",
+        "sample events", "sampl events", "events leading"
+      ],
+      patterns: [
+        /\b(what|events?)\b.*\b(happened|occurred|led|leading)\b.*\b(before|prior|up to|symptoms?|pain|illness|injury)\b/,
+        /\b(what were you doing|doing when|began while|started while|onset during)\b/
+      ]
+    },
+    {
+      skill: "Complete SAMPLE history performed",
+      keywords: [
+        "perform a complete sample", "perform complete sample", "perform a sample history",
+        "complete sample history", "full sample history", "assess using sample",
+        "obtain a complete sample", "go through sample", "complete sampl history",
+        "perform sampl", "obtain sampl", "sample assessment"
+      ],
+      patterns: [
+        /\b(complete|full|entire)\b.*\b(sample|sampl)\b/,
+        /\b(perform|obtain|assess|gather|take)\b.*\b(sample|sampl)\b.*\b(history|assessment)?\b/
       ]
     },
     {
@@ -822,7 +884,12 @@
       keywords: [
         "perform a complete opqrst", "perform complete opqrst", "perform an opqrst assessment",
         "complete opqrst assessment", "full opqrst assessment", "assess using opqrst",
-        "obtain a complete opqrst", "go through opqrst"
+        "obtain a complete opqrst", "go through opqrst", "perform oprst", "complete oprst",
+        "full oprst", "obtain oprst", "go through oprst", "opqrst history", "oprst history"
+      ],
+      patterns: [
+        /\b(complete|full|entire)\b.*\b(opqrst|oprst)\b/,
+        /\b(perform|obtain|assess|go through)\b.*\b(opqrst|oprst)\b/
       ]
     },
     {
@@ -830,7 +897,14 @@
       keywords: [
         "when did the chest pain start", "when did the pain start", "when did the discomfort start",
         "when did this begin", "what time did this begin", "was the onset sudden or gradual",
-        "pain started", "symptoms started", "onset was"
+        "pain started", "symptoms started", "onset was", "when did it start", "when did it begin",
+        "what time did it start", "how did it start", "did it start suddenly", "did it come on gradually",
+        "sudden onset", "gradual onset", "began suddenly", "began gradually",
+        "first noticed", "when were you last normal", "opqrst onset", "oprst onset"
+      ],
+      patterns: [
+        /\b(when|what time|how)\b.*\b(start|started|begin|began|onset|first notice)\b/,
+        /\b(sudden|suddenly|gradual|gradually)\b.*\b(onset|start|started|begin|began|came on)\b/
       ]
     },
     {
@@ -839,10 +913,16 @@
         "what makes the pain better", "what makes the pain worse", "does anything make it better",
         "does anything make it worse", "what relieves the discomfort", "what causes the discomfort to worsen",
         "better with", "worse with", "relieved by", "worsened by", "improves with",
-        "what brings the pain on", "does movement make it worse", "does rest make it better"
+        "what brings the pain on", "does movement make it worse", "does rest make it better",
+        "what aggravates it", "what relieves it", "what improves it", "what triggers it",
+        "anything aggravate the pain", "anything relieve the pain", "better or worse with breathing",
+        "worse with exertion", "better with rest", "changes with movement", "changes with position",
+        "provocation palliation", "opqrst provocation", "oprst provocation"
       ],
       patterns: [
-        /\b(what|anything)\b.*\b(make|makes)\b.*\b(pain|discomfort)\b.*\b(better|worse)\b/
+        /\b(what|anything)\b.*\b(make|makes)\b.*\b(pain|discomfort|it)\b.*\b(better|worse)\b/,
+        /\b(aggravat|reliev|improv|worsen|trigger)\w*\b.*\b(pain|discomfort|symptoms?|it)\b/,
+        /\b(pain|discomfort|symptoms?|it)\b.*\b(better|worse|relieved|aggravated)\b.*\b(with|by|when)\b/
       ]
     },
     {
@@ -851,7 +931,14 @@
         "describe the chest pain", "describe the pain", "describe the discomfort",
         "what does the pain feel like", "what does the discomfort feel like",
         "is the pain sharp dull or pressure", "quality of the pain", "quality of the discomfort",
-        "pressure like", "crushing pain", "sharp pain", "dull pain", "tightness"
+        "pressure like", "crushing pain", "sharp pain", "dull pain", "tightness",
+        "how would you describe it", "tell me what it feels like", "what kind of pain is it",
+        "is it pressure or pain", "burning pain", "stabbing pain", "aching pain", "tearing pain",
+        "heavy feeling", "squeezing sensation", "chest heaviness", "opqrst quality", "oprst quality"
+      ],
+      patterns: [
+        /\b(what|how)\b.*\b(pain|discomfort|it)\b.*\b(feel|feels|describe|like)\b/,
+        /\b(sharp|dull|pressure|crushing|tight|tightness|burning|stabbing|aching|tearing|heavy|squeezing)\b.*\b(pain|discomfort|feeling|sensation)?\b/
       ]
     },
     {
@@ -859,17 +946,30 @@
       keywords: [
         "does the pain radiate", "does the pain travel", "does the discomfort radiate",
         "does the discomfort travel", "where does the pain go", "does it move anywhere",
-        "radiates to", "travels to", "moves to"
+        "radiates to", "travels to", "moves to", "does the pain spread", "does it spread anywhere",
+        "where else do you feel it", "does it go anywhere else", "pain goes into",
+        "pain extends to", "stays in one place", "non radiating", "no radiation",
+        "left arm", "right arm", "jaw", "back", "shoulder", "opqrst radiation", "oprst radiation"
+      ],
+      patterns: [
+        /\b(pain|discomfort|it)\b.*\b(radiat|travel|spread|move|go|extend)\w*\b.*\b(to|into|anywhere|else)\b/,
+        /\b(radiat|travel|spread)\w*\b.*\b(arm|jaw|back|shoulder|neck)\b/,
+        /\b(no|non)\s+radiat\w*\b/
       ]
     },
     {
       skill: "OPQRST severity assessed",
       keywords: [
         "rate your pain", "rate the discomfort", "pain scale", "zero to ten pain",
-        "0 to 10 pain", "how severe is the pain", "pain is 8 out of 10", "pain 8 10"
+        "0 to 10 pain", "how severe is the pain", "pain is 8 out of 10", "pain 8 10",
+        "how bad is the pain", "how much does it hurt", "give the pain a number",
+        "on a scale of one to ten", "on a scale from zero to ten", "pain rating",
+        "discomfort is eight out of ten", "rates pain", "opqrst severity", "oprst severity"
       ],
       patterns: [
-        /\b(pain|discomfort)\b[^0-9]{0,12}\d{1,2}\s*(out of|\/)\s*10\b/
+        /\b(pain|discomfort)\b[^0-9]{0,20}\d{1,2}\s*(out of|of|\/)\s*10\b/,
+        /\b(scale|rating)\b.*\b(0|zero|1|one)\b.*\b(10|ten)\b/,
+        /\bhow (bad|severe|strong|intense)\b.*\b(pain|discomfort|it)\b/
       ]
     },
     {
@@ -878,10 +978,16 @@
         "how long has the pain lasted", "how long have you had the discomfort",
         "has the pain been constant", "does the pain come and go", "how long have the symptoms been present",
         "pain has lasted", "symptoms for", "constant pain", "intermittent pain",
-        "how long has this been going on", "is the pain constant", "does it come and go"
+        "how long has this been going on", "is the pain constant", "does it come and go",
+        "how long ago did it start", "how long has it been there", "has it stopped at all",
+        "is it always there", "is it continuous", "is it intermittent", "does it stay or go away",
+        "comes and goes", "has been present for", "duration of pain", "duration of symptoms",
+        "opqrst time", "oprst time"
       ],
       patterns: [
-        /\bhow long\b.*\b(pain|discomfort|symptom)\w*\b/
+        /\bhow long\b.*\b(pain|discomfort|symptom|it|this)\w*\b/,
+        /\b(constant|continuous|intermittent|comes and goes|present for|duration)\b.*\b(pain|discomfort|symptoms?|it)?\b/,
+        /\b(pain|discomfort|symptoms?|it)\b.*\b(constant|continuous|intermittent|comes and goes|lasted|present for)\b/
       ]
     },
     {
