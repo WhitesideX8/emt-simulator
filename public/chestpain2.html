@@ -1295,14 +1295,14 @@
       return;
     }
 
-    const newSkills = detectAndRecordAssessments(
+    const questionSkills = detectAndRecordAssessments(
       question,
-      "patient interview"
+      "Ask the Patient question"
     );
 
-    showRecordedStatus(newSkills, "the patient");
-
     responseBox.innerText = "Contacting patient...";
+    document.getElementById("recordStatus").innerText =
+      "Patient question submitted. Waiting for the response...";
     patientButton.disabled = true;
 
     try {
@@ -1323,11 +1323,26 @@
       patientHistory += `Student to patient: ${question}\n`;
       patientHistory += `Patient: ${patientReply}\n\n`;
 
+      // Evaluate the patient's answer as well as the student's question.
+      // This allows assessment findings obtained through Ask the Patient
+      // to appear in Automatically Recorded Assessments.
+      const responseSkills = detectAndRecordAssessments(
+        `${question}\n${patientReply}`,
+        "Ask the Patient interview"
+      );
+
+      const recordedSkills = Array.from(
+        new Set([...questionSkills, ...responseSkills])
+      );
+
+      showRecordedStatus(recordedSkills, "the patient");
+
       responseBox.innerText = patientReply;
       questionBox.value = "";
       questionBox.focus();
     } catch (error) {
       console.error("Patient request error:", error);
+      showRecordedStatus(questionSkills, "the patient");
       responseBox.innerText =
         "Error contacting patient server.\n\n" + error.message;
     } finally {
