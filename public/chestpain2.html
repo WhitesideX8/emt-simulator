@@ -111,6 +111,23 @@
 
     .verbal-report-btn {
       background: #b36b00;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 9px 16px;
+      margin: 2px;
+      color: white;
+      font-size: 13px;
+      font-weight: bold;
+      text-decoration: none;
+      border-radius: 5px;
+      cursor: pointer;
+      vertical-align: middle;
+    }
+
+    .verbal-report-btn:hover {
+      opacity: 0.86;
     }
 
     .reset-btn {
@@ -400,13 +417,13 @@
       </div>
 
       <div class="button-row">
-        <button
+        <a
           class="verbal-report-btn"
-          type="button"
-          onclick="window.open('verbal_report.html', 'verbalReportWindow')"
+          href="./verbal_report.html"
+          target="verbalReportWindow"
         >
           Verbal Report
-        </button>
+        </a>
 
         <button
           id="gradeButton"
