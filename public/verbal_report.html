@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EMR / EMT Verbal Patient Report Practice</title>
+  <title> Verbal Patient Report Practice</title>
   <style>
     * { box-sizing: border-box; }
 
@@ -226,8 +226,7 @@
 <body>
   <main class="page">
     <header>
-      <h1>EMR / EMT Verbal Patient Report</h1>
-      <p>Connecticut psychomotor examination practice</p>
+      <h1 Verbal Patient Report</h1>
     </header>
 
     <section class="panel instructions">
@@ -264,9 +263,7 @@
         <span id="scoreBadge" class="score-badge">0 / 12</span>
       </div>
       <div id="checklist" class="checklist"></div>
-      <p class="disclaimer">
-        This automated keyword review is a study aid. It cannot evaluate clinical accuracy, organization, judgment, or substitute for scoring by a Connecticut-approved examiner using the current official skill sheet.
-      </p>
+  
     </section>
 
     <div class="controls">
@@ -322,24 +319,7 @@
         help: "Reports orientation, AVPU, GCS, confusion, or responsiveness.",
         patterns: [/\b(alert|oriented|a\s*&?\s*o|avpu|gcs|responsive|unresponsive|confused|mental status|responds? to (voice|verbal|pain))\b/i]
       },
-      {
-        name: "Airway and breathing",
-        help: "Describes airway status and respiratory assessment.",
-        patterns: [
-          /\b(airway|patent|open airway|maintaining (his|her|their|own) airway)\b/i,
-          /\b(breathing|respirat(?:ion|ory)|lung sounds?|breath sounds?|ventilat(?:ing|ions?)|clear bilaterally|wheez|rhonchi|rales|crackles)\b/i
-        ],
-        requireAll: true
-      },
-      {
-        name: "Circulation and skin",
-        help: "Reports pulse/perfusion and relevant skin findings.",
-        patterns: [
-          /\b(pulse|circulation|perfus(?:ion|ing)|capillary refill|radial)\b/i,
-          /\b(skin|pale|cyanotic|flushed|warm|cool|cold|dry|diaphoretic|sweaty|clammy)\b/i
-        ],
-        requireAll: true
-      },
+      
       {
         name: "Vital signs",
         help: "Reports a set of vital signs or several measured values.",
@@ -349,8 +329,6 @@
             /\b(pulse|heart rate|hr)\b/i,
             /\b(respirations?|respiratory rate|rr)\b/i,
             /\b(spo2|oxygen saturation|pulse ox)\b/i,
-            /\b(glucose|blood sugar|bgl)\b/i,
-            /\btemperature|temp\b/i
           ];
           return /\bvital signs?\b/i.test(text) || terms.filter(function (term) { return term.test(text); }).length >= 3;
         }
