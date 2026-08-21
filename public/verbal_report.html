@@ -54,6 +54,11 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, .24);
     }
 
+    .report-panel {
+      width: min(760px, 100%);
+      margin: 45px auto 14px;
+    }
+
     .instructions {
       border-left: 6px solid var(--gold);
       line-height: 1.45;
@@ -153,7 +158,11 @@
       background: #fff1f1;
     }
 
-    .results { display: none; }
+    .results {
+      display: none;
+      width: min(760px, 100%);
+      margin: 0 auto 14px;
+    }
 
     .score-heading {
       display: flex;
@@ -226,10 +235,10 @@
 <body>
   <main class="page">
     <header>
-      <h1 Verbal Patient Report</h1>
+      <h1>Verbal Patient Report</h1>
     </header>
 
-    <section class="panel" aria-labelledby="reportHeading">
+    <section class="panel report-panel" aria-labelledby="reportHeading">
       <h2 id="reportHeading" style="margin:0; color:var(--navy); text-align:center;">Record Your Report</h2>
 
       <div id="unsupported" class="unsupported" role="alert">
