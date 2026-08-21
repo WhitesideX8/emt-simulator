@@ -741,7 +741,11 @@
       keywords: [
         "what makes the pain better", "what makes the pain worse", "does anything make it better",
         "does anything make it worse", "what relieves the discomfort", "what causes the discomfort to worsen",
-        "better with", "worse with", "relieved by", "worsened by", "improves with"
+        "better with", "worse with", "relieved by", "worsened by", "improves with",
+        "what brings the pain on", "does movement make it worse", "does rest make it better"
+      ],
+      patterns: [
+        /\b(what|anything)\b.*\b(make|makes)\b.*\b(pain|discomfort)\b.*\b(better|worse)\b/
       ]
     },
     {
@@ -776,7 +780,11 @@
       keywords: [
         "how long has the pain lasted", "how long have you had the discomfort",
         "has the pain been constant", "does the pain come and go", "how long have the symptoms been present",
-        "pain has lasted", "symptoms for", "constant pain", "intermittent pain"
+        "pain has lasted", "symptoms for", "constant pain", "intermittent pain",
+        "how long has this been going on", "is the pain constant", "does it come and go"
+      ],
+      patterns: [
+        /\bhow long\b.*\b(pain|discomfort|symptom)\w*\b/
       ]
     },
     {
@@ -927,34 +935,63 @@
       }
     });
 
-    // If every OPQRST component was individually obtained, award the
-    // complete OPQRST item automatically without requiring the phrase OPQRST.
-    const opqrstComponents = [
-      "OPQRST onset assessed",
-      "OPQRST provocation and palliation assessed",
-      "OPQRST quality assessed",
-      "OPQRST radiation assessed",
-      "OPQRST severity assessed",
-      "OPQRST time assessed"
-    ];
+    updateCompleteHistorySkills();
 
-    const hasCompleteOPQRST = opqrstComponents.every(skill =>
-      completedSkills.has(skill)
-    );
+    updateCompletedAssessmentsDisplay();
+    return newlyRecorded;
+  }
+
+  function getHistoryComponentStatus() {
+    const opqrst = {
+      onset: completedSkills.has("OPQRST onset assessed"),
+      provocationPalliation: completedSkills.has("OPQRST provocation and palliation assessed"),
+      quality: completedSkills.has("OPQRST quality assessed"),
+      radiation: completedSkills.has("OPQRST radiation assessed"),
+      severity: completedSkills.has("OPQRST severity assessed"),
+      time: completedSkills.has("OPQRST time assessed")
+    };
+
+    const sample = {
+      signsSymptoms: completedSkills.has("Signs and symptoms assessed"),
+      allergies: completedSkills.has("Allergies assessed"),
+      medications: completedSkills.has("Medications assessed"),
+      pertinentHistory: completedSkills.has("Pertinent medical history assessed"),
+      lastOralIntake: completedSkills.has("Last oral intake assessed"),
+      events: completedSkills.has("Events leading to illness assessed")
+    };
+
+    return {
+      opqrst,
+      sample,
+      opqrstScore: Object.values(opqrst).filter(Boolean).length,
+      sampleScore: Object.values(sample).filter(Boolean).length
+    };
+  }
+
+  function updateCompleteHistorySkills() {
+    const historyStatus = getHistoryComponentStatus();
 
     if (
-      hasCompleteOPQRST &&
+      historyStatus.opqrstScore === 6 &&
       !completedSkills.has("Complete OPQRST assessment performed")
     ) {
       completedSkills.add("Complete OPQRST assessment performed");
       assessmentLog.push(
-        `Complete OPQRST assessment performed — all OPQRST components recognized`
+        "Complete OPQRST assessment performed — all OPQRST components recognized"
       );
-      newlyRecorded.push("Complete OPQRST assessment performed");
     }
 
-    updateCompletedAssessmentsDisplay();
-    return newlyRecorded;
+    if (
+      historyStatus.sampleScore === 6 &&
+      !completedSkills.has("Complete SAMPLE history performed")
+    ) {
+      completedSkills.add("Complete SAMPLE history performed");
+      assessmentLog.push(
+        "Complete SAMPLE history performed — all SAMPLE components recognized"
+      );
+    }
+
+    return historyStatus;
   }
 
   function updateCompletedAssessmentsDisplay() {
@@ -1184,6 +1221,7 @@
           treatmentPlan,
           assessmentLog,
           completedSkills: completedSkillsArray,
+          historyComponents: getHistoryComponentStatus(),
           scenario,
           elapsedSeconds
         })
@@ -1203,6 +1241,7 @@
         treatmentPlan,
         assessmentLog,
         completedSkills: completedSkillsArray,
+        historyComponents: getHistoryComponentStatus(),
         patientHistory,
         instructorHistory,
         elapsedSeconds,
@@ -1232,6 +1271,7 @@
         treatmentPlan,
         assessmentLog,
         completedSkills: completedSkillsArray,
+        historyComponents: getHistoryComponentStatus(),
         patientHistory,
         instructorHistory,
         elapsedSeconds,
