@@ -762,10 +762,24 @@
       skill: "Blood pressure obtained",
       keywords: [
         "check blood pressure", "obtain blood pressure", "what is the blood pressure",
-        "what is the bp", "take a blood pressure"
+        "what is the bp", "take a blood pressure",
+        "assess blood pressure", "assessed blood pressure", "assessing blood pressure",
+        "blood pressure assessed", "blood pressure was assessed",
+        "check the blood pressure", "checked the blood pressure",
+        "obtain the blood pressure", "obtained the blood pressure",
+        "take the blood pressure", "took the blood pressure",
+        "get a blood pressure", "got a blood pressure", "get the bp", "got the bp",
+        "measure blood pressure", "measured blood pressure",
+        "bp assessed", "bp obtained", "bp checked", "bp measured",
+        "assess all vitals", "assessed all vitals", "reassessed all vitals",
+        "all vital signs assessed", "all vital signs obtained", "all vitals obtained"
       ],
       patterns: [
         /\b(bp|blood pressure)\b[^0-9]{0,10}\d{2,3}\s*\/\s*\d{2,3}\b/,
+        /\b(bp|blood pressure)\b[^0-9]{0,15}\d{2,3}\s*(?:over|by)\s*\d{2,3}\b/,
+        /\b(assess|assessed|assessing|check|checked|checking|obtain|obtained|obtaining|take|took|taking|get|got|getting|measure|measured|measuring|record|recorded|recording)\w*\b.*\b(bp|blood pressure)\b/,
+        /\b(bp|blood pressure)\b.*\b(assess|assessed|checked|obtained|taken|measured|recorded)\w*\b/,
+        /\b(assess|assessed|reassess|reassessed|obtain|obtained|repeat|repeated|check|checked)\w*\b.*\b(all|complete|full)\b.*\b(vitals|vital signs)\b/,
         /\b\d{2,3}\s*\/\s*\d{2,3}\b/
       ]
     },
@@ -1012,14 +1026,31 @@
       keywords: [
         "perform a secondary assessment", "perform a focused physical exam",
         "perform a head to toe assessment", "complete a rapid assessment", "perform a physical examination",
-        "secondary assessment completed", "focused exam completed"
+        "secondary assessment completed", "focused exam completed",
+        "assess for dcap", "assessed for dcap", "check for dcap", "checked for dcap",
+        "dcap btls assessment", "dcap-btls assessment", "assess using dcap btls",
+        "expose the chest and assess", "exposed the chest and assessed",
+        "xpose the chest and assess", "xposed the chest and assessed"
+      ],
+      patterns: [
+        /\b(assess|assessed|assessing|check|checked|checking|inspect|inspected)\w*\b.*\bdcap\b(?:\s*btls\b)?/,
+        /\bdcap\b(?:\s*btls\b)?.*\b(assess|assessed|assessment|check|checked|exam|examination)\w*\b/,
+        /\b(e?xpose|e?xposed|e?xposing)\w*\b.*\b(chest|thorax)\b.*\b(assess|assessed|assessing|inspect|inspected|palpate|palpated|dcap)\w*\b/
       ]
     },
     {
       skill: "Cardiac assessment performed",
       keywords: [
         "perform a cardiac assessment", "assess the chest", "inspect and palpate the chest",
-        "check for chest tenderness", "chest non tender", "chest tenderness", "chest wall assessed"
+        "check for chest tenderness", "chest non tender", "chest tenderness", "chest wall assessed",
+        "expose the chest and assess", "exposed the chest and assessed",
+        "xpose the chest and assess", "xposed the chest and assessed",
+        "assess the chest for dcap", "assessed the chest for dcap"
+      ],
+      patterns: [
+        /\b(e?xpose|e?xposed|e?xposing)\w*\b.*\b(chest|thorax)\b.*\b(assess|assessed|assessing|inspect|inspected|palpate|palpated|dcap)\w*\b/,
+        /\b(assess|assessed|assessing|inspect|inspected|palpate|palpated|check|checked)\w*\b.*\b(chest|thorax|chest wall)\b.*\bdcap\b/,
+        /\b(chest|thorax|chest wall)\b.*\b(assess|assessed|assessing|inspect|inspected|palpate|palpated|tenderness|dcap)\w*\b/
       ]
     },
     {
@@ -1233,7 +1264,18 @@
       keywords: [
         "perform a reassessment", "reassess the patient", "repeat all vital signs",
         "repeat the blood pressure", "repeat the pain assessment", "recheck the patient",
-        "repeat vitals", "reassessed patient", "recheck vital signs"
+        "repeat vitals", "reassessed patient", "recheck vital signs",
+        "reassess all vitals", "reassessed all vitals", "reassessing all vitals",
+        "reassess all vital signs", "reassessed all vital signs",
+        "repeat all vitals", "repeated all vitals", "vitals reassessed",
+        "vital signs reassessed", "obtained another set of vitals",
+        "obtain another set of vital signs", "second set of vitals",
+        "repeat a full set of vitals", "repeat full set of vital signs"
+      ],
+      patterns: [
+        /\b(reassess|reassessed|reassessing|recheck|rechecked|rechecking|repeat|repeated|repeating)\w*\b.*\b(all|full|complete|another|second)?\s*(set of\s*)?(vitals|vital signs)\b/,
+        /\b(vitals|vital signs)\b.*\b(reassess|reassessed|rechecked|repeated|again)\w*\b/,
+        /\b(reassess|reassessed|reassessing|repeat|repeated)\w*\b.*\b(patient|assessment|blood pressure|pulse|respirations|pain)\b/
       ]
     }
   ];
@@ -1306,7 +1348,7 @@
       if (matched && !completedSkills.has(item.skill)) {
         completedSkills.add(item.skill);
         assessmentLog.push(
-          `${item.skill} — recognized through ${source}`
+          `${item.skill} ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â recognized through ${source}`
         );
         newlyRecorded.push(item.skill);
       }
@@ -1354,7 +1396,7 @@
     ) {
       completedSkills.add("Complete OPQRST assessment performed");
       assessmentLog.push(
-        "Complete OPQRST assessment performed — all OPQRST components recognized"
+        "Complete OPQRST assessment performed ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â all OPQRST components recognized"
       );
     }
 
@@ -1364,7 +1406,7 @@
     ) {
       completedSkills.add("Complete SAMPLE history performed");
       assessmentLog.push(
-        "Complete SAMPLE history performed — all SAMPLE components recognized"
+        "Complete SAMPLE history performed ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â all SAMPLE components recognized"
       );
     }
 
@@ -1382,7 +1424,7 @@
 
     completedBox.innerText = Array
       .from(completedSkills)
-      .map((skill, index) => `${index + 1}. ✓ ${skill}`)
+      .map((skill, index) => `${index + 1}. ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“ ${skill}`)
       .join("\n");
   }
 
