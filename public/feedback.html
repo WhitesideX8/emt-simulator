@@ -1,115 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>EMT Scenario Grading Report</title>
-
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #e9ecef;
-      color: #222;
-    }
-
-    .container {
-      width: 90%;
-      max-width: 1000px;
-      margin: 30px auto;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 5px;
-    }
-
-    #scenarioTitle {
-      text-align: center;
-      color: #555;
-      margin-top: 0;
-    }
-
-    .section {
-      background: white;
-      border: 1px solid #bbb;
-      border-radius: 8px;
-      padding: 18px;
-      margin: 18px 0;
-    }
-
-    .section h2 {
-      margin-top: 0;
-      border-bottom: 2px solid #333;
-      padding-bottom: 6px;
-    }
-
-    #feedback {
-      white-space: pre-wrap;
-      line-height: 1.5;
-      font-size: 16px;
-    }
-
-    #treatmentPlan {
-      white-space: pre-wrap;
-      line-height: 1.5;
-    }
-
-    .buttons {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    button {
-      background: green;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 10px 18px;
-      margin: 5px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: darkgreen;
-    }
-
-    .secondary {
-      background: #333;
-    }
-
-    .secondary:hover {
-      background: #111;
-    }
-
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #e9ecef; color: #222; }
+    .container { width: 90%; max-width: 1000px; margin: 30px auto; }
+    h1 { text-align: center; margin-bottom: 5px; }
+    #scenarioTitle { text-align: center; color: #555; margin-top: 0; }
+    .section { background: white; border: 1px solid #bbb; border-radius: 8px; padding: 18px; margin: 18px 0; }
+    .section h2 { margin-top: 0; border-bottom: 2px solid #333; padding-bottom: 6px; }
+    #feedback, #treatmentPlan { white-space: pre-wrap; line-height: 1.5; }
+    #feedback { font-size: 16px; }
+    .input-list { display: grid; gap: 10px; }
+    .input-item { padding: 11px 13px; border-left: 5px solid #176b9e; border-radius: 5px; background: #f4f7f9; }
+    .input-heading { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-bottom: 5px; color: #12304a; font-weight: bold; }
+    .input-time { color: #666; font-size: 13px; font-weight: normal; }
+    .input-text { white-space: pre-wrap; line-height: 1.45; }
+    .empty-message { color: #666; font-style: italic; }
+    .buttons { text-align: center; margin-top: 20px; }
+    button { background: green; color: white; border: none; border-radius: 6px; padding: 10px 18px; margin: 5px; font-size: 16px; cursor: pointer; }
+    button:hover { background: darkgreen; }
+    .secondary { background: #333; }
+    .secondary:hover { background: #111; }
     @media print {
-      .buttons {
-        display: none;
-      }
-
-      body {
-        background: white;
-      }
-
-      .container {
-        width: 100%;
-        margin: 0;
-      }
+      .buttons { display: none; }
+      body { background: white; }
+      .container { width: 100%; margin: 0; }
+      .section { break-inside: avoid; }
     }
   </style>
 </head>
-
 <body>
-
   <div class="container">
-
     <h1>EMT Scenario Grading Report</h1>
     <h2 id="scenarioTitle"></h2>
 
@@ -119,58 +44,102 @@
     </div>
 
     <div class="section">
+      <h2>All Student Inputs</h2>
+      <div id="studentInputs" class="input-list"></div>
+    </div>
+
+    <div class="section">
       <h2>Evaluation</h2>
       <div id="feedback"></div>
     </div>
 
     <div class="buttons">
-
-      <button onclick="returnToScenario()">
-        Return to Scenario
-      </button>
-
-      <button class="secondary" onclick="window.print()">
-        Print Report
-      </button>
-
-      <button class="secondary" onclick="location.href='index.html'">
-        Home
-      </button>
-
+      <button onclick="returnToScenario()">Return to Scenario</button>
+      <button class="secondary" onclick="window.print()">Print Report</button>
+      <button class="secondary" onclick="location.href='index.html'">Home</button>
     </div>
-
   </div>
 
   <script>
-    const savedData =
-      sessionStorage.getItem("emtGradingResults");
+    function renderStudentInputs(data) {
+      const container = document.getElementById("studentInputs");
+      let inputs = Array.isArray(data.studentInputLog) ? data.studentInputLog : [];
+
+      // Show older saved reports even if they predate the chronological log.
+      if (inputs.length === 0) {
+        inputs = [];
+
+        if (Array.isArray(data.assessmentLog)) {
+          data.assessmentLog.forEach(function(entry) {
+            inputs.push({ type: "Assessment / Treatment", text: entry, time: "" });
+          });
+        }
+
+        if (data.patientHistory) {
+          inputs.push({ type: "Patient Interview History", text: data.patientHistory, time: "" });
+        }
+
+        if (data.instructorHistory) {
+          inputs.push({ type: "Instructor Interaction History", text: data.instructorHistory, time: "" });
+        }
+      }
+
+      if (inputs.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty-message";
+        empty.textContent = "No student inputs were recorded.";
+        container.appendChild(empty);
+        return;
+      }
+
+      inputs.forEach(function(input, index) {
+        const item = document.createElement("div");
+        item.className = "input-item";
+
+        const heading = document.createElement("div");
+        heading.className = "input-heading";
+
+        const type = document.createElement("span");
+        type.textContent = (index + 1) + ". " + (input.type || "Student Input");
+        heading.appendChild(type);
+
+        if (input.time) {
+          const time = document.createElement("span");
+          time.className = "input-time";
+          time.textContent = input.time;
+          heading.appendChild(time);
+        }
+
+        const inputText = document.createElement("div");
+        inputText.className = "input-text";
+        inputText.textContent = input.text || "";
+
+        item.append(heading, inputText);
+        container.appendChild(item);
+      });
+    }
+
+    const savedData = sessionStorage.getItem("emtGradingResults");
 
     if (savedData) {
-
-      const data = JSON.parse(savedData);
-
-      document.getElementById("scenarioTitle").innerText =
-        data.scenario || "EMT Scenario";
-
-      document.getElementById("treatmentPlan").innerText =
-        data.treatmentPlan || "No treatment plan entered.";
-
-      document.getElementById("feedback").innerText =
-        data.feedback || "No grading feedback available.";
-
+      try {
+        const data = JSON.parse(savedData);
+        document.getElementById("scenarioTitle").innerText = data.scenario || "EMT Scenario";
+        document.getElementById("treatmentPlan").innerText = data.treatmentPlan || "No treatment plan entered.";
+        document.getElementById("feedback").innerText = data.feedback || "No grading feedback available.";
+        renderStudentInputs(data);
+      } catch (error) {
+        document.getElementById("scenarioTitle").innerText = "Invalid Scenario Results";
+        document.getElementById("feedback").innerText = "The saved grading information could not be read.";
+        renderStudentInputs({});
+      }
     } else {
-
-      document.getElementById("scenarioTitle").innerText =
-        "No Scenario Results";
-
-      document.getElementById("feedback").innerText =
-        "No grading information was found. Please complete a scenario first.";
+      document.getElementById("scenarioTitle").innerText = "No Scenario Results";
+      document.getElementById("feedback").innerText = "No grading information was found. Please complete a scenario first.";
+      renderStudentInputs({});
     }
 
-    function returnToScenario() {
-      window.history.back();
-    }
+    function returnToScenario() { window.history.back(); }
   </script>
-
 </body>
 </html>
