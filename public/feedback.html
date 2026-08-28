@@ -20,13 +20,31 @@
     .input-time { color: #666; font-size: 13px; font-weight: normal; }
     .input-text { white-space: pre-wrap; line-height: 1.45; }
     .empty-message { color: #666; font-style: italic; }
+    .dispute-help { margin: 0 0 14px; line-height: 1.45; color: #444; }
+    .dispute-form { display: grid; gap: 12px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+    .form-group input,
+    .form-group textarea { width: 100%; padding: 10px; border: 1px solid #999; border-radius: 5px; font: inherit; }
+    .form-group textarea { min-height: 95px; resize: vertical; }
+    .dispute-btn { width: fit-content; margin: 0; background: #b35a00; }
+    .dispute-btn:hover { background: #823f00; }
+    .dispute-list { display: grid; gap: 12px; margin-top: 18px; }
+    .dispute-item { padding: 13px; border-left: 5px solid #b35a00; border-radius: 5px; background: #fff7ed; }
+    .dispute-heading { display: flex; justify-content: space-between; gap: 10px; font-weight: bold; }
+    .dispute-status { color: #8a4300; }
+    .dispute-reason { margin-top: 8px; white-space: pre-wrap; line-height: 1.45; }
+    .remove-dispute { padding: 6px 10px; margin: 10px 0 0; font-size: 13px; background: #9d2020; }
+    .review-disputes { background: #663399; }
+    .review-disputes:hover { background: #48216d; }
+    .ai-review-note { margin-top: 8px; padding: 8px; border-radius: 4px; background: #f3eef8; line-height: 1.4; }
+    #disputeStatus { min-height: 20px; margin-top: 8px; color: #166534; font-weight: bold; }
     .buttons { text-align: center; margin-top: 20px; }
     button { background: green; color: white; border: none; border-radius: 6px; padding: 10px 18px; margin: 5px; font-size: 16px; cursor: pointer; }
     button:hover { background: darkgreen; }
     .secondary { background: #333; }
     .secondary:hover { background: #111; }
     @media print {
-      .buttons { display: none; }
+      .buttons, .dispute-form, .dispute-help, #disputeStatus, .remove-dispute { display: none; }
       body { background: white; }
       .container { width: 100%; margin: 0; }
       .section { break-inside: avoid; }
@@ -53,6 +71,33 @@
       <div id="feedback"></div>
     </div>
 
+    <div class="section">
+      <h2>Scoring Disputes</h2>
+      <p class="dispute-help">
+        If you believe a scoring point was missed, identify the item and explain what you entered or did that supports receiving credit.
+      </p>
+
+      <div class="dispute-form">
+        <div class="form-group">
+          <label for="disputeItem">Scoring item being disputed</label>
+          <input id="disputeItem" type="text" placeholder="Example: Blood pressure assessed" />
+        </div>
+
+        <div class="form-group">
+          <label for="disputeReason">Reason for dispute</label>
+          <textarea id="disputeReason" placeholder="Explain what you entered and where it appears in the student input log."></textarea>
+        </div>
+
+        <button type="button" class="dispute-btn" onclick="addDispute()">Add Dispute</button>
+      </div>
+
+      <div id="disputeStatus" aria-live="polite"></div>
+      <div id="disputeList" class="dispute-list"></div>
+      <div class="buttons">
+        <button type="button" class="review-disputes" onclick="openDisputeReview()">Open Instructor Dispute Report</button>
+      </div>
+    </div>
+
     <div class="buttons">
       <button onclick="returnToScenario()">Return to Scenario</button>
       <button class="secondary" onclick="window.print()">Print Report</button>
@@ -61,6 +106,8 @@
   </div>
 
   <script>
+    let gradingData = {};
+
     function renderStudentInputs(data) {
       const container = document.getElementById("studentInputs");
       let inputs = Array.isArray(data.studentInputLog) ? data.studentInputLog : [];
@@ -119,24 +166,171 @@
       });
     }
 
+    function saveGradingData() {
+      sessionStorage.setItem("emtGradingResults", JSON.stringify(gradingData));
+    }
+
+    function renderDisputes() {
+      const container = document.getElementById("disputeList");
+      const disputes = Array.isArray(gradingData.scoringDisputes)
+        ? gradingData.scoringDisputes
+        : [];
+
+      container.innerHTML = "";
+
+      if (disputes.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty-message";
+        empty.textContent = "No scoring disputes have been entered.";
+        container.appendChild(empty);
+        return;
+      }
+
+      disputes.forEach(function(dispute, index) {
+        const item = document.createElement("div");
+        item.className = "dispute-item";
+
+        const heading = document.createElement("div");
+        heading.className = "dispute-heading";
+
+        const title = document.createElement("span");
+        title.textContent = (index + 1) + ". " + dispute.item;
+
+        const status = document.createElement("span");
+        status.className = "dispute-status";
+        status.textContent = dispute.status || "Pending instructor review";
+
+        const reason = document.createElement("div");
+        reason.className = "dispute-reason";
+        reason.textContent = "Student explanation: " + dispute.reason;
+
+        const submitted = document.createElement("div");
+        submitted.className = "input-time";
+        submitted.textContent = "Submitted: " + (dispute.submittedAt || "Time unavailable");
+
+        const aiNote = document.createElement("div");
+        aiNote.className = "ai-review-note";
+        if (dispute.aiReview) {
+          aiNote.textContent = "AI recommendation prepared for instructor review: " +
+            String(dispute.aiReview.recommendation || "Needs review").replaceAll("_", " ");
+        } else if (dispute.aiReviewError) {
+          aiNote.textContent = "AI review unavailable; the instructor can still decide manually.";
+        } else {
+          aiNote.textContent = "AI review pending.";
+        }
+
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "remove-dispute";
+        remove.textContent = "Remove Dispute";
+        remove.onclick = function() { removeDispute(index); };
+
+        heading.append(title, status);
+        item.append(heading, reason, submitted, aiNote, remove);
+        container.appendChild(item);
+      });
+    }
+
+    async function addDispute() {
+      const itemInput = document.getElementById("disputeItem");
+      const reasonInput = document.getElementById("disputeReason");
+      const statusBox = document.getElementById("disputeStatus");
+      const item = itemInput.value.trim();
+      const reason = reasonInput.value.trim();
+
+      if (!item || !reason) {
+        statusBox.textContent = "Enter both the scoring item and the reason for the dispute.";
+        statusBox.style.color = "#9d2020";
+        return;
+      }
+
+      if (!Array.isArray(gradingData.scoringDisputes)) {
+        gradingData.scoringDisputes = [];
+      }
+
+      const dispute = {
+        id: "dispute-" + Date.now() + "-" + Math.random().toString(16).slice(2),
+        item: item,
+        reason: reason,
+        status: "Pending instructor review",
+        submittedAt: new Date().toLocaleString()
+      };
+
+      gradingData.scoringDisputes.push(dispute);
+
+      saveGradingData();
+      renderDisputes();
+      itemInput.value = "";
+      reasonInput.value = "";
+      statusBox.style.color = "#166534";
+      statusBox.textContent = "Dispute saved. Preparing the AI recommendation...";
+
+      try {
+        const response = await fetch("/review-dispute", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            dispute: dispute,
+            scenario: gradingData.scenario,
+            earnedPoints: gradingData.originalEarnedPoints ?? gradingData.earnedPoints,
+            possiblePoints: gradingData.possiblePoints,
+            checklist: gradingData.checklist,
+            studentInputLog: gradingData.studentInputLog,
+            treatmentPlan: gradingData.treatmentPlan
+          })
+        });
+
+        const review = await response.json();
+        if (!response.ok) throw new Error(review.error || "Review failed");
+        dispute.aiReview = review;
+        statusBox.textContent = "AI recommendation prepared. An instructor must make the final decision.";
+      } catch (error) {
+        dispute.aiReviewError = error.message;
+        statusBox.style.color = "#9d2020";
+        statusBox.textContent = "Dispute saved, but AI review was unavailable. The instructor can review it manually.";
+      }
+
+      saveGradingData();
+      renderDisputes();
+    }
+
+    function removeDispute(index) {
+      if (!Array.isArray(gradingData.scoringDisputes)) return;
+      gradingData.scoringDisputes.splice(index, 1);
+      saveGradingData();
+      renderDisputes();
+      document.getElementById("disputeStatus").textContent = "Scoring dispute removed.";
+    }
+
+    function openDisputeReview() {
+      if (!Array.isArray(gradingData.scoringDisputes) || gradingData.scoringDisputes.length === 0) {
+        document.getElementById("disputeStatus").textContent = "Add at least one scoring dispute first.";
+        return;
+      }
+      window.location.href = "dispute_review.html";
+    }
+
     const savedData = sessionStorage.getItem("emtGradingResults");
 
     if (savedData) {
       try {
-        const data = JSON.parse(savedData);
-        document.getElementById("scenarioTitle").innerText = data.scenario || "EMT Scenario";
-        document.getElementById("treatmentPlan").innerText = data.treatmentPlan || "No treatment plan entered.";
-        document.getElementById("feedback").innerText = data.feedback || "No grading feedback available.";
-        renderStudentInputs(data);
+        gradingData = JSON.parse(savedData);
+        document.getElementById("scenarioTitle").innerText = gradingData.scenario || "EMT Scenario";
+        document.getElementById("treatmentPlan").innerText = gradingData.treatmentPlan || "No treatment plan entered.";
+        document.getElementById("feedback").innerText = gradingData.feedback || "No grading feedback available.";
+        renderStudentInputs(gradingData);
+        renderDisputes();
       } catch (error) {
         document.getElementById("scenarioTitle").innerText = "Invalid Scenario Results";
         document.getElementById("feedback").innerText = "The saved grading information could not be read.";
         renderStudentInputs({});
+        renderDisputes();
       }
     } else {
       document.getElementById("scenarioTitle").innerText = "No Scenario Results";
       document.getElementById("feedback").innerText = "No grading information was found. Please complete a scenario first.";
       renderStudentInputs({});
+      renderDisputes();
     }
 
     function returnToScenario() { window.history.back(); }
