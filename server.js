@@ -26,10 +26,6 @@ const openai = new OpenAI({
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-/*
-  Allows pages hosted on Hostinger or another website
-  to communicate with this Render server.
-*/
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
 
@@ -1042,7 +1038,6 @@ function evaluateCriticalCriteria(
   checklist
 ) {
   const text = combineStudentWork(body);
-
   const elapsedSeconds =
     Number(body.elapsedSeconds) || 0;
 
@@ -1064,7 +1059,6 @@ function evaluateCriticalCriteria(
   return [
     {
       id: "F1",
-
       description:
         "Failure to initiate or call for transport within 15 minutes.",
 
@@ -1083,7 +1077,6 @@ function evaluateCriticalCriteria(
 
     {
       id: "F2",
-
       description:
         "Failure to take or verbalize appropriate PPE precautions.",
 
@@ -1100,7 +1093,6 @@ function evaluateCriticalCriteria(
 
     {
       id: "F3",
-
       description:
         "Failure to determine scene safety.",
 
@@ -1117,7 +1109,6 @@ function evaluateCriticalCriteria(
 
     {
       id: "F4",
-
       description:
         "Failure to provide oxygen therapy according to patient condition and current guidance.",
 
@@ -1129,7 +1120,6 @@ function evaluateCriticalCriteria(
 
     {
       id: "F5",
-
       description:
         "Failure to identify or manage airway, breathing, hemorrhage or shock problems.",
 
@@ -1150,7 +1140,6 @@ function evaluateCriticalCriteria(
 
     {
       id: "F6",
-
       description:
         "Failure to determine immediate transport versus continued scene assessment.",
 
@@ -1169,7 +1158,6 @@ function evaluateCriticalCriteria(
 
     {
       id: "F7",
-
       description:
         "Failure to manage life threats before secondary care.",
 
@@ -1181,7 +1169,6 @@ function evaluateCriticalCriteria(
 
     {
       id: "F8",
-
       description:
         "Orders a dangerous or inappropriate intervention.",
 
@@ -1198,7 +1185,6 @@ function evaluateCriticalCriteria(
 
     {
       id: "F9",
-
       description:
         "Failure to provide an accurate report to EMS, medical direction or receiving staff.",
 
@@ -1215,7 +1201,6 @@ function evaluateCriticalCriteria(
 
     {
       id: "F10",
-
       description:
         "Failure to manage the patient as a competent EMT.",
 
@@ -1227,7 +1212,6 @@ function evaluateCriticalCriteria(
 
     {
       id: "F11",
-
       description:
         "Exhibits unacceptable affect or unprofessional behavior.",
 
@@ -1239,7 +1223,6 @@ function evaluateCriticalCriteria(
 
     {
       id: "F12",
-
       description:
         "Failure to obtain the minimum passing score.",
 
@@ -1445,7 +1428,6 @@ app.post("/grade", async (req, res) => {
               ? item.points
               : 0
           ),
-
         0
       );
 
@@ -1453,7 +1435,6 @@ app.post("/grade", async (req, res) => {
       checklist.reduce(
         (total, item) =>
           total + item.points,
-
         0
       );
 
@@ -1463,9 +1444,6 @@ app.post("/grade", async (req, res) => {
         checklist
       );
 
-    /*
-      Update the score-related critical criterion.
-    */
     const scoreCriterion =
       criticalCriteria.find(
         item => item.id === "F12"
@@ -1581,17 +1559,13 @@ You are a strict but helpful EMT instructor grading a patient-assessment simulat
 Use clear checklist-style feedback.
 Do not invent student actions.
         `,
-
         gradingPrompt
       );
 
     return res.json({
       feedback,
-
       checklist,
-
       earnedPoints,
-
       possiblePoints,
 
       completed:
@@ -1624,6 +1598,239 @@ Do not invent student actions.
 });
 
 /* =========================================================
+   AI-ASSISTED DISPUTE REVIEW
+========================================================= */
+
+app.post("/review-dispute", async (req, res) => {
+  try {
+    const body = req.body || {};
+    const dispute = body.dispute || {};
+
+    const checklist =
+      Array.isArray(body.checklist)
+        ? body.checklist
+        : [];
+
+    const studentInputLog =
+      Array.isArray(body.studentInputLog)
+        ? body.studentInputLog
+        : [];
+
+    if (
+      !String(dispute.item || "").trim() ||
+      !String(dispute.reason || "").trim()
+    ) {
+      return res.status(400).json({
+        error:
+          "A scoring item and dispute reason are required."
+      });
+    }
+
+    const inputText =
+      studentInputLog
+        .map((entry, index) => {
+          return (
+            `${index + 1}. ` +
+            `${entry.type || "Student Input"}: ` +
+            `${entry.text || ""}`
+          );
+        })
+        .join("\n");
+
+    const checklistText =
+      checklist
+        .map(item => {
+          return (
+            `${item.id || ""} | ` +
+            `${item.name || "Unnamed item"} | ` +
+            `${item.pass ? "CREDIT AWARDED" : "NO CREDIT"} | ` +
+            `${item.points || 0} point(s)`
+          );
+        })
+        .join("\n");
+
+    const completion =
+      await openai.chat.completions.create({
+        model:
+          process.env.CHAT_MODEL ||
+          "gpt-4.1-mini",
+
+        temperature: 0,
+
+        response_format: {
+          type: "json_object"
+        },
+
+        messages: [
+          {
+            role: "system",
+
+            content: `
+You are reviewing a scoring dispute for a Connecticut EMT practice simulation.
+
+IMPORTANT RULES:
+
+- Use only the supplied student-input log.
+- Do not infer or invent student actions.
+- The dispute must match an exact checklist item.
+- The checklist item must currently show NO CREDIT.
+- Recommend AWARD only when clear supporting evidence appears in the student-input log.
+- Recommend DENY when evidence is absent, vague, unrelated, or the item already received credit.
+- Use NEEDS_INSTRUCTOR_REVIEW when the evidence cannot be judged reliably.
+- Never award more than one point.
+- Return valid JSON only.
+
+Return these exact JSON fields:
+
+{
+  "recommendation": "AWARD, DENY, or NEEDS_INSTRUCTOR_REVIEW",
+  "suggestedPoints": 0 or 1,
+  "rationale": "Brief explanation",
+  "relevantEvidence": ["Evidence from student input"],
+  "matchedChecklistItemId": "Exact checklist ID",
+  "matchedChecklistItemName": "Exact checklist item name"
+}
+            `
+          },
+
+          {
+            role: "user",
+
+            content: `
+Scenario:
+${body.scenario || "EMT Scenario"}
+
+Original score:
+${Number(body.earnedPoints) || 0}/${Number(body.possiblePoints) || 0}
+
+Disputed item:
+${dispute.item}
+
+Student explanation:
+${dispute.reason}
+
+CHECKLIST:
+
+${checklistText || "Checklist unavailable."}
+
+COMPLETE STUDENT INPUT LOG:
+
+${inputText ||
+body.treatmentPlan ||
+"No student inputs supplied."}
+            `
+          }
+        ]
+      });
+
+    const raw =
+      completion.choices?.[0]
+        ?.message?.content ||
+      "{}";
+
+    const review =
+      JSON.parse(raw);
+
+    const allowed = [
+      "AWARD",
+      "DENY",
+      "NEEDS_INSTRUCTOR_REVIEW"
+    ];
+
+    let recommendation =
+      allowed.includes(
+        review.recommendation
+      )
+        ? review.recommendation
+        : "NEEDS_INSTRUCTOR_REVIEW";
+
+    const matchedItem =
+      checklist.find(item => {
+        return (
+          String(item.id || "") ===
+            String(
+              review.matchedChecklistItemId ||
+              ""
+            ) &&
+          item.pass !== true
+        );
+      });
+
+    /*
+      The AI cannot award a point unless it returned the ID
+      of a real checklist item that originally received no credit.
+    */
+    if (
+      recommendation === "AWARD" &&
+      !matchedItem
+    ) {
+      recommendation =
+        "NEEDS_INSTRUCTOR_REVIEW";
+    }
+
+    return res.json({
+      recommendation,
+
+      suggestedPoints:
+        recommendation === "AWARD" &&
+        Number(
+          review.suggestedPoints
+        ) === 1
+          ? 1
+          : 0,
+
+      matchedChecklistItemId:
+        matchedItem
+          ? String(
+              matchedItem.id ||
+              ""
+            )
+          : "",
+
+      matchedChecklistItemName:
+        matchedItem
+          ? String(
+              matchedItem.name ||
+              ""
+            )
+          : "",
+
+      rationale:
+        String(
+          review.rationale ||
+          "The AI review did not provide a rationale."
+        ),
+
+      relevantEvidence:
+        Array.isArray(
+          review.relevantEvidence
+        )
+          ? review.relevantEvidence
+              .map(value =>
+                String(value)
+              )
+              .slice(0, 6)
+          : [],
+
+      advisoryOnly: false,
+
+      reviewedAt:
+        new Date().toISOString()
+    });
+  } catch (error) {
+    console.error(
+      "DISPUTE REVIEW ERROR:",
+      error
+    );
+
+    return res.status(500).json({
+      error:
+        "The AI dispute review could not be completed."
+    });
+  }
+});
+
+/* =========================================================
    COMPATIBILITY ROUTES
 ========================================================= */
 
@@ -1636,6 +1843,13 @@ app.post(
         history = "",
         scenario = "chestPain"
       } = req.body || {};
+
+      if (!studentQuestion.trim()) {
+        return res.status(400).json({
+          reply:
+            "No patient question was provided."
+        });
+      }
 
       const selectedScenario =
         getScenario(scenario);
@@ -1683,6 +1897,13 @@ app.post(
         history = "",
         scenario = "chestPain"
       } = req.body || {};
+
+      if (!studentQuestion.trim()) {
+        return res.status(400).json({
+          reply:
+            "No instructor question was provided."
+        });
+      }
 
       const selectedScenario =
         getScenario(scenario);
