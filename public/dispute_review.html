@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instructor Dispute Review</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #e9ecef; color: #222; }
+    .container { width: 92%; max-width: 1050px; margin: 28px auto; }
+    h1, #scenarioTitle { text-align: center; }
+    #scenarioTitle { margin-top: -8px; color: #555; }
+    .section, .dispute { background: #fff; border: 1px solid #bbb; border-radius: 8px; padding: 18px; margin: 16px 0; }
+    .score-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: center; }
+    .score-box { padding: 14px; border-radius: 6px; background: #eef4f8; }
+    .score-box strong { display: block; margin-top: 5px; font-size: 25px; }
+    .dispute { border-left: 7px solid #b35a00; }
+    .dispute.decided-award { border-left-color: #16803a; }
+    .dispute.decided-deny { border-left-color: #a32626; }
+    .label { margin-top: 12px; font-weight: bold; }
+    .text { margin-top: 4px; white-space: pre-wrap; line-height: 1.45; }
+    .ai-box { margin-top: 14px; padding: 12px; background: #f3eef8; border-radius: 6px; }
+    .evidence li { margin: 5px 0; }
+    .decision-row { margin-top: 14px; padding-top: 12px; border-top: 1px solid #ccc; }
+    button { border: 0; border-radius: 5px; padding: 9px 14px; margin: 4px; color: #fff; font-weight: bold; cursor: pointer; }
+    .award { background: #16803a; } .deny { background: #a32626; }
+    .ai { background: #663399; } .secondary { background: #333; }
+    input { width: 100%; padding: 9px; margin-top: 5px; border: 1px solid #999; border-radius: 5px; }
+    .status { font-weight: bold; margin-top: 10px; }
+    .empty { color: #666; font-style: italic; }
+    .buttons { text-align: center; margin: 20px 0; }
+    @media (max-width: 650px) { .score-grid { grid-template-columns: 1fr; } }
+    @media print {
+      body { background: #fff; }
+      .container { width: 100%; margin: 0; }
+      .buttons, .decision-controls, #reviewKeySection { display: none !important; }
+      .section, .dispute { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>Instructor Dispute Review</h1>
+    <h2 id="scenarioTitle"></h2>
+
+    <section class="section score-grid">
+      <div class="score-box">Original Score<strong id="originalScore">0/0</strong></div>
+      <div class="score-box">Points Awarded on Appeal<strong id="appealPoints">0</strong></div>
+      <div class="score-box">Adjusted Score<strong id="adjustedScore">0/0</strong></div>
+    </section>
+
+    <section id="reviewKeySection" class="section">
+      <label for="reviewKey"><strong>Instructor review code</strong> (required only if configured on Render)</label>
+      <input id="reviewKey" type="password" autocomplete="off" placeholder="Enter instructor review code" />
+    </section>
+
+    <div id="disputes"></div>
+
+    <section class="section">
+      <label for="instructorName"><strong>Instructor name or initials</strong></label>
+      <input id="instructorName" type="text" placeholder="Instructor name or initials" oninput="saveInstructorName()" />
+      <div id="finalStatus" class="status"></div>
+    </section>
+
+    <div class="buttons">
+      <button class="secondary" onclick="location.href='feedback.html'">Return to Student Report</button>
+      <button class="secondary" onclick="window.print()">Print Final Report</button>
+      <button class="secondary" onclick="location.href='index.html'">Home</button>
+    </div>
+  </main>
+
+  <script>
+    let report = {};
+
+    function save() {
+      sessionStorage.setItem("emtGradingResults", JSON.stringify(report));
+    }
+
+    function originalPoints() {
+      return Number(report.originalEarnedPoints ?? report.earnedPoints) || 0;
+    }
+
+    function possiblePoints() {
+      return Number(report.possiblePoints) || 0;
+    }
+
+    function awardedAppealPoints() {
+      const disputes = Array.isArray(report.scoringDisputes) ? report.scoringDisputes : [];
+      return disputes.filter(item => item.instructorDecision === "AWARD").length;
+    }
+
+    function updateScores() {
+      const original = originalPoints();
+      const possible = possiblePoints();
+      const awarded = awardedAppealPoints();
+      const adjusted = possible ? Math.min(original + awarded, possible) : original + awarded;
+      report.adjustedEarnedPoints = adjusted;
+      document.getElementById("originalScore").textContent = original + "/" + possible;
+      document.getElementById("appealPoints").textContent = "+" + awarded;
+      document.getElementById("adjustedScore").textContent = adjusted + "/" + possible;
+      document.getElementById("finalStatus").textContent =
+        "Instructor decisions completed: " +
+        (report.scoringDisputes || []).filter(d => d.instructorDecision).length +
+        " of " + (report.scoringDisputes || []).length + ".";
+      save();
+    }
+
+    function aiLabel(value) {
+      return String(value || "NEEDS_INSTRUCTOR_REVIEW").replaceAll("_", " ");
+    }
+
+    function render() {
+      document.getElementById("scenarioTitle").textContent = report.scenario || "EMT Scenario";
+      document.getElementById("instructorName").value = report.disputeReviewInstructor || "";
+      const container = document.getElementById("disputes");
+      container.innerHTML = "";
+      const disputes = Array.isArray(report.scoringDisputes) ? report.scoringDisputes : [];
+
+      if (!disputes.length) {
+        container.innerHTML = '<section class="section empty">No scoring disputes were found.</section>';
+        updateScores();
+        return;
+      }
+
+      disputes.forEach((dispute, index) => {
+        const card = document.createElement("section");
+        card.className = "dispute" + (dispute.instructorDecision ? " decided-" + dispute.instructorDecision.toLowerCase() : "");
+        const review = dispute.aiReview;
+        const evidence = review && Array.isArray(review.relevantEvidence) && review.relevantEvidence.length
+          ? '<ul class="evidence">' + review.relevantEvidence.map(value => '<li>' + escapeHtml(value) + '</li>').join("") + '</ul>'
+          : '<div class="text">No specific evidence was returned.</div>';
+        const aiContent = review
+          ? '<strong>AI recommendation: ' + escapeHtml(aiLabel(review.recommendation)) + '</strong>' +
+            '<div class="text">' + escapeHtml(review.rationale || "No rationale supplied.") + '</div>' + evidence
+          : '<strong>AI recommendation not yet available.</strong><br>' +
+            '<button class="ai decision-controls" onclick="runAiReview(' + index + ')">Run AI Review</button>';
+
+        card.innerHTML =
+          '<h2>Dispute ' + (index + 1) + ': ' + escapeHtml(dispute.item) + '</h2>' +
+          '<div class="label">Student explanation</div><div class="text">' + escapeHtml(dispute.reason) + '</div>' +
+          '<div class="label">Submitted</div><div class="text">' + escapeHtml(dispute.submittedAt || "Unknown") + '</div>' +
+          '<div class="ai-box">' + aiContent + '</div>' +
+          '<div class="decision-row"><strong>Instructor decision: ' + escapeHtml(dispute.instructorDecision || "PENDING") + '</strong>' +
+          (dispute.decidedAt ? '<div class="text">Decided ' + escapeHtml(dispute.decidedAt) + ' by ' + escapeHtml(dispute.instructor || "Instructor") + '</div>' : '') +
+          '<div class="decision-controls"><button class="award" onclick="decide(' + index + ',\'AWARD\')">Award Point</button>' +
+          '<button class="deny" onclick="decide(' + index + ',\'DENY\')">Deny Dispute</button></div></div>';
+        container.appendChild(card);
+      });
+      updateScores();
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, character => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+      })[character]);
+    }
+
+    async function runAiReview(index) {
+      const dispute = report.scoringDisputes[index];
+      try {
+        const response = await fetch("/review-dispute", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Review-Key": document.getElementById("reviewKey").value
+          },
+          body: JSON.stringify({
+            dispute,
+            scenario: report.scenario,
+            earnedPoints: originalPoints(),
+            possiblePoints: possiblePoints(),
+            checklist: report.checklist,
+            studentInputLog: report.studentInputLog,
+            treatmentPlan: report.treatmentPlan
+          })
+        });
+        const review = await response.json();
+        if (!response.ok) throw new Error(review.error || "Review failed");
+        dispute.aiReview = review;
+        delete dispute.aiReviewError;
+        save();
+        render();
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    function decide(index, decision) {
+      const instructor = document.getElementById("instructorName").value.trim();
+      if (!instructor) {
+        alert("Enter the instructor name or initials before making a final decision.");
+        document.getElementById("instructorName").focus();
+        return;
+      }
+      const dispute = report.scoringDisputes[index];
+      dispute.instructorDecision = decision;
+      dispute.status = decision === "AWARD" ? "Point awarded by instructor" : "Dispute denied by instructor";
+      dispute.instructor = instructor;
+      dispute.decidedAt = new Date().toLocaleString();
+      save();
+      render();
+    }
+
+    function saveInstructorName() {
+      report.disputeReviewInstructor = document.getElementById("instructorName").value.trim();
+      save();
+    }
+
+    const saved = sessionStorage.getItem("emtGradingResults");
+    if (saved) {
+      try { report = JSON.parse(saved); }
+      catch (error) { report = {}; }
+    }
+    render();
+  </script>
+</body>
+</html>
