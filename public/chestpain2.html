@@ -1689,6 +1689,12 @@
       const data = await readJsonResponse(response);
 
       const gradingData = {
+        earnedPoints: Number(data.earnedPoints) || 0,
+        possiblePoints: Number(data.possiblePoints) || 0,
+        checklist: Array.isArray(data.checklist) ? data.checklist : [],
+        criticalCriteria: Array.isArray(data.criticalCriteria) ? data.criticalCriteria : [],
+        originalEarnedPoints: Number(data.earnedPoints) || 0,
+        adjustedEarnedPoints: Number(data.earnedPoints) || 0,
         scenario: "Chest Pain Scenario",
         scenarioCode: scenario,
         feedback:
