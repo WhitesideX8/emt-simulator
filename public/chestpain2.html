@@ -1364,7 +1364,7 @@
       if (matched && !completedSkills.has(item.skill)) {
         completedSkills.add(item.skill);
         assessmentLog.push(
-          `${item.skill} ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â recognized through ${source}`
+          `${item.skill} - recognized through ${source}`
         );
         newlyRecorded.push(item.skill);
       }
@@ -1412,7 +1412,7 @@
     ) {
       completedSkills.add("Complete OPQRST assessment performed");
       assessmentLog.push(
-        "Complete OPQRST assessment performed ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â all OPQRST components recognized"
+        "Complete OPQRST assessment performed - all OPQRST components recognized"
       );
     }
 
@@ -1422,7 +1422,7 @@
     ) {
       completedSkills.add("Complete SAMPLE history performed");
       assessmentLog.push(
-        "Complete SAMPLE history performed ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â all SAMPLE components recognized"
+        "Complete SAMPLE history performed - all SAMPLE components recognized"
       );
     }
 
@@ -1440,7 +1440,7 @@
 
     completedBox.innerText = Array
       .from(completedSkills)
-      .map((skill, index) => `${index + 1}. ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ ${skill}`)
+      .map((skill, index) => `${index + 1}. \u2713 ${skill}`)
       .join("\n");
   }
 
