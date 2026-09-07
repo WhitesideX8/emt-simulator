@@ -2,12 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shortness of Breath Scenario</title>
 
   <style>
@@ -16,14 +11,12 @@
     }
 
     body {
+      font-family: Arial, sans-serif;
       margin: 0;
       min-height: 100vh;
-      font-family: Arial, sans-serif;
-
       background:
         url("https://raw.githubusercontent.com/WhitesideX8/emt-simulator/main/public/IMG_0989.jpg")
         no-repeat center center fixed;
-
       background-size: cover;
     }
 
@@ -31,8 +24,8 @@
       content: "";
       position: fixed;
       inset: 0;
-      z-index: 0;
       background: rgba(0, 0, 0, 0.52);
+      z-index: 0;
     }
 
     .container {
@@ -42,14 +35,19 @@
       max-width: 1150px;
       margin: 0 auto;
       padding: 8px 8px 30px;
-      color: white;
       text-align: center;
+      color: white;
     }
 
     h1,
     h2,
     h3 {
       margin: 4px 0;
+    }
+
+    h1,
+    h2 {
+      color: white;
     }
 
     h1 {
@@ -61,6 +59,7 @@
     }
 
     h3 {
+      color: white;
       font-size: 15px;
     }
 
@@ -71,11 +70,11 @@
     }
 
     button {
-      margin: 2px;
       padding: 6px 10px;
-      color: white;
+      margin: 2px;
       font-size: 13px;
       font-weight: bold;
+      color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
@@ -110,6 +109,27 @@
       background: #005fa3;
     }
 
+    .verbal-report-btn {
+      background: #b36b00;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 9px 16px;
+      margin: 2px;
+      color: white;
+      font-size: 13px;
+      font-weight: bold;
+      text-decoration: none;
+      border-radius: 5px;
+      cursor: pointer;
+      vertical-align: middle;
+    }
+
+    .verbal-report-btn:hover {
+      opacity: 0.86;
+    }
+
     .reset-btn {
       background: #a32626;
     }
@@ -117,15 +137,15 @@
     .box {
       width: 100%;
       padding: 6px;
-      overflow-y: auto;
-      color: #222;
-      font-size: 13px;
-      line-height: 1.35;
-      text-align: left;
-      white-space: pre-wrap;
       background: rgba(255, 255, 255, 0.92);
+      color: #222;
       border: 1px solid rgba(255, 255, 255, 0.55);
       border-radius: 5px;
+      text-align: left;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      font-size: 13px;
+      line-height: 1.35;
     }
 
     #scenarioInfo {
@@ -139,12 +159,12 @@
     .question-area {
       display: grid;
       grid-template-columns: 360px 360px;
-      justify-content: center;
-      align-items: start;
       gap: 100px;
       width: fit-content;
       max-width: 95%;
       margin: 42px auto 0;
+      justify-content: center;
+      align-items: start;
     }
 
     .question-column,
@@ -165,13 +185,13 @@
     textarea {
       width: 100%;
       padding: 6px;
-      color: #222;
       font-family: Arial, sans-serif;
       font-size: 13px;
-      background: rgba(255, 255, 255, 0.94);
+      color: #222;
       border: 1px solid rgba(255, 255, 255, 0.55);
       border-radius: 5px;
       resize: vertical;
+      background: rgba(255, 255, 255, 0.94);
     }
 
     #patientQuestion,
@@ -184,8 +204,8 @@
       height: 78px;
       min-height: 68px;
       color: #222;
-      background: rgba(244, 255, 244, 0.90);
       border: 2px solid #087f23;
+      background: rgba(244, 255, 244, 0.90);
     }
 
     .button-row {
@@ -226,6 +246,7 @@
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
     }
 
+
     #completedAssessments {
       min-height: 55px;
       max-height: 150px;
@@ -235,20 +256,14 @@
       border: 2px solid #087f23;
     }
 
-    .grading-section {
-      width: 560px;
-      max-width: 92%;
-      margin: 10px auto 4px;
+    .grading-note {
+      margin: 5px 0;
+      color: #333;
+      font-size: 11px;
+      line-height: 1.35;
+      text-align: left;
     }
-
-    #feedback {
-      min-height: 95px;
-      max-height: 210px;
-      background: #f4f4f4;
-      border: 2px solid #333;
-    }
-
-    @media (max-width: 900px) {
+@media (max-width: 900px) {
       .question-area {
         grid-template-columns: 330px 330px;
         gap: 40px;
@@ -276,8 +291,7 @@
       }
 
       .question-column,
-      .recorder-column,
-      .grading-section {
+      .recorder-column {
         width: 92%;
       }
 
@@ -295,7 +309,6 @@
 
 <body>
   <div class="container">
-
     <h1>Patient Simulation</h1>
 
     <div class="navigation">
@@ -335,9 +348,7 @@
           </button>
         </div>
 
-        <div class="response-label">
-          Patient Response
-        </div>
+        <div class="response-label">Patient Response</div>
 
         <div id="patientResponse" class="box">
           Patient response will appear here.
@@ -349,7 +360,7 @@
 
         <textarea
           id="instructorQuestion"
-          placeholder="Ask for an assessment finding, vital sign, or instructor guidance..."
+          placeholder="Ask the instructor a question about the scenario..."
         ></textarea>
 
         <div class="button-row">
@@ -363,9 +374,7 @@
           </button>
         </div>
 
-        <div class="response-label">
-          Instructor Response
-        </div>
+        <div class="response-label">Instructor Response</div>
 
         <div id="instructorResponse" class="box">
           Instructor answer will appear here.
@@ -377,9 +386,12 @@
     <section class="recorder-column">
       <h3>Assessment and Treatment</h3>
 
+      <div class="section-label">
+      </div>
+
       <textarea
         id="actionEntry"
-        placeholder="Enter an assessment, treatment, or transport decision..."
+        placeholder="Example: Assessed airway; airway is patent."
       ></textarea>
 
       <div class="button-row">
@@ -393,10 +405,8 @@
         </button>
       </div>
 
-      <div
-        id="recordStatus"
-        class="record-status"
-      ></div>
+      <div id="recordStatus" class="record-status"></div>
+
 
       <div class="section-label">
         Automatically Recorded Assessments
@@ -407,6 +417,14 @@
       </div>
 
       <div class="button-row">
+        <a
+          class="verbal-report-btn"
+          href="/verbal_report.html"
+          target="verbalReportWindow"
+        >
+          Verbal Report
+        </a>
+
         <button
           id="gradeButton"
           class="grade-btn"
@@ -425,1221 +443,1144 @@
         </button>
       </div>
     </section>
-
-    <section class="grading-section">
-      <h3>Feedback and Grading Report</h3>
-
-      <div id="feedback" class="box">
-        Feedback will appear here.
-      </div>
-    </section>
-
   </div>
 
   <script>
-    let patientHistory = "";
-    let instructorHistory = "";
-    let assessmentLog = [];
-    let completedSkills = new Set();
-    let scenarioStartTime = Date.now();
+  let patientHistory = "";
+  let instructorHistory = "";
+  let assessmentLog = [];
+  let studentInputLog = [];
+  let completedSkills = new Set();
+  let scenarioStartTime = Date.now();
 
-    const scenario = "shortnessOfBreath";
+  const scenario = "shortnessOfBreath";
 
-    /*
-      Assessment phrases are intentionally specific for a respiratory emergency.
+  function recordStudentInput(type, text) {
+    const cleanedText = String(text || "").trim();
+    if (!cleanedText) return;
 
-      Avoid using broad single words such as:
-      "quality"
-      "onset"
-      "time"
-      "speech"
+    studentInputLog.push({
+      type,
+      text: cleanedText,
+      time: new Date().toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+        second: "2-digit"
+      })
+    });
+  }
 
-      Broad words can incorrectly record unrelated assessments.
-    */
-    const assessmentMap = [
-      {
-        skill: "BSI precautions",
-        keywords: [
-          "bsi",
-          "body substance isolation",
-          "put on gloves",
-          "wear gloves",
-          "use ppe",
-          "personal protective equipment"
-        ]
-      },
+  /*
+    These phrases are intentionally specific so unrelated words
+    do not accidentally receive credit.
 
-      {
-        skill: "Scene safety assessed",
-        keywords: [
-          "is the scene safe",
-          "is scene safe",
-          "scene safety",
-          "scene is safe",
-          "safe to enter",
-          "safe to approach",
-          "check the scene for hazards",
-          "are there any hazards",
-          "any scene hazards"
-        ]
-      },
+    Complete OPQRST is credited only when the student clearly
+    requests the complete assessment. Individual OPQRST components
+    are recorded separately.
+  */
+  const assessmentMap = [
+    {
+      skill: "BSI precautions",
+      keywords: [
+        "bsi",
+        "body substance isolation",
+        "put on gloves",
+        "wear gloves",
+        "use ppe",
+        "personal protective equipment"
+      ]
+    },
 
-      {
-        skill: "Nature of illness assessed",
-        keywords: [
-          "nature of illness",
-          "what happened today",
-          "why were we called",
-          "reason for the call"
-        ]
-      },
+    {
+      skill: "Scene safety assessed",
+      keywords: [
+        "is the scene safe",
+        "is scene safe",
+        "scene safety",
+        "scene is safe",
+        "safe to enter",
+        "safe to approach",
+        "check the scene for hazards",
+        "are there any hazards",
+        "any scene hazards"
+      ]
+    },
 
-      {
-        skill: "Number of patients determined",
-        keywords: [
-          "how many patients",
-          "number of patients",
-          "are there any other patients"
-        ]
-      },
+    {
+      skill: "Nature of illness assessed",
+      keywords: [
+        "nature of illness",
+        "what happened today",
+        "why were we called",
+        "reason for the call"
+      ]
+    },
 
-      {
-        skill: "Need for additional resources considered",
-        keywords: [
-          "request als",
-          "need als",
-          "request a paramedic",
-          "need a paramedic",
-          "request additional resources",
-          "need additional resources"
-        ]
-      },
+    {
+      skill: "Number of patients determined",
+      keywords: [
+        "how many patients",
+        "number of patients",
+        "are there any other patients"
+      ]
+    },
 
-      {
-        skill: "General impression formed",
-        keywords: [
-          "general impression",
-          "what does the patient look like",
-          "how does the patient appear",
-          "initial impression"
-        ]
-      },
+    {
+      skill: "Need for additional resources considered",
+      keywords: [
+        "request als",
+        "need als",
+        "request a paramedic",
+        "need a paramedic",
+        "request additional resources",
+        "need additional resources"
+      ]
+    },
 
-      {
-        skill: "Mental status assessed",
-        keywords: [
-          "assess mental status",
-          "what is the mental status",
-          "level of consciousness",
-          "what is the avpu",
-          "is the patient alert",
-          "is he alert and oriented",
-          "glasgow coma scale",
-          "what is the gcs",
-          "check responsiveness"
-        ]
-      },
+    {
+      skill: "General impression formed",
+      keywords: [
+        "general impression",
+        "what does the patient look like",
+        "how does the patient appear",
+        "initial impression"
+      ]
+    },
 
-      {
-        skill: "Airway assessed",
-        keywords: [
-          "assess the airway",
-          "check the airway",
-          "is the airway patent",
-          "can the patient maintain his airway",
-          "is anything blocking the airway"
-        ]
-      },
+    {
+      skill: "Mental status assessed",
+      keywords: [
+        "assess mental status",
+        "what is the mental status",
+        "level of consciousness",
+        "what is the avpu",
+        "is the patient alert",
+        "is he alert and oriented",
+        "glasgow coma scale",
+        "what is the gcs",
+        "check responsiveness"
+      ]
+    },
 
-      {
-        skill: "Breathing assessed",
-        keywords: [
-          "assess breathing",
-          "check breathing",
-          "what is the breathing effort",
-          "what is the respiratory effort",
-          "what is the work of breathing",
-          "rate depth and quality",
-          "depth and quality of respirations",
-          "quality of respirations"
-        ]
-      },
+    {
+      skill: "Airway assessed",
+      keywords: [
+        "assess the airway",
+        "check the airway",
+        "is the airway patent",
+        "can the patient maintain his airway",
+        "is anything blocking the airway"
+      ]
+    },
 
-      {
-        skill: "Respiratory rate obtained",
-        keywords: [
-          "respiratory rate",
-          "respiration rate",
-          "rate of respirations",
-          "how many respirations",
-          "how many breaths per minute",
-          "what are the respirations",
-          "rate depth and quality"
-        ]
-      },
+    {
+      skill: "Breathing assessed",
+      keywords: [
+        "assess breathing",
+        "check breathing",
+        "what is the breathing effort",
+        "what is the respiratory effort",
+        "what is the work of breathing",
+        "rate depth and quality",
+        "depth and quality of respirations",
+        "quality of respirations"
+      ]
+    },
 
-      {
-        skill: "Lung sounds assessed",
-        keywords: [
-          "assess lung sounds",
-          "check lung sounds",
-          "what are the lung sounds",
-          "what are the breath sounds",
-          "auscultate the lungs",
-          "are the lungs clear",
-          "listen to the lungs"
-        ]
-      },
+    {
+      skill: "Respiratory rate obtained",
+      keywords: [
+        "respiratory rate",
+        "respiration rate",
+        "rate of respirations",
+        "how many respirations",
+        "how many breaths per minute",
+        "what are the respirations",
+        "rate depth and quality"
+      ]
+    },
 
-      {
-        skill: "Oxygen saturation obtained",
-        keywords: [
-          "oxygen saturation",
-          "what is the spo2",
-          "check spo2",
-          "pulse oximetry",
-          "pulse ox reading",
-          "what is the oxygen level",
-          "o2 saturation"
-        ]
-      },
+    {
+      skill: "Lung sounds assessed",
+      keywords: [
+        "assess lung sounds",
+        "check lung sounds",
+        "what are the lung sounds",
+        "what are the breath sounds",
+        "auscultate the lungs",
+        "are the lungs clear",
+        "listen to the lungs"
+      ]
+    },
 
-      {
-        skill: "Ability to speak assessed",
-        keywords: [
-          "can the patient speak in full sentences",
-          "is she speaking in full sentences",
-          "how many words can she speak",
-          "assess ability to speak",
-          "can she talk without stopping for breath"
-        ]
-      },
+    {
+      skill: "Oxygen saturation obtained",
+      keywords: [
+        "oxygen saturation",
+        "what is the spo2",
+        "check spo2",
+        "pulse oximetry",
+        "pulse ox reading",
+        "what is the oxygen level",
+        "o2 saturation"
+      ]
+    },
 
-      {
-        skill: "Accessory muscle use assessed",
-        keywords: [
-          "is she using accessory muscles",
-          "check accessory muscle use",
-          "assess accessory muscles",
-          "is there retraction",
-          "are there retractions",
-          "is there nasal flaring"
-        ]
-      },
+    {
+      skill: "Ability to speak assessed",
+      keywords: [
+        "can the patient speak in full sentences",
+        "is she speaking in full sentences",
+        "how many words can she speak",
+        "assess ability to speak",
+        "can she talk without stopping for breath"
+      ]
+    },
 
-      {
-        skill: "Chest rise and symmetry assessed",
-        keywords: [
-          "assess chest rise",
-          "check chest rise",
-          "is chest rise equal",
-          "is chest expansion symmetrical",
-          "is the chest moving equally"
-        ]
-      },
+    {
+      skill: "Accessory muscle use assessed",
+      keywords: [
+        "is she using accessory muscles",
+        "check accessory muscle use",
+        "assess accessory muscles",
+        "is there retraction",
+        "are there retractions",
+        "is there nasal flaring"
+      ]
+    },
 
-      {
-        skill: "Cough and sputum assessed",
-        keywords: [
-          "do you have a cough",
-          "are you coughing",
-          "are you bringing up sputum",
-          "what color is the sputum",
-          "is the cough productive",
-          "have you been coughing"
-        ]
-      },
+    {
+      skill: "Chest rise and symmetry assessed",
+      keywords: [
+        "assess chest rise",
+        "check chest rise",
+        "is chest rise equal",
+        "is chest expansion symmetrical",
+        "is the chest moving equally"
+      ]
+    },
 
-      {
-        skill: "Home oxygen use assessed",
-        keywords: [
-          "do you use oxygen at home",
-          "are you on home oxygen",
-          "what is your normal oxygen flow",
-          "how many liters of oxygen do you use",
-          "did you use your home oxygen"
-        ]
-      },
+    {
+      skill: "Cough and sputum assessed",
+      keywords: [
+        "do you have a cough",
+        "are you coughing",
+        "are you bringing up sputum",
+        "what color is the sputum",
+        "is the cough productive",
+        "have you been coughing"
+      ]
+    },
 
-      {
-        skill: "Inhaler or nebulizer use assessed",
-        keywords: [
-          "did you use your inhaler",
-          "have you used your inhaler",
-          "did you use a nebulizer",
-          "have you used a nebulizer",
-          "when was your last breathing treatment",
-          "did the inhaler help"
-        ]
-      },
+    {
+      skill: "Home oxygen use assessed",
+      keywords: [
+        "do you use oxygen at home",
+        "are you on home oxygen",
+        "what is your normal oxygen flow",
+        "how many liters of oxygen do you use",
+        "did you use your home oxygen"
+      ]
+    },
 
-      {
-        skill: "Position of comfort provided",
-        keywords: [
-          "place patient in position of comfort",
-          "sit the patient upright",
-          "position upright",
-          "high fowlers position",
-          "allow tripod position",
-          "assist patient to tripod"
-        ]
-      },
+    {
+      skill: "Inhaler or nebulizer use assessed",
+      keywords: [
+        "did you use your inhaler",
+        "have you used your inhaler",
+        "did you use a nebulizer",
+        "have you used a nebulizer",
+        "when was your last breathing treatment",
+        "did the inhaler help"
+      ]
+    },
 
-      {
-        skill: "Oxygen administered",
-        keywords: [
-          "administer oxygen",
-          "give oxygen",
-          "apply oxygen",
-          "place on oxygen",
-          "oxygen by nasal cannula",
-          "oxygen by nonrebreather",
-          "use a non rebreather"
-        ]
-      },
+    {
+      skill: "Position of comfort provided",
+      keywords: [
+        "place patient in position of comfort",
+        "sit the patient upright",
+        "position upright",
+        "high fowlers position",
+        "allow tripod position",
+        "assist patient to tripod"
+      ]
+    },
 
-      {
-        skill: "Bronchodilator treatment considered",
-        keywords: [
-          "assist with prescribed inhaler",
-          "assist with inhaler",
-          "administer albuterol",
-          "give albuterol",
-          "administer a bronchodilator",
-          "give a nebulizer treatment",
-          "administer nebulized medication",
-          "assist with prescribed bronchodilator"
-        ]
-      },
+    {
+      skill: "Oxygen administered",
+      keywords: [
+        "administer oxygen",
+        "give oxygen",
+        "apply oxygen",
+        "place on oxygen",
+        "oxygen by nasal cannula",
+        "oxygen by nonrebreather",
+        "use a non rebreather"
+      ]
+    },
 
-      {
-        skill: "Positive-pressure ventilation considered",
-        keywords: [
-          "consider cpap",
-          "apply cpap",
-          "use cpap",
-          "consider positive pressure ventilation",
-          "assist ventilations",
-          "ventilate with a bvm",
-          "use a bag valve mask",
-          "provide bag mask ventilation"
-        ]
-      },
+    {
+      skill: "Bronchodilator treatment considered",
+      keywords: [
+        "assist with prescribed inhaler",
+        "assist with inhaler",
+        "administer albuterol",
+        "give albuterol",
+        "administer a bronchodilator",
+        "give a nebulizer treatment",
+        "administer nebulized medication",
+        "assist with prescribed bronchodilator"
+      ]
+    },
 
-      {
-        skill: "Rapid transport or ALS considered",
-        keywords: [
-          "request als",
-          "intercept with als",
-          "rapid transport",
-          "transport promptly",
-          "transport without delay",
-          "notify the receiving hospital"
-        ]
-      },
+    {
+      skill: "Positive-pressure ventilation considered",
+      keywords: [
+        "consider cpap",
+        "apply cpap",
+        "use cpap",
+        "consider positive pressure ventilation",
+        "assist ventilations",
+        "ventilate with a bvm",
+        "use a bag valve mask",
+        "provide bag mask ventilation"
+      ]
+    },
 
-      {
-        skill: "Circulation assessed",
-        keywords: [
-          "assess circulation",
-          "check circulation",
-          "assess perfusion",
-          "what is the perfusion status"
-        ]
-      },
+    {
+      skill: "Rapid transport or ALS considered",
+      keywords: [
+        "request als",
+        "intercept with als",
+        "rapid transport",
+        "transport promptly",
+        "transport without delay",
+        "notify the receiving hospital"
+      ]
+    },
 
-      {
-        skill: "Pulse assessed",
-        keywords: [
-          "check the pulse",
-          "assess the pulse",
-          "what is the pulse",
-          "what is the heart rate",
-          "check heart rate",
-          "radial pulse",
-          "carotid pulse"
-        ]
-      },
+    {
+      skill: "Circulation assessed",
+      keywords: [
+        "assess circulation",
+        "check circulation",
+        "assess perfusion",
+        "what is the perfusion status"
+      ]
+    },
 
-      {
-        skill: "Skin signs assessed",
-        keywords: [
-          "assess skin signs",
-          "check skin signs",
-          "what are the skin signs",
-          "skin color temperature and condition",
-          "skin color temperature and moisture",
-          "what is the skin color",
-          "is the skin warm or cool",
-          "is the patient diaphoretic"
-        ]
-      },
+    {
+      skill: "Pulse assessed",
+      keywords: [
+        "check the pulse",
+        "assess the pulse",
+        "what is the pulse",
+        "what is the heart rate",
+        "check heart rate",
+        "radial pulse",
+        "carotid pulse"
+      ]
+    },
 
-      {
-        skill: "Major bleeding assessed",
-        keywords: [
-          "check for major bleeding",
-          "check for severe bleeding",
-          "any major bleeding",
-          "any uncontrolled bleeding",
-          "assess for hemorrhage"
-        ]
-      },
+    {
+      skill: "Skin signs assessed",
+      keywords: [
+        "assess skin signs",
+        "check skin signs",
+        "what are the skin signs",
+        "skin color temperature and condition",
+        "skin color temperature and moisture",
+        "what is the skin color",
+        "is the skin warm or cool",
+        "is the patient diaphoretic"
+      ]
+    },
 
-      {
-        skill: "Blood pressure obtained",
-        keywords: [
-          "check blood pressure",
-          "obtain blood pressure",
-          "what is the blood pressure",
-          "what is the bp",
-          "take a blood pressure"
-        ]
-      },
+    {
+      skill: "Major bleeding assessed",
+      keywords: [
+        "check for major bleeding",
+        "check for severe bleeding",
+        "any major bleeding",
+        "any uncontrolled bleeding",
+        "assess for hemorrhage"
+      ]
+    },
 
-      {
-        skill: "Pupils assessed",
-        keywords: [
-          "check the pupils",
-          "assess the pupils",
-          "what do the pupils look like",
-          "are the pupils equal and reactive",
-          "what is the pupil response",
-          "check perrl"
-        ]
-      },
+    {
+      skill: "Blood pressure obtained",
+      keywords: [
+        "check blood pressure",
+        "obtain blood pressure",
+        "what is the blood pressure",
+        "what is the bp",
+        "take a blood pressure"
+      ]
+    },
 
-      {
-        skill: "Chief complaint identified",
-        keywords: [
-          "what is your chief complaint",
-          "what is bothering you",
-          "why did you call ems",
-          "what is wrong today"
-        ]
-      },
+    {
+      skill: "Pupils assessed",
+      keywords: [
+        "check the pupils",
+        "assess the pupils",
+        "what do the pupils look like",
+        "are the pupils equal and reactive",
+        "what is the pupil response",
+        "check perrl"
+      ]
+    },
 
-      {
-        skill: "Signs and symptoms assessed",
-        keywords: [
-          "what symptoms are you having",
-          "what signs and symptoms",
-          "how are you feeling",
-          "what are you experiencing"
-        ]
-      },
+    {
+      skill: "Chief complaint identified",
+      keywords: [
+        "what is your chief complaint",
+        "what is bothering you",
+        "why did you call ems",
+        "what is wrong today"
+      ]
+    },
 
-      {
-        skill: "Allergies assessed",
-        keywords: [
-          "do you have any allergies",
-          "are you allergic to anything",
-          "any medication allergies",
-          "what are your allergies"
-        ]
-      },
+    {
+      skill: "Signs and symptoms assessed",
+      keywords: [
+        "what symptoms are you having",
+        "what signs and symptoms",
+        "how are you feeling",
+        "what are you experiencing"
+      ]
+    },
 
-      {
-        skill: "Medications assessed",
-        keywords: [
-          "what medications do you take",
-          "are you taking any medications",
-          "what medicines do you take",
-          "do you use an inhaler",
-          "what inhalers do you use",
-          "did you use your inhaler",
-          "do you use a nebulizer",
-          "do you take prednisone",
-          "copd medications"
-        ]
-      },
+    {
+      skill: "Allergies assessed",
+      keywords: [
+        "do you have any allergies",
+        "are you allergic to anything",
+        "any medication allergies",
+        "what are your allergies"
+      ]
+    },
 
-      {
-        skill: "Pertinent medical history assessed",
-        keywords: [
-          "what is your medical history",
-          "past medical history",
-          "do you have copd",
-          "history of copd",
-          "do you have asthma",
-          "history of asthma",
-          "do you have heart failure",
-          "medical problems",
-          "have you had this before"
-        ]
-      },
+    {
+      skill: "Medications assessed",
+      keywords: [
+        "what medications do you take",
+        "are you taking any medications",
+        "what medicines do you take",
+        "do you use an inhaler",
+        "what inhalers do you use",
+        "did you use your inhaler",
+        "do you use a nebulizer",
+        "do you take prednisone",
+        "copd medications"
+      ]
+    },
 
-      {
-        skill: "Last oral intake assessed",
-        keywords: [
-          "when did you last eat",
-          "what did you last eat",
-          "last oral intake",
-          "when was your last meal",
-          "did you eat today",
-          "have you eaten today"
-        ]
-      },
+    {
+      skill: "Pertinent medical history assessed",
+      keywords: [
+        "what is your medical history",
+        "past medical history",
+        "do you have copd",
+        "history of copd",
+        "do you have asthma",
+        "history of asthma",
+        "do you have heart failure",
+        "medical problems",
+        "have you had this before"
+      ]
+    },
 
-      {
-        skill: "Events leading to illness assessed",
-        keywords: [
-          "what happened before this started",
-          "what were you doing when this started",
-          "events leading up to this",
-          "what happened before the breathing became worse",
-          "what led up to this"
-        ]
-      },
+    {
+      skill: "Last oral intake assessed",
+      keywords: [
+        "when did you last eat",
+        "what did you last eat",
+        "last oral intake",
+        "when was your last meal",
+        "did you eat today",
+        "have you eaten today"
+      ]
+    },
 
-      /*
-        Complete OPQRST is credited only when the student
-        clearly requests the complete assessment.
-      */
-      {
-        skill: "Complete OPQRST assessment performed",
-        keywords: [
-          "perform a complete opqrst",
-          "perform complete opqrst",
-          "perform an opqrst assessment",
-          "complete opqrst assessment",
-          "full opqrst assessment",
-          "assess using opqrst",
-          "obtain a complete opqrst",
-          "go through opqrst"
-        ]
-      },
-
-      /*
-        Individual OPQRST components are recorded separately.
-      */
-      {
-        skill: "OPQRST onset assessed",
-        keywords: [
-          "when did the complaint start",
-          "when did the symptoms start",
-          "when did this begin",
-          "what time did this begin",
-          "was the onset sudden or gradual"
-        ]
-      },
-
-      {
-        skill: "OPQRST provocation and palliation assessed",
-        keywords: [
-          "what makes it better",
-          "what makes it worse",
-          "does anything make it better",
-          "does anything make it worse",
-          "what relieves the discomfort",
-          "what causes the discomfort to worsen"
-        ]
-      },
-
-      {
-        skill: "OPQRST quality assessed",
-        keywords: [
-          "describe the pain",
-          "describe the discomfort",
-          "what does the pain feel like",
-          "what does the discomfort feel like",
-          "is the pain sharp dull or pressure",
-          "quality of the pain",
-          "quality of the discomfort"
-        ]
-      },
-
-      {
-        skill: "OPQRST radiation assessed",
-        keywords: [
-          "does the pain radiate",
-          "does the pain travel",
-          "does the discomfort radiate",
-          "does the discomfort travel",
-          "where does the pain go",
-          "does it move anywhere"
-        ]
-      },
-
-      {
-        skill: "OPQRST severity assessed",
-        keywords: [
-          "rate your pain",
-          "rate the discomfort",
-          "pain scale",
-          "zero to ten pain",
-          "0 to 10 pain",
-          "how severe is the pain"
-        ]
-      },
-
-      {
-        skill: "OPQRST time assessed",
-        keywords: [
-          "how long has the pain lasted",
-          "how long have you had the discomfort",
-          "has the pain been constant",
-          "does the pain come and go",
-          "how long have the symptoms been present"
-        ]
-      },
-
-      {
-        skill: "Secondary assessment performed",
-        keywords: [
-          "perform a secondary assessment",
-          "perform a focused physical exam",
-          "perform a head to toe assessment",
-          "complete a rapid assessment",
-          "perform a physical examination"
-        ]
-      },
-
-      {
-        skill: "Neurologic assessment performed",
-        keywords: [
-          "perform a neurologic assessment",
-          "perform a neurological assessment",
-          "check motor function",
-          "check sensation",
-          "assess grip strength",
-          "check for arm drift",
-          "perform a stroke assessment"
-        ]
-      },
-
-      {
-        skill: "Temperature obtained",
-        keywords: [
-          "check the temperature",
-          "obtain a temperature",
-          "what is the temperature",
-          "does the patient have a fever"
-        ]
-      },
-
-      {
-        skill: "Cardiac rhythm assessed",
-        keywords: [
-          "place the patient on the cardiac monitor",
-          "assess cardiac rhythm",
-          "what is the cardiac rhythm",
-          "obtain an ecg",
-          "obtain an ekg"
-        ]
-      },
-
-      {
-        skill: "Reassessment performed",
-        keywords: [
-          "perform a reassessment",
-          "reassess the patient",
-          "repeat all vital signs",
-          "repeat the blood pressure",
-          "repeat the glucose",
-          "recheck the patient"
-        ]
-      }
-    ];
-
-    function normalizeText(text) {
-      return text
-        .toLowerCase()
-        .replace(/[^a-z0-9\s]/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-    }
-
-    async function readJsonResponse(response) {
-      const contentType =
-        response.headers.get("content-type") || "";
-
-      if (!response.ok) {
-        const errorText = await response.text();
-
-        throw new Error(
-          errorText ||
-          `Server returned status ${response.status}.`
-        );
-      }
-
-      if (!contentType.includes("application/json")) {
-        const responseText = await response.text();
-
-        throw new Error(
-          responseText ||
-          "The server did not return valid JSON."
-        );
-      }
-
-      return response.json();
-    }
+    {
+      skill: "Events leading to illness assessed",
+      keywords: [
+        "what happened before this started",
+        "what were you doing when this started",
+        "events leading up to this",
+        "what happened before the breathing became worse",
+        "what led up to this"
+      ]
+    },
 
     /*
-      Matches exact phrases and reasonable wording variations.
-
-      Example:
-      "Is scene safe?" will match the keyword "is the scene safe"
-      because the important words "scene" and "safe" are present.
-
-      Short or overly broad keywords still require an exact phrase match
-      to reduce accidental credit.
+      Complete OPQRST is credited only when the student
+      clearly requests the complete assessment.
     */
-    function assessmentPhraseMatches(question, keyword) {
-      const normalizedQuestion = normalizeText(question);
-      const normalizedKeyword = normalizeText(keyword);
+    {
+      skill: "Complete OPQRST assessment performed",
+      keywords: [
+        "perform a complete opqrst",
+        "perform complete opqrst",
+        "perform an opqrst assessment",
+        "complete opqrst assessment",
+        "full opqrst assessment",
+        "assess using opqrst",
+        "obtain a complete opqrst",
+        "go through opqrst"
+      ]
+    },
 
-      if (!normalizedQuestion || !normalizedKeyword) {
-        return false;
-      }
+    /*
+      Individual OPQRST components are recorded separately.
+    */
+    {
+      skill: "OPQRST onset assessed",
+      keywords: [
+        "when did the complaint start",
+        "when did the symptoms start",
+        "when did this begin",
+        "what time did this begin",
+        "was the onset sudden or gradual"
+      ]
+    },
 
-      // First try the original exact-phrase matching.
-      if (
-        normalizedQuestion.includes(normalizedKeyword) ||
-        normalizedKeyword.includes(normalizedQuestion)
-      ) {
-        return true;
-      }
+    {
+      skill: "OPQRST provocation and palliation assessed",
+      keywords: [
+        "what makes it better",
+        "what makes it worse",
+        "does anything make it better",
+        "does anything make it worse",
+        "what relieves the discomfort",
+        "what causes the discomfort to worsen"
+      ]
+    },
 
-      // Ignore common filler words when comparing wording variations.
-      const ignoredWords = new Set([
-        "a",
-        "an",
-        "and",
-        "any",
-        "are",
-        "be",
-        "did",
-        "do",
-        "does",
-        "for",
-        "has",
-        "have",
-        "he",
-        "his",
-        "how",
-        "i",
-        "in",
-        "is",
-        "it",
-        "my",
-        "of",
-        "on",
-        "or",
-        "our",
-        "patient",
-        "please",
-        "the",
-        "there",
-        "to",
-        "was",
-        "were",
-        "what",
-        "when",
-        "with",
-        "you",
-        "your"
-      ]);
+    {
+      skill: "OPQRST quality assessed",
+      keywords: [
+        "describe the pain",
+        "describe the discomfort",
+        "what does the pain feel like",
+        "what does the discomfort feel like",
+        "is the pain sharp dull or pressure",
+        "quality of the pain",
+        "quality of the discomfort"
+      ]
+    },
 
-      const importantWords = normalizedKeyword
-        .split(" ")
-        .filter(word => word.length > 2 && !ignoredWords.has(word));
+    {
+      skill: "OPQRST radiation assessed",
+      keywords: [
+        "does the pain radiate",
+        "does the pain travel",
+        "does the discomfort radiate",
+        "does the discomfort travel",
+        "where does the pain go",
+        "does it move anywhere"
+      ]
+    },
 
-      // Very short phrases must match exactly to avoid false credit.
-      if (importantWords.length < 2) {
-        return false;
-      }
+    {
+      skill: "OPQRST severity assessed",
+      keywords: [
+        "rate your pain",
+        "rate the discomfort",
+        "pain scale",
+        "zero to ten pain",
+        "0 to 10 pain",
+        "how severe is the pain"
+      ]
+    },
 
-      return importantWords.every(word =>
-        normalizedQuestion.includes(word)
+    {
+      skill: "OPQRST time assessed",
+      keywords: [
+        "how long has the pain lasted",
+        "how long have you had the discomfort",
+        "has the pain been constant",
+        "does the pain come and go",
+        "how long have the symptoms been present"
+      ]
+    },
+
+    {
+      skill: "Secondary assessment performed",
+      keywords: [
+        "perform a secondary assessment",
+        "perform a focused physical exam",
+        "perform a head to toe assessment",
+        "complete a rapid assessment",
+        "perform a physical examination"
+      ]
+    },
+
+    {
+      skill: "Neurologic assessment performed",
+      keywords: [
+        "perform a neurologic assessment",
+        "perform a neurological assessment",
+        "check motor function",
+        "check sensation",
+        "assess grip strength",
+        "check for arm drift",
+        "perform a stroke assessment"
+      ]
+    },
+
+    {
+      skill: "Temperature obtained",
+      keywords: [
+        "check the temperature",
+        "obtain a temperature",
+        "what is the temperature",
+        "does the patient have a fever"
+      ]
+    },
+
+    {
+      skill: "Cardiac rhythm assessed",
+      keywords: [
+        "place the patient on the cardiac monitor",
+        "assess cardiac rhythm",
+        "what is the cardiac rhythm",
+        "obtain an ecg",
+        "obtain an ekg"
+      ]
+    },
+
+    {
+      skill: "Reassessment performed",
+      keywords: [
+        "perform a reassessment",
+        "reassess the patient",
+        "repeat all vital signs",
+        "repeat the blood pressure",
+        "repeat the glucose",
+        "recheck the patient"
+      ]
+    }
+  ];
+
+  function normalizeText(text) {
+    return text
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  async function readJsonResponse(response) {
+    const contentType = response.headers.get("content-type") || "";
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        errorText || `Server returned status ${response.status}.`
       );
     }
 
-    function detectAndRecordAssessments(question, source) {
-      const newlyRecorded = [];
+    if (!contentType.includes("application/json")) {
+      const responseText = await response.text();
+      throw new Error(
+        responseText || "The server did not return valid JSON."
+      );
+    }
 
-      assessmentMap.forEach(item => {
-        const matched = item.keywords.some(keyword =>
-          assessmentPhraseMatches(question, keyword)
+    return response.json();
+  }
+
+  function phraseMatches(normalizedText, phrase) {
+    const normalizedPhrase = normalizeText(phrase);
+    if (!normalizedPhrase) return false;
+
+    // Direct phrase match first.
+    if (normalizedText.includes(normalizedPhrase)) return true;
+
+    // Allow natural word order variations for longer phrases while
+    // requiring every meaningful word to be present.
+    const stopWords = new Set([
+      "a", "an", "the", "is", "are", "was", "were", "to", "of", "for",
+      "and", "or", "with", "his", "her", "your", "my", "patient"
+    ]);
+
+    const words = normalizedPhrase
+      .split(" ")
+      .filter(word => word.length > 2 && !stopWords.has(word));
+
+    if (words.length < 2) return false;
+    return words.every(word => normalizedText.includes(word));
+  }
+
+  function detectAndRecordAssessments(text, source) {
+    const normalizedText = normalizeText(text);
+    const newlyRecorded = [];
+
+    assessmentMap.forEach(item => {
+      const keywordMatched = (item.keywords || []).some(keyword =>
+        phraseMatches(normalizedText, keyword)
+      );
+
+      const patternMatched = (item.patterns || []).some(pattern =>
+        pattern.test(normalizedText)
+      );
+
+      const matched = keywordMatched || patternMatched;
+
+      if (matched && !completedSkills.has(item.skill)) {
+        completedSkills.add(item.skill);
+        assessmentLog.push(
+          `${item.skill} - recognized through ${source}`
         );
+        newlyRecorded.push(item.skill);
+      }
+    });
 
-        if (
-          matched &&
-          !completedSkills.has(item.skill)
-        ) {
-          completedSkills.add(item.skill);
+    updateCompleteHistorySkills();
 
-          assessmentLog.push(
-            `${item.skill} — requested through ${source}`
-          );
+    updateCompletedAssessmentsDisplay();
+    return newlyRecorded;
+  }
 
-          newlyRecorded.push(item.skill);
-        }
+  function getHistoryComponentStatus() {
+    const opqrst = {
+      onset: completedSkills.has("OPQRST onset assessed"),
+      provocationPalliation: completedSkills.has("OPQRST provocation and palliation assessed"),
+      quality: completedSkills.has("OPQRST quality assessed"),
+      radiation: completedSkills.has("OPQRST radiation assessed"),
+      severity: completedSkills.has("OPQRST severity assessed"),
+      time: completedSkills.has("OPQRST time assessed")
+    };
+
+    const sample = {
+      signsSymptoms: completedSkills.has("Signs and symptoms assessed"),
+      allergies: completedSkills.has("Allergies assessed"),
+      medications: completedSkills.has("Medications assessed"),
+      pertinentHistory: completedSkills.has("Pertinent medical history assessed"),
+      lastOralIntake: completedSkills.has("Last oral intake assessed"),
+      events: completedSkills.has("Events leading to illness assessed")
+    };
+
+    return {
+      opqrst,
+      sample,
+      opqrstScore: Object.values(opqrst).filter(Boolean).length,
+      sampleScore: Object.values(sample).filter(Boolean).length
+    };
+  }
+
+  function updateCompleteHistorySkills() {
+    const historyStatus = getHistoryComponentStatus();
+
+    if (
+      historyStatus.opqrstScore === 6 &&
+      !completedSkills.has("Complete OPQRST assessment performed")
+    ) {
+      completedSkills.add("Complete OPQRST assessment performed");
+      assessmentLog.push(
+        "Complete OPQRST assessment performed - all OPQRST components recognized"
+      );
+    }
+
+    if (
+      historyStatus.sampleScore === 6 &&
+      !completedSkills.has("Complete SAMPLE history performed")
+    ) {
+      completedSkills.add("Complete SAMPLE history performed");
+      assessmentLog.push(
+        "Complete SAMPLE history performed - all SAMPLE components recognized"
+      );
+    }
+
+    return historyStatus;
+  }
+
+  function updateCompletedAssessmentsDisplay() {
+    const completedBox =
+      document.getElementById("completedAssessments");
+
+    if (completedSkills.size === 0) {
+      completedBox.innerText = "No assessments recorded yet.";
+      return;
+    }
+
+    completedBox.innerText = Array
+      .from(completedSkills)
+      .map((skill, index) => `${index + 1}. \u2713 ${skill}`)
+      .join("\n");
+  }
+
+  function showRecordedStatus(newSkills, source) {
+    const statusBox = document.getElementById("recordStatus");
+
+    if (newSkills.length === 0) {
+      statusBox.innerText =
+        `Question sent to ${source}. No new assessment was automatically recorded.`;
+      return;
+    }
+
+    if (newSkills.length === 1) {
+      statusBox.innerText =
+        `Automatically recorded: ${newSkills[0]}`;
+      return;
+    }
+
+    statusBox.innerText =
+      `${newSkills.length} assessments automatically recorded.`;
+  }
+
+  async function askPatientTyped() {
+    const questionBox = document.getElementById("patientQuestion");
+    const responseBox = document.getElementById("patientResponse");
+    const patientButton = document.getElementById("patientButton");
+    const question = questionBox.value.trim();
+
+    if (!question) {
+      responseBox.innerText =
+        "Type a question for the patient first.";
+      questionBox.focus();
+      return;
+    }
+
+    recordStudentInput("Ask the Patient", question);
+
+    const questionSkills = detectAndRecordAssessments(
+      question,
+      "Ask the Patient question"
+    );
+
+    responseBox.innerText = "Contacting patient...";
+    document.getElementById("recordStatus").innerText =
+      "Patient question submitted. Waiting for the response...";
+    patientButton.disabled = true;
+
+    try {
+      const response = await fetch("/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentQuestion: question,
+          history: patientHistory,
+          scenario
+        })
       });
 
-      updateCompletedAssessmentsDisplay();
-
-      return newlyRecorded;
-    }
-
-    function updateCompletedAssessmentsDisplay() {
-      const completedBox =
-        document.getElementById("completedAssessments");
-
-      if (completedSkills.size === 0) {
-        completedBox.innerText =
-          "No assessments recorded yet.";
-
-        return;
-      }
-
-      completedBox.innerText = Array
-        .from(completedSkills)
-        .map(
-          (skill, index) =>
-            `${index + 1}. ✓ ${skill}`
-        )
-        .join("\n");
-    }
-
-    function showRecordedStatus(newSkills, source) {
-      const statusBox =
-        document.getElementById("recordStatus");
-
-      if (newSkills.length === 0) {
-        statusBox.innerText =
-          `Question sent to ${source}. No new assessment was automatically recorded.`;
-
-        return;
-      }
-
-      if (newSkills.length === 1) {
-        statusBox.innerText =
-          `Automatically recorded: ${newSkills[0]}`;
-
-        return;
-      }
-
-      statusBox.innerText =
-        `${newSkills.length} assessments automatically recorded.`;
-    }
-
-    async function askPatientTyped() {
-      const questionBox =
-        document.getElementById("patientQuestion");
-
-      const responseBox =
-        document.getElementById("patientResponse");
-
-      const patientButton =
-        document.getElementById("patientButton");
-
-      const question = questionBox.value.trim();
-
-      if (!question) {
-        responseBox.innerText =
-          "Type a question for the patient first.";
-
-        questionBox.focus();
-        return;
-      }
-
-      responseBox.innerText =
-        "Contacting patient...";
-
-      patientButton.disabled = true;
-
-      try {
-        const response = await fetch("/ask", {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json"
-          },
-
-          body: JSON.stringify({
-            studentQuestion: question,
-            history: patientHistory,
-            scenario: scenario
-          })
-        });
-
-        const data =
-          await readJsonResponse(response);
-
-        const patientReply =
-          data.reply ||
-          data.answer ||
-          "The patient did not respond.";
-
-        patientHistory +=
-          `Student to patient: ${question}\n`;
-
-        patientHistory +=
-          `Patient: ${patientReply}\n\n`;
-
-        const newSkills =
-          detectAndRecordAssessments(
-            question,
-            "patient interview"
-          );
-
-        showRecordedStatus(
-          newSkills,
-          "the patient"
-        );
-
-        responseBox.innerText =
-          patientReply;
-
-        questionBox.value = "";
-        questionBox.focus();
-
-      } catch (error) {
-        console.error(
-          "Patient request error:",
-          error
-        );
-
-        responseBox.innerText =
-          "Error contacting patient server.\n\n" +
-          error.message;
-
-      } finally {
-        patientButton.disabled = false;
-      }
-    }
-
-    async function askInstructorTyped() {
-      const questionBox =
-        document.getElementById("instructorQuestion");
-
-      const responseBox =
-        document.getElementById("instructorResponse");
-
-      const instructorButton =
-        document.getElementById("instructorButton");
-
-      const question = questionBox.value.trim();
-
-      if (!question) {
-        responseBox.innerText =
-          "Type a question for the instructor first.";
-
-        questionBox.focus();
-        return;
-      }
-
-      responseBox.innerText =
-        "Contacting instructor...";
-
-      instructorButton.disabled = true;
-
-      try {
-        const response = await fetch("/instructor", {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json"
-          },
-
-          body: JSON.stringify({
-            studentQuestion: question,
-            history: patientHistory,
-            scenario: scenario
-          })
-        });
-
-        const data =
-          await readJsonResponse(response);
-
-        const instructorReply =
-          data.reply ||
-          data.answer ||
-          "The instructor did not respond.";
-
-        instructorHistory +=
-          `Student to instructor: ${question}\n`;
-
-        instructorHistory +=
-          `Instructor: ${instructorReply}\n\n`;
-
-        const newSkills =
-          detectAndRecordAssessments(
-            question,
-            "instructor assessment"
-          );
-
-        showRecordedStatus(
-          newSkills,
-          "the instructor"
-        );
-
-        responseBox.innerText =
-          instructorReply;
-
-        questionBox.value = "";
-        questionBox.focus();
-
-      } catch (error) {
-        console.error(
-          "Instructor request error:",
-          error
-        );
-
-        responseBox.innerText =
-          "Error contacting instructor.\n\n" +
-          error.message;
-
-      } finally {
-        instructorButton.disabled = false;
-      }
-    }
-
-    function recordAction() {
-      const entryBox =
-        document.getElementById("actionEntry");
-
-      const statusBox =
-        document.getElementById("recordStatus");
-
-      const entry = entryBox.value.trim();
-
-      if (!entry) {
-        statusBox.innerText =
-          "Type an assessment or treatment before recording.";
-
-        entryBox.focus();
-        return;
-      }
-
-      const detectedSkills =
-        detectAndRecordAssessments(
-          entry,
-          "manual entry"
-        );
-
-      assessmentLog.push(entry);
-
-      if (detectedSkills.length === 1) {
-        statusBox.innerText =
-          `Action recorded. Recognized: ${detectedSkills[0]}`;
-
-      } else if (detectedSkills.length > 1) {
-        statusBox.innerText =
-          `Action recorded. ${detectedSkills.length} assessments recognized.`;
-
-      } else {
-        statusBox.innerText =
-          `Action recorded. Total entries: ${assessmentLog.length}`;
-      }
-
-      entryBox.value = "";
-
-      entryBox.placeholder =
-        "Enter the next assessment, finding, treatment, or decision...";
-
-      entryBox.focus();
-    }
-
-    async function gradeStudent() {
-      const feedbackBox =
-        document.getElementById("feedback");
-
-      const gradeButton =
-        document.getElementById("gradeButton");
-
-      const actionEntry =
-        document.getElementById("actionEntry");
-
-      const pendingEntry =
-        actionEntry.value.trim();
-
-      if (pendingEntry) {
-        detectAndRecordAssessments(
-          pendingEntry,
-          "manual entry"
-        );
-
-        assessmentLog.push(pendingEntry);
-        actionEntry.value = "";
-      }
-
-      if (
-        assessmentLog.length === 0 &&
-        !patientHistory.trim()
-      ) {
-        feedbackBox.innerText =
-          "Record at least one assessment, treatment, or patient interview before submitting.";
-
-        actionEntry.focus();
-        return;
-      }
-
-      const treatmentPlan = assessmentLog
-        .map(
-          (action, index) =>
-            `${index + 1}. ${action}`
-        )
-        .join("\n");
-
-      const completedSkillsArray =
-        Array.from(completedSkills);
-
-      const elapsedSeconds = Math.floor(
-        (Date.now() - scenarioStartTime) / 1000
+      const data = await readJsonResponse(response);
+      const patientReply =
+        data.reply || data.answer || "The patient did not respond.";
+
+      patientHistory += `Student to patient: ${question}\n`;
+      patientHistory += `Patient: ${patientReply}\n\n`;
+
+      // Evaluate the patient's answer as well as the student's question.
+      // This allows assessment findings obtained through Ask the Patient
+      // to appear in Automatically Recorded Assessments.
+      const responseSkills = detectAndRecordAssessments(
+        `${question}\n${patientReply}`,
+        "Ask the Patient interview"
       );
 
-      feedbackBox.innerText =
-        "Scoring the shortness-of-breath scenario...";
+      const recordedSkills = Array.from(
+        new Set([...questionSkills, ...responseSkills])
+      );
 
-      gradeButton.disabled = true;
+      showRecordedStatus(recordedSkills, "the patient");
 
-      try {
-        const response = await fetch("/grade", {
-          method: "POST",
+      responseBox.innerText = patientReply;
+      questionBox.value = "";
+      questionBox.focus();
+    } catch (error) {
+      console.error("Patient request error:", error);
+      showRecordedStatus(questionSkills, "the patient");
+      responseBox.innerText =
+        "Error contacting patient server.\n\n" + error.message;
+    } finally {
+      patientButton.disabled = false;
+    }
+  }
 
-          headers: {
-            "Content-Type": "application/json"
-          },
+  async function askInstructorTyped() {
+    const questionBox =
+      document.getElementById("instructorQuestion");
+    const responseBox =
+      document.getElementById("instructorResponse");
+    const instructorButton =
+      document.getElementById("instructorButton");
+    const question = questionBox.value.trim();
 
-          body: JSON.stringify({
-            studentAnswer: patientHistory,
-            patientHistory: patientHistory,
-            instructorHistory: instructorHistory,
-            treatmentPlan: treatmentPlan,
-            assessmentLog: assessmentLog,
-            completedSkills: completedSkillsArray,
-            scenario: scenario,
-            elapsedSeconds: elapsedSeconds
-          })
-        });
+    if (!question) {
+      responseBox.innerText =
+        "Type a question for the instructor first.";
+      questionBox.focus();
+      return;
+    }
 
-        const data =
-          await readJsonResponse(response);
+    recordStudentInput("Ask the Instructor", question);
 
-        feedbackBox.innerText =
+    const newSkills = detectAndRecordAssessments(
+      question,
+      "instructor assessment"
+    );
+
+    showRecordedStatus(newSkills, "the instructor");
+
+    responseBox.innerText = "Contacting instructor...";
+    instructorButton.disabled = true;
+
+    try {
+      const response = await fetch("/instructor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentQuestion: question,
+          history: patientHistory,
+          scenario
+        })
+      });
+
+      const data = await readJsonResponse(response);
+      const instructorReply =
+        data.reply || data.answer || "The instructor did not respond.";
+
+      instructorHistory += `Student to instructor: ${question}\n`;
+      instructorHistory += `Instructor: ${instructorReply}\n\n`;
+
+      responseBox.innerText = instructorReply;
+      questionBox.value = "";
+      questionBox.focus();
+    } catch (error) {
+      console.error("Instructor request error:", error);
+      responseBox.innerText =
+        "Error contacting instructor.\n\n" + error.message;
+    } finally {
+      instructorButton.disabled = false;
+    }
+  }
+
+  function recordAction() {
+    const entryBox = document.getElementById("actionEntry");
+    const statusBox = document.getElementById("recordStatus");
+    const entry = entryBox.value.trim();
+
+    if (!entry) {
+      statusBox.innerText =
+        "Type an assessment or treatment before recording.";
+      entryBox.focus();
+      return;
+    }
+
+    const detectedSkills = detectAndRecordAssessments(
+      entry,
+      "manual entry"
+    );
+
+    recordStudentInput("Assessment / Treatment", entry);
+    assessmentLog.push(entry);
+
+    if (detectedSkills.length === 1) {
+      statusBox.innerText =
+        `Action recorded. Recognized: ${detectedSkills[0]}`;
+    } else if (detectedSkills.length > 1) {
+      statusBox.innerText =
+        `Action recorded. ${detectedSkills.length} assessments recognized.`;
+    } else {
+      statusBox.innerText =
+        `Action recorded. Total entries: ${assessmentLog.length}`;
+    }
+
+    entryBox.value = "";
+    entryBox.placeholder =
+      "Enter the next assessment, finding, treatment, or decision...";
+    entryBox.focus();
+  }
+
+  async function gradeStudent() {
+    const gradeButton = document.getElementById("gradeButton");
+    const actionEntry = document.getElementById("actionEntry");
+    const pendingEntry = actionEntry.value.trim();
+
+    if (pendingEntry) {
+      detectAndRecordAssessments(pendingEntry, "manual entry");
+      recordStudentInput("Assessment / Treatment", pendingEntry);
+      assessmentLog.push(pendingEntry);
+      actionEntry.value = "";
+    }
+
+    if (assessmentLog.length === 0 && !patientHistory.trim()) {
+      alert(
+        "Record at least one assessment, treatment, or patient interview before submitting."
+      );
+      actionEntry.focus();
+      return;
+    }
+
+    const treatmentPlan = assessmentLog
+      .map((action, index) => `${index + 1}. ${action}`)
+      .join("\n");
+
+    const completedSkillsArray = Array.from(completedSkills);
+
+    const elapsedSeconds = Math.floor(
+      (Date.now() - scenarioStartTime) / 1000
+    );
+
+    const originalButtonText = gradeButton.innerText;
+    gradeButton.innerText = "Scoring...";
+    gradeButton.disabled = true;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+    try {
+      const response = await fetch("/grade", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
+        body: JSON.stringify({
+          studentAnswer: patientHistory,
+          patientHistory,
+          instructorHistory,
+          treatmentPlan,
+          assessmentLog,
+          studentInputLog,
+          completedSkills: completedSkillsArray,
+          historyComponents: getHistoryComponentStatus(),
+          scenario,
+          elapsedSeconds
+        })
+      });
+
+      clearTimeout(timeoutId);
+
+      const data = await readJsonResponse(response);
+
+      const gradingData = {
+        earnedPoints: Number(data.earnedPoints) || 0,
+        possiblePoints: Number(data.possiblePoints) || 0,
+        checklist: Array.isArray(data.checklist) ? data.checklist : [],
+        criticalCriteria: Array.isArray(data.criticalCriteria) ? data.criticalCriteria : [],
+        originalEarnedPoints: Number(data.earnedPoints) || 0,
+        adjustedEarnedPoints: Number(data.earnedPoints) || 0,
+        scenario: "Shortness of Breath Scenario",
+        scenarioCode: scenario,
+        feedback:
           data.feedback ||
           data.reply ||
-          "No grading feedback was returned.";
+          "No grading feedback was returned.",
+        treatmentPlan,
+        assessmentLog,
+        studentInputLog,
+        completedSkills: completedSkillsArray,
+        historyComponents: getHistoryComponentStatus(),
+        patientHistory,
+        instructorHistory,
+        elapsedSeconds,
+        date: new Date().toLocaleString()
+      };
 
-      } catch (error) {
-        console.error(
-          "Grading error:",
-          error
-        );
+      sessionStorage.setItem(
+        "emtGradingResults",
+        JSON.stringify(gradingData)
+      );
 
-        feedbackBox.innerText =
-          "Error grading the scenario.\n\n" +
-          error.message;
+      window.location.href = "feedback.html";
 
-      } finally {
-        gradeButton.disabled = false;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      console.error("Grading error:", error);
+
+      const fallbackFeedback =
+        error.name === "AbortError"
+          ? "The grading server did not respond within 30 seconds. Your assessments and treatments were saved, but the server did not return a grading report."
+          : "The grading server returned an error: " + error.message;
+
+      const gradingData = {
+        scenario: "Shortness of Breath Scenario",
+        scenarioCode: scenario,
+        feedback: fallbackFeedback,
+        treatmentPlan,
+        assessmentLog,
+        studentInputLog,
+        completedSkills: completedSkillsArray,
+        historyComponents: getHistoryComponentStatus(),
+        patientHistory,
+        instructorHistory,
+        elapsedSeconds,
+        gradingError: true,
+        date: new Date().toLocaleString()
+      };
+
+      sessionStorage.setItem(
+        "emtGradingResults",
+        JSON.stringify(gradingData)
+      );
+
+      gradeButton.innerText = originalButtonText;
+      gradeButton.disabled = false;
+
+      alert(fallbackFeedback);
+    }
+  }
+
+  function resetScenario() {
+    patientHistory = "";
+    instructorHistory = "";
+    assessmentLog = [];
+    studentInputLog = [];
+    completedSkills = new Set();
+    scenarioStartTime = Date.now();
+    sessionStorage.removeItem("emtGradingResults");
+
+    document.getElementById("patientQuestion").value = "";
+    document.getElementById("instructorQuestion").value = "";
+    document.getElementById("actionEntry").value = "";
+
+    document.getElementById("patientResponse").innerText =
+      "Patient response will appear here.";
+
+    document.getElementById("instructorResponse").innerText =
+      "Instructor answer will appear here.";
+
+    document.getElementById("recordStatus").innerText = "";
+
+    document.getElementById("completedAssessments").innerText =
+      "No assessments recorded yet.";
+document.getElementById("actionEntry").placeholder =
+      "Example: Assessed airway; airway is patent.";
+
+    document.getElementById("patientQuestion").focus();
+  }
+
+  document
+    .getElementById("patientQuestion")
+    .addEventListener("keydown", function(event) {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        askPatientTyped();
       }
-    }
+    });
 
-    function resetScenario() {
-      patientHistory = "";
-      instructorHistory = "";
-      assessmentLog = [];
-      completedSkills = new Set();
-      scenarioStartTime = Date.now();
+  document
+    .getElementById("instructorQuestion")
+    .addEventListener("keydown", function(event) {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        askInstructorTyped();
+      }
+    });
 
-      document.getElementById(
-        "patientQuestion"
-      ).value = "";
+  document
+    .getElementById("actionEntry")
+    .addEventListener("keydown", function(event) {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        recordAction();
+      }
+    });
 
-      document.getElementById(
-        "instructorQuestion"
-      ).value = "";
-
-      document.getElementById(
-        "actionEntry"
-      ).value = "";
-
-      document.getElementById(
-        "patientResponse"
-      ).innerText =
-        "Patient response will appear here.";
-
-      document.getElementById(
-        "instructorResponse"
-      ).innerText =
-        "Instructor answer will appear here.";
-
-      document.getElementById(
-        "recordStatus"
-      ).innerText = "";
-
-      document.getElementById(
-        "completedAssessments"
-      ).innerText =
-        "No assessments recorded yet.";
-
-      document.getElementById(
-        "feedback"
-      ).innerText =
-        "Feedback will appear here.";
-
-      document.getElementById(
-        "actionEntry"
-      ).placeholder =
-        "Enter an assessment, treatment, or transport decision...";
-
-      document.getElementById(
-        "patientQuestion"
-      ).focus();
-    }
-
-    document
-      .getElementById("patientQuestion")
-      .addEventListener(
-        "keydown",
-        function(event) {
-          if (
-            event.key === "Enter" &&
-            !event.shiftKey
-          ) {
-            event.preventDefault();
-            askPatientTyped();
-          }
-        }
-      );
-
-    document
-      .getElementById("instructorQuestion")
-      .addEventListener(
-        "keydown",
-        function(event) {
-          if (
-            event.key === "Enter" &&
-            !event.shiftKey
-          ) {
-            event.preventDefault();
-            askInstructorTyped();
-          }
-        }
-      );
-
-    document
-      .getElementById("actionEntry")
-      .addEventListener(
-        "keydown",
-        function(event) {
-          if (
-            event.key === "Enter" &&
-            !event.shiftKey
-          ) {
-            event.preventDefault();
-            recordAction();
-          }
-        }
-      );
-
-    window.addEventListener(
-      "DOMContentLoaded",
-      resetScenario
-    );
-  </script>
+  window.addEventListener("DOMContentLoaded", resetScenario);
+</script>
 </body>
 </html>
