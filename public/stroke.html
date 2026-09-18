@@ -41,7 +41,7 @@
       width: 96%;
       max-width: 1150px;
       margin: 0 auto;
-      padding: 8px 8px 30px;
+      padding: 6px 8px 10px;
       color: white;
       text-align: center;
     }
@@ -106,6 +106,20 @@
       background: #087f23;
     }
 
+    .voice-btn {
+      background: #b36b00;
+    }
+
+    .voice-btn.listening {
+      background: #a32626;
+      animation: voicePulse 1s infinite alternate;
+    }
+
+    @keyframes voicePulse {
+      from { opacity: 1; }
+      to { opacity: 0.68; }
+    }
+
     .grade-btn {
       background: #005fa3;
     }
@@ -138,13 +152,12 @@
 
     .question-area {
       display: grid;
-      grid-template-columns: 360px 360px;
+      grid-template-columns: 360px;
       justify-content: center;
       align-items: start;
-      gap: 100px;
       width: fit-content;
       max-width: 95%;
-      margin: 42px auto 0;
+      margin: 10px auto 0;
     }
 
     .question-column,
@@ -211,9 +224,9 @@
     }
 
     .recorder-column {
-      width: 560px;
-      max-width: 92%;
-      margin: 52px auto 0;
+      width: 600px;
+      max-width: 70%;
+      margin: 10px auto 0;
     }
 
     .record-status {
@@ -250,8 +263,7 @@
 
     @media (max-width: 900px) {
       .question-area {
-        grid-template-columns: 330px 330px;
-        gap: 40px;
+        grid-template-columns: 330px;
       }
 
       .question-column {
@@ -271,14 +283,17 @@
       .question-area {
         grid-template-columns: 1fr;
         width: 92%;
-        gap: 22px;
-        margin-top: 25px;
+        gap: 8px;
+        margin-top: 10px;
       }
 
       .question-column,
-      .recorder-column,
       .grading-section {
         width: 92%;
+      }
+
+      .recorder-column {
+        width: 70%;
       }
 
       #patientQuestion,
@@ -326,6 +341,15 @@
 
         <div class="button-row">
           <button
+            id="patientVoiceButton"
+            class="voice-btn"
+            type="button"
+            onclick="toggleVoiceInput('patientQuestion', 'patientVoiceButton')"
+          >
+            🎤 Speak
+          </button>
+
+          <button
             id="patientButton"
             class="patient-btn"
             type="button"
@@ -344,15 +368,38 @@
         </div>
       </section>
 
-      <section class="question-column">
-        <h3>Ask the Instructor</h3>
+    </div>
+
+    <section class="recorder-column">
+      <h3>Assessment and Treatment</h3>
+
+      <div>
+        <h3>Record Assessment and Treatment</h3>
 
         <textarea
-          id="instructorQuestion"
-          placeholder="Ask for an assessment finding, vital sign, or instructor guidance..."
+          id="actionEntry"
+          placeholder="Enter an assessment, treatment, or transport decision..."
         ></textarea>
 
         <div class="button-row">
+          <button
+            id="actionVoiceButton"
+            class="voice-btn"
+            type="button"
+            onclick="toggleVoiceInput('actionEntry', 'actionVoiceButton', true)"
+          >
+            🎤 Speak
+          </button>
+
+          <button
+            id="recordButton"
+            class="record-btn"
+            type="button"
+            onclick="recordAction()"
+          >
+            Record Assessment
+          </button>
+
           <button
             id="instructorButton"
             class="instructor-btn"
@@ -363,34 +410,11 @@
           </button>
         </div>
 
-        <div class="response-label">
-          Instructor Response
-        </div>
+        <div class="response-label">Instructor Response</div>
 
         <div id="instructorResponse" class="box">
           Instructor answer will appear here.
         </div>
-      </section>
-
-    </div>
-
-    <section class="recorder-column">
-      <h3>Assessment and Treatment</h3>
-
-      <textarea
-        id="actionEntry"
-        placeholder="Enter an assessment, treatment, or transport decision..."
-      ></textarea>
-
-      <div class="button-row">
-        <button
-          id="recordButton"
-          class="record-btn"
-          type="button"
-          onclick="recordAction()"
-        >
-          Record Assessment
-        </button>
       </div>
 
       <div
@@ -444,6 +468,133 @@
     let scenarioStartTime = Date.now();
 
     const scenario = "stroke";
+
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    let activeRecognition = null;
+    let activeVoiceButton = null;
+
+    function resetVoiceButton(recognitionToReset = activeRecognition) {
+      if (recognitionToReset !== activeRecognition) return;
+
+      if (activeVoiceButton) {
+        activeVoiceButton.innerText = "🎤 Speak";
+        activeVoiceButton.classList.remove("listening");
+      }
+
+      activeVoiceButton = null;
+      activeRecognition = null;
+    }
+
+    function stopVoiceInput() {
+      if (activeRecognition) activeRecognition.stop();
+    }
+
+    function toggleVoiceInput(textareaId, buttonId, recordWhenFinished = false) {
+      if (!SpeechRecognition) {
+        alert("Voice entry is not supported by this browser. Please use Microsoft Edge or Google Chrome.");
+        return;
+      }
+
+      const selectedButton = document.getElementById(buttonId);
+
+      if (activeRecognition) {
+        const sameButton = activeVoiceButton === selectedButton;
+        const recognitionBeingStopped = activeRecognition;
+        stopVoiceInput();
+
+        if (sameButton) {
+          setTimeout(function() {
+            if (typeof recognitionBeingStopped.finishVoiceRecording === "function") {
+              recognitionBeingStopped.finishVoiceRecording();
+            }
+          }, 250);
+          return;
+        }
+      }
+
+      const textBox = document.getElementById(textareaId);
+      const recognition = new SpeechRecognition();
+      const existingText = textBox.value.trim();
+      let finalTranscript = "";
+      let heardSpeech = false;
+      let voiceEntryRecorded = false;
+      const voiceDetectedSkills = new Set();
+
+      function finishVoiceRecording() {
+        if (voiceEntryRecorded || !recordWhenFinished) return;
+
+        const spokenEntry = textBox.value.trim();
+        if (!spokenEntry) {
+          document.getElementById("recordStatus").innerText = heardSpeech
+            ? "Speech was heard, but no words were captured. Please try again."
+            : "No speech was detected. Please try again.";
+          return;
+        }
+
+        voiceEntryRecorded = true;
+        recordAction("voice assessment");
+      }
+
+      recognition.finishVoiceRecording = finishVoiceRecording;
+      recognition.lang = "en-US";
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      activeRecognition = recognition;
+      activeVoiceButton = selectedButton;
+      selectedButton.innerText = "⏹ Stop Voice";
+      selectedButton.classList.add("listening");
+
+      recognition.onresult = function(event) {
+        let interimTranscript = "";
+
+        for (let index = event.resultIndex; index < event.results.length; index++) {
+          const words = event.results[index][0].transcript;
+          if (words.trim()) heardSpeech = true;
+
+          if (event.results[index].isFinal) finalTranscript += words + " ";
+          else interimTranscript += words;
+        }
+
+        textBox.value = [existingText, finalTranscript.trim(), interimTranscript.trim()]
+          .filter(Boolean)
+          .join(" ");
+
+        if (recordWhenFinished && textBox.value.trim()) {
+          const newSkills = detectAndRecordAssessments(textBox.value, "voice assessment");
+          newSkills.forEach(skill => voiceDetectedSkills.add(skill));
+
+          if (voiceDetectedSkills.size > 0) {
+            showRecordedStatus(Array.from(voiceDetectedSkills), "voice assessment");
+          } else {
+            document.getElementById("recordStatus").innerText =
+              "Listening and checking the spoken assessment...";
+          }
+        }
+
+        textBox.focus();
+      };
+
+      recognition.onerror = function(event) {
+        if (event.error !== "aborted" && event.error !== "no-speech") {
+          alert("Voice entry error: " + event.error);
+        }
+        resetVoiceButton(recognition);
+      };
+
+      recognition.onend = function() {
+        resetVoiceButton(recognition);
+        setTimeout(finishVoiceRecording, 150);
+      };
+
+      try {
+        recognition.start();
+      } catch (error) {
+        resetVoiceButton(recognition);
+        alert("The microphone could not be started. Please allow microphone access and try again.");
+      }
+    }
 
     /*
       Assessment phrases are intentionally specific for a suspected stroke.
@@ -1334,7 +1485,7 @@
 
     async function askInstructorTyped() {
       const questionBox =
-        document.getElementById("instructorQuestion");
+        document.getElementById("actionEntry");
 
       const responseBox =
         document.getElementById("instructorResponse");
@@ -1342,11 +1493,13 @@
       const instructorButton =
         document.getElementById("instructorButton");
 
-      const question = questionBox.value.trim();
+      const typedQuestion = questionBox.value.trim();
+      const question =
+        typedQuestion || assessmentLog[assessmentLog.length - 1] || "";
 
       if (!question) {
         responseBox.innerText =
-          "Type a question for the instructor first.";
+          "Type or speak an assessment or treatment first.";
 
         questionBox.focus();
         return;
@@ -1400,7 +1553,9 @@
         responseBox.innerText =
           instructorReply;
 
-        questionBox.value = "";
+        if (typedQuestion) {
+          questionBox.value = "";
+        }
         questionBox.focus();
 
       } catch (error) {
@@ -1418,7 +1573,7 @@
       }
     }
 
-    function recordAction() {
+    function recordAction(source = "manual entry") {
       const entryBox =
         document.getElementById("actionEntry");
 
@@ -1438,7 +1593,7 @@
       const detectedSkills =
         detectAndRecordAssessments(
           entry,
-          "manual entry"
+          source
         );
 
       assessmentLog.push(entry);
@@ -1572,10 +1727,6 @@
       ).value = "";
 
       document.getElementById(
-        "instructorQuestion"
-      ).value = "";
-
-      document.getElementById(
         "actionEntry"
       ).value = "";
 
@@ -1624,21 +1775,6 @@
           ) {
             event.preventDefault();
             askPatientTyped();
-          }
-        }
-      );
-
-    document
-      .getElementById("instructorQuestion")
-      .addEventListener(
-        "keydown",
-        function(event) {
-          if (
-            event.key === "Enter" &&
-            !event.shiftKey
-          ) {
-            event.preventDefault();
-            askInstructorTyped();
           }
         }
       );
