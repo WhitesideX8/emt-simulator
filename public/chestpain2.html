@@ -510,9 +510,19 @@
 
     if (activeRecognition) {
       const sameButton = activeVoiceButton === selectedButton;
+      const recognitionBeingStopped = activeRecognition;
       stopVoiceInput();
 
-      if (sameButton) return;
+      if (sameButton) {
+        // Some browsers do not reliably complete the automatic record step
+        // after the user presses Stop Voice. Finalize it directly as a backup.
+        setTimeout(function() {
+          if (typeof recognitionBeingStopped.finishVoiceRecording === "function") {
+            recognitionBeingStopped.finishVoiceRecording();
+          }
+        }, 250);
+        return;
+      }
     }
 
     const textBox = document.getElementById(textareaId);
@@ -520,7 +530,27 @@
     const existingText = textBox.value.trim();
     let finalTranscript = "";
     let heardSpeech = false;
+    let voiceEntryRecorded = false;
     const voiceDetectedSkills = new Set();
+
+    function finishVoiceRecording() {
+      if (voiceEntryRecorded || !recordWhenFinished) return;
+
+      const spokenEntry = textBox.value.trim();
+      if (!spokenEntry) {
+        document.getElementById("recordStatus").innerText =
+          heardSpeech
+            ? "Speech was heard, but no words were captured. Please try again."
+            : "No speech was detected. Please try again.";
+        return;
+      }
+
+      voiceEntryRecorded = true;
+      recordAction("voice assessment");
+    }
+
+    // Make the finalizer available to the Stop Voice button as well as onend.
+    recognition.finishVoiceRecording = finishVoiceRecording;
 
     recognition.lang = "en-US";
     recognition.continuous = true;
@@ -584,16 +614,11 @@
     };
 
     recognition.onend = function() {
-      const shouldRecord =
-        recordWhenFinished &&
-        heardSpeech &&
-        textBox.value.trim();
-
       resetVoiceButton(recognition);
 
-      if (shouldRecord) {
-        recordAction("voice assessment");
-      }
+      // Give the browser a moment to place its final transcript in the box,
+      // then record it automatically. The guard prevents a duplicate entry.
+      setTimeout(finishVoiceRecording, 150);
     };
 
     try {
