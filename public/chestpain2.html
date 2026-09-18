@@ -105,6 +105,20 @@
       background: #087f23;
     }
 
+    .voice-btn {
+      background: #b36b00;
+    }
+
+    .voice-btn.listening {
+      background: #a32626;
+      animation: voicePulse 1s infinite alternate;
+    }
+
+    @keyframes voicePulse {
+      from { opacity: 1; }
+      to { opacity: 0.68; }
+    }
+
     .grade-btn {
       background: #005fa3;
     }
@@ -339,6 +353,15 @@
 
         <div class="button-row">
           <button
+            id="patientVoiceButton"
+            class="voice-btn"
+            type="button"
+            onclick="toggleVoiceInput('patientQuestion', 'patientVoiceButton')"
+          >
+            🎤 Speak
+          </button>
+
+          <button
             id="patientButton"
             class="patient-btn"
             type="button"
@@ -364,6 +387,15 @@
         ></textarea>
 
         <div class="button-row">
+          <button
+            id="instructorVoiceButton"
+            class="voice-btn"
+            type="button"
+            onclick="toggleVoiceInput('instructorQuestion', 'instructorVoiceButton')"
+          >
+            🎤 Speak
+          </button>
+
           <button
             id="instructorButton"
             class="instructor-btn"
@@ -395,6 +427,15 @@
       ></textarea>
 
       <div class="button-row">
+        <button
+          id="actionVoiceButton"
+          class="voice-btn"
+          type="button"
+          onclick="toggleVoiceInput('actionEntry', 'actionVoiceButton')"
+        >
+          🎤 Speak
+        </button>
+
         <button
           id="recordButton"
           class="record-btn"
@@ -454,6 +495,94 @@
   let scenarioStartTime = Date.now();
 
   const scenario = "chestPain";
+
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+  let activeRecognition = null;
+  let activeVoiceButton = null;
+
+  function resetVoiceButton() {
+    if (activeVoiceButton) {
+      activeVoiceButton.innerText = "🎤 Speak";
+      activeVoiceButton.classList.remove("listening");
+    }
+
+    activeVoiceButton = null;
+    activeRecognition = null;
+  }
+
+  function stopVoiceInput() {
+    if (activeRecognition) {
+      activeRecognition.stop();
+    }
+  }
+
+  function toggleVoiceInput(textareaId, buttonId) {
+    if (!SpeechRecognition) {
+      alert(
+        "Voice entry is not supported by this browser. Please use Microsoft Edge or Google Chrome."
+      );
+      return;
+    }
+
+    const selectedButton = document.getElementById(buttonId);
+
+    if (activeRecognition) {
+      const sameButton = activeVoiceButton === selectedButton;
+      stopVoiceInput();
+
+      if (sameButton) return;
+    }
+
+    const textBox = document.getElementById(textareaId);
+    const recognition = new SpeechRecognition();
+    const existingText = textBox.value.trim();
+    let finalTranscript = "";
+
+    recognition.lang = "en-US";
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    activeRecognition = recognition;
+    activeVoiceButton = selectedButton;
+    selectedButton.innerText = "⏹ Stop Voice";
+    selectedButton.classList.add("listening");
+
+    recognition.onresult = function(event) {
+      let interimTranscript = "";
+
+      for (let index = event.resultIndex; index < event.results.length; index++) {
+        const words = event.results[index][0].transcript;
+
+        if (event.results[index].isFinal) {
+          finalTranscript += words + " ";
+        } else {
+          interimTranscript += words;
+        }
+      }
+
+      textBox.value = [existingText, finalTranscript.trim(), interimTranscript.trim()]
+        .filter(Boolean)
+        .join(existingText ? " " : "");
+      textBox.focus();
+    };
+
+    recognition.onerror = function(event) {
+      if (event.error !== "aborted" && event.error !== "no-speech") {
+        alert("Voice entry error: " + event.error);
+      }
+      resetVoiceButton();
+    };
+
+    recognition.onend = resetVoiceButton;
+
+    try {
+      recognition.start();
+    } catch (error) {
+      resetVoiceButton();
+      alert("The microphone could not be started. Please allow microphone access and try again.");
+    }
+  }
 
   function recordStudentInput(type, text) {
     const cleanedText = String(text || "").trim();
@@ -1757,6 +1886,7 @@
   }
 
   function resetScenario() {
+    stopVoiceInput();
     patientHistory = "";
     instructorHistory = "";
     assessmentLog = [];
