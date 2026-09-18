@@ -431,7 +431,7 @@
           id="actionVoiceButton"
           class="voice-btn"
           type="button"
-          onclick="toggleVoiceInput('actionEntry', 'actionVoiceButton')"
+          onclick="toggleVoiceInput('actionEntry', 'actionVoiceButton', true)"
         >
           🎤 Speak
         </button>
@@ -501,7 +501,9 @@
   let activeRecognition = null;
   let activeVoiceButton = null;
 
-  function resetVoiceButton() {
+  function resetVoiceButton(recognitionToReset = activeRecognition) {
+    if (recognitionToReset !== activeRecognition) return;
+
     if (activeVoiceButton) {
       activeVoiceButton.innerText = "🎤 Speak";
       activeVoiceButton.classList.remove("listening");
@@ -517,7 +519,7 @@
     }
   }
 
-  function toggleVoiceInput(textareaId, buttonId) {
+  function toggleVoiceInput(textareaId, buttonId, recordWhenFinished = false) {
     if (!SpeechRecognition) {
       alert(
         "Voice entry is not supported by this browser. Please use Microsoft Edge or Google Chrome."
@@ -538,6 +540,7 @@
     const recognition = new SpeechRecognition();
     const existingText = textBox.value.trim();
     let finalTranscript = "";
+    let heardSpeech = false;
 
     recognition.lang = "en-US";
     recognition.continuous = true;
@@ -553,6 +556,10 @@
 
       for (let index = event.resultIndex; index < event.results.length; index++) {
         const words = event.results[index][0].transcript;
+
+        if (words.trim()) {
+          heardSpeech = true;
+        }
 
         if (event.results[index].isFinal) {
           finalTranscript += words + " ";
@@ -571,15 +578,26 @@
       if (event.error !== "aborted" && event.error !== "no-speech") {
         alert("Voice entry error: " + event.error);
       }
-      resetVoiceButton();
+      resetVoiceButton(recognition);
     };
 
-    recognition.onend = resetVoiceButton;
+    recognition.onend = function() {
+      const shouldRecord =
+        recordWhenFinished &&
+        heardSpeech &&
+        textBox.value.trim();
+
+      resetVoiceButton(recognition);
+
+      if (shouldRecord) {
+        recordAction();
+      }
+    };
 
     try {
       recognition.start();
     } catch (error) {
-      resetVoiceButton();
+      resetVoiceButton(recognition);
       alert("The microphone could not be started. Please allow microphone access and try again.");
     }
   }
