@@ -172,8 +172,7 @@
 
     .question-area {
       display: grid;
-      grid-template-columns: 360px 360px;
-      gap: 100px;
+      grid-template-columns: 360px;
       width: fit-content;
       max-width: 95%;
       margin: 42px auto 0;
@@ -245,7 +244,7 @@
     }
 
     .recorder-column {
-      width: 560px;
+      width: 820px;
       max-width: 92%;
       margin: 52px auto 0;
     }
@@ -277,10 +276,9 @@
       line-height: 1.35;
       text-align: left;
     }
-@media (max-width: 900px) {
+    @media (max-width: 900px) {
       .question-area {
-        grid-template-columns: 330px 330px;
-        gap: 40px;
+        grid-template-columns: 330px;
       }
 
       .question-column {
@@ -378,72 +376,53 @@
         </div>
       </section>
 
-      <section class="question-column">
-        <h3>Ask the Instructor</h3>
-
-        <textarea
-          id="instructorQuestion"
-          placeholder="Ask the instructor a question about the scenario..."
-        ></textarea>
-
-        <div class="button-row">
-          <button
-            id="instructorVoiceButton"
-            class="voice-btn"
-            type="button"
-            onclick="toggleVoiceInput('instructorQuestion', 'instructorVoiceButton')"
-          >
-            🎤 Speak
-          </button>
-
-          <button
-            id="instructorButton"
-            class="instructor-btn"
-            type="button"
-            onclick="askInstructorTyped()"
-          >
-            Ask Instructor
-          </button>
-        </div>
-
-        <div class="response-label">Instructor Response</div>
-
-        <div id="instructorResponse" class="box">
-          Instructor answer will appear here.
-        </div>
-      </section>
-
     </div>
 
     <section class="recorder-column">
       <h3>Assessment and Treatment</h3>
 
-      <div class="section-label">
-      </div>
+      <div>
+          <h3>Record Assessment and Treatment</h3>
 
-      <textarea
-        id="actionEntry"
-        placeholder="Example: Assessed airway; airway is patent."
-      ></textarea>
+          <textarea
+            id="actionEntry"
+            placeholder="Example: Assessed airway; airway is patent."
+          ></textarea>
 
-      <div class="button-row">
-        <button
-          id="actionVoiceButton"
-          class="voice-btn"
-          type="button"
-          onclick="toggleVoiceInput('actionEntry', 'actionVoiceButton', true)"
-        >
-          🎤 Speak
-        </button>
+          <div class="button-row">
+            <button
+              id="actionVoiceButton"
+              class="voice-btn"
+              type="button"
+              onclick="toggleVoiceInput('actionEntry', 'actionVoiceButton', true)"
+            >
+              🎤 Speak
+            </button>
 
-        <button
-          id="recordButton"
-          class="record-btn"
-          type="button"
-          onclick="recordAction()"
-        >
-          Record Assessment
-        </button>
+            <button
+              id="recordButton"
+              class="record-btn"
+              type="button"
+              onclick="recordAction()"
+            >
+              Record Assessment
+            </button>
+
+            <button
+              id="instructorButton"
+              class="instructor-btn"
+              type="button"
+              onclick="askInstructorTyped()"
+            >
+              Ask Instructor
+            </button>
+          </div>
+
+          <div class="response-label">Instructor Response</div>
+
+          <div id="instructorResponse" class="box">
+            Instructor answer will appear here.
+          </div>
       </div>
 
       <div id="recordStatus" class="record-status"></div>
@@ -1705,16 +1684,18 @@
 
   async function askInstructorTyped() {
     const questionBox =
-      document.getElementById("instructorQuestion");
+      document.getElementById("actionEntry");
     const responseBox =
       document.getElementById("instructorResponse");
     const instructorButton =
       document.getElementById("instructorButton");
-    const question = questionBox.value.trim();
+    const typedQuestion = questionBox.value.trim();
+    const question =
+      typedQuestion || assessmentLog[assessmentLog.length - 1] || "";
 
     if (!question) {
       responseBox.innerText =
-        "Type a question for the instructor first.";
+        "Type or speak an assessment or treatment first.";
       questionBox.focus();
       return;
     }
@@ -1750,7 +1731,9 @@
       instructorHistory += `Instructor: ${instructorReply}\n\n`;
 
       responseBox.innerText = instructorReply;
-      questionBox.value = "";
+      if (typedQuestion) {
+        questionBox.value = "";
+      }
       questionBox.focus();
     } catch (error) {
       console.error("Instructor request error:", error);
@@ -1937,7 +1920,6 @@
     sessionStorage.removeItem("emtGradingResults");
 
     document.getElementById("patientQuestion").value = "";
-    document.getElementById("instructorQuestion").value = "";
     document.getElementById("actionEntry").value = "";
 
     document.getElementById("patientResponse").innerText =
@@ -1962,15 +1944,6 @@ document.getElementById("actionEntry").placeholder =
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
         askPatientTyped();
-      }
-    });
-
-  document
-    .getElementById("instructorQuestion")
-    .addEventListener("keydown", function(event) {
-      if (event.key === "Enter" && !event.shiftKey) {
-        event.preventDefault();
-        askInstructorTyped();
       }
     });
 
