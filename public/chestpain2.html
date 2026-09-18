@@ -541,6 +541,7 @@
     const existingText = textBox.value.trim();
     let finalTranscript = "";
     let heardSpeech = false;
+    const voiceDetectedSkills = new Set();
 
     recognition.lang = "en-US";
     recognition.continuous = true;
@@ -570,7 +571,29 @@
 
       textBox.value = [existingText, finalTranscript.trim(), interimTranscript.trim()]
         .filter(Boolean)
-        .join(existingText ? " " : "");
+        .join(" ");
+
+      // Check Assessment and Treatment speech immediately. This makes
+      // recognized checklist items appear before the microphone closes.
+      if (recordWhenFinished && textBox.value.trim()) {
+        const newSkills = detectAndRecordAssessments(
+          textBox.value,
+          "voice assessment"
+        );
+
+        newSkills.forEach(skill => voiceDetectedSkills.add(skill));
+
+        if (voiceDetectedSkills.size > 0) {
+          showRecordedStatus(
+            Array.from(voiceDetectedSkills),
+            "voice assessment"
+          );
+        } else {
+          document.getElementById("recordStatus").innerText =
+            "Listening and checking the spoken assessment...";
+        }
+      }
+
       textBox.focus();
     };
 
@@ -590,7 +613,7 @@
       resetVoiceButton(recognition);
 
       if (shouldRecord) {
-        recordAction();
+        recordAction("voice assessment");
       }
     };
 
@@ -1738,7 +1761,7 @@
     }
   }
 
-  function recordAction() {
+  function recordAction(source = "manual entry") {
     const entryBox = document.getElementById("actionEntry");
     const statusBox = document.getElementById("recordStatus");
     const entry = entryBox.value.trim();
@@ -1752,7 +1775,7 @@
 
     const detectedSkills = detectAndRecordAssessments(
       entry,
-      "manual entry"
+      source
     );
 
     recordStudentInput("Assessment / Treatment", entry);
