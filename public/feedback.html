@@ -88,36 +88,43 @@
           <textarea id="disputeReason" placeholder="Explain what you entered and where it appears in the student input log."></textarea>
         </div>
 
-        <button type="button" class="dispute-btn" onclick="addDispute()">Add Dispute</button>
+        <button id="addDisputeButton" type="button" class="dispute-btn">Add Dispute</button>
       </div>
 
       <div id="disputeStatus" aria-live="polite"></div>
       <div id="disputeList" class="dispute-list"></div>
       <div class="buttons">
-        <button type="button" class="review-disputes" onclick="openDisputeReview()">Open Instructor Dispute Report</button>
+        <button id="reviewDisputesButton" type="button" class="review-disputes">Open Instructor Dispute Report</button>
       </div>
     </div>
 
     <div class="buttons">
-      <button onclick="returnToScenario()">Return to Scenario</button>
-      <button class="secondary" onclick="window.print()">Print Report</button>
-      <button class="secondary" onclick="location.href='index.html'">Home</button>
+      <button id="returnButton" type="button">Return to Scenario</button>
+      <button id="printButton" type="button" class="secondary">Print Report</button>
+      <button id="homeButton" type="button" class="secondary">Home</button>
     </div>
   </div>
 
   <script>
+    const STORAGE_KEY = "emtGradingResults";
     let gradingData = {};
 
+    function getElement(id) {
+      return document.getElementById(id);
+    }
+
     function renderStudentInputs(data) {
-      const container = document.getElementById("studentInputs");
+      const container = getElement("studentInputs");
       let inputs = Array.isArray(data.studentInputLog) ? data.studentInputLog : [];
+
+      container.replaceChildren();
 
       // Show older saved reports even if they predate the chronological log.
       if (inputs.length === 0) {
         inputs = [];
 
         if (Array.isArray(data.assessmentLog)) {
-          data.assessmentLog.forEach(function(entry) {
+          data.assessmentLog.forEach(function (entry) {
             inputs.push({ type: "Assessment / Treatment", text: entry, time: "" });
           });
         }
@@ -139,7 +146,7 @@
         return;
       }
 
-      inputs.forEach(function(input, index) {
+      inputs.forEach(function (input, index) {
         const item = document.createElement("div");
         item.className = "input-item";
 
@@ -167,16 +174,16 @@
     }
 
     function saveGradingData() {
-      sessionStorage.setItem("emtGradingResults", JSON.stringify(gradingData));
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(gradingData));
     }
 
     function renderDisputes() {
-      const container = document.getElementById("disputeList");
+      const container = getElement("disputeList");
       const disputes = Array.isArray(gradingData.scoringDisputes)
         ? gradingData.scoringDisputes
         : [];
 
-      container.innerHTML = "";
+      container.replaceChildren();
 
       if (disputes.length === 0) {
         const empty = document.createElement("div");
@@ -186,7 +193,7 @@
         return;
       }
 
-      disputes.forEach(function(dispute, index) {
+      disputes.forEach(function (dispute, index) {
         const item = document.createElement("div");
         item.className = "dispute-item";
 
@@ -223,7 +230,9 @@
         remove.type = "button";
         remove.className = "remove-dispute";
         remove.textContent = "Remove Dispute";
-        remove.onclick = function() { removeDispute(index); };
+        remove.addEventListener("click", function () {
+          removeDispute(index);
+        });
 
         heading.append(title, status);
         item.append(heading, reason, submitted, aiNote, remove);
@@ -232,9 +241,9 @@
     }
 
     async function addDispute() {
-      const itemInput = document.getElementById("disputeItem");
-      const reasonInput = document.getElementById("disputeReason");
-      const statusBox = document.getElementById("disputeStatus");
+      const itemInput = getElement("disputeItem");
+      const reasonInput = getElement("disputeReason");
+      const statusBox = getElement("disputeStatus");
       const item = itemInput.value.trim();
       const reason = reasonInput.value.trim();
 
@@ -250,8 +259,8 @@
 
       const dispute = {
         id: "dispute-" + Date.now() + "-" + Math.random().toString(16).slice(2),
-        item: item,
-        reason: reason,
+        item,
+        reason,
         status: "Pending instructor review",
         submittedAt: new Date().toLocaleString()
       };
@@ -299,41 +308,57 @@
       gradingData.scoringDisputes.splice(index, 1);
       saveGradingData();
       renderDisputes();
-      document.getElementById("disputeStatus").textContent = "Scoring dispute removed.";
+      getElement("disputeStatus").textContent = "Scoring dispute removed.";
     }
 
     function openDisputeReview() {
       if (!Array.isArray(gradingData.scoringDisputes) || gradingData.scoringDisputes.length === 0) {
-        document.getElementById("disputeStatus").textContent = "Add at least one scoring dispute first.";
+        getElement("disputeStatus").textContent = "Add at least one scoring dispute first.";
         return;
       }
       window.location.href = "dispute_review.html";
     }
 
-    const savedData = sessionStorage.getItem("emtGradingResults");
+    function loadReport() {
+      const savedData = sessionStorage.getItem(STORAGE_KEY);
 
-    if (savedData) {
+      if (!savedData) {
+        getElement("scenarioTitle").textContent = "No Scenario Results";
+        getElement("feedback").textContent = "No grading information was found. Please complete a scenario first.";
+        renderStudentInputs({});
+        renderDisputes();
+        return;
+      }
+
       try {
         gradingData = JSON.parse(savedData);
-        document.getElementById("scenarioTitle").innerText = gradingData.scenario || "EMT Scenario";
-        document.getElementById("treatmentPlan").innerText = gradingData.treatmentPlan || "No treatment plan entered.";
-        document.getElementById("feedback").innerText = gradingData.feedback || "No grading feedback available.";
+        getElement("scenarioTitle").textContent = gradingData.scenario || "EMT Scenario";
+        getElement("treatmentPlan").textContent = gradingData.treatmentPlan || "No treatment plan entered.";
+        getElement("feedback").textContent = gradingData.feedback || "No grading feedback available.";
         renderStudentInputs(gradingData);
         renderDisputes();
       } catch (error) {
-        document.getElementById("scenarioTitle").innerText = "Invalid Scenario Results";
-        document.getElementById("feedback").innerText = "The saved grading information could not be read.";
+        gradingData = {};
+        getElement("scenarioTitle").textContent = "Invalid Scenario Results";
+        getElement("feedback").textContent = "The saved grading information could not be read.";
         renderStudentInputs({});
         renderDisputes();
       }
-    } else {
-      document.getElementById("scenarioTitle").innerText = "No Scenario Results";
-      document.getElementById("feedback").innerText = "No grading information was found. Please complete a scenario first.";
-      renderStudentInputs({});
-      renderDisputes();
     }
 
-    function returnToScenario() { window.history.back(); }
+    getElement("addDisputeButton").addEventListener("click", addDispute);
+    getElement("reviewDisputesButton").addEventListener("click", openDisputeReview);
+    getElement("returnButton").addEventListener("click", function () {
+      window.history.back();
+    });
+    getElement("printButton").addEventListener("click", function () {
+      window.print();
+    });
+    getElement("homeButton").addEventListener("click", function () {
+      window.location.href = "index.html";
+    });
+
+    loadReport();
   </script>
 </body>
 </html>
