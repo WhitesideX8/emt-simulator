@@ -44,8 +44,19 @@
     button:hover { background: darkgreen; }
     .secondary { background: #333; }
     .secondary:hover { background: #111; }
+    .download { background: #176b9e; }
+    .download:hover { background: #0f4f78; }
+    #downloadStatus { min-height: 20px; margin-top: 8px; text-align: center; font-weight: bold; }
+    body.pdf-mode .buttons,
+    body.pdf-mode .dispute-form,
+    body.pdf-mode .dispute-help,
+    body.pdf-mode #disputeStatus,
+    body.pdf-mode #downloadStatus,
+    body.pdf-mode .remove-dispute { display: none; }
+    body.pdf-mode { background: white; }
+    body.pdf-mode .container { width: 100%; margin: 0; }
     @media print {
-      .buttons, .dispute-form, .dispute-help, #disputeStatus, .remove-dispute { display: none; }
+      .buttons, .dispute-form, .dispute-help, #disputeStatus, #downloadStatus, .remove-dispute { display: none; }
       body { background: white; }
       .container { width: 100%; margin: 0; }
       .section { break-inside: avoid; }
@@ -103,10 +114,13 @@
     <div class="buttons">
       <button id="returnButton" type="button">Return to Scenario</button>
       <button id="printButton" type="button" class="secondary">Print Report</button>
+      <button id="downloadButton" type="button" class="download">Download PDF</button>
       <button id="homeButton" type="button" class="secondary">Home</button>
+      <div id="downloadStatus" aria-live="polite"></div>
     </div>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script>
     const STORAGE_KEY = "emtGradingResults";
     let gradingData = {};
@@ -350,6 +364,52 @@
       window.location.href = "dispute_review.html";
     }
 
+    function createPdfFilename() {
+      const scenarioName = gradingData.scenario || "EMT-Scenario";
+      const safeName = scenarioName
+        .replace(/[^a-z0-9]+/gi, "-")
+        .replace(/^-+|-+$/g, "") || "EMT-Scenario";
+
+      return `${safeName}-Grading-Report.pdf`;
+    }
+
+    async function downloadReportAsPdf() {
+      const statusBox = getElement("downloadStatus");
+      const downloadButton = getElement("downloadButton");
+
+      if (typeof html2pdf === "undefined") {
+        statusBox.style.color = "#9d2020";
+        statusBox.textContent = "The PDF tool did not load. Check the internet connection and try again.";
+        return;
+      }
+
+      downloadButton.disabled = true;
+      statusBox.style.color = "#166534";
+      statusBox.textContent = "Preparing PDF...";
+      document.body.classList.add("pdf-mode");
+
+      const options = {
+        margin: [0.35, 0.35, 0.35, 0.35],
+        filename: createPdfFilename(),
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
+        jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+        pagebreak: { mode: ["css", "legacy"], avoid: [".section", ".input-item", ".dispute-item"] }
+      };
+
+      try {
+        await html2pdf().set(options).from(document.querySelector(".container")).save();
+        statusBox.textContent = "PDF downloaded.";
+      } catch (error) {
+        console.error("PDF download failed:", error);
+        statusBox.style.color = "#9d2020";
+        statusBox.textContent = "The PDF could not be created. Please try Print Report instead.";
+      } finally {
+        document.body.classList.remove("pdf-mode");
+        downloadButton.disabled = false;
+      }
+    }
+
     function loadReport() {
       const savedData = sessionStorage.getItem(STORAGE_KEY);
 
@@ -388,6 +448,7 @@
     getElement("printButton").addEventListener("click", function () {
       window.print();
     });
+    getElement("downloadButton").addEventListener("click", downloadReportAsPdf);
     getElement("homeButton").addEventListener("click", function () {
       window.location.href = "index.html";
     });
