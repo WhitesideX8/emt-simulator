@@ -14,6 +14,7 @@
     .section h2 { margin-top: 0; border-bottom: 2px solid #333; padding-bottom: 6px; }
     #feedback, #treatmentPlan { white-space: pre-wrap; line-height: 1.5; }
     #feedback { font-size: 16px; }
+    #scoreSummary { margin-bottom: 14px; padding: 12px 14px; border-left: 5px solid #176b9e; border-radius: 5px; background: #f4f7f9; font-size: 18px; font-weight: bold; }
     .input-list { display: grid; gap: 10px; }
     .input-item { padding: 11px 13px; border-left: 5px solid #176b9e; border-radius: 5px; background: #f4f7f9; }
     .input-heading { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-bottom: 5px; color: #12304a; font-weight: bold; }
@@ -68,6 +69,7 @@
 
     <div class="section">
       <h2>Evaluation</h2>
+      <div id="scoreSummary"></div>
       <div id="feedback"></div>
     </div>
 
@@ -175,6 +177,35 @@
 
     function saveGradingData() {
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(gradingData));
+    }
+
+    function renderScore(data) {
+      const scoreSummary = getElement("scoreSummary");
+      const earnedPoints = Number(data.earnedPoints);
+      const possiblePoints = Number(data.possiblePoints);
+
+      if (Number.isFinite(earnedPoints) && Number.isFinite(possiblePoints) && possiblePoints > 0) {
+        const percentage = Math.round((earnedPoints / possiblePoints) * 100);
+        scoreSummary.textContent = `Score: ${earnedPoints} of ${possiblePoints} points (${percentage}%)`;
+        return;
+      }
+
+      scoreSummary.textContent = "Score unavailable";
+    }
+
+    function removePassFailResult(feedback) {
+      if (!feedback) return "No grading feedback available.";
+
+      const cleanedFeedback = String(feedback)
+        .split("\n")
+        .filter(function (line) {
+          return !/^\s*(?:(?:overall\s+)?(?:result|status|outcome|grade)\s*:\s*)?(?:pass|passed|fail|failed)\s*[.!]?\s*$/i.test(line);
+        })
+        .join("\n")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
+
+      return cleanedFeedback || "No additional grading feedback available.";
     }
 
     function renderDisputes() {
@@ -324,6 +355,7 @@
 
       if (!savedData) {
         getElement("scenarioTitle").textContent = "No Scenario Results";
+        renderScore({});
         getElement("feedback").textContent = "No grading information was found. Please complete a scenario first.";
         renderStudentInputs({});
         renderDisputes();
@@ -334,12 +366,14 @@
         gradingData = JSON.parse(savedData);
         getElement("scenarioTitle").textContent = gradingData.scenario || "EMT Scenario";
         getElement("treatmentPlan").textContent = gradingData.treatmentPlan || "No treatment plan entered.";
-        getElement("feedback").textContent = gradingData.feedback || "No grading feedback available.";
+        renderScore(gradingData);
+        getElement("feedback").textContent = removePassFailResult(gradingData.feedback);
         renderStudentInputs(gradingData);
         renderDisputes();
       } catch (error) {
         gradingData = {};
         getElement("scenarioTitle").textContent = "Invalid Scenario Results";
+        renderScore({});
         getElement("feedback").textContent = "The saved grading information could not be read.";
         renderStudentInputs({});
         renderDisputes();
