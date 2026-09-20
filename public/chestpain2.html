@@ -477,6 +477,60 @@
   let scenarioStartTime = Date.now();
 
   const scenario = "chestPain";
+  const SCENARIO_STATE_KEY = `emtScenarioState:${scenario}`;
+
+  function saveScenarioState() {
+    const state = {
+      patientHistory,
+      instructorHistory,
+      assessmentLog,
+      studentInputLog,
+      completedSkills: Array.from(completedSkills),
+      scenarioStartTime,
+      patientQuestion: document.getElementById("patientQuestion").value,
+      actionEntry: document.getElementById("actionEntry").value,
+      patientResponse: document.getElementById("patientResponse").innerText,
+      instructorResponse: document.getElementById("instructorResponse").innerText,
+      recordStatus: document.getElementById("recordStatus").innerText,
+      completedAssessments: document.getElementById("completedAssessments").innerText
+    };
+
+    sessionStorage.setItem(SCENARIO_STATE_KEY, JSON.stringify(state));
+  }
+
+  function restoreScenarioState() {
+    const savedState = sessionStorage.getItem(SCENARIO_STATE_KEY);
+    if (!savedState) return false;
+
+    try {
+      const state = JSON.parse(savedState);
+
+      patientHistory = state.patientHistory || "";
+      instructorHistory = state.instructorHistory || "";
+      assessmentLog = Array.isArray(state.assessmentLog) ? state.assessmentLog : [];
+      studentInputLog = Array.isArray(state.studentInputLog) ? state.studentInputLog : [];
+      completedSkills = new Set(
+        Array.isArray(state.completedSkills) ? state.completedSkills : []
+      );
+      scenarioStartTime = Number(state.scenarioStartTime) || Date.now();
+
+      document.getElementById("patientQuestion").value = state.patientQuestion || "";
+      document.getElementById("actionEntry").value = state.actionEntry || "";
+      document.getElementById("patientResponse").innerText =
+        state.patientResponse || "Patient response will appear here.";
+      document.getElementById("instructorResponse").innerText =
+        state.instructorResponse || "Instructor answer will appear here.";
+      document.getElementById("recordStatus").innerText = state.recordStatus || "";
+      document.getElementById("completedAssessments").innerText =
+        state.completedAssessments || "No assessments recorded yet.";
+
+      return true;
+    } catch (error) {
+      console.error("Could not restore the scenario session:", error);
+      sessionStorage.removeItem(SCENARIO_STATE_KEY);
+      return false;
+    }
+  }
 
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1878,6 +1932,7 @@
         adjustedEarnedPoints: Number(data.earnedPoints) || 0,
         scenario: "Chest Pain Scenario",
         scenarioCode: scenario,
+        scenarioUrl: window.location.href,
         feedback:
           data.feedback ||
           data.reply ||
@@ -1912,6 +1967,7 @@
       const gradingData = {
         scenario: "Chest Pain Scenario",
         scenarioCode: scenario,
+        scenarioUrl: window.location.href,
         feedback: fallbackFeedback,
         treatmentPlan,
         assessmentLog,
@@ -1946,6 +2002,7 @@
     completedSkills = new Set();
     scenarioStartTime = Date.now();
     sessionStorage.removeItem("emtGradingResults");
+    sessionStorage.removeItem(SCENARIO_STATE_KEY);
 
     document.getElementById("patientQuestion").value = "";
     document.getElementById("actionEntry").value = "";
@@ -1984,7 +2041,14 @@ document.getElementById("actionEntry").placeholder =
       }
     });
 
-  window.addEventListener("DOMContentLoaded", resetScenario);
+  document.addEventListener("input", saveScenarioState);
+  window.addEventListener("pagehide", saveScenarioState);
+
+  window.addEventListener("DOMContentLoaded", function() {
+    if (!restoreScenarioState()) {
+      resetScenario();
+    }
+  });
 </script>
 </body>
 </html>
