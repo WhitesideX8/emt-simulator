@@ -123,10 +123,53 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script>
     const STORAGE_KEY = "emtGradingResults";
+    const SCENARIO_URL_KEY = "emtCurrentScenarioUrl";
     let gradingData = {};
 
     function getElement(id) {
       return document.getElementById(id);
+    }
+
+    function isScenarioUrl(value) {
+      if (!value) return false;
+
+      try {
+        const url = new URL(value, window.location.href);
+        const page = url.pathname.split("/").pop().toLowerCase();
+        const excludedPages = ["feedback.html", "dispute_review.html", "index.html", ""];
+
+        return url.origin === window.location.origin && !excludedPages.includes(page);
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function rememberCurrentScenario() {
+      const returnParameter = new URLSearchParams(window.location.search).get("returnTo");
+      const savedInResults = gradingData.scenarioUrl || gradingData.returnUrl || gradingData.sourcePage;
+      const referringPage = document.referrer;
+      const candidates = [returnParameter, savedInResults, referringPage];
+
+      const scenarioUrl = candidates.find(isScenarioUrl);
+      if (scenarioUrl) {
+        sessionStorage.setItem(SCENARIO_URL_KEY, new URL(scenarioUrl, window.location.href).href);
+      }
+    }
+
+    function returnToCurrentScenario() {
+      const savedScenarioUrl = sessionStorage.getItem(SCENARIO_URL_KEY);
+
+      if (isScenarioUrl(savedScenarioUrl)) {
+        window.location.href = savedScenarioUrl;
+        return;
+      }
+
+      if (window.history.length > 1) {
+        window.history.back();
+        return;
+      }
+
+      window.location.href = "index.html";
     }
 
     function renderStudentInputs(data) {
@@ -424,6 +467,7 @@
 
       try {
         gradingData = JSON.parse(savedData);
+        rememberCurrentScenario();
         getElement("scenarioTitle").textContent = gradingData.scenario || "EMT Scenario";
         getElement("treatmentPlan").textContent = gradingData.treatmentPlan || "No treatment plan entered.";
         renderScore(gradingData);
@@ -442,9 +486,7 @@
 
     getElement("addDisputeButton").addEventListener("click", addDispute);
     getElement("reviewDisputesButton").addEventListener("click", openDisputeReview);
-    getElement("returnButton").addEventListener("click", function () {
-      window.history.back();
-    });
+    getElement("returnButton").addEventListener("click", returnToCurrentScenario);
     getElement("printButton").addEventListener("click", function () {
       window.print();
     });
