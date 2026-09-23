@@ -10,6 +10,7 @@
     .container { width: 90%; max-width: 1000px; margin: 30px auto; }
     h1 { text-align: center; margin-bottom: 5px; }
     #scenarioTitle { text-align: center; color: #555; margin-top: 0; }
+    #studentNameDisplay { text-align: center; font-size: 18px; font-weight: bold; margin: 8px 0 22px; }
     .section { background: white; border: 1px solid #bbb; border-radius: 8px; padding: 18px; margin: 18px 0; }
     .section h2 { margin-top: 0; border-bottom: 2px solid #333; padding-bottom: 6px; }
     #feedback, #treatmentPlan { white-space: pre-wrap; line-height: 1.5; }
@@ -67,6 +68,7 @@
   <div class="container">
     <h1>EMT Scenario Grading Report</h1>
     <h2 id="scenarioTitle"></h2>
+    <p id="studentNameDisplay"></p>
 
     <div class="section">
       <h2>Student Treatment Plan</h2>
@@ -467,6 +469,10 @@
 
       try {
         gradingData = JSON.parse(savedData);
+        const studentName = gradingData.studentName || sessionStorage.getItem("emtStudentName") || "";
+        getElement("studentNameDisplay").textContent = studentName
+          ? "Student: " + studentName
+          : "Student: Name not entered";
         rememberCurrentScenario();
         getElement("scenarioTitle").textContent = gradingData.scenario || "EMT Scenario";
         getElement("treatmentPlan").textContent = gradingData.treatmentPlan || "No treatment plan entered.";
