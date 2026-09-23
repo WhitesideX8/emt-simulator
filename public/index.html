@@ -96,5 +96,24 @@
     <a href="stroke.html"><button>Scenario #3</button></a>
     <a href="diabetic.html"><button>Scenario #4</button></a>
   </div>
+ <a href="chestpain2.html" class="scenario-link"><button type="button">Scenario #1</button></a>
+<a href="sob.html" class="scenario-link"><button type="button">Scenario #2</button></a>
+<a href="stroke.html" class="scenario-link"><button type="button">Scenario #3</button></a>
+<a href="diabetic.html" class="scenario-link"><button type="button">Scenario #4</button></a>
+
+<script>
+  const nameInput = document.getElementById("studentName");
+  nameInput.value = sessionStorage.getItem("emtStudentName") || "";
+
+  nameInput.addEventListener("input", () => {
+    sessionStorage.setItem("emtStudentName", nameInput.value.trim());
+  });
+
+  document.querySelectorAll(".scenario-link").forEach(link => {
+    link.addEventListener("click", () => {
+      sessionStorage.setItem("emtStudentName", nameInput.value.trim());
+    });
+  });
+</script> 
 </body>
 </html>
