@@ -23,10 +23,33 @@
       z-index: 0;
     }
 
+    .name-field {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 20px;
+      text-align: left;
+    }
+
+    .name-field label {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .name-field input {
+      width: 220px;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+    }
+
     .container {
       position: relative;
       z-index: 1;
-      padding-top: 40px;
+      padding-top: 20px;
     }
 
     h1 {
@@ -54,26 +77,24 @@
 </head>
 
 <body>
-  <div class="container">
+  <div class="name-field">
+    <label for="studentName">Name:</label>
+    <input
+      type="text"
+      id="studentName"
+      name="studentName"
+      placeholder="Enter your name"
+      autocomplete="name"
+    />
+  </div>
 
+  <div class="container">
     <h1>EMT Simulation Scenarios</h1>
 
-    <a href="chestpain2.html">
-      <button>Scenario #1</button>
-    </a>
-
-    <a href="sob.html">
-      <button>Scenario #2</button>
-    </a>
-
-    <a href="stroke.html">
-      <button>Scenario #3</button>
-    </a>
-
-    <a href="diabetic.html">
-      <button>Scenario #4</button>
-    </a>
-
+    <a href="chestpain2.html"><button>Scenario #1</button></a>
+    <a href="sob.html"><button>Scenario #2</button></a>
+    <a href="stroke.html"><button>Scenario #3</button></a>
+    <a href="diabetic.html"><button>Scenario #4</button></a>
   </div>
 </body>
 </html>
