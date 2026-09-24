@@ -28,6 +28,10 @@
       z-index: 0;
     }
 
+    .navigation {
+      margin-bottom: 5px;
+    }
+
     .container {
       position: relative;
       z-index: 1;
@@ -477,6 +481,61 @@
   let scenarioStartTime = Date.now();
 
   const scenario = "shortnessOfBreath";
+  const SCENARIO_STATE_KEY = `emtScenarioState:${scenario}`;
+
+  function saveScenarioState() {
+    const state = {
+      patientHistory,
+      instructorHistory,
+      assessmentLog,
+      studentInputLog,
+      completedSkills: Array.from(completedSkills),
+      scenarioStartTime,
+      patientQuestion: document.getElementById("patientQuestion").value,
+      actionEntry: document.getElementById("actionEntry").value,
+      patientResponse: document.getElementById("patientResponse").innerText,
+      instructorResponse: document.getElementById("instructorResponse").innerText,
+      recordStatus: document.getElementById("recordStatus").innerText,
+      completedAssessments: document.getElementById("completedAssessments").innerText
+    };
+
+    sessionStorage.setItem(SCENARIO_STATE_KEY, JSON.stringify(state));
+  }
+
+  function restoreScenarioState() {
+    const savedState = sessionStorage.getItem(SCENARIO_STATE_KEY);
+    if (!savedState) return false;
+
+    try {
+      const state = JSON.parse(savedState);
+
+      patientHistory = state.patientHistory || "";
+      instructorHistory = state.instructorHistory || "";
+      assessmentLog = Array.isArray(state.assessmentLog) ? state.assessmentLog : [];
+      studentInputLog = Array.isArray(state.studentInputLog) ? state.studentInputLog : [];
+      completedSkills = new Set(
+        Array.isArray(state.completedSkills) ? state.completedSkills : []
+      );
+      scenarioStartTime = Number(state.scenarioStartTime) || Date.now();
+
+      document.getElementById("patientQuestion").value = state.patientQuestion || "";
+      document.getElementById("actionEntry").value = state.actionEntry || "";
+      document.getElementById("patientResponse").innerText =
+        state.patientResponse || "Patient response will appear here.";
+      document.getElementById("instructorResponse").innerText =
+        state.instructorResponse || "Instructor answer will appear here.";
+      document.getElementById("recordStatus").innerText = state.recordStatus || "";
+      document.getElementById("completedAssessments").innerText =
+        state.completedAssessments || "No assessments recorded yet.";
+
+      return true;
+    } catch (error) {
+      console.error("Could not restore the scenario session:", error);
+      sessionStorage.removeItem(SCENARIO_STATE_KEY);
+      return false;
+    }
+  }
+
 
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -496,7 +555,9 @@
   }
 
   function stopVoiceInput() {
-    if (activeRecognition) activeRecognition.stop();
+    if (activeRecognition) {
+      activeRecognition.stop();
+    }
   }
 
   function toggleVoiceInput(textareaId, buttonId, recordWhenFinished = false) {
@@ -1554,6 +1615,8 @@
     const gradeButton = document.getElementById("gradeButton");
     const actionEntry = document.getElementById("actionEntry");
     const pendingEntry = actionEntry.value.trim();
+    const studentName = (sessionStorage.getItem("emtStudentName") || "").trim();
+    saveScenarioState();
 
     if (pendingEntry) {
       detectAndRecordAssessments(pendingEntry, "manual entry");
@@ -1618,6 +1681,8 @@
         originalEarnedPoints: Number(data.earnedPoints) || 0,
         adjustedEarnedPoints: Number(data.earnedPoints) || 0,
         scenario: "Shortness of Breath Scenario",
+        studentName,
+        scenarioUrl: window.location.href,
         scenarioCode: scenario,
         feedback:
           data.feedback ||
@@ -1652,6 +1717,8 @@
 
       const gradingData = {
         scenario: "Shortness of Breath Scenario",
+        studentName,
+        scenarioUrl: window.location.href,
         scenarioCode: scenario,
         feedback: fallbackFeedback,
         treatmentPlan,
@@ -1679,6 +1746,7 @@
   }
 
   function resetScenario() {
+    stopVoiceInput();
     patientHistory = "";
     instructorHistory = "";
     assessmentLog = [];
@@ -1686,6 +1754,7 @@
     completedSkills = new Set();
     scenarioStartTime = Date.now();
     sessionStorage.removeItem("emtGradingResults");
+    sessionStorage.removeItem(SCENARIO_STATE_KEY);
 
     document.getElementById("patientQuestion").value = "";
     document.getElementById("actionEntry").value = "";
@@ -1724,7 +1793,14 @@ document.getElementById("actionEntry").placeholder =
       }
     });
 
-  window.addEventListener("DOMContentLoaded", resetScenario);
+  document.addEventListener("input", saveScenarioState);
+  window.addEventListener("pagehide", saveScenarioState);
+
+  window.addEventListener("DOMContentLoaded", function() {
+    if (!restoreScenarioState()) {
+      resetScenario();
+    }
+  });
 </script>
 </body>
 </html>
