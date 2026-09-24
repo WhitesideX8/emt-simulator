@@ -436,7 +436,7 @@
 
 
       <div class="section-label">
-        Recorded Assessments and Treatments
+        Automatically Recorded Assessments
       </div>
 
       <div id="completedAssessments" class="box">
@@ -1409,17 +1409,18 @@
   }
 
   function updateCompletedAssessmentsDisplay() {
-    const completedBox = document.getElementById("completedAssessments");
-    const recordedEntries = studentInputLog
-      .filter(item => item.type === "Assessment / Treatment")
-      .map((item, index) => `${index + 1}. ${item.text}`);
-    const recognizedSkills = Array.from(completedSkills)
-      .map(skill => `\u2713 ${skill}`);
+    const completedBox =
+      document.getElementById("completedAssessments");
 
-    completedBox.innerText = [
-      recordedEntries.length ? recordedEntries.join("\n") : "No assessments recorded yet.",
-      recognizedSkills.length ? "\nRecognized skills:\n" + recognizedSkills.join("\n") : ""
-    ].join("\n").trim();
+    if (completedSkills.size === 0) {
+      completedBox.innerText = "No assessments recorded yet.";
+      return;
+    }
+
+    completedBox.innerText = Array
+      .from(completedSkills)
+      .map((skill, index) => `${index + 1}. \u2713 ${skill}`)
+      .join("\n");
   }
 
   function showRecordedStatus(newSkills, source) {
