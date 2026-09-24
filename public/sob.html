@@ -694,150 +694,228 @@
     {
       skill: "BSI precautions",
       keywords: [
-        "bsi",
-        "body substance isolation",
-        "put on gloves",
-        "wear gloves",
-        "use ppe",
-        "personal protective equipment"
+        "bsi", "body substance isolation", "put on gloves", "wear gloves",
+        "use ppe", "personal protective equipment", "gloves on", "ppe on"
       ]
     },
-
     {
       skill: "Scene safety assessed",
       keywords: [
-        "is the scene safe",
-        "is scene safe",
-        "scene safety",
-        "scene is safe",
-        "safe to enter",
-        "safe to approach",
-        "check the scene for hazards",
-        "are there any hazards",
-        "any scene hazards"
+        "is the scene safe", "scene safety", "scene is safe", "scene appears safe",
+        "check the scene for hazards", "are there any hazards", "no hazards", "scene secure"
       ]
     },
-
     {
       skill: "Nature of illness assessed",
       keywords: [
-        "nature of illness",
-        "what happened today",
-        "why were we called",
-        "reason for the call"
+        "nature of illness", "what happened today", "why were we called",
+        "reason for the call", "medical complaint", "what brought us here"
       ]
     },
-
     {
       skill: "Number of patients determined",
       keywords: [
-        "how many patients",
-        "number of patients",
-        "are there any other patients"
+        "how many patients", "number of patients", "are there any other patients",
+        "one patient", "single patient", "only patient"
       ]
     },
-
     {
       skill: "Need for additional resources considered",
       keywords: [
         "request als",
+        "requesting als",
+        "going to request als",
+        "i am going to request als",
         "need als",
+        "call als",
+        "call for als",
+        "contact als",
+        "als intercept",
+        "request intercept",
         "request a paramedic",
+        "request paramedic",
         "need a paramedic",
         "request additional resources",
-        "need additional resources"
+        "request additional ems resources",
+        "additional ems resources",
+        "need additional resources",
+        "need additional ems resources",
+        "upgrade to als"
+      ],
+      patterns: [
+        /\b(request|call|contact|need|want|consider|activate)\b.*\bals\b/,
+        /\bals\b.*\b(request|intercept|backup|resource|paramedic)\b/,
+        /\b(additional|extra)\b.*\b(ems|medical)?\s*resources?\b/,
+        /\brequest\b.*\b(paramedic|intercept|resources?)\b/
       ]
     },
-
     {
       skill: "General impression formed",
       keywords: [
-        "general impression",
-        "what does the patient look like",
-        "how does the patient appear",
-        "initial impression"
+        "general impression", "what does the patient look like", "how does the patient appear",
+        "initial impression", "patient appears", "patient looks", "appears ill",
+        "appears distressed", "appears stable", "appears unstable"
       ]
     },
-
     {
       skill: "Mental status assessed",
       keywords: [
-        "assess mental status",
-        "what is the mental status",
-        "level of consciousness",
-        "what is the avpu",
-        "is the patient alert",
-        "is he alert and oriented",
-        "glasgow coma scale",
-        "what is the gcs",
-        "check responsiveness"
+        "assess mental status", "what is the mental status", "level of consciousness",
+        "what is the avpu", "glasgow coma scale", "what is the gcs", "check responsiveness",
+        "alert and oriented", "alert but confused", "alert to verbal", "responds to verbal",
+        "responds to voice", "responds to pain", "responds to painful stimuli", "unresponsive",
+        "confused", "disoriented", "oriented to person", "oriented to place", "oriented to time",
+        "oriented to event", "awake and alert", "a and o", "ao x", "gcs is"
+      ],
+      patterns: [
+        /\balert\b.*\b(confused|disoriented|oriented|verbal|voice)\b/,
+        /\b(responds?|responsive)\b.*\b(verbal|voice|pain|stimuli)\b/,
+        /\b(gcs|avpu)\b.*\b\d{1,2}\b/
       ]
     },
-
     {
       skill: "Airway assessed",
       keywords: [
-        "assess the airway",
-        "check the airway",
-        "is the airway patent",
-        "can the patient maintain his airway",
-        "is anything blocking the airway"
+        "assess the airway", "check the airway", "is the airway patent",
+        "can the patient maintain his airway", "is anything blocking the airway",
+        "airway patent", "airway open", "airway clear", "no airway obstruction",
+        "speaking clearly", "speaking in full sentences", "maintaining airway"
+      ],
+      patterns: [
+        /\bairway\b.*\b(patent|open|clear|maintained|intact|obstructed)\b/
       ]
     },
-
     {
       skill: "Breathing assessed",
       keywords: [
-        "assess breathing",
-        "check breathing",
-        "what is the breathing effort",
-        "what is the respiratory effort",
-        "what is the work of breathing",
-        "rate depth and quality",
-        "depth and quality of respirations",
-        "quality of respirations"
+        "assess breathing", "check breathing", "what is the breathing effort",
+        "what is the respiratory effort", "what is the work of breathing",
+        "rate depth and quality", "depth and quality of respirations", "quality of respirations",
+        "breathing unlabored", "breathing labored", "respirations unlabored", "respirations labored",
+        "shallow respirations", "deep respirations", "normal respiratory effort"
+      ],
+      patterns: [
+        /\b(respirations?|breathing)\b.*\b(labored|unlabored|shallow|deep|regular|irregular|adequate|inadequate)\b/
       ]
     },
-
     {
       skill: "Respiratory rate obtained",
       keywords: [
-        "respiratory rate",
-        "respiration rate",
-        "rate of respirations",
-        "how many respirations",
-        "how many breaths per minute",
-        "what are the respirations",
-        "rate depth and quality"
+        "respiratory rate", "respiration rate", "rate of respirations", "how many respirations",
+        "how many breaths per minute", "what are the respirations", "rate depth and quality"
+      ],
+      patterns: [
+        /\b(respirations?|rr|respiratory rate)\b\s*(is|are|:)?\s*\d{1,2}\b/,
+        /\b\d{1,2}\s*(breaths|respirations)\s*per\s*minute\b/
       ]
     },
-
     {
       skill: "Lung sounds assessed",
       keywords: [
         "assess lung sounds",
+        "assess the lung sounds",
         "check lung sounds",
-        "what are the lung sounds",
-        "what are the breath sounds",
+        "check the lung sounds",
+        "listen to lung sounds",
+        "listen to the lung sounds",
+        "listen to lungs",
+        "listen to the lungs",
+        "auscultate lung sounds",
+        "auscultate the lung sounds",
+        "auscultate lungs",
         "auscultate the lungs",
+        "auscultate breath sounds",
+        "auscultate the breath sounds",
+        "assess breath sounds",
+        "assess the breath sounds",
+        "check breath sounds",
+        "check the breath sounds",
+        "listen to breath sounds",
+        "listen to the breath sounds",
+        "what are the lung sounds",
+        "what do the lung sounds sound like",
+        "what are his lung sounds",
+        "what are her lung sounds",
+        "what are the breath sounds",
+        "what do the breath sounds sound like",
+        "how do the lungs sound",
+        "how do his lungs sound",
+        "how do her lungs sound",
         "are the lungs clear",
-        "listen to the lungs"
+        "are lung sounds clear",
+        "are breath sounds clear",
+        "are the lungs clear bilaterally",
+        "are breath sounds equal",
+        "are lung sounds equal",
+        "are breath sounds equal bilaterally",
+        "are lung sounds equal bilaterally",
+        "bilateral lung sounds",
+        "bilateral breath sounds",
+        "lung sounds bilaterally",
+        "breath sounds bilaterally",
+        "lungs clear bilaterally",
+        "lung sounds clear bilaterally",
+        "breath sounds clear bilaterally",
+        "clear and equal bilaterally",
+        "clear equal bilaterally",
+        "equal breath sounds",
+        "equal lung sounds",
+        "equal bilateral breath sounds",
+        "equal bilateral lung sounds",
+        "clear breath sounds",
+        "breath sounds clear",
+        "clear lung sounds",
+        "lung sounds clear",
+        "wheezes",
+        "wheezing",
+        "rales",
+        "crackles",
+        "crackling",
+        "rhonchi",
+        "diminished breath sounds",
+        "diminished lung sounds",
+        "decreased breath sounds",
+        "decreased lung sounds",
+        "absent breath sounds",
+        "absent lung sounds",
+        "adventitious breath sounds",
+        "adventitious lung sounds",
+        "coarse breath sounds",
+        "fine crackles",
+        "coarse crackles",
+        "stridor",
+        "listen anteriorly",
+        "listen posteriorly",
+        "listen to anterior lung fields",
+        "listen to posterior lung fields",
+        "assess anterior lung fields",
+        "assess posterior lung fields",
+        "auscultate anterior lung fields",
+        "auscultate posterior lung fields",
+        "compare lung sounds bilaterally",
+        "compare breath sounds bilaterally",
+        "compare left and right lung sounds",
+        "compare left and right breath sounds"
+      ],
+      patterns: [
+        /\b(assess|check|listen|auscultate|evaluate)\w*\b.*\b(lungs?|lung sounds?|breath sounds?|lung fields?)\b/,
+        /\b(lungs?|lung sounds?|breath sounds?|lung fields?)\b.*\b(assess|check|listen|auscultate|evaluate)\w*\b/,
+        /\b(lungs?|lung sounds?|breath sounds?)\b.*\b(clear|equal|bilateral|wheez\w*|crackl\w*|rales|rhonchi|diminished|decreased|absent|coarse|stridor)\b/,
+        /\b(clear|equal|wheez\w*|crackl\w*|rales|rhonchi|diminished|decreased|absent|coarse|stridor)\b.*\b(lungs?|lung sounds?|breath sounds?)\b/,
+        /\b(anterior|posterior|bilateral)\b.*\b(lung fields?|lung sounds?|breath sounds?)\b/,
+        /\b(compare|comparison)\b.*\b(left|right|bilateral)\b.*\b(lung sounds?|breath sounds?|lungs?)\b/
       ]
     },
-
     {
       skill: "Oxygen saturation obtained",
       keywords: [
-        "oxygen saturation",
-        "what is the spo2",
-        "check spo2",
-        "pulse oximetry",
-        "pulse ox reading",
-        "what is the oxygen level",
-        "o2 saturation"
+        "oxygen saturation", "what is the spo2", "check spo2", "pulse oximetry",
+        "pulse ox reading", "what is the oxygen level", "o2 saturation", "room air saturation"
+      ],
+      patterns: [
+        /\b(spo2|spo 2|o2 sat|oxygen saturation|pulse ox)\b[^0-9]{0,10}\d{2,3}%?/
       ]
     },
-
     {
       skill: "Ability to speak assessed",
       keywords: [
@@ -848,7 +926,6 @@
         "can she talk without stopping for breath"
       ]
     },
-
     {
       skill: "Accessory muscle use assessed",
       keywords: [
@@ -860,7 +937,6 @@
         "is there nasal flaring"
       ]
     },
-
     {
       skill: "Chest rise and symmetry assessed",
       keywords: [
@@ -871,7 +947,6 @@
         "is the chest moving equally"
       ]
     },
-
     {
       skill: "Cough and sputum assessed",
       keywords: [
@@ -883,7 +958,6 @@
         "have you been coughing"
       ]
     },
-
     {
       skill: "Home oxygen use assessed",
       keywords: [
@@ -894,7 +968,6 @@
         "did you use your home oxygen"
       ]
     },
-
     {
       skill: "Inhaler or nebulizer use assessed",
       keywords: [
@@ -906,7 +979,6 @@
         "did the inhaler help"
       ]
     },
-
     {
       skill: "Position of comfort provided",
       keywords: [
@@ -918,7 +990,6 @@
         "assist patient to tripod"
       ]
     },
-
     {
       skill: "Oxygen administered",
       keywords: [
@@ -931,7 +1002,6 @@
         "use a non rebreather"
       ]
     },
-
     {
       skill: "Bronchodilator treatment considered",
       keywords: [
@@ -945,7 +1015,6 @@
         "assist with prescribed bronchodilator"
       ]
     },
-
     {
       skill: "Positive-pressure ventilation considered",
       keywords: [
@@ -959,7 +1028,6 @@
         "provide bag mask ventilation"
       ]
     },
-
     {
       skill: "Rapid transport or ALS considered",
       keywords: [
@@ -971,264 +1039,313 @@
         "notify the receiving hospital"
       ]
     },
-
     {
       skill: "Circulation assessed",
       keywords: [
-        "assess circulation",
-        "check circulation",
-        "assess perfusion",
-        "what is the perfusion status"
+        "assess circulation", "check circulation", "assess perfusion", "what is the perfusion status",
+        "perfusion adequate", "perfusion poor", "capillary refill", "peripheral perfusion"
       ]
     },
-
     {
       skill: "Pulse assessed",
       keywords: [
-        "check the pulse",
-        "assess the pulse",
-        "what is the pulse",
-        "what is the heart rate",
-        "check heart rate",
-        "radial pulse",
-        "carotid pulse"
+        "check the pulse", "assess the pulse", "what is the pulse", "what is the heart rate",
+        "check heart rate", "radial pulse", "carotid pulse", "pulse strong", "pulse weak",
+        "pulse regular", "pulse irregular"
+      ],
+      patterns: [
+        /\b(pulse|heart rate|hr)\b[^0-9]{0,12}\d{2,3}\b/,
+        /\b(radial|carotid)\b.*\b(strong|weak|regular|irregular|present|absent)\b/
       ]
     },
-
     {
       skill: "Skin signs assessed",
       keywords: [
-        "assess skin signs",
-        "check skin signs",
-        "what are the skin signs",
-        "skin color temperature and condition",
-        "skin color temperature and moisture",
-        "what is the skin color",
-        "is the skin warm or cool",
-        "is the patient diaphoretic"
+        "assess skin signs", "check skin signs", "what are the skin signs",
+        "skin color temperature and condition", "skin color temperature and moisture",
+        "what is the skin color", "is the skin warm or cool", "is the patient diaphoretic",
+        "skin pale", "skin cool", "skin warm", "skin clammy", "skin dry", "skin diaphoretic",
+        "pink warm and dry", "pale cool and clammy"
+      ],
+      patterns: [
+        /\bskin\b.*\b(pale|pink|cyanotic|flushed|cool|warm|hot|cold|clammy|dry|diaphoretic|moist)\b/
       ]
     },
-
     {
       skill: "Major bleeding assessed",
       keywords: [
-        "check for major bleeding",
-        "check for severe bleeding",
-        "any major bleeding",
-        "any uncontrolled bleeding",
-        "assess for hemorrhage"
+        "check for major bleeding", "check for severe bleeding", "any major bleeding",
+        "any uncontrolled bleeding", "assess for hemorrhage", "no major bleeding",
+        "no uncontrolled bleeding", "no severe bleeding", "no obvious hemorrhage"
       ]
     },
-
     {
       skill: "Blood pressure obtained",
       keywords: [
-        "check blood pressure",
-        "obtain blood pressure",
-        "what is the blood pressure",
-        "what is the bp",
-        "take a blood pressure"
+        "check blood pressure", "obtain blood pressure", "what is the blood pressure",
+        "what is the bp", "take a blood pressure",
+        "assess blood pressure", "assessed blood pressure", "assessing blood pressure",
+        "blood pressure assessed", "blood pressure was assessed",
+        "check the blood pressure", "checked the blood pressure",
+        "obtain the blood pressure", "obtained the blood pressure",
+        "take the blood pressure", "took the blood pressure",
+        "get a blood pressure", "got a blood pressure", "get the bp", "got the bp",
+        "measure blood pressure", "measured blood pressure",
+        "bp assessed", "bp obtained", "bp checked", "bp measured",
+        "assess all vitals", "assessed all vitals", "reassessed all vitals",
+        "all vital signs assessed", "all vital signs obtained", "all vitals obtained"
+      ],
+      patterns: [
+        /\b(bp|blood pressure)\b[^0-9]{0,10}\d{2,3}\s*\/\s*\d{2,3}\b/,
+        /\b(bp|blood pressure)\b[^0-9]{0,15}\d{2,3}\s*(?:over|by)\s*\d{2,3}\b/,
+        /\b(assess|assessed|assessing|check|checked|checking|obtain|obtained|obtaining|take|took|taking|get|got|getting|measure|measured|measuring|record|recorded|recording)\w*\b.*\b(bp|blood pressure)\b/,
+        /\b(bp|blood pressure)\b.*\b(assess|assessed|checked|obtained|taken|measured|recorded)\w*\b/,
+        /\b(assess|assessed|reassess|reassessed|obtain|obtained|repeat|repeated|check|checked)\w*\b.*\b(all|complete|full)\b.*\b(vitals|vital signs)\b/,
+        /\b\d{2,3}\s*\/\s*\d{2,3}\b/
       ]
     },
-
     {
       skill: "Pupils assessed",
       keywords: [
-        "check the pupils",
-        "assess the pupils",
-        "what do the pupils look like",
-        "are the pupils equal and reactive",
-        "what is the pupil response",
-        "check perrl"
+        "check the pupils", "assess the pupils", "what do the pupils look like",
+        "are the pupils equal and reactive", "what is the pupil response", "check perrl",
+        "pupils equal and reactive", "pupils round and reactive", "perrl", "pearl"
+      ],
+      patterns: [
+        /\bpupils?\b.*\b(equal|reactive|round|dilated|constricted|sluggish|fixed)\b/
       ]
     },
-
     {
       skill: "Chief complaint identified",
       keywords: [
-        "what is your chief complaint",
-        "what is bothering you",
-        "why did you call ems",
-        "what is wrong today"
+        "what is your chief complaint", "what is bothering you", "why did you call ems",
+        "what is wrong today", "chief complaint is", "complains of", "c o chest pain"
       ]
     },
-
     {
       skill: "Signs and symptoms assessed",
       keywords: [
-        "what symptoms are you having",
-        "what signs and symptoms",
-        "how are you feeling",
-        "what are you experiencing"
+        "what symptoms are you having", "what signs and symptoms", "how are you feeling",
+        "what are you experiencing", "associated symptoms", "other symptoms",
+        "tell me what you are feeling", "what else are you feeling", "any other complaints",
+        "any other discomfort", "are you short of breath", "any trouble breathing",
+        "are you nauseated", "have you vomited", "are you dizzy", "did you pass out",
+        "patient reports", "patient complains of", "denies other symptoms",
+        "signs symptoms", "sample signs and symptoms", "sampl signs and symptoms"
+      ],
+      patterns: [
+        /\b(what|which|any)\b.*\b(symptoms?|complaints?|problems?|discomfort)\b/,
+        /\b(how|what)\b.*\b(feel|feeling|experiencing)\b/,
+        /\b(short of breath|difficulty breathing|nausea|vomiting|dizzy|dizziness|syncope|sweating|diaphoretic)\b/
       ]
     },
-
     {
       skill: "Allergies assessed",
       keywords: [
-        "do you have any allergies",
-        "are you allergic to anything",
-        "any medication allergies",
-        "what are your allergies"
+        "do you have any allergies", "are you allergic to anything", "any medication allergies",
+        "what are your allergies", "no known allergies", "no known drug allergies", "nkda",
+        "allergic to", "any known allergies", "do you have drug allergies",
+        "are you allergic to medications", "food allergies", "environmental allergies",
+        "allergy history", "patient has no allergies", "denies allergies",
+        "sample allergies", "sampl allergies"
+      ],
+      patterns: [
+        /\b(allerg(?:y|ies|ic)|nkda|nka)\b/,
+        /\breact(?:ion|ed)\b.*\b(medication|medicine|drug|food)\b/
       ]
     },
-
     {
       skill: "Medications assessed",
       keywords: [
-        "what medications do you take",
-        "are you taking any medications",
-        "what medicines do you take",
-        "do you use an inhaler",
-        "what inhalers do you use",
-        "did you use your inhaler",
-        "do you use a nebulizer",
-        "do you take prednisone",
-        "copd medications"
+        "what medications do you take", "are you taking any medications", "what medicines do you take",
+        "did you take aspirin", "did you take nitroglycerin", "cardiac medications",
+        "takes lisinopril", "takes atorvastatin", "medication list", "home medications",
+        "do you take any medicine", "are you on any medications", "what prescriptions do you take",
+        "what are your daily medications", "what pills do you take", "any over the counter medications",
+        "has not taken medications", "denies taking medications", "patient takes",
+        "sample medications", "sampl medications"
+      ],
+      patterns: [
+        /\b(what|which|any)\b.*\b(medications?|medicines?|prescriptions?|pills?)\b/,
+        /\b(takes?|taking|on|uses?)\b.*\b(medications?|medicine|lisinopril|atorvastatin|aspirin|nitro(?:glycerin)?)\b/
       ]
     },
-
     {
       skill: "Pertinent medical history assessed",
       keywords: [
-        "what is your medical history",
-        "past medical history",
-        "do you have copd",
-        "history of copd",
-        "do you have asthma",
-        "history of asthma",
-        "do you have heart failure",
-        "medical problems",
-        "have you had this before"
+        "what is your medical history", "past medical history", "history of heart problems",
+        "history of heart attack", "history of angina", "medical problems", "have you had this before",
+        "history of hypertension", "history of high blood pressure", "history of high cholesterol",
+        "history includes", "do you have any medical conditions", "what medical conditions do you have",
+        "any significant medical history", "any past illnesses", "previous health problems",
+        "have you ever had this problem", "has this happened before", "any prior episodes",
+        "prior heart attack", "prior stroke", "denies medical history", "no medical history",
+        "sample past history", "sampl past history", "pertinent history"
+      ],
+      patterns: [
+        /\b(history|previous|prior|past)\b.*\b(medical|illness|condition|problem|episode|heart attack|stroke|angina)\b/,
+        /\b(has|have)\b.*\b(happened|occurred)\b.*\b(before|previously)\b/
       ]
     },
-
     {
       skill: "Last oral intake assessed",
       keywords: [
-        "when did you last eat",
-        "what did you last eat",
-        "last oral intake",
-        "when was your last meal",
-        "did you eat today",
-        "have you eaten today"
+        "when did you last eat", "what did you last eat", "last oral intake", "when was your last meal",
+        "did you eat today", "have you eaten today", "ate breakfast", "last meal was", "last ate",
+        "when did you last drink", "what did you last drink", "last food or drink",
+        "most recent meal", "what time did you eat", "anything to eat or drink",
+        "last intake", "has not eaten", "has not had anything to drink",
+        "sample last oral intake", "sampl last oral intake"
+      ],
+      patterns: [
+        /\b(when|what|time)\b.*\b(last|most recent)\b.*\b(eat|ate|meal|food|drink|intake)\b/,
+        /\b(last|most recent)\b.*\b(meal|food|drink|oral intake|intake)\b/
       ]
     },
-
     {
       skill: "Events leading to illness assessed",
       keywords: [
-        "what happened before this started",
-        "what were you doing when this started",
-        "events leading up to this",
-        "what happened before the breathing became worse",
-        "what led up to this"
+        "what happened before this started", "what were you doing when this started",
+        "events leading up to this", "what happened prior to the chest pain", "what led up to this",
+        "started while", "began while", "was doing when", "tell me what happened",
+        "what happened today", "what were you doing beforehand", "what occurred before this",
+        "what led to the symptoms", "events before the illness", "events before the injury",
+        "symptoms began while", "patient was doing", "onset during activity",
+        "sample events", "sampl events", "events leading"
+      ],
+      patterns: [
+        /\b(what|events?)\b.*\b(happened|occurred|led|leading)\b.*\b(before|prior|up to|symptoms?|pain|illness|injury)\b/,
+        /\b(what were you doing|doing when|began while|started while|onset during)\b/
       ]
     },
-
-    /*
-      Complete OPQRST is credited only when the student
-      clearly requests the complete assessment.
-    */
     {
       skill: "Complete OPQRST assessment performed",
       keywords: [
-        "perform a complete opqrst",
-        "perform complete opqrst",
-        "perform an opqrst assessment",
-        "complete opqrst assessment",
-        "full opqrst assessment",
-        "assess using opqrst",
-        "obtain a complete opqrst",
-        "go through opqrst"
+        "perform a complete opqrst", "perform complete opqrst", "perform an opqrst assessment",
+        "complete opqrst assessment", "full opqrst assessment", "assess using opqrst",
+        "obtain a complete opqrst", "go through opqrst", "perform oprst", "complete oprst",
+        "full oprst", "obtain oprst", "go through oprst", "opqrst history", "oprst history"
+      ],
+      patterns: [
+        /\b(complete|full|entire)\b.*\b(opqrst|oprst)\b/,
+        /\b(perform|obtain|assess|go through)\b.*\b(opqrst|oprst)\b/
       ]
     },
-
-    /*
-      Individual OPQRST components are recorded separately.
-    */
     {
       skill: "OPQRST onset assessed",
       keywords: [
-        "when did the complaint start",
-        "when did the symptoms start",
-        "when did this begin",
-        "what time did this begin",
-        "was the onset sudden or gradual"
+        "when did the chest pain start", "when did the pain start", "when did the discomfort start",
+        "when did this begin", "what time did this begin", "was the onset sudden or gradual",
+        "pain started", "symptoms started", "onset was", "when did it start", "when did it begin",
+        "what time did it start", "how did it start", "did it start suddenly", "did it come on gradually",
+        "sudden onset", "gradual onset", "began suddenly", "began gradually",
+        "first noticed", "when were you last normal", "opqrst onset", "oprst onset"
+      ],
+      patterns: [
+        /\b(when|what time|how)\b.*\b(start|started|begin|began|onset|first notice)\b/,
+        /\b(sudden|suddenly|gradual|gradually)\b.*\b(onset|start|started|begin|began|came on)\b/
       ]
     },
-
     {
       skill: "OPQRST provocation and palliation assessed",
       keywords: [
-        "what makes it better",
-        "what makes it worse",
-        "does anything make it better",
-        "does anything make it worse",
-        "what relieves the discomfort",
-        "what causes the discomfort to worsen"
+        "what makes the pain better", "what makes the pain worse", "does anything make it better",
+        "does anything make it worse", "what relieves the discomfort", "what causes the discomfort to worsen",
+        "better with", "worse with", "relieved by", "worsened by", "improves with",
+        "what brings the pain on", "does movement make it worse", "does rest make it better",
+        "what aggravates it", "what relieves it", "what improves it", "what triggers it",
+        "anything aggravate the pain", "anything relieve the pain", "better or worse with breathing",
+        "worse with exertion", "better with rest", "changes with movement", "changes with position",
+        "provocation palliation", "opqrst provocation", "oprst provocation"
+      ],
+      patterns: [
+        /\b(what|anything)\b.*\b(make|makes)\b.*\b(pain|discomfort|it)\b.*\b(better|worse)\b/,
+        /\b(aggravat|reliev|improv|worsen|trigger)\w*\b.*\b(pain|discomfort|symptoms?|it)\b/,
+        /\b(pain|discomfort|symptoms?|it)\b.*\b(better|worse|relieved|aggravated)\b.*\b(with|by|when)\b/
       ]
     },
-
     {
       skill: "OPQRST quality assessed",
       keywords: [
-        "describe the pain",
-        "describe the discomfort",
-        "what does the pain feel like",
-        "what does the discomfort feel like",
-        "is the pain sharp dull or pressure",
-        "quality of the pain",
-        "quality of the discomfort"
+        "describe the chest pain", "describe the pain", "describe the discomfort",
+        "what does the pain feel like", "what does the discomfort feel like",
+        "is the pain sharp dull or pressure", "quality of the pain", "quality of the discomfort",
+        "pressure like", "crushing pain", "sharp pain", "dull pain", "tightness",
+        "how would you describe it", "tell me what it feels like", "what kind of pain is it",
+        "is it pressure or pain", "burning pain", "stabbing pain", "aching pain", "tearing pain",
+        "heavy feeling", "squeezing sensation", "chest heaviness", "opqrst quality", "oprst quality"
+      ],
+      patterns: [
+        /\b(what|how)\b.*\b(pain|discomfort|it)\b.*\b(feel|feels|describe|like)\b/,
+        /\b(sharp|dull|pressure|crushing|tight|tightness|burning|stabbing|aching|tearing|heavy|squeezing)\b.*\b(pain|discomfort|feeling|sensation)?\b/
       ]
     },
-
     {
       skill: "OPQRST radiation assessed",
       keywords: [
-        "does the pain radiate",
-        "does the pain travel",
-        "does the discomfort radiate",
-        "does the discomfort travel",
-        "where does the pain go",
-        "does it move anywhere"
+        "does the pain radiate", "does the pain travel", "does the discomfort radiate",
+        "does the discomfort travel", "where does the pain go", "does it move anywhere",
+        "radiates to", "travels to", "moves to", "does the pain spread", "does it spread anywhere",
+        "where else do you feel it", "does it go anywhere else", "pain goes into",
+        "pain extends to", "stays in one place", "non radiating", "no radiation",
+        "left arm", "right arm", "jaw", "back", "shoulder", "opqrst radiation", "oprst radiation"
+      ],
+      patterns: [
+        /\b(pain|discomfort|it)\b.*\b(radiat|travel|spread|move|go|extend)\w*\b.*\b(to|into|anywhere|else)\b/,
+        /\b(radiat|travel|spread)\w*\b.*\b(arm|jaw|back|shoulder|neck)\b/,
+        /\b(no|non)\s+radiat\w*\b/
       ]
     },
-
     {
       skill: "OPQRST severity assessed",
       keywords: [
-        "rate your pain",
-        "rate the discomfort",
-        "pain scale",
-        "zero to ten pain",
-        "0 to 10 pain",
-        "how severe is the pain"
+        "rate your pain", "rate the discomfort", "pain scale", "zero to ten pain",
+        "0 to 10 pain", "how severe is the pain", "pain is 8 out of 10", "pain 8 10",
+        "how bad is the pain", "how much does it hurt", "give the pain a number",
+        "on a scale of one to ten", "on a scale from zero to ten", "pain rating",
+        "discomfort is eight out of ten", "rates pain", "opqrst severity", "oprst severity"
+      ],
+      patterns: [
+        /\b(pain|discomfort)\b[^0-9]{0,20}\d{1,2}\s*(out of|of|\/)\s*10\b/,
+        /\b(scale|rating)\b.*\b(0|zero|1|one)\b.*\b(10|ten)\b/,
+        /\bhow (bad|severe|strong|intense)\b.*\b(pain|discomfort|it)\b/
       ]
     },
-
     {
       skill: "OPQRST time assessed",
       keywords: [
-        "how long has the pain lasted",
-        "how long have you had the discomfort",
-        "has the pain been constant",
-        "does the pain come and go",
-        "how long have the symptoms been present"
+        "how long has the pain lasted", "how long have you had the discomfort",
+        "has the pain been constant", "does the pain come and go", "how long have the symptoms been present",
+        "pain has lasted", "symptoms for", "constant pain", "intermittent pain",
+        "how long has this been going on", "is the pain constant", "does it come and go",
+        "how long ago did it start", "how long has it been there", "has it stopped at all",
+        "is it always there", "is it continuous", "is it intermittent", "does it stay or go away",
+        "comes and goes", "has been present for", "duration of pain", "duration of symptoms",
+        "opqrst time", "oprst time"
+      ],
+      patterns: [
+        /\bhow long\b.*\b(pain|discomfort|symptom|it|this)\w*\b/,
+        /\b(constant|continuous|intermittent|comes and goes|present for|duration)\b.*\b(pain|discomfort|symptoms?|it)?\b/,
+        /\b(pain|discomfort|symptoms?|it)\b.*\b(constant|continuous|intermittent|comes and goes|lasted|present for)\b/
       ]
     },
-
     {
       skill: "Secondary assessment performed",
       keywords: [
-        "perform a secondary assessment",
-        "perform a focused physical exam",
-        "perform a head to toe assessment",
-        "complete a rapid assessment",
-        "perform a physical examination"
+        "perform a secondary assessment", "perform a focused physical exam",
+        "perform a head to toe assessment", "complete a rapid assessment", "perform a physical examination",
+        "secondary assessment completed", "focused exam completed",
+        "assess for dcap", "assessed for dcap", "check for dcap", "checked for dcap",
+        "dcap btls assessment", "dcap-btls assessment", "assess using dcap btls",
+        "expose the chest and assess", "exposed the chest and assessed",
+        "xpose the chest and assess", "xposed the chest and assessed"
+      ],
+      patterns: [
+        /\b(assess|assessed|assessing|check|checked|checking|inspect|inspected)\w*\b.*\bdcap\b(?:\s*btls\b)?/,
+        /\bdcap\b(?:\s*btls\b)?.*\b(assess|assessed|assessment|check|checked|exam|examination)\w*\b/,
+        /\b(e?xpose|e?xposed|e?xposing)\w*\b.*\b(chest|thorax)\b.*\b(assess|assessed|assessing|inspect|inspected|palpate|palpated|dcap)\w*\b/
       ]
     },
-
     {
       skill: "Neurologic assessment performed",
       keywords: [
@@ -1241,7 +1358,6 @@
         "perform a stroke assessment"
       ]
     },
-
     {
       skill: "Temperature obtained",
       keywords: [
@@ -1251,18 +1367,14 @@
         "does the patient have a fever"
       ]
     },
-
     {
       skill: "Cardiac rhythm assessed",
       keywords: [
-        "place the patient on the cardiac monitor",
-        "assess cardiac rhythm",
-        "what is the cardiac rhythm",
-        "obtain an ecg",
-        "obtain an ekg"
+        "place the patient on the cardiac monitor", "assess cardiac rhythm", "what is the cardiac rhythm",
+        "obtain an ecg", "obtain an ekg", "obtain a 12 lead", "obtain a twelve lead",
+        "cardiac monitor applied", "12 lead obtained", "ekg obtained", "ecg obtained"
       ]
     },
-
     {
       skill: "C-spine stabilization considered",
       keywords: [
@@ -1502,12 +1614,20 @@
     {
       skill: "Reassessment performed",
       keywords: [
-        "perform a reassessment",
-        "reassess the patient",
-        "repeat all vital signs",
-        "repeat the blood pressure",
-        "repeat the glucose",
-        "recheck the patient"
+        "perform a reassessment", "reassess the patient", "repeat all vital signs",
+        "repeat the blood pressure", "repeat the pain assessment", "recheck the patient",
+        "repeat vitals", "reassessed patient", "recheck vital signs",
+        "reassess all vitals", "reassessed all vitals", "reassessing all vitals",
+        "reassess all vital signs", "reassessed all vital signs",
+        "repeat all vitals", "repeated all vitals", "vitals reassessed",
+        "vital signs reassessed", "obtained another set of vitals",
+        "obtain another set of vital signs", "second set of vitals",
+        "repeat a full set of vitals", "repeat full set of vital signs"
+      ],
+      patterns: [
+        /\b(reassess|reassessed|reassessing|recheck|rechecked|rechecking|repeat|repeated|repeating)\w*\b.*\b(all|full|complete|another|second)?\s*(set of\s*)?(vitals|vital signs)\b/,
+        /\b(vitals|vital signs)\b.*\b(reassess|reassessed|rechecked|repeated|again)\w*\b/,
+        /\b(reassess|reassessed|reassessing|repeat|repeated)\w*\b.*\b(patient|assessment|blood pressure|pulse|respirations|pain)\b/
       ]
     }
   ];
