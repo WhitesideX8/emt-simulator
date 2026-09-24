@@ -1610,6 +1610,48 @@
       }
   ];
 
+  // Accept common spoken and typed stroke-assessment wording in addition to
+  // the phrases in the shared medical-assessment checklist above.
+  const strokeAliases = {
+    "Blood glucose obtained": [
+      /\b(bgl|blood glucose|blood sugar|finger ?stick|glucometer)\b.*\b(\d{2,3}|check\w*|obtain\w*|measure\w*|assess\w*)\b/,
+      /\b(check\w*|obtain\w*|measure\w*|assess\w*)\b.*\b(bgl|blood glucose|blood sugar|finger ?stick)\b/
+    ],
+    "Last known well time determined": [
+      /\b(last known well|lkw|last seen (well|normal)|onset of (stroke )?symptoms?)\b/,
+      /\b(when|what time)\b.*\b(normal|well|weakness|slur\w*|symptoms?)\b.*\b(start\w*|began|seen|noticed)\b/
+    ],
+    "Facial droop assessed": [
+      /\b(face|facial|smile)\b.*\b(droop\w*|symmetr\w*|uneven|assess\w*|check\w*)\b/,
+      /\b(assess\w*|check\w*|inspect\w*)\b.*\b(face|facial|smile)\b/
+    ],
+    "Arm drift assessed": [
+      /\b(arm|arms)\b.*\b(drift\w*|raise\w*|hold|strength|weakness)\b/,
+      /\b(check\w*|assess\w*|compare)\b.*\b(arm|arms)\b.*\b(drift\w*|weakness|strength)\b/
+    ],
+    "Speech assessed": [
+      /\b(speech|words|phrase)\b.*\b(slur\w*|clear|garbled|aphasia|repeat\w*|assess\w*|check\w*)\b/,
+      /\b(assess\w*|check\w*|evaluate|repeat)\b.*\b(speech|words|phrase)\b/
+    ],
+    "Stroke scale performed": [
+      /\b(fast|be ?fast|cincinnati|cp(ss)?|lams|mends)\b.*\b(stroke|scale|exam|assessment|screen|perform\w*)\b/,
+      /\b(perform\w*|complete\w*|do|use)\b.*\b(stroke scale|stroke screen|fast|be ?fast|cincinnati)\b/
+    ],
+    "Motor function assessed": [
+      /\b(grip|motor|leg strength|limb strength|extremit\w*|weakness)\b.*\b(check\w*|assess\w*|compar\w*|\d+\/?5)\b/,
+      /\b(check\w*|assess\w*|compar\w*)\b.*\b(grip|motor|leg strength|limb strength|extremit\w*|weakness)\b/
+    ],
+    "Sensation assessed": [
+      /\b(check\w*|assess\w*|compar\w*|test\w*)\b.*\b(sensation|feeling|numbness|touch)\b/,
+      /\b(sensation|numbness)\b.*\b(intact|decreased|equal|unequal)\b/
+    ]
+  };
+  assessmentMap.forEach(item => {
+    if (strokeAliases[item.skill]) {
+      item.patterns = [...(item.patterns || []), ...strokeAliases[item.skill]];
+    }
+  });
+
   function normalizeText(text) {
     return text
       .toLowerCase()
