@@ -436,7 +436,7 @@
 
 
       <div class="section-label">
-        Automatically Recorded Assessments
+        Recorded Assessments and Treatments
       </div>
 
       <div id="completedAssessments" class="box">
@@ -527,6 +527,7 @@
       document.getElementById("recordStatus").innerText = state.recordStatus || "";
       document.getElementById("completedAssessments").innerText =
         state.completedAssessments || "No assessments recorded yet.";
+      updateCompletedAssessmentsDisplay();
 
       return true;
     } catch (error) {
@@ -1263,6 +1264,242 @@
     },
 
     {
+      skill: "C-spine stabilization considered",
+      keywords: [
+        "c-spine",
+        "c spine",
+        "c-spine precautions",
+        "c spine precautions",
+        "c-spine stabilization",
+        "c spine stabilization",
+        "consider c-spine",
+        "consider c spine",
+        "consider c-spine precautions",
+        "consider c spine precautions",
+        "consider c-spine stabilization",
+        "consider c spine stabilization",
+        "spinal precautions",
+        "spinal stabilization",
+        "spine stabilization",
+        "spinal motion restriction",
+        "smr",
+        "immobilization considered",
+        "cervical spine precautions",
+        "cervical spine stabilization"
+      ],
+      patterns: [
+        /\b(c\s*-?\s*spine|cervical spine)\b.*\b(consider|precaution|stabil|immobil|restrict)\w*\b/,
+        /\b(consider|apply|maintain)\w*\b.*\b(c\s*-?\s*spine|cervical spine)\b/,
+        /\bspinal\b.*\b(precaution|stabil|motion restriction|immobil)\w*\b/
+      ]
+    },
+    {
+      skill: "Complete SAMPLE history performed",
+      keywords: [
+        "perform a complete sample", "perform complete sample", "perform a sample history",
+        "complete sample history", "full sample history", "assess using sample",
+        "obtain a complete sample", "go through sample", "complete sampl history",
+        "perform sampl", "obtain sampl", "sample assessment"
+      ],
+      patterns: [
+        /\b(complete|full|entire)\b.*\b(sample|sampl)\b/,
+        /\b(perform|obtain|assess|gather|take)\b.*\b(sample|sampl)\b.*\b(history|assessment)?\b/
+      ]
+    },
+    {
+      skill: "Patient priority identified",
+      keywords: [
+        "high priority",
+        "high-priority",
+        "priority patient",
+        "priority transport",
+        "high priority transport",
+        "make this a priority",
+        "make him a priority",
+        "make her a priority",
+        "this is a priority patient",
+        "this is a high priority patient",
+        "this is a high priority transport",
+        "patient is high priority",
+        "patient is a high priority",
+        "critical patient",
+        "patient is critical",
+        "potentially unstable",
+        "patient is unstable",
+        "unstable patient",
+        "serious patient",
+        "seriously ill",
+        "time sensitive",
+        "time-sensitive",
+        "time critical",
+        "time-critical",
+        "emergent patient",
+        "emergent transport",
+        "urgent transport",
+        "needs rapid transport",
+        "requires rapid transport",
+        "requires immediate transport",
+        "needs immediate transport",
+        "due to shortness of breath this is high priority",
+        "because of shortness of breath this is high priority",
+        "due to the chief complaint this is a priority transport",
+        "because of the chief complaint this is a priority transport",
+        "i am going to make this a priority transport",
+        "i will make this a priority transport",
+        "i consider this patient high priority",
+        "i consider this patient a high priority"
+      ],
+      patterns: [
+        /\b(high|urgent|emergent|critical|time[- ]?sensitive|time[- ]?critical)\b.*\b(priority|transport|patient)\b/,
+        /\bpriority\b.*\b(patient|transport)\b/,
+        /\bpatient\b.*\b(high priority|unstable|critical|time[- ]?sensitive|emergent)\b/,
+        /\b(make|consider|classify|identify)\w*\b.*\b(patient|this)\b.*\b(priority|high priority|unstable|critical)\b/,
+        /\b(chief complaint|shortness of breath|respiratory distress)\b.*\b(priority|high priority|urgent|emergent|rapid transport)\b/
+      ]
+    },
+    {
+      skill: "Rapid transport initiated",
+      keywords: [
+        "rapid transport",
+        "transport promptly",
+        "begin transport",
+        "beginning transport",
+        "initiate transport",
+        "initiating transport",
+        "start transport",
+        "starting transport",
+        "transport now",
+        "transport immediately",
+        "immediate transport",
+        "urgent transport",
+        "emergent transport",
+        "expedited transport",
+        "priority transport",
+        "high priority transport",
+        "load and go",
+        "load and transport",
+        "move to the ambulance",
+        "move him to the ambulance",
+        "move her to the ambulance",
+        "bring him to the ambulance",
+        "bring her to the ambulance",
+        "place him on the stretcher",
+        "place her on the stretcher",
+        "place patient on stretcher",
+        "move patient to stretcher",
+        "secure to stretcher",
+        "secure him to the stretcher",
+        "secure her to the stretcher",
+        "transport to the hospital",
+        "transport to hospital",
+        "transport to emergency department",
+        "transport to the emergency department",
+        "transport to appropriate hospital",
+        "transport to a appropriate hospital",
+        "transport to appropriate hospital",
+        "transport to an appropriate facility",
+        "transport to the closest appropriate facility",
+        "head to the hospital",
+        "go to the hospital",
+        "leave the scene for transport",
+        "depart for the hospital",
+        "we are transporting",
+        "i am going to transport",
+        "i will transport",
+        "begin transport while continuing assessment",
+        "continue assessment en route",
+        "continue treatment en route",
+        "reassess during transport",
+        "transport without delay",
+        "do not delay transport",
+        "minimize scene time"
+      ],
+      patterns: [
+        /\b(begin|start|initiate|commence|continue)\w*\b.*\btransport\w*\b/,
+        /\btransport\w*\b.*\b(now|immediate|immediately|promptly|rapidly|urgently|without delay)\b/,
+        /\b(move|bring|place|load|secure)\w*\b.*\b(patient|him|her)\b.*\b(stretcher|ambulance)\b/,
+        /\b(stretcher|ambulance)\b.*\b(transport|move|load|secure)\w*\b/,
+        /\btransport\w*\b.*\b(hospital|emergency department|ed|appropriate hospital|appropriate hospital|facility)\b/,
+        /\b(load and go|load and transport|minimize scene time)\b/,
+        /\b(reassess|assessment|treatment)\b.*\b(en route|during transport)\b/
+      ]
+    },
+    {
+      skill: "Treatment and transport decision made",
+      keywords: [
+        "treatment and transport decision",
+        "treatment plan",
+        "transport decision",
+        "decision to transport",
+        "decide to transport",
+        "going to transport",
+        "will transport",
+        "plan to transport",
+        "needs transport",
+        "requires transport",
+        "transport is indicated",
+        "transport is appropriate",
+        "hospital transport indicated",
+        "appropriate destination",
+        "closest appropriate facility",
+        "appropriate receiving facility",
+        "appropriate hospital",
+        "appropriate hospital",
+        "continue treatment during transport",
+        "continue treatment en route",
+        "continue monitoring during transport",
+        "continue monitoring en route",
+        "treat and transport",
+        "stabilize and transport",
+        "manage and transport",
+        "transport while monitoring",
+        "transport while reassessing",
+        "transport with als intercept",
+        "request als and transport",
+        "begin transport and request als",
+        "oxygen and transport",
+        "treat for shock and transport",
+        "keep warm and transport",
+        "position of comfort and transport"
+      ],
+      patterns: [
+        /\b(decide|decision|plan|intend|going|will)\w*\b.*\btransport\w*\b/,
+        /\b(treat|treatment|manage|monitor|reassess|stabilize)\w*\b.*\b(and|while|during)\b.*\btransport\w*\b/,
+        /\btransport\w*\b.*\b(and|while|with)\b.*\b(treat|monitor|reassess|als|aspirin|shock)\w*\b/,
+        /\b(appropriate|closest)\b.*\b(facility|hospital|destination|appropriate hospital|appropriate hospital)\b/
+      ]
+    },
+    {
+      skill: "Adequate ventilation assessed and supported",
+      keywords: [
+        "assess ventilation", "is ventilation adequate", "check breathing depth and quality",
+        "assist ventilations", "support ventilations", "ventilate with bvm",
+        "bag valve mask ventilation", "provide positive pressure ventilation"
+      ]
+    },
+    {
+      skill: "Respiratory quality assessed",
+      keywords: [
+        "assess respiratory quality", "check depth and quality of breathing",
+        "assess depth of breathing", "shallow respirations", "labored respirations",
+        "respiratory rate and quality", "rate depth and quality"
+      ]
+    },
+    {
+      skill: "Field impression stated",
+      keywords: [
+        "field impression", "my impression is", "suspected copd exacerbation",
+        "suspect respiratory distress", "my working diagnosis"
+      ]
+    },
+    {
+      skill: "Verbal report provided",
+      keywords: [
+        "provide verbal report", "give a verbal report", "report to arriving ems",
+        "handoff report", "verbal handoff", "report to receiving crew"
+      ]
+    },
+    {
       skill: "Reassessment performed",
       keywords: [
         "perform a reassessment",
@@ -1409,18 +1646,17 @@
   }
 
   function updateCompletedAssessmentsDisplay() {
-    const completedBox =
-      document.getElementById("completedAssessments");
+    const completedBox = document.getElementById("completedAssessments");
+    const entries = studentInputLog
+      .filter(input => input.type === "Assessment / Treatment")
+      .map((input, index) => `${index + 1}. ${input.text}`);
+    const checkedSkills = Array.from(completedSkills)
+      .map((skill, index) => `${index + 1}. \u2713 ${skill}`);
 
-    if (completedSkills.size === 0) {
-      completedBox.innerText = "No assessments recorded yet.";
-      return;
-    }
-
-    completedBox.innerText = Array
-      .from(completedSkills)
-      .map((skill, index) => `${index + 1}. \u2713 ${skill}`)
-      .join("\n");
+    const sections = [];
+    if (entries.length) sections.push("Recorded entries:\n" + entries.join("\n"));
+    if (checkedSkills.length) sections.push("Recognized assessments:\n" + checkedSkills.join("\n"));
+    completedBox.innerText = sections.join("\n\n") || "No assessments recorded yet.";
   }
 
   function showRecordedStatus(newSkills, source) {
