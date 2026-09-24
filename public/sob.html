@@ -1767,16 +1767,11 @@
 
   function updateCompletedAssessmentsDisplay() {
     const completedBox = document.getElementById("completedAssessments");
-    const entries = studentInputLog
-      .filter(input => input.type === "Assessment / Treatment")
-      .map((input, index) => `${index + 1}. ${input.text}`);
-    const checkedSkills = Array.from(completedSkills)
-      .map((skill, index) => `${index + 1}. \u2713 ${skill}`);
-
-    const sections = [];
-    if (entries.length) sections.push("Recorded entries:\n" + entries.join("\n"));
-    if (checkedSkills.length) sections.push("Recognized assessments:\n" + checkedSkills.join("\n"));
-    completedBox.innerText = sections.join("\n\n") || "No assessments recorded yet.";
+    completedBox.innerText = completedSkills.size
+      ? Array.from(completedSkills)
+          .map((skill, index) => `${index + 1}. \u2713 ${skill}`)
+          .join("\n")
+      : "No assessments recorded yet.";
   }
 
   function showRecordedStatus(newSkills, source) {
