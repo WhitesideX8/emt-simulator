@@ -436,7 +436,7 @@
 
 
       <div class="section-label">
-        Automatically Recorded Assessments
+        Recorded Assessments and Treatments
       </div>
 
       <div id="completedAssessments" class="box">
@@ -1409,18 +1409,17 @@
   }
 
   function updateCompletedAssessmentsDisplay() {
-    const completedBox =
-      document.getElementById("completedAssessments");
+    const completedBox = document.getElementById("completedAssessments");
+    const recordedEntries = studentInputLog
+      .filter(item => item.type === "Assessment / Treatment")
+      .map((item, index) => `${index + 1}. ${item.text}`);
+    const recognizedSkills = Array.from(completedSkills)
+      .map(skill => `\u2713 ${skill}`);
 
-    if (completedSkills.size === 0) {
-      completedBox.innerText = "No assessments recorded yet.";
-      return;
-    }
-
-    completedBox.innerText = Array
-      .from(completedSkills)
-      .map((skill, index) => `${index + 1}. \u2713 ${skill}`)
-      .join("\n");
+    completedBox.innerText = [
+      recordedEntries.length ? recordedEntries.join("\n") : "No assessments recorded yet.",
+      recognizedSkills.length ? "\nRecognized skills:\n" + recognizedSkills.join("\n") : ""
+    ].join("\n").trim();
   }
 
   function showRecordedStatus(newSkills, source) {
@@ -1532,10 +1531,18 @@
 
     recordStudentInput("Ask the Instructor", question);
 
+    if (typedQuestion) {
+      recordStudentInput("Assessment / Treatment", typedQuestion);
+      assessmentLog.push(typedQuestion);
+      questionBox.value = "";
+    }
+
     const newSkills = detectAndRecordAssessments(
       question,
       "instructor assessment"
     );
+    updateCompletedAssessmentsDisplay();
+    saveScenarioState();
 
     showRecordedStatus(newSkills, "the instructor");
 
@@ -1561,9 +1568,6 @@
       instructorHistory += `Instructor: ${instructorReply}\n\n`;
 
       responseBox.innerText = instructorReply;
-      if (typedQuestion) {
-        questionBox.value = "";
-      }
       questionBox.focus();
     } catch (error) {
       console.error("Instructor request error:", error);
@@ -1593,6 +1597,7 @@
 
     recordStudentInput("Assessment / Treatment", entry);
     assessmentLog.push(entry);
+    updateCompletedAssessmentsDisplay();
 
     if (detectedSkills.length === 1) {
       statusBox.innerText =
@@ -1608,6 +1613,7 @@
     entryBox.value = "";
     entryBox.placeholder =
       "Enter the next assessment, finding, treatment, or decision...";
+    saveScenarioState();
     entryBox.focus();
   }
 
@@ -1623,6 +1629,8 @@
       recordStudentInput("Assessment / Treatment", pendingEntry);
       assessmentLog.push(pendingEntry);
       actionEntry.value = "";
+      updateCompletedAssessmentsDisplay();
+      saveScenarioState();
     }
 
     if (assessmentLog.length === 0 && !patientHistory.trim()) {
