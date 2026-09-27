@@ -1,3 +1,4 @@
+Full source code: chestpain2.html · 2,037 lines · Download as text
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -389,7 +390,8 @@
 
           <textarea
             id="actionEntry"
-            placeholder="Example: Assessed airway; airway is patent."
+            placeholder="Type an assessment or question, then press Enter. Shift+Enter adds a new line."
+            onkeydown="if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) { event.preventDefault(); askInstructorTyped(); }"
           ></textarea>
 
           <div class="button-row">
@@ -402,23 +404,6 @@
               🎤 Speak
             </button>
 
-            <button
-              id="recordButton"
-              class="record-btn"
-              type="button"
-              onclick="recordAction()"
-            >
-              Record Assessment
-            </button>
-
-            <button
-              id="instructorButton"
-              class="instructor-btn"
-              type="button"
-              onclick="askInstructorTyped()"
-            >
-              Ask Instructor
-            </button>
           </div>
 
           <div class="response-label">Instructor Response</div>
@@ -472,6 +457,8 @@
   let patientHistory = "";
   let instructorHistory = "";
   let assessmentLog = [];
+  let lastRecordedAction = "";
+  let instructorRequestPending = false;
   let studentInputLog = [];
   let completedSkills = new Set();
   let scenarioStartTime = Date.now();
@@ -484,6 +471,7 @@
       patientHistory,
       instructorHistory,
       assessmentLog,
+      lastRecordedAction,
       studentInputLog,
       completedSkills: Array.from(completedSkills),
       scenarioStartTime,
@@ -508,6 +496,7 @@
       patientHistory = state.patientHistory || "";
       instructorHistory = state.instructorHistory || "";
       assessmentLog = Array.isArray(state.assessmentLog) ? state.assessmentLog : [];
+      lastRecordedAction = state.lastRecordedAction || "";
       studentInputLog = Array.isArray(state.studentInputLog) ? state.studentInputLog : [];
       completedSkills = new Set(
         Array.isArray(state.completedSkills) ? state.completedSkills : []
@@ -1769,11 +1758,9 @@
       document.getElementById("actionEntry");
     const responseBox =
       document.getElementById("instructorResponse");
-    const instructorButton =
-      document.getElementById("instructorButton");
+    if (instructorRequestPending) return;
     const typedQuestion = questionBox.value.trim();
-    const question =
-      typedQuestion || assessmentLog[assessmentLog.length - 1] || "";
+    const question = typedQuestion || lastRecordedAction;
 
     if (!question) {
       responseBox.innerText =
@@ -1782,17 +1769,15 @@
       return;
     }
 
+    // Spoken actions are already recorded when the microphone stops.
+    // A newly typed action is recorded here before asking the instructor.
+    if (typedQuestion) {
+      recordAction("instructor assessment");
+    }
     recordStudentInput("Ask the Instructor", question);
 
-    const newSkills = detectAndRecordAssessments(
-      question,
-      "instructor assessment"
-    );
-
-    showRecordedStatus(newSkills, "the instructor");
-
     responseBox.innerText = "Contacting instructor...";
-    instructorButton.disabled = true;
+    instructorRequestPending = true;
 
     try {
       const response = await fetch("/instructor", {
@@ -1813,16 +1798,13 @@
       instructorHistory += `Instructor: ${instructorReply}\n\n`;
 
       responseBox.innerText = instructorReply;
-      if (typedQuestion) {
-        questionBox.value = "";
-      }
       questionBox.focus();
     } catch (error) {
       console.error("Instructor request error:", error);
       responseBox.innerText =
         "Error contacting instructor.\n\n" + error.message;
     } finally {
-      instructorButton.disabled = false;
+      instructorRequestPending = false;
     }
   }
 
@@ -1845,6 +1827,7 @@
 
     recordStudentInput("Assessment / Treatment", entry);
     assessmentLog.push(entry);
+    lastRecordedAction = entry;
 
     if (detectedSkills.length === 1) {
       statusBox.innerText =
@@ -1998,6 +1981,7 @@
     patientHistory = "";
     instructorHistory = "";
     assessmentLog = [];
+    lastRecordedAction = "";
     studentInputLog = [];
     completedSkills = new Set();
     scenarioStartTime = Date.now();
