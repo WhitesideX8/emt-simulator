@@ -385,12 +385,11 @@
       <h3>Assessment and Treatment</h3>
 
       <div>
-          <h3>Record Assessment and Treatment</h3>
+          <h3>Record Assessment, Treatment, or Ask Instructor</h3>
 
           <textarea
             id="actionEntry"
             placeholder="Type an assessment or question, then press Enter. Shift+Enter adds a new line."
-            onkeydown="if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) { event.preventDefault(); askInstructorTyped(); }"
           ></textarea>
 
           <div class="button-row">
@@ -591,7 +590,12 @@
       }
 
       voiceEntryRecorded = true;
-      recordAction("voice assessment");
+      if (isInstructorQuestion(spokenEntry)) {
+        document.getElementById("recordStatus").innerText =
+          "Question captured. Press Enter to ask the instructor.";
+      } else {
+        recordAction("voice assessment");
+      }
     }
 
     // Make the finalizer available to the Stop Voice button as well as onend.
@@ -1752,6 +1756,11 @@
     }
   }
 
+  function isInstructorQuestion(entry) {
+    return /\?\s*$/.test(entry) ||
+      /^(what|how|when|where|why|who|which|can|could|would|should|is|are|do|does|did|will|may|tell me|please tell me)\b/i.test(entry);
+  }
+
   async function askInstructorTyped() {
     const questionBox =
       document.getElementById("actionEntry");
@@ -1770,12 +1779,14 @@
 
     // Spoken actions are already recorded when the microphone stops.
     // A newly typed action is recorded here before asking the instructor.
-    if (typedQuestion) {
+    if (typedQuestion && !isInstructorQuestion(typedQuestion)) {
       recordAction("instructor assessment");
+    } else if (typedQuestion) {
+      questionBox.value = "";
     }
     recordStudentInput("Ask the Instructor", question);
 
-    responseBox.innerText = "Contacting instructor...";
+    responseBox.innerText = `Question: ${question}\n\nContacting instructor...`;
     instructorRequestPending = true;
 
     try {
@@ -1791,17 +1802,20 @@
 
       const data = await readJsonResponse(response);
       const instructorReply =
-        data.reply || data.answer || "The instructor did not respond.";
+        data.reply || data.answer || data.response || data.instructorResponse ||
+        "The instructor did not respond.";
 
       instructorHistory += `Student to instructor: ${question}\n`;
       instructorHistory += `Instructor: ${instructorReply}\n\n`;
 
-      responseBox.innerText = instructorReply;
+      responseBox.innerText = `Question: ${question}\n\nInstructor: ${instructorReply}`;
+      saveScenarioState();
       questionBox.focus();
     } catch (error) {
       console.error("Instructor request error:", error);
       responseBox.innerText =
-        "Error contacting instructor.\n\n" + error.message;
+        `Question: ${question}\n\nError contacting instructor: ${error.message}`;
+      saveScenarioState();
     } finally {
       instructorRequestPending = false;
     }
@@ -2018,9 +2032,9 @@ document.getElementById("actionEntry").placeholder =
   document
     .getElementById("actionEntry")
     .addEventListener("keydown", function(event) {
-      if (event.key === "Enter" && !event.shiftKey) {
+      if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
         event.preventDefault();
-        recordAction();
+        askInstructorTyped();
       }
     });
 
