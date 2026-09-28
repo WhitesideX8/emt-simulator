@@ -422,7 +422,7 @@
 
 
       <div class="section-label">
-        Automatically Recorded Assessments
+        Recorded Assessments and Treatments
       </div>
 
       <div id="completedAssessments" class="box">
@@ -517,6 +517,7 @@
       document.getElementById("recordStatus").innerText = state.recordStatus || "";
       document.getElementById("completedAssessments").innerText =
         state.completedAssessments || "No assessments recorded yet.";
+      updateCompletedAssessmentsDisplay();
 
       return true;
     } catch (error) {
@@ -545,6 +546,7 @@
 
   function stopVoiceInput() {
     if (activeRecognition) {
+      // Keep the recognition instance active until onend receives final results.
       activeRecognition.stop();
     }
   }
@@ -561,28 +563,20 @@
 
     if (activeRecognition) {
       const sameButton = activeVoiceButton === selectedButton;
-      const recognitionBeingStopped = activeRecognition;
       stopVoiceInput();
 
       if (sameButton) {
-        // Some browsers do not reliably complete the automatic record step
-        // after the user presses Stop Voice. Finalize it directly as a backup.
-        setTimeout(function() {
-          if (typeof recognitionBeingStopped.finishVoiceRecording === "function") {
-            recognitionBeingStopped.finishVoiceRecording();
-          }
-        }, 250);
         return;
       }
+      // Wait for the previous transcript to be finalized before starting another.
+      return;
     }
 
     const textBox = document.getElementById(textareaId);
     const recognition = new SpeechRecognition();
     const existingText = textBox.value.trim();
-    let finalTranscript = "";
     let heardSpeech = false;
     let voiceEntryRecorded = false;
-    const voiceDetectedSkills = new Set();
 
     function finishVoiceRecording() {
       if (voiceEntryRecorded || !recordWhenFinished) return;
@@ -597,11 +591,12 @@
       }
 
       voiceEntryRecorded = true;
-      if (isInstructorQuestion(spokenEntry)) {
+      if (textareaId === "actionEntry" && isInstructorQuestion(spokenEntry)) {
         askInstructorTyped();
       } else {
         recordAction("voice assessment");
       }
+      saveScenarioState();
     }
 
     // Make the finalizer available to the Stop Voice button as well as onend.
@@ -617,47 +612,24 @@
     selectedButton.classList.add("listening");
 
     recognition.onresult = function(event) {
-      let interimTranscript = "";
+      let transcript = "";
 
-      for (let index = event.resultIndex; index < event.results.length; index++) {
+      // Rebuild from all results: resultIndex may point past earlier finals.
+      for (let index = 0; index < event.results.length; index++) {
         const words = event.results[index][0].transcript;
 
         if (words.trim()) {
           heardSpeech = true;
         }
 
-        if (event.results[index].isFinal) {
-          finalTranscript += words + " ";
-        } else {
-          interimTranscript += words;
-        }
+        transcript += words + " ";
       }
 
-      textBox.value = [existingText, finalTranscript.trim(), interimTranscript.trim()]
+      textBox.value = [existingText, transcript.trim()]
         .filter(Boolean)
         .join(" ");
-
-      // Check Assessment and Treatment speech immediately. This makes
-      // recognized checklist items appear before the microphone closes.
-      if (recordWhenFinished && textBox.value.trim() &&
-          !isInstructorQuestion(textBox.value.trim())) {
-        const newSkills = detectAndRecordAssessments(
-          textBox.value,
-          "voice assessment"
-        );
-
-        newSkills.forEach(skill => voiceDetectedSkills.add(skill));
-
-        if (voiceDetectedSkills.size > 0) {
-          showRecordedStatus(
-            Array.from(voiceDetectedSkills),
-            "voice assessment"
-          );
-        } else {
-          document.getElementById("recordStatus").innerText =
-            "Listening and checking the spoken assessment...";
-        }
-      }
+      if (recordWhenFinished) document.getElementById("recordStatus").innerText =
+        "Listening. Press Stop Voice to record the assessment.";
 
       textBox.focus();
     };
@@ -666,15 +638,13 @@
       if (event.error !== "aborted" && event.error !== "no-speech") {
         alert("Voice entry error: " + event.error);
       }
+      finishVoiceRecording();
       resetVoiceButton(recognition);
     };
 
     recognition.onend = function() {
+      finishVoiceRecording();
       resetVoiceButton(recognition);
-
-      // Give the browser a moment to place its final transcript in the box,
-      // then record it automatically. The guard prevents a duplicate entry.
-      setTimeout(finishVoiceRecording, 150);
     };
 
     try {
@@ -1663,15 +1633,24 @@
     const completedBox =
       document.getElementById("completedAssessments");
 
-    if (completedSkills.size === 0) {
+    const actions = studentInputLog
+      .filter(item => item.type === "Assessment / Treatment")
+      .map(item => item.text);
+
+    if (completedSkills.size === 0 && actions.length === 0) {
       completedBox.innerText = "No assessments recorded yet.";
       return;
     }
 
-    completedBox.innerText = Array
+    const recognized = Array
       .from(completedSkills)
       .map((skill, index) => `${index + 1}. \u2713 ${skill}`)
       .join("\n");
+    completedBox.innerText = [
+      actions.length ? "Recorded actions:\n" + actions.map((action, index) =>
+        `${index + 1}. ${action}`).join("\n") : "",
+      recognized ? "Recognized checklist items:\n" + recognized : ""
+    ].filter(Boolean).join("\n\n");
   }
 
   function showRecordedStatus(newSkills, source) {
@@ -1846,6 +1825,7 @@
     recordStudentInput("Assessment / Treatment", entry);
     assessmentLog.push(entry);
     lastRecordedAction = entry;
+    updateCompletedAssessmentsDisplay();
 
     if (detectedSkills.length === 1) {
       statusBox.innerText =
@@ -1862,6 +1842,7 @@
     entryBox.placeholder =
       "Enter the next assessment, finding, treatment, or decision...";
     entryBox.focus();
+    saveScenarioState();
   }
 
   async function gradeStudent() {
@@ -1886,6 +1867,7 @@
       detectAndRecordAssessments(pendingEntry, "manual entry");
       recordStudentInput("Assessment / Treatment", pendingEntry);
       assessmentLog.push(pendingEntry);
+      updateCompletedAssessmentsDisplay();
       actionEntry.value = "";
     }
 
