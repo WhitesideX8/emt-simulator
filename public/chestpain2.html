@@ -517,6 +517,9 @@
       document.getElementById("recordStatus").innerText = state.recordStatus || "";
       document.getElementById("completedAssessments").innerText =
         state.completedAssessments || "No assessments recorded yet.";
+      if (instructorHistory.trim()) {
+        detectAndRecordAssessments(instructorHistory, "saved instructor exchange");
+      }
       updateCompletedAssessmentsDisplay();
 
       return true;
@@ -1790,8 +1793,15 @@
       instructorHistory += `Instructor: ${instructorReply}\n\n`;
 
       responseBox.innerText = `Question: ${question}\n\nInstructor: ${instructorReply}`;
-      document.getElementById("recordStatus").innerText =
-        "Instructor question answered. No assessment was recorded.";
+      // The instructor supplies assessment findings (for example, scene safety
+      // or lung sounds). Credit recognized findings from this exchange.
+      const recordedSkills = detectAndRecordAssessments(
+        `${question}\n${instructorReply}`,
+        "Ask the Instructor exchange"
+      );
+      document.getElementById("recordStatus").innerText = recordedSkills.length
+        ? `Instructor answered. Recorded: ${recordedSkills.join(", ")}`
+        : "Instructor answered. No new checklist item was recognized.";
       saveScenarioState();
       questionBox.focus();
     } catch (error) {
