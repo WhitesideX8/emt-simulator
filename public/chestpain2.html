@@ -363,7 +363,7 @@
             type="button"
             onclick="toggleVoiceInput('patientQuestion', 'patientVoiceButton')"
           >
-            ðŸŽ¤ Speak
+            🎤 Speak
           </button>
 
           <button
@@ -403,7 +403,7 @@
               type="button"
               onclick="toggleVoiceInput('actionEntry', 'actionVoiceButton', true)"
             >
-              ðŸŽ¤ Speak
+              🎤 Speak
             </button>
 
             <button id="actionInstructorButton" class="instructor-btn" type="button"
@@ -535,7 +535,7 @@
     if (recognitionToReset !== activeRecognition) return;
 
     if (activeVoiceButton) {
-      activeVoiceButton.innerText = "ðŸŽ¤ Speak";
+      activeVoiceButton.innerText = "🎤 Speak";
       activeVoiceButton.classList.remove("listening");
     }
 
@@ -613,7 +613,7 @@
 
     activeRecognition = recognition;
     activeVoiceButton = selectedButton;
-    selectedButton.innerText = "â¹ Stop Voice";
+    selectedButton.innerText = "⏹ Stop Voice";
     selectedButton.classList.add("listening");
 
     recognition.onresult = function(event) {
