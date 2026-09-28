@@ -363,7 +363,7 @@
             type="button"
             onclick="toggleVoiceInput('patientQuestion', 'patientVoiceButton')"
           >
-            🎤 Speak
+            ðŸŽ¤ Speak
           </button>
 
           <button
@@ -403,8 +403,11 @@
               type="button"
               onclick="toggleVoiceInput('actionEntry', 'actionVoiceButton', true)"
             >
-              🎤 Speak
+              ðŸŽ¤ Speak
             </button>
+
+            <button id="actionInstructorButton" class="instructor-btn" type="button"
+              onclick="askInstructorTyped()">Ask Instructor</button>
 
           </div>
 
@@ -532,7 +535,7 @@
     if (recognitionToReset !== activeRecognition) return;
 
     if (activeVoiceButton) {
-      activeVoiceButton.innerText = "🎤 Speak";
+      activeVoiceButton.innerText = "ðŸŽ¤ Speak";
       activeVoiceButton.classList.remove("listening");
     }
 
@@ -595,8 +598,7 @@
 
       voiceEntryRecorded = true;
       if (isInstructorQuestion(spokenEntry)) {
-        document.getElementById("recordStatus").innerText =
-          "Question captured. Press Enter to ask the instructor.";
+        askInstructorTyped();
       } else {
         recordAction("voice assessment");
       }
@@ -611,7 +613,7 @@
 
     activeRecognition = recognition;
     activeVoiceButton = selectedButton;
-    selectedButton.innerText = "⏹ Stop Voice";
+    selectedButton.innerText = "â¹ Stop Voice";
     selectedButton.classList.add("listening");
 
     recognition.onresult = function(event) {
@@ -637,7 +639,8 @@
 
       // Check Assessment and Treatment speech immediately. This makes
       // recognized checklist items appear before the microphone closes.
-      if (recordWhenFinished && textBox.value.trim()) {
+      if (recordWhenFinished && textBox.value.trim() &&
+          !isInstructorQuestion(textBox.value.trim())) {
         const newSkills = detectAndRecordAssessments(
           textBox.value,
           "voice assessment"
@@ -1770,28 +1773,23 @@
       document.getElementById("actionEntry");
     const responseBox =
       document.getElementById("instructorResponse");
+    const instructorButton = document.getElementById("actionInstructorButton");
     if (instructorRequestPending) return;
-    const typedQuestion = questionBox.value.trim();
-    const question = typedQuestion || lastRecordedAction;
+    const question = questionBox.value.trim();
 
     if (!question) {
-      responseBox.innerText =
-        "Type or speak an assessment or treatment first.";
+      document.getElementById("recordStatus").innerText =
+        "Type or speak a question for the instructor first.";
       questionBox.focus();
       return;
     }
 
-    // Spoken actions are already recorded when the microphone stops.
-    // A newly typed action is recorded here before asking the instructor.
-    if (typedQuestion && !isInstructorQuestion(typedQuestion)) {
-      recordAction("instructor assessment");
-    } else if (typedQuestion) {
-      questionBox.value = "";
-    }
+    questionBox.value = "";
     recordStudentInput("Ask the Instructor", question);
 
     responseBox.innerText = `Question: ${question}\n\nContacting instructor...`;
     instructorRequestPending = true;
+    instructorButton.disabled = true;
 
     try {
       const response = await fetch("/instructor", {
@@ -1813,6 +1811,8 @@
       instructorHistory += `Instructor: ${instructorReply}\n\n`;
 
       responseBox.innerText = `Question: ${question}\n\nInstructor: ${instructorReply}`;
+      document.getElementById("recordStatus").innerText =
+        "Instructor question answered. No assessment was recorded.";
       saveScenarioState();
       questionBox.focus();
     } catch (error) {
@@ -1822,6 +1822,7 @@
       saveScenarioState();
     } finally {
       instructorRequestPending = false;
+      instructorButton.disabled = false;
     }
   }
 
@@ -1867,6 +1868,19 @@
     const gradeButton = document.getElementById("gradeButton");
     const actionEntry = document.getElementById("actionEntry");
     const pendingEntry = actionEntry.value.trim();
+
+    if (instructorRequestPending) {
+      document.getElementById("recordStatus").innerText =
+        "Wait for the instructor answer before submitting for grading.";
+      return;
+    }
+
+    if (pendingEntry && isInstructorQuestion(pendingEntry)) {
+      await askInstructorTyped();
+      document.getElementById("recordStatus").innerText =
+        "Instructor question sent. Submit for grading after reviewing the answer.";
+      return;
+    }
 
     if (pendingEntry) {
       detectAndRecordAssessments(pendingEntry, "manual entry");
@@ -2038,7 +2052,11 @@ document.getElementById("actionEntry").placeholder =
     .addEventListener("keydown", function(event) {
       if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
         event.preventDefault();
-        askInstructorTyped();
+        if (isInstructorQuestion(this.value.trim())) {
+          askInstructorTyped();
+        } else {
+          recordAction();
+        }
       }
     });
 
