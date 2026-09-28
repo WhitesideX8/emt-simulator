@@ -24,7 +24,7 @@
       content: "";
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.);
+      background: rgba(0, 0, 0, 0.25);
       z-index: 0;
     }
 
@@ -182,18 +182,15 @@
 
     .question-column,
     .recorder-column {
-  width: 600px;
-  max-width: 70%;
-  margin: 10px auto 0;
-  padding: 8px;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 7px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
 
-  background: none;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
     .question-column {
       width: 360px;
     }
@@ -250,6 +247,10 @@
       width: 600px;
       max-width: 70%;
       margin: 10px auto 0;
+      background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      box-shadow: none;
     }
 
     .record-status {
