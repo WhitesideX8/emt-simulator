@@ -6,7 +6,9 @@
   <title>Chest Pain Scenario</title>
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       font-family: Arial, sans-serif;
@@ -37,14 +39,24 @@
       color: white;
     }
 
-    h1, h2, h3 {
+    h1,
+    h2,
+    h3 {
       margin: 4px 0;
       color: white;
     }
 
-    h1 { font-size: 25px; }
-    h2 { font-size: 18px; }
-    h3 { font-size: 15px; }
+    h1 {
+      font-size: 25px;
+    }
+
+    h2 {
+      font-size: 18px;
+    }
+
+    h3 {
+      font-size: 15px;
+    }
 
     .question-column h3,
     .recorder-column h3,
@@ -73,12 +85,30 @@
       cursor: not-allowed;
     }
 
-    .nav-btn { background: #333; }
-    .patient-btn, .record-btn { background: #087f23; }
-    .instructor-btn { background: #663399; }
-    .voice-btn { background: #b36b00; }
-    .grade-btn { background: #005fa3; }
-    .reset-btn { background: #a32626; }
+    .nav-btn {
+      background: #333;
+    }
+
+    .patient-btn,
+    .record-btn {
+      background: #087f23;
+    }
+
+    .instructor-btn {
+      background: #663399;
+    }
+
+    .voice-btn {
+      background: #b36b00;
+    }
+
+    .grade-btn {
+      background: #005fa3;
+    }
+
+    .reset-btn {
+      background: #a32626;
+    }
 
     .voice-btn.listening {
       background: #a32626;
@@ -86,8 +116,12 @@
     }
 
     @keyframes voicePulse {
-      from { opacity: 1; }
-      to { opacity: 0.68; }
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: 0.68;
+      }
     }
 
     .verbal-report-btn {
@@ -129,15 +163,15 @@
       background: #d9d9d9;
     }
 
-    /* Patient and Assessment containers share the same top edge.
-       Left and right margins are 100px on wide screens. */
+    /* Two upper containers:
+       50px top margin and 100px left/right margins. */
     .scenario-workspace {
       display: grid;
       grid-template-columns: minmax(0, 360px) minmax(0, 360px);
       justify-content: space-between;
       align-items: start;
       gap: 20px;
-      margin: 40px 100px 0;
+      margin: 50px 100px 0;
     }
 
     .question-area,
@@ -145,7 +179,6 @@
       min-width: 0;
     }
 
-    /* Keep the recorded container below Assessment and Treatment. */
     .assessment-stack {
       display: grid;
       gap: 10px;
@@ -265,14 +298,18 @@
     }
 
     @media (max-width: 750px) {
-      .container { width: 98%; }
+      .container {
+        width: 98%;
+      }
 
-      #scenarioInfo { width: 92%; }
+      #scenarioInfo {
+        width: 92%;
+      }
 
       .scenario-workspace {
         grid-template-columns: minmax(0, 1fr);
         width: 92%;
-        margin: 10px auto 0;
+        margin: 50px auto 0;
         gap: 10px;
       }
 
@@ -285,16 +322,22 @@
         height: 86px;
       }
     }
+
+    /* Center the separate recorded assessments container. */
+    .recorded-column {
+      width: 360px;
+      max-width: 92%;
+      margin: 20px auto 0;
+    }
+
+    /* Match the heights of the two upper containers. */
     @media (min-width: 751px) {
-  .question-column,
-  .recorder-column {
-    height: 310px;
-    overflow-y: auto;
-  }
-}
-    #scenarioInfo {
-  margin-bottom: 50px;
-}
+      .question-column,
+      .recorder-column {
+        height: 310px;
+        overflow-y: auto;
+      }
+    }
   </style>
 </head>
 
@@ -318,7 +361,7 @@
 
     <div class="scenario-workspace">
 
-      <!-- Ask the Patient -->
+      <!-- Upper left: Ask the Patient -->
       <div class="question-area">
         <section class="question-column">
           <h3>Ask the Patient</h3>
@@ -354,10 +397,8 @@
         </section>
       </div>
 
-      <!-- Right column contains two separate containers -->
+      <!-- Upper right: Record or Ask Instructor -->
       <div class="assessment-stack">
-
-        <!-- Assessment, Treatment, and Instructor -->
         <section class="recorder-column">
           <h3>Record Assessment, Treatment, or Ask Instructor</h3>
 
@@ -392,42 +433,42 @@
 
           <div id="recordStatus" class="record-status"></div>
         </section>
-
-        <!-- Separate Recorded Assessments and Treatments -->
-        <section class="recorded-column">
-          <h3>Recorded Assessments and Treatments</h3>
-
-          <div id="completedAssessments" class="box">No assessments recorded yet.</div>
-
-          <div class="button-row">
-            <a
-              class="verbal-report-btn"
-              href="/verbal_report.html"
-              target="verbalReportWindow"
-            >
-              Verbal Report
-            </a>
-
-            <button
-              id="gradeButton"
-              class="grade-btn"
-              type="button"
-              onclick="gradeStudent()"
-            >
-              Submit for Grading
-            </button>
-
-            <button
-              class="reset-btn"
-              type="button"
-              onclick="resetScenario()"
-            >
-              Reset Scenario
-            </button>
-          </div>
-        </section>
       </div>
     </div>
+
+    <!-- Separate container centered below both upper containers -->
+    <section class="recorded-column">
+      <h3>Recorded Assessments and Treatments</h3>
+
+      <div id="completedAssessments" class="box">No assessments recorded yet.</div>
+
+      <div class="button-row">
+        <a
+          class="verbal-report-btn"
+          href="/verbal_report.html"
+          target="verbalReportWindow"
+        >
+          Verbal Report
+        </a>
+
+        <button
+          id="gradeButton"
+          class="grade-btn"
+          type="button"
+          onclick="gradeStudent()"
+        >
+          Submit for Grading
+        </button>
+
+        <button
+          class="reset-btn"
+          type="button"
+          onclick="resetScenario()"
+        >
+          Reset Scenario
+        </button>
+      </div>
+    </section>
   </div>
 
   <script>
@@ -480,19 +521,29 @@
         );
         scenarioStartTime = Number(state.scenarioStartTime) || Date.now();
 
-        document.getElementById("patientQuestion").value = state.patientQuestion || "";
-        document.getElementById("actionEntry").value = state.actionEntry || "";
+        document.getElementById("patientQuestion").value =
+          state.patientQuestion || "";
+        document.getElementById("actionEntry").value =
+          state.actionEntry || "";
+
         document.getElementById("patientResponse").innerText =
           state.patientResponse || "Patient response will appear here.";
+
         document.getElementById("instructorResponse").innerText =
           (state.instructorResponse || "Instructor answer will appear here.")
             .replace(/^Question: [^\n]*\n\n(?:Instructor: )?/, "");
-        document.getElementById("recordStatus").innerText = state.recordStatus || "";
+
+        document.getElementById("recordStatus").innerText =
+          state.recordStatus || "";
+
         document.getElementById("completedAssessments").innerText =
           state.completedAssessments || "No assessments recorded yet.";
 
         if (instructorHistory.trim()) {
-          detectAndRecordAssessments(instructorHistory, "saved instructor exchange");
+          detectAndRecordAssessments(
+            instructorHistory,
+            "saved instructor exchange"
+          );
         }
 
         updateCompletedAssessmentsDisplay();
@@ -524,12 +575,15 @@
 
     function stopVoiceInput() {
       if (activeRecognition) {
-        // Wait for final speech results in onend.
         activeRecognition.stop();
       }
     }
 
-    function toggleVoiceInput(textareaId, buttonId, recordWhenFinished = false) {
+    function toggleVoiceInput(
+      textareaId,
+      buttonId,
+      recordWhenFinished = false
+    ) {
       if (!SpeechRecognition) {
         alert(
           "Voice entry is not supported by this browser. Please use Microsoft Edge or Google Chrome."
@@ -571,7 +625,10 @@
 
         voiceEntryRecorded = true;
 
-        if (textareaId === "actionEntry" && isInstructorQuestion(spokenEntry)) {
+        if (
+          textareaId === "actionEntry" &&
+          isInstructorQuestion(spokenEntry)
+        ) {
           askInstructorTyped();
         } else {
           recordAction("voice assessment");
@@ -616,7 +673,10 @@
       };
 
       recognition.onerror = function(event) {
-        if (event.error !== "aborted" && event.error !== "no-speech") {
+        if (
+          event.error !== "aborted" &&
+          event.error !== "no-speech"
+        ) {
           alert("Voice entry error: " + event.error);
         }
 
@@ -1370,6 +1430,7 @@
         .filter(word => word.length > 2 && !stopWords.has(word));
 
       if (words.length < 2) return false;
+
       return words.every(word => normalizedText.includes(word));
     }
 
@@ -1390,9 +1451,11 @@
 
         if (matched && !completedSkills.has(item.skill)) {
           completedSkills.add(item.skill);
+
           assessmentLog.push(
             `${item.skill} - recognized through ${source}`
           );
+
           newlyRecorded.push(item.skill);
         }
       });
@@ -1438,6 +1501,7 @@
         !completedSkills.has("Complete OPQRST assessment performed")
       ) {
         completedSkills.add("Complete OPQRST assessment performed");
+
         assessmentLog.push(
           "Complete OPQRST assessment performed - all OPQRST components recognized"
         );
@@ -1448,6 +1512,7 @@
         !completedSkills.has("Complete SAMPLE history performed")
       ) {
         completedSkills.add("Complete SAMPLE history performed");
+
         assessmentLog.push(
           "Complete SAMPLE history performed - all SAMPLE components recognized"
         );
@@ -1511,14 +1576,18 @@
       );
 
       responseBox.innerText = "Contacting patient...";
+
       document.getElementById("recordStatus").innerText =
         "Patient question submitted. Waiting for the response...";
+
       patientButton.disabled = true;
 
       try {
         const response = await fetch("/ask", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({
             studentQuestion: question,
             history: patientHistory,
@@ -1527,6 +1596,7 @@
         });
 
         const data = await readJsonResponse(response);
+
         const patientReply =
           data.reply || data.answer || "The patient did not respond.";
 
@@ -1549,7 +1619,9 @@
         questionBox.focus();
       } catch (error) {
         console.error("Patient request error:", error);
+
         showRecordedStatus(questionSkills, "the patient");
+
         responseBox.innerText =
           "Error contacting patient server.\n\n" + error.message;
       } finally {
@@ -1565,8 +1637,10 @@
     async function askInstructorTyped() {
       const questionBox =
         document.getElementById("actionEntry");
+
       const responseBox =
         document.getElementById("instructorResponse");
+
       const instructorButton =
         document.getElementById("actionInstructorButton");
 
@@ -1582,6 +1656,7 @@
       }
 
       questionBox.value = "";
+
       recordStudentInput("Ask the Instructor", question);
 
       responseBox.innerText = "Contacting instructor...";
@@ -1591,7 +1666,9 @@
       try {
         const response = await fetch("/instructor", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({
             studentQuestion: question,
             history: patientHistory,
@@ -1600,8 +1677,12 @@
         });
 
         const data = await readJsonResponse(response);
+
         const instructorReply =
-          data.reply || data.answer || data.response || data.instructorResponse ||
+          data.reply ||
+          data.answer ||
+          data.response ||
+          data.instructorResponse ||
           "The instructor did not respond.";
 
         instructorHistory += `Student to instructor: ${question}\n`;
@@ -1614,16 +1695,19 @@
           "Ask the Instructor exchange"
         );
 
-        document.getElementById("recordStatus").innerText = recordedSkills.length
-          ? `Instructor answered. Recorded: ${recordedSkills.join(", ")}`
-          : "Instructor answered. No new checklist item was recognized.";
+        document.getElementById("recordStatus").innerText =
+          recordedSkills.length
+            ? `Instructor answered. Recorded: ${recordedSkills.join(", ")}`
+            : "Instructor answered. No new checklist item was recognized.";
 
         saveScenarioState();
         questionBox.focus();
       } catch (error) {
         console.error("Instructor request error:", error);
+
         responseBox.innerText =
           `Error contacting instructor: ${error.message}`;
+
         saveScenarioState();
       } finally {
         instructorRequestPending = false;
@@ -1651,6 +1735,7 @@
       recordStudentInput("Assessment / Treatment", entry);
       assessmentLog.push(entry);
       lastRecordedAction = entry;
+
       updateCompletedAssessmentsDisplay();
 
       if (detectedSkills.length === 1) {
@@ -1665,8 +1750,10 @@
       }
 
       entryBox.value = "";
+
       entryBox.placeholder =
         "Enter the next assessment, finding, treatment, or decision...";
+
       entryBox.focus();
       saveScenarioState();
     }
@@ -1684,8 +1771,10 @@
 
       if (pendingEntry && isInstructorQuestion(pendingEntry)) {
         await askInstructorTyped();
+
         document.getElementById("recordStatus").innerText =
           "Instructor question sent. Submit for grading after reviewing the answer.";
+
         return;
       }
 
@@ -1716,16 +1805,23 @@
       );
 
       const originalButtonText = gradeButton.innerText;
+
       gradeButton.innerText = "Scoring...";
       gradeButton.disabled = true;
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+      const timeoutId = setTimeout(
+        () => controller.abort(),
+        30000
+      );
 
       try {
         const response = await fetch("/grade", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json"
+          },
           signal: controller.signal,
           body: JSON.stringify({
             studentAnswer: patientHistory,
@@ -1748,8 +1844,12 @@
         const gradingData = {
           earnedPoints: Number(data.earnedPoints) || 0,
           possiblePoints: Number(data.possiblePoints) || 0,
-          checklist: Array.isArray(data.checklist) ? data.checklist : [],
-          criticalCriteria: Array.isArray(data.criticalCriteria) ? data.criticalCriteria : [],
+          checklist: Array.isArray(data.checklist)
+            ? data.checklist
+            : [],
+          criticalCriteria: Array.isArray(data.criticalCriteria)
+            ? data.criticalCriteria
+            : [],
           originalEarnedPoints: Number(data.earnedPoints) || 0,
           adjustedEarnedPoints: Number(data.earnedPoints) || 0,
           scenario: "Chest Pain Scenario",
@@ -1816,6 +1916,7 @@
 
     function resetScenario() {
       stopVoiceInput();
+
       patientHistory = "";
       instructorHistory = "";
       assessmentLog = [];
@@ -1859,7 +1960,11 @@
     document
       .getElementById("actionEntry")
       .addEventListener("keydown", function(event) {
-        if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
+        if (
+          event.key === "Enter" &&
+          !event.shiftKey &&
+          !event.isComposing
+        ) {
           event.preventDefault();
 
           if (isInstructorQuestion(this.value.trim())) {
