@@ -490,6 +490,15 @@
     @media (max-width: 500px) {
       .entry-controls { flex-wrap: wrap; }
     }
+
+    /* Textarea edges follow the outer edges of the action buttons. */
+    .combined-workspace #actionEntry {
+      display: block;
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .shared-responses > [hidden] { display: none; }
   </style>
 </head>
 
@@ -533,11 +542,11 @@
           </div>
         </div>
         <div class="shared-responses">
-          <div>
+          <div id="patientResponseArea" hidden>
             <div class="response-label">Patient Response</div>
             <div id="patientResponse" class="box">Patient response will appear here.</div>
           </div>
-          <div>
+          <div id="instructorResponseArea" hidden>
             <div class="response-label">Instructor Response</div>
             <div id="instructorResponse" class="box">Instructor answer will appear here.</div>
           </div>
@@ -604,8 +613,10 @@
         completedSkills: Array.from(completedSkills),
         scenarioStartTime,
         actionEntry: document.getElementById("actionEntry").value,
-        patientResponse: document.getElementById("patientResponse").innerText,
-        instructorResponse: document.getElementById("instructorResponse").innerText,
+        patientResponseVisible: !document.getElementById("patientResponseArea").hidden,
+        instructorResponseVisible: !document.getElementById("instructorResponseArea").hidden,
+        patientResponse: document.getElementById("patientResponse").textContent,
+        instructorResponse: document.getElementById("instructorResponse").textContent,
         recordStatus: document.getElementById("recordStatus").innerText,
         completedAssessments: document.getElementById("completedAssessments").innerText
       };
@@ -639,6 +650,17 @@
         document.getElementById("instructorResponse").innerText =
           (state.instructorResponse || "Instructor answer will appear here.")
             .replace(/^Question: [^\n]*\n\n(?:Instructor: )?/, "");
+
+        document.getElementById("patientResponseArea").hidden =
+          !(state.patientResponseVisible ?? (
+            Boolean(state.patientResponse) &&
+            state.patientResponse !== "Patient response will appear here."
+          ));
+        document.getElementById("instructorResponseArea").hidden =
+          !(state.instructorResponseVisible ?? (
+            Boolean(state.instructorResponse) &&
+            state.instructorResponse !== "Instructor answer will appear here."
+          ));
 
         document.getElementById("recordStatus").innerText =
           state.recordStatus || "";
@@ -1706,6 +1728,7 @@
         return;
       }
 
+      document.getElementById("patientResponseArea").hidden = false;
       recordStudentInput("Ask the Patient", question);
 
       const questionSkills = detectAndRecordAssessments(
@@ -1785,12 +1808,14 @@
 
       const question = questionBox.value.trim();
       if (!question) {
+        document.getElementById("instructorResponseArea").hidden = false;
         responseBox.textContent =
           "Type a question in the shared text area, then click Ask Instructor. You can also use the Voice button under Ask Instructor.";
         questionBox.focus();
         return;
       }
 
+      document.getElementById("instructorResponseArea").hidden = false;
       responseBox.textContent = "Contacting instructor...";
       statusBox.textContent = "Instructor question submitted. Waiting for the answer...";
       instructorRequestPending = true;
@@ -2064,6 +2089,8 @@
 
     function resetScenario() {
       stopVoiceInput();
+      document.getElementById("patientResponseArea").hidden = true;
+      document.getElementById("instructorResponseArea").hidden = true;
 
       patientHistory = "";
       instructorHistory = "";
@@ -2118,6 +2145,40 @@
         resetScenario();
       }
     });
+
+    function alignSharedTextareaWithButtons() {
+      const textarea = document.getElementById("actionEntry");
+      const controls = document.querySelector(".entry-controls");
+      const buttons = [
+        document.getElementById("patientButton"),
+        controls.querySelector(".record-btn"),
+        document.getElementById("actionInstructorButton")
+      ];
+      const bounds = buttons.map(button => button.getBoundingClientRect());
+      const left = Math.min(...bounds.map(rect => rect.left));
+      const right = Math.max(...bounds.map(rect => rect.right));
+      const parent = textarea.parentElement;
+      const parentBounds = parent.getBoundingClientRect();
+      const paddingLeft = parseFloat(getComputedStyle(parent).paddingLeft) || 0;
+      if (right > left) {
+        textarea.style.width = (right - left) + "px";
+        textarea.style.marginLeft =
+          Math.max(0, left - parentBounds.left - paddingLeft) + "px";
+        textarea.style.marginRight = "0";
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", function() {
+      alignSharedTextareaWithButtons();
+      if (typeof ResizeObserver !== "undefined") {
+        const controlsObserver = new ResizeObserver(alignSharedTextareaWithButtons);
+        controlsObserver.observe(document.querySelector(".entry-controls"));
+      }
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(alignSharedTextareaWithButtons);
+      }
+    });
+    window.addEventListener("resize", alignSharedTextareaWithButtons);
   </script>
 </body>
 </html>
