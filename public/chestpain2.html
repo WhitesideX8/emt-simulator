@@ -421,6 +421,75 @@
   width: 100%;
   text-align: center;
 }
+
+    /* One combined container; original inputs and actions are preserved. */
+    .combined-workspace {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      justify-content: normal;
+      width: 100%;
+      max-width: 920px;
+      margin: 50px auto 0;
+      padding: 8px;
+      gap: 24px;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+    .combined-workspace .question-column,
+    .combined-workspace .recorder-column {
+      height: auto;
+      min-height: 0;
+      overflow-y: visible;
+    }
+    .combined-workspace .question-column h3,
+    .combined-workspace .recorder-column h3 {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: normal;
+    }
+    @media (max-width: 750px) {
+      .combined-workspace {
+        grid-template-columns: minmax(0, 1fr);
+        width: 92%;
+        gap: 16px;
+      }
+      .combined-workspace .question-column h3,
+      .combined-workspace .recorder-column h3 { min-height: 0; }
+    }
+
+    .combined-workspace { display: block; max-width: 920px; }
+    .combined-workspace .recorder-column h3 { min-height: 0; }
+    .shared-responses {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 24px;
+    }
+    @media (max-width: 750px) {
+      .shared-responses { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+    }
+
+    /* Center Speak beneath the patient/assessment button pair. */
+    .entry-controls {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 4px;
+    }
+    .patient-assessment-controls {
+      min-width: 0;
+      text-align: center;
+    }
+    .patient-assessment-controls .button-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    @media (max-width: 500px) {
+      .entry-controls { flex-wrap: wrap; }
+    }
   </style>
 </head>
 
@@ -442,82 +511,40 @@
 
     <div id="scenarioInfo" class="box">You are dispatched to a home for a 65-year-old male experiencing chest pain.</div>
 
-    <div class="scenario-workspace">
-
-      <!-- Upper left: Ask the Patient -->
-      <div class="question-area">
-        <section class="question-column">
-          <h3>Ask the Patient</h3>
-
-          <textarea
-            id="patientQuestion"
-            placeholder="Type a question for the patient..."
-          ></textarea>
-
-          <div class="button-row">
-            <button
-              id="patientVoiceButton"
-              class="voice-btn"
-              type="button"
-              onclick="toggleVoiceInput('patientQuestion', 'patientVoiceButton')"
-            >
-              🎤 Speak
-            </button>
-
-            <button
-              id="patientButton"
-              class="patient-btn"
-              type="button"
-              onclick="askPatientTyped()"
-            >
-              Ask Patient
-            </button>
+    <section class="scenario-workspace combined-workspace">
+      <div class="recorder-column">
+        <textarea id="actionEntry" aria-label="Patient question, assessment, treatment, or instructor question"
+          placeholder="Type or speak a patient question, assessment, or treatment. For instructor questions, use Ask Instructor."></textarea>
+        <div class="entry-controls">
+          <div class="patient-assessment-controls">
+            <div class="button-row">
+              <button id="patientButton" class="patient-btn" type="button" onclick="submitPatientEntry()">Ask Patient</button>
+              <button class="record-btn" type="button" onclick="recordAction()">Assessment/treatment</button>
+            </div>
+            <div class="button-row">
+              <button id="actionVoiceButton" class="voice-btn" type="button" onclick="speakSharedEntry()">Voice</button>
+            </div>
           </div>
-
-          <div class="response-label">Patient Response</div>
-
-          <div id="patientResponse" class="box">Patient response will appear here.</div>
-        </section>
-      </div>
-
-      <!-- Upper right: Record or Ask Instructor -->
-      <div class="assessment-stack">
-        <section class="recorder-column">
-          <h3>Record Assessment, Treatment, or Ask Instructor</h3>
-
-          <textarea
-            id="actionEntry"
-            placeholder="Type an assessment or question, then press Enter. Shift+Enter adds a new line."
-          ></textarea>
-
-          <div class="button-row">
-            <button
-              id="actionVoiceButton"
-              class="voice-btn"
-              type="button"
-              onclick="toggleVoiceInput('actionEntry', 'actionVoiceButton', true)"
-            >
-              🎤 Speak
-            </button>
-
-            <button
-              id="actionInstructorButton"
-              class="instructor-btn"
-              type="button"
-              onclick="askInstructorTyped()"
-            >
-              Ask Instructor
-            </button>
+          <div class="button-row instructor-control">
+            <button id="actionInstructorButton" class="instructor-btn" type="button" onclick="submitInstructorEntry()">Ask Instructor</button>
+            <div class="button-row">
+              <button id="instructorVoiceButton" class="voice-btn" type="button" onclick="speakInstructorEntry()">Voice</button>
+            </div>
           </div>
-
-          <div class="response-label">Instructor Response</div>
-
-          <div id="instructorResponse" class="box">Instructor answer will appear here.</div>
-
-          <div id="recordStatus" class="record-status"></div>
-        </section>
+        </div>
+        <div class="shared-responses">
+          <div>
+            <div class="response-label">Patient Response</div>
+            <div id="patientResponse" class="box">Patient response will appear here.</div>
+          </div>
+          <div>
+            <div class="response-label">Instructor Response</div>
+            <div id="instructorResponse" class="box">Instructor answer will appear here.</div>
+          </div>
+        </div>
+        <div id="recordStatus" class="record-status"></div>
       </div>
-    </div>
+    </section>
 
     <!-- Separate container centered below both upper containers -->
     <section class="recorded-column">
@@ -576,7 +603,6 @@
         studentInputLog,
         completedSkills: Array.from(completedSkills),
         scenarioStartTime,
-        patientQuestion: document.getElementById("patientQuestion").value,
         actionEntry: document.getElementById("actionEntry").value,
         patientResponse: document.getElementById("patientResponse").innerText,
         instructorResponse: document.getElementById("instructorResponse").innerText,
@@ -604,10 +630,8 @@
         );
         scenarioStartTime = Number(state.scenarioStartTime) || Date.now();
 
-        document.getElementById("patientQuestion").value =
-          state.patientQuestion || "";
         document.getElementById("actionEntry").value =
-          state.actionEntry || "";
+          state.actionEntry || state.patientQuestion || "";
 
         document.getElementById("patientResponse").innerText =
           state.patientResponse || "Patient response will appear here.";
@@ -648,7 +672,7 @@
       if (recognitionToReset !== activeRecognition) return;
 
       if (activeVoiceButton) {
-        activeVoiceButton.innerText = "🎤 Speak";
+        activeVoiceButton.innerText = "Voice";
         activeVoiceButton.classList.remove("listening");
       }
 
@@ -665,7 +689,8 @@
     function toggleVoiceInput(
       textareaId,
       buttonId,
-      recordWhenFinished = false
+      recordWhenFinished = false,
+      sendToInstructor = false
     ) {
       if (!SpeechRecognition) {
         alert(
@@ -689,6 +714,7 @@
 
       const textBox = document.getElementById(textareaId);
       const recognition = new SpeechRecognition();
+      recognition.submitToInstructor = sendToInstructor;
       const existingText = textBox.value.trim();
       let heardSpeech = false;
       let voiceEntryRecorded = false;
@@ -708,13 +734,10 @@
 
         voiceEntryRecorded = true;
 
-        if (
-          textareaId === "actionEntry" &&
-          isInstructorQuestion(spokenEntry)
-        ) {
+        if (recognition.submitToInstructor) {
           askInstructorTyped();
         } else {
-          recordAction("voice assessment");
+          submitCombinedEntry("voice assessment");
         }
 
         saveScenarioState();
@@ -749,7 +772,9 @@
 
         if (recordWhenFinished) {
           document.getElementById("recordStatus").innerText =
-            "Listening. Press Stop Voice to record the assessment.";
+            sendToInstructor
+              ? "Listening. Press Stop Voice to send your question to the instructor."
+              : "Listening. Press Stop Voice to ask the patient or record the assessment/treatment. Use Ask Instructor to send this entry to the instructor.";
         }
 
         textBox.focus();
@@ -1638,8 +1663,38 @@
         `${newSkills.length} assessments automatically recorded.`;
     }
 
+
+    function submitPatientEntry() {
+      return askPatientTyped();
+    }
+
+    function submitInstructorEntry() {
+      if (activeRecognition) {
+        activeRecognition.submitToInstructor = true;
+        stopVoiceInput();
+        return;
+      }
+      return askInstructorTyped();
+    }
+
+    function submitCombinedEntry(source = "manual entry") {
+      const entry = document.getElementById("actionEntry").value.trim();
+      if (isInstructorQuestion(entry)) {
+        return askPatientTyped();
+      }
+      return recordAction(source);
+    }
+
+    function speakSharedEntry() {
+      toggleVoiceInput("actionEntry", "actionVoiceButton", true);
+    }
+
+    function speakInstructorEntry() {
+      toggleVoiceInput("actionEntry", "instructorVoiceButton", true, true);
+    }
+
     async function askPatientTyped() {
-      const questionBox = document.getElementById("patientQuestion");
+      const questionBox = document.getElementById("actionEntry");
       const responseBox = document.getElementById("patientResponse");
       const patientButton = document.getElementById("patientButton");
       const question = questionBox.value.trim();
@@ -1718,81 +1773,91 @@
     }
 
     async function askInstructorTyped() {
-      const questionBox =
-        document.getElementById("actionEntry");
+      const questionBox = document.getElementById("actionEntry");
+      const responseBox = document.getElementById("instructorResponse");
+      const instructorButton = document.getElementById("actionInstructorButton");
+      const statusBox = document.getElementById("recordStatus");
 
-      const responseBox =
-        document.getElementById("instructorResponse");
-
-      const instructorButton =
-        document.getElementById("actionInstructorButton");
-
-      if (instructorRequestPending) return;
+      if (instructorRequestPending) {
+        statusBox.textContent = "Waiting for the instructor answer...";
+        return;
+      }
 
       const question = questionBox.value.trim();
-
       if (!question) {
-        document.getElementById("recordStatus").innerText =
-          "Type or speak a question for the instructor first.";
+        responseBox.textContent =
+          "Type a question in the shared text area, then click Ask Instructor. You can also use the Voice button under Ask Instructor.";
         questionBox.focus();
         return;
       }
 
-      questionBox.value = "";
-
-      recordStudentInput("Ask the Instructor", question);
-
-      responseBox.innerText = "Contacting instructor...";
+      responseBox.textContent = "Contacting instructor...";
+      statusBox.textContent = "Instructor question submitted. Waiting for the answer...";
       instructorRequestPending = true;
       instructorButton.disabled = true;
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 45000);
 
       try {
+        recordStudentInput("Ask the Instructor", question);
         const response = await fetch("/instructor", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
           body: JSON.stringify({
             studentQuestion: question,
+            question,
             history: patientHistory,
             scenario
           })
         });
 
-        const data = await readJsonResponse(response);
+        const raw = await response.text();
+        let data;
+        try { data = JSON.parse(raw); }
+        catch {
+          throw new Error("The instructor server returned an invalid response (status " +
+            response.status + "). Please try again.");
+        }
+        if (!response.ok) {
+          throw new Error(data.error || data.message ||
+            "Instructor server returned status " + response.status + ".");
+        }
 
-        const instructorReply =
-          data.reply ||
-          data.answer ||
-          data.response ||
-          data.instructorResponse ||
-          "The instructor did not respond.";
+        const candidates = typeof data === "string" ? [data] :
+          [data.reply, data.answer, data.response, data.instructorResponse,
+           data.message, data.text, data.content];
+        const instructorReply = candidates.find(value =>
+          typeof value === "string" && value.trim());
+        if (!instructorReply) {
+          throw new Error(typeof data.error === "string" ? data.error :
+            "The instructor server returned no answer. Please try again.");
+        }
 
-        instructorHistory += `Student to instructor: ${question}\n`;
-        instructorHistory += `Instructor: ${instructorReply}\n\n`;
+        responseBox.textContent = instructorReply;
+        instructorHistory += `Student to instructor: ${question}\nInstructor: ${instructorReply}\n\n`;
+        if (questionBox.value.trim() === question) questionBox.value = "";
 
-        responseBox.innerText = instructorReply;
-
-        const recordedSkills = detectAndRecordAssessments(
-          `${question}\n${instructorReply}`,
-          "Ask the Instructor exchange"
-        );
-
-        document.getElementById("recordStatus").innerText =
-          recordedSkills.length
-            ? `Instructor answered. Recorded: ${recordedSkills.join(", ")}`
-            : "Instructor answered. No new checklist item was recognized.";
-
-        saveScenarioState();
+        try {
+          const skills = detectAndRecordAssessments(
+            question + "\n" + instructorReply, "Ask the Instructor exchange");
+          statusBox.textContent = skills.length
+            ? "Instructor answered. Recorded: " + skills.join(", ")
+            : "Instructor answered.";
+          saveScenarioState();
+        } catch (recordingError) {
+          console.error("Instructor answer received; recording failed:", recordingError);
+          statusBox.textContent = "Instructor answered. The session could not be saved.";
+        }
         questionBox.focus();
       } catch (error) {
         console.error("Instructor request error:", error);
-
-        responseBox.innerText =
-          `Error contacting instructor: ${error.message}`;
-
-        saveScenarioState();
+        responseBox.textContent = error.name === "AbortError"
+          ? "The instructor request timed out. Your question is still in the text area; click Ask Instructor to retry."
+          : "Error contacting instructor: " + error.message;
+        statusBox.textContent = "Instructor request failed. Your question has been kept for retry.";
       } finally {
+        clearTimeout(timeout);
         instructorRequestPending = false;
         instructorButton.disabled = false;
       }
@@ -1853,10 +1918,10 @@
       }
 
       if (pendingEntry && isInstructorQuestion(pendingEntry)) {
-        await askInstructorTyped();
+        await askPatientTyped();
 
         document.getElementById("recordStatus").innerText =
-          "Instructor question sent. Submit for grading after reviewing the answer.";
+          "Patient question sent. Submit for grading after reviewing the answer.";
 
         return;
       }
@@ -2011,7 +2076,7 @@
       sessionStorage.removeItem("emtGradingResults");
       sessionStorage.removeItem(SCENARIO_STATE_KEY);
 
-      document.getElementById("patientQuestion").value = "";
+      document.getElementById("actionEntry").value = "";
       document.getElementById("actionEntry").value = "";
 
       document.getElementById("patientResponse").innerText =
@@ -2026,19 +2091,10 @@
         "No assessments recorded yet.";
 
       document.getElementById("actionEntry").placeholder =
-        "Example: Assessed airway; airway is patent.";
+        "Type a patient question, assessment, treatment, or instructor question.";
 
-      document.getElementById("patientQuestion").focus();
+      document.getElementById("actionEntry").focus();
     }
-
-    document
-      .getElementById("patientQuestion")
-      .addEventListener("keydown", function(event) {
-        if (event.key === "Enter" && !event.shiftKey) {
-          event.preventDefault();
-          askPatientTyped();
-        }
-      });
 
     document
       .getElementById("actionEntry")
@@ -2050,11 +2106,7 @@
         ) {
           event.preventDefault();
 
-          if (isInstructorQuestion(this.value.trim())) {
-            askInstructorTyped();
-          } else {
-            recordAction();
-          }
+          submitCombinedEntry();
         }
       });
 
