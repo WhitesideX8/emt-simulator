@@ -2179,6 +2179,49 @@
       }
     });
     window.addEventListener("resize", alignSharedTextareaWithButtons);
+
+    // Hide each response five seconds after its output appears.
+    const responseHideTimers = new Map();
+
+    function scheduleResponseHide(responseId, areaId) {
+      const responseBox = document.getElementById(responseId);
+      const area = document.getElementById(areaId);
+      const text = responseBox.textContent.trim();
+      clearTimeout(responseHideTimers.get(responseId));
+      responseHideTimers.delete(responseId);
+
+      if (area.hidden || !text ||
+          text === "Contacting patient..." ||
+          text === "Contacting instructor..." ||
+          text === "Patient response will appear here." ||
+          text === "Instructor answer will appear here.") {
+        return;
+      }
+
+      responseHideTimers.set(responseId, setTimeout(function() {
+        area.hidden = true;
+        responseHideTimers.delete(responseId);
+        try { saveScenarioState(); }
+        catch (error) { console.error("Could not save response visibility:", error); }
+      }, 5000));
+    }
+
+    window.addEventListener("DOMContentLoaded", function() {
+      [
+        ["patientResponse", "patientResponseArea"],
+        ["instructorResponse", "instructorResponseArea"]
+      ].forEach(function([responseId, areaId]) {
+        const observer = new MutationObserver(function() {
+          scheduleResponseHide(responseId, areaId);
+        });
+        observer.observe(document.getElementById(responseId), {
+          childList: true,
+          characterData: true,
+          subtree: true
+        });
+        scheduleResponseHide(responseId, areaId);
+      });
+    });
   </script>
 </body>
 </html>
