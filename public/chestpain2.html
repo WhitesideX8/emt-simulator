@@ -524,8 +524,7 @@
 
     <section class="scenario-workspace combined-workspace">
       <div class="recorder-column">
-        <textarea id="actionEntry" aria-label="Patient question, assessment, treatment, or instructor question"
-          placeholder="Type or speak a patient question, assessment, or treatment. For instructor questions, use Ask Instructor."></textarea>
+        <textarea id="actionEntry" aria-label="Patient question, assessment, treatment, or instructor question"></textarea>
         <div class="entry-controls">
           <div class="patient-assessment-controls">
             <div class="button-row">
@@ -1927,7 +1926,7 @@
       entryBox.value = "";
 
       entryBox.placeholder =
-        "Enter the next assessment, finding, treatment, or decision...";
+        "";
 
       entryBox.focus();
       saveScenarioState();
@@ -2120,7 +2119,7 @@
         "No assessments recorded yet.";
 
       document.getElementById("actionEntry").placeholder =
-        "Type a patient question, assessment, treatment, or instructor question.";
+        "";
 
       document.getElementById("actionEntry").focus();
     }
