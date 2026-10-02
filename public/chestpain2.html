@@ -560,7 +560,7 @@
     <section class="recorded-column">
       <h3>Recorded Assessments and Treatments</h3>
 
-      <div id="completedAssessments" class="box">No assessments recorded yet.</div>
+      <div id="completedAssessments" class="box"></div>
 
       <div class="button-row">
         <a
@@ -667,7 +667,7 @@
           state.recordStatus || "";
 
         document.getElementById("completedAssessments").innerText =
-          state.completedAssessments || "No assessments recorded yet.";
+          state.completedAssessments || "";
 
         if (instructorHistory.trim()) {
           detectAndRecordAssessments(
@@ -1657,7 +1657,7 @@
         document.getElementById("completedAssessments");
 
       if (completedSkills.size === 0) {
-        completedBox.innerText = "No assessments recorded yet.";
+        completedBox.innerText = "";
         return;
       }
 
@@ -2116,7 +2116,7 @@
       document.getElementById("recordStatus").innerText = "";
 
       document.getElementById("completedAssessments").innerText =
-        "No assessments recorded yet.";
+        "";
 
       document.getElementById("actionEntry").placeholder =
         "";
