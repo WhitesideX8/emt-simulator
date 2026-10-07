@@ -335,89 +335,108 @@
         overflow-y: auto;
       }
     }
-    #completedAssessments {
-  max-height: none;
-  overflow-y: visible;
-}
-    .recorder-column {
-  height: auto;
-  min-height: 310px;
-  overflow-y: visible;
-}
-    .recorder-column h3 {
-  white-space: nowrap;
-  font-size: 13px;
-}
-    #patientQuestion,
-#actionEntry {
-  width: 100%;
-  height: 78px;
-  min-height: 78px;
-}
-    #patientQuestion,
-#actionEntry {
-  background: rgba(255, 255, 255, 0.55);
-  color: #222;
-}
-    #patientQuestion,
-#actionEntry {
-  color: #000;
-  font-weight: bold;
-}
-    #patientQuestion::placeholder,
-#actionEntry::placeholder {
-  color: #333;
-  opacity: 1;
-}
-    #patientQuestion,
-#actionEntry {
-  border: none;
-  box-shadow: none;
-}
-    #patientResponse,
-#instructorResponse,
-#completedAssessments {
-  background: rgba(255, 255, 255, 0.55);
-  color: #000;
-}
-    /* Ask the Patient and Record Assessment headings */
-.question-column h3,
-.recorder-column h3 {
-  font-size: 18px;
-}
 
-/* Patient Response and Instructor Response labels */
-.response-label {
-  font-size: 16px;
-}
+    /* Long assessment lists scroll within their box. */
+    #completedAssessments {
+      max-height: clamp(100px, 28vh, 240px);
+      max-height: clamp(100px, 28dvh, 240px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      overflow-wrap: anywhere;
+      scrollbar-gutter: stable;
+    }
+
+    .recorder-column {
+      height: auto;
+      min-height: 310px;
+      overflow-y: visible;
+    }
+
+    .recorder-column h3 {
+      white-space: nowrap;
+      font-size: 13px;
+    }
+
     #patientQuestion,
-#actionEntry {
-  font-size: 15px;
-  font-weight: 700;
-  color: #000;
-}
+    #actionEntry {
+      width: 100%;
+      height: 78px;
+      min-height: 78px;
+    }
+
+    #patientQuestion,
+    #actionEntry {
+      background: rgba(255, 255, 255, 0.55);
+      color: #222;
+    }
+
+    #patientQuestion,
+    #actionEntry {
+      color: #000;
+      font-weight: bold;
+    }
+
+    #patientQuestion::placeholder,
+    #actionEntry::placeholder {
+      color: #333;
+      opacity: 1;
+    }
+
+    #patientQuestion,
+    #actionEntry {
+      border: none;
+      box-shadow: none;
+    }
+
+    #patientResponse,
+    #instructorResponse,
+    #completedAssessments {
+      background: rgba(255, 255, 255, 0.55);
+      color: #000;
+    }
+
+    /* Ask the Patient and Record Assessment headings */
+    .question-column h3,
+    .recorder-column h3 {
+      font-size: 18px;
+    }
+
+    /* Patient Response and Instructor Response labels */
+    .response-label {
+      font-size: 16px;
+    }
+
+    #patientQuestion,
+    #actionEntry {
+      font-size: 15px;
+      font-weight: 700;
+      color: #000;
+    }
+
     textarea,
-#scenarioInfo,
-#patientResponse,
-#instructorResponse,
-#completedAssessments {
-  font-size: 15px;
-  font-weight: 700;
-  color: #000;
-}
+    #scenarioInfo,
+    #patientResponse,
+    #instructorResponse,
+    #completedAssessments {
+      font-size: 15px;
+      font-weight: 700;
+      color: #000;
+    }
+
     h2,
-.question-column h3,
-.recorder-column h3,
-.recorded-column h3,
-.response-label,
-.section-label {
-  text-align: center;
-}
+    .question-column h3,
+    .recorder-column h3,
+    .recorded-column h3,
+    .response-label,
+    .section-label {
+      text-align: center;
+    }
+
     label[for="patientResponse"] {
-  display: block;
-  width: 100%;
-  text-align: center;
-}
+      display: block;
+      width: 100%;
+      text-align: center;
+    }
 
     /* One combined container; original inputs and actions are preserved. */
     .combined-workspace {
@@ -432,12 +451,14 @@
       border: none;
       box-shadow: none;
     }
+
     .combined-workspace .question-column,
     .combined-workspace .recorder-column {
       height: auto;
       min-height: 0;
       overflow-y: visible;
     }
+
     .combined-workspace .question-column h3,
     .combined-workspace .recorder-column h3 {
       min-height: 44px;
@@ -446,25 +467,40 @@
       justify-content: center;
       white-space: normal;
     }
+
     @media (max-width: 750px) {
       .combined-workspace {
         grid-template-columns: minmax(0, 1fr);
         width: 92%;
         gap: 16px;
       }
+
       .combined-workspace .question-column h3,
-      .combined-workspace .recorder-column h3 { min-height: 0; }
+      .combined-workspace .recorder-column h3 {
+        min-height: 0;
+      }
     }
 
-    .combined-workspace { display: block; max-width: 920px; }
-    .combined-workspace .recorder-column h3 { min-height: 0; }
+    .combined-workspace {
+      display: block;
+      max-width: 920px;
+    }
+
+    .combined-workspace .recorder-column h3 {
+      min-height: 0;
+    }
+
     .shared-responses {
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: 24px;
     }
+
     @media (max-width: 750px) {
-      .shared-responses { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+      .shared-responses {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+      }
     }
 
     /* Center Speak beneath the patient/assessment button pair. */
@@ -475,17 +511,22 @@
       gap: 12px;
       margin-top: 4px;
     }
+
     .patient-assessment-controls {
       min-width: 0;
       text-align: center;
     }
+
     .patient-assessment-controls .button-row {
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
     }
+
     @media (max-width: 500px) {
-      .entry-controls { flex-wrap: wrap; }
+      .entry-controls {
+        flex-wrap: wrap;
+      }
     }
 
     /* Textarea edges follow the outer edges of the action buttons. */
@@ -495,11 +536,16 @@
       margin-left: auto;
       margin-right: auto;
     }
-    .shared-responses > [hidden] { display: none; }
 
-    /* Move Recorded Assessments and Treatments farther down the page. */
+    .shared-responses > [hidden] {
+      display: none;
+    }
+
+    /* Keep the recorded list and grading controls compact on screen. */
     .recorded-column {
-      margin-top: 80px;
+      width: 680px;
+      max-width: 100%;
+      margin-top: 24px;
     }
   </style>
 </head>
@@ -524,43 +570,93 @@
 
     <section class="scenario-workspace combined-workspace">
       <div class="recorder-column">
-        <textarea id="actionEntry" aria-label="Patient question, assessment, treatment, or instructor question"></textarea>
+        <textarea
+          id="actionEntry"
+          aria-label="Patient question, assessment, treatment, or instructor question"
+        ></textarea>
+
         <div class="entry-controls">
           <div class="patient-assessment-controls">
             <div class="button-row">
-              <button id="patientButton" class="patient-btn" type="button" onclick="submitPatientEntry()">Ask Patient</button>
-              <button class="record-btn" type="button" onclick="recordAction()">Assessment/treatment</button>
+              <button
+                id="patientButton"
+                class="patient-btn"
+                type="button"
+                onclick="submitPatientEntry()"
+              >
+                Ask Patient
+              </button>
+
+              <button
+                class="record-btn"
+                type="button"
+                onclick="recordAction()"
+              >
+                Assessment/treatment
+              </button>
             </div>
+
             <div class="button-row">
-              <button id="actionVoiceButton" class="voice-btn" type="button" onclick="speakSharedEntry()">Voice</button>
+              <button
+                id="actionVoiceButton"
+                class="voice-btn"
+                type="button"
+                onclick="speakSharedEntry()"
+              >
+                Voice
+              </button>
             </div>
           </div>
+
           <div class="button-row instructor-control">
-            <button id="actionInstructorButton" class="instructor-btn" type="button" onclick="submitInstructorEntry()">Ask Instructor</button>
+            <button
+              id="actionInstructorButton"
+              class="instructor-btn"
+              type="button"
+              onclick="submitInstructorEntry()"
+            >
+              Ask Instructor
+            </button>
+
             <div class="button-row">
-              <button id="instructorVoiceButton" class="voice-btn" type="button" onclick="speakInstructorEntry()">Voice</button>
+              <button
+                id="instructorVoiceButton"
+                class="voice-btn"
+                type="button"
+                onclick="speakInstructorEntry()"
+              >
+                Voice
+              </button>
             </div>
           </div>
         </div>
+
         <div class="shared-responses">
           <div id="patientResponseArea" hidden>
             <div class="response-label">Patient Response</div>
             <div id="patientResponse" class="box">Patient response will appear here.</div>
           </div>
+
           <div id="instructorResponseArea" hidden>
             <div class="response-label">Instructor Response</div>
             <div id="instructorResponse" class="box">Instructor answer will appear here.</div>
           </div>
         </div>
+
         <div id="recordStatus" class="record-status"></div>
       </div>
     </section>
 
-    <!-- Separate container centered below both upper containers -->
     <section class="recorded-column">
       <h3>Recorded Assessments and Treatments</h3>
 
-      <div id="completedAssessments" class="box"></div>
+      <div
+        id="completedAssessments"
+        class="box"
+        tabindex="0"
+        role="region"
+        aria-label="Recorded Assessments and Treatments"
+      ></div>
 
       <div class="button-row">
         <a
@@ -614,12 +710,18 @@
         completedSkills: Array.from(completedSkills),
         scenarioStartTime,
         actionEntry: document.getElementById("actionEntry").value,
-        patientResponseVisible: !document.getElementById("patientResponseArea").hidden,
-        instructorResponseVisible: !document.getElementById("instructorResponseArea").hidden,
-        patientResponse: document.getElementById("patientResponse").textContent,
-        instructorResponse: document.getElementById("instructorResponse").textContent,
-        recordStatus: document.getElementById("recordStatus").innerText,
-        completedAssessments: document.getElementById("completedAssessments").innerText
+        patientResponseVisible:
+          !document.getElementById("patientResponseArea").hidden,
+        instructorResponseVisible:
+          !document.getElementById("instructorResponseArea").hidden,
+        patientResponse:
+          document.getElementById("patientResponse").textContent,
+        instructorResponse:
+          document.getElementById("instructorResponse").textContent,
+        recordStatus:
+          document.getElementById("recordStatus").innerText,
+        completedAssessments:
+          document.getElementById("completedAssessments").innerText
       };
 
       sessionStorage.setItem(SCENARIO_STATE_KEY, JSON.stringify(state));
@@ -634,12 +736,21 @@
 
         patientHistory = state.patientHistory || "";
         instructorHistory = state.instructorHistory || "";
-        assessmentLog = Array.isArray(state.assessmentLog) ? state.assessmentLog : [];
+
+        assessmentLog = Array.isArray(state.assessmentLog)
+          ? state.assessmentLog
+          : [];
+
         lastRecordedAction = state.lastRecordedAction || "";
-        studentInputLog = Array.isArray(state.studentInputLog) ? state.studentInputLog : [];
+
+        studentInputLog = Array.isArray(state.studentInputLog)
+          ? state.studentInputLog
+          : [];
+
         completedSkills = new Set(
           Array.isArray(state.completedSkills) ? state.completedSkills : []
         );
+
         scenarioStartTime = Number(state.scenarioStartTime) || Date.now();
 
         document.getElementById("actionEntry").value =
@@ -657,6 +768,7 @@
             Boolean(state.patientResponse) &&
             state.patientResponse !== "Patient response will appear here."
           ));
+
         document.getElementById("instructorResponseArea").hidden =
           !(state.instructorResponseVisible ?? (
             Boolean(state.instructorResponse) &&
@@ -738,6 +850,7 @@
       const textBox = document.getElementById(textareaId);
       const recognition = new SpeechRecognition();
       recognition.submitToInstructor = sendToInstructor;
+
       const existingText = textBox.value.trim();
       let heardSpeech = false;
       let voiceEntryRecorded = false;
@@ -1600,7 +1713,8 @@
     function getHistoryComponentStatus() {
       const opqrst = {
         onset: completedSkills.has("OPQRST onset assessed"),
-        provocationPalliation: completedSkills.has("OPQRST provocation and palliation assessed"),
+        provocationPalliation:
+          completedSkills.has("OPQRST provocation and palliation assessed"),
         quality: completedSkills.has("OPQRST quality assessed"),
         radiation: completedSkills.has("OPQRST radiation assessed"),
         severity: completedSkills.has("OPQRST severity assessed"),
@@ -1611,7 +1725,8 @@
         signsSymptoms: completedSkills.has("Signs and symptoms assessed"),
         allergies: completedSkills.has("Allergies assessed"),
         medications: completedSkills.has("Medications assessed"),
-        pertinentHistory: completedSkills.has("Pertinent medical history assessed"),
+        pertinentHistory:
+          completedSkills.has("Pertinent medical history assessed"),
         lastOralIntake: completedSkills.has("Last oral intake assessed"),
         events: completedSkills.has("Events leading to illness assessed")
       };
@@ -1686,7 +1801,6 @@
         `${newSkills.length} assessments automatically recorded.`;
     }
 
-
     function submitPatientEntry() {
       return askPatientTyped();
     }
@@ -1697,14 +1811,17 @@
         stopVoiceInput();
         return;
       }
+
       return askInstructorTyped();
     }
 
     function submitCombinedEntry(source = "manual entry") {
       const entry = document.getElementById("actionEntry").value.trim();
+
       if (isInstructorQuestion(entry)) {
         return askPatientTyped();
       }
+
       return recordAction(source);
     }
 
@@ -1799,7 +1916,8 @@
     async function askInstructorTyped() {
       const questionBox = document.getElementById("actionEntry");
       const responseBox = document.getElementById("instructorResponse");
-      const instructorButton = document.getElementById("actionInstructorButton");
+      const instructorButton =
+        document.getElementById("actionInstructorButton");
       const statusBox = document.getElementById("recordStatus");
 
       if (instructorRequestPending) {
@@ -1808,6 +1926,7 @@
       }
 
       const question = questionBox.value.trim();
+
       if (!question) {
         document.getElementById("instructorResponseArea").hidden = false;
         responseBox.textContent =
@@ -1818,17 +1937,23 @@
 
       document.getElementById("instructorResponseArea").hidden = false;
       responseBox.textContent = "Contacting instructor...";
-      statusBox.textContent = "Instructor question submitted. Waiting for the answer...";
+      statusBox.textContent =
+        "Instructor question submitted. Waiting for the answer...";
+
       instructorRequestPending = true;
       instructorButton.disabled = true;
+
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 45000);
 
       try {
         recordStudentInput("Ask the Instructor", question);
+
         const response = await fetch("/instructor", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json"
+          },
           signal: controller.signal,
           body: JSON.stringify({
             studentQuestion: question,
@@ -1840,48 +1965,87 @@
 
         const raw = await response.text();
         let data;
-        try { data = JSON.parse(raw); }
-        catch {
-          throw new Error("The instructor server returned an invalid response (status " +
-            response.status + "). Please try again.");
-        }
-        if (!response.ok) {
-          throw new Error(data.error || data.message ||
-            "Instructor server returned status " + response.status + ".");
+
+        try {
+          data = JSON.parse(raw);
+        } catch {
+          throw new Error(
+            "The instructor server returned an invalid response (status " +
+            response.status + "). Please try again."
+          );
         }
 
-        const candidates = typeof data === "string" ? [data] :
-          [data.reply, data.answer, data.response, data.instructorResponse,
-           data.message, data.text, data.content];
+        if (!response.ok) {
+          throw new Error(
+            data.error || data.message ||
+            "Instructor server returned status " + response.status + "."
+          );
+        }
+
+        const candidates = typeof data === "string"
+          ? [data]
+          : [
+              data.reply,
+              data.answer,
+              data.response,
+              data.instructorResponse,
+              data.message,
+              data.text,
+              data.content
+            ];
+
         const instructorReply = candidates.find(value =>
-          typeof value === "string" && value.trim());
+          typeof value === "string" && value.trim()
+        );
+
         if (!instructorReply) {
-          throw new Error(typeof data.error === "string" ? data.error :
-            "The instructor server returned no answer. Please try again.");
+          throw new Error(
+            typeof data.error === "string"
+              ? data.error
+              : "The instructor server returned no answer. Please try again."
+          );
         }
 
         responseBox.textContent = instructorReply;
-        instructorHistory += `Student to instructor: ${question}\nInstructor: ${instructorReply}\n\n`;
-        if (questionBox.value.trim() === question) questionBox.value = "";
+
+        instructorHistory +=
+          `Student to instructor: ${question}\nInstructor: ${instructorReply}\n\n`;
+
+        if (questionBox.value.trim() === question) {
+          questionBox.value = "";
+        }
 
         try {
           const skills = detectAndRecordAssessments(
-            question + "\n" + instructorReply, "Ask the Instructor exchange");
+            question + "\n" + instructorReply,
+            "Ask the Instructor exchange"
+          );
+
           statusBox.textContent = skills.length
             ? "Instructor answered. Recorded: " + skills.join(", ")
             : "Instructor answered.";
+
           saveScenarioState();
         } catch (recordingError) {
-          console.error("Instructor answer received; recording failed:", recordingError);
-          statusBox.textContent = "Instructor answered. The session could not be saved.";
+          console.error(
+            "Instructor answer received; recording failed:",
+            recordingError
+          );
+
+          statusBox.textContent =
+            "Instructor answered. The session could not be saved.";
         }
+
         questionBox.focus();
       } catch (error) {
         console.error("Instructor request error:", error);
+
         responseBox.textContent = error.name === "AbortError"
           ? "The instructor request timed out. Your question is still in the text area; click Ask Instructor to retry."
           : "Error contacting instructor: " + error.message;
-        statusBox.textContent = "Instructor request failed. Your question has been kept for retry.";
+
+        statusBox.textContent =
+          "Instructor request failed. Your question has been kept for retry.";
       } finally {
         clearTimeout(timeout);
         instructorRequestPending = false;
@@ -1924,11 +2088,9 @@
       }
 
       entryBox.value = "";
-
-      entryBox.placeholder =
-        "";
-
+      entryBox.placeholder = "";
       entryBox.focus();
+
       saveScenarioState();
     }
 
@@ -1964,6 +2126,7 @@
         alert(
           "Record at least one assessment, treatment, or patient interview before submitting."
         );
+
         actionEntry.focus();
         return;
       }
@@ -2018,21 +2181,26 @@
         const gradingData = {
           earnedPoints: Number(data.earnedPoints) || 0,
           possiblePoints: Number(data.possiblePoints) || 0,
+
           checklist: Array.isArray(data.checklist)
             ? data.checklist
             : [],
+
           criticalCriteria: Array.isArray(data.criticalCriteria)
             ? data.criticalCriteria
             : [],
+
           originalEarnedPoints: Number(data.earnedPoints) || 0,
           adjustedEarnedPoints: Number(data.earnedPoints) || 0,
           scenario: "Chest Pain Scenario",
           scenarioCode: scenario,
           scenarioUrl: window.location.href,
+
           feedback:
             data.feedback ||
             data.reply ||
             "No grading feedback was returned.",
+
           treatmentPlan,
           assessmentLog,
           studentInputLog,
@@ -2090,6 +2258,7 @@
 
     function resetScenario() {
       stopVoiceInput();
+
       document.getElementById("patientResponseArea").hidden = true;
       document.getElementById("instructorResponseArea").hidden = true;
 
@@ -2114,13 +2283,8 @@
         "Instructor answer will appear here.";
 
       document.getElementById("recordStatus").innerText = "";
-
-      document.getElementById("completedAssessments").innerText =
-        "";
-
-      document.getElementById("actionEntry").placeholder =
-        "";
-
+      document.getElementById("completedAssessments").innerText = "";
+      document.getElementById("actionEntry").placeholder = "";
       document.getElementById("actionEntry").focus();
     }
 
@@ -2133,7 +2297,6 @@
           !event.isComposing
         ) {
           event.preventDefault();
-
           submitCombinedEntry();
         }
       });
@@ -2150,35 +2313,53 @@
     function alignSharedTextareaWithButtons() {
       const textarea = document.getElementById("actionEntry");
       const controls = document.querySelector(".entry-controls");
+
       const buttons = [
         document.getElementById("patientButton"),
         controls.querySelector(".record-btn"),
         document.getElementById("actionInstructorButton")
       ];
-      const bounds = buttons.map(button => button.getBoundingClientRect());
+
+      const bounds = buttons.map(button =>
+        button.getBoundingClientRect()
+      );
+
       const left = Math.min(...bounds.map(rect => rect.left));
       const right = Math.max(...bounds.map(rect => rect.right));
+
       const parent = textarea.parentElement;
       const parentBounds = parent.getBoundingClientRect();
-      const paddingLeft = parseFloat(getComputedStyle(parent).paddingLeft) || 0;
+
+      const paddingLeft =
+        parseFloat(getComputedStyle(parent).paddingLeft) || 0;
+
       if (right > left) {
         textarea.style.width = (right - left) + "px";
+
         textarea.style.marginLeft =
           Math.max(0, left - parentBounds.left - paddingLeft) + "px";
+
         textarea.style.marginRight = "0";
       }
     }
 
     window.addEventListener("DOMContentLoaded", function() {
       alignSharedTextareaWithButtons();
+
       if (typeof ResizeObserver !== "undefined") {
-        const controlsObserver = new ResizeObserver(alignSharedTextareaWithButtons);
-        controlsObserver.observe(document.querySelector(".entry-controls"));
+        const controlsObserver =
+          new ResizeObserver(alignSharedTextareaWithButtons);
+
+        controlsObserver.observe(
+          document.querySelector(".entry-controls")
+        );
       }
+
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(alignSharedTextareaWithButtons);
       }
     });
+
     window.addEventListener("resize", alignSharedTextareaWithButtons);
 
     // Hide each response five seconds after its output appears.
@@ -2188,23 +2369,37 @@
       const responseBox = document.getElementById(responseId);
       const area = document.getElementById(areaId);
       const text = responseBox.textContent.trim();
+
       clearTimeout(responseHideTimers.get(responseId));
       responseHideTimers.delete(responseId);
 
-      if (area.hidden || !text ||
-          text === "Contacting patient..." ||
-          text === "Contacting instructor..." ||
-          text === "Patient response will appear here." ||
-          text === "Instructor answer will appear here.") {
+      if (
+        area.hidden ||
+        !text ||
+        text === "Contacting patient..." ||
+        text === "Contacting instructor..." ||
+        text === "Patient response will appear here." ||
+        text === "Instructor answer will appear here."
+      ) {
         return;
       }
 
-      responseHideTimers.set(responseId, setTimeout(function() {
-        area.hidden = true;
-        responseHideTimers.delete(responseId);
-        try { saveScenarioState(); }
-        catch (error) { console.error("Could not save response visibility:", error); }
-      }, 5000));
+      responseHideTimers.set(
+        responseId,
+        setTimeout(function() {
+          area.hidden = true;
+          responseHideTimers.delete(responseId);
+
+          try {
+            saveScenarioState();
+          } catch (error) {
+            console.error(
+              "Could not save response visibility:",
+              error
+            );
+          }
+        }, 5000)
+      );
     }
 
     window.addEventListener("DOMContentLoaded", function() {
@@ -2215,11 +2410,13 @@
         const observer = new MutationObserver(function() {
           scheduleResponseHide(responseId, areaId);
         });
+
         observer.observe(document.getElementById(responseId), {
           childList: true,
           characterData: true,
           subtree: true
         });
+
         scheduleResponseHide(responseId, areaId);
       });
     });
