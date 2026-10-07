@@ -558,12 +558,19 @@
       max-width: 680px;
       margin: 0 auto;
     }
-    .patient-side-controls {
-      display: flex;
-      gap: 6px;
-      align-items: flex-start;
+    .entry-side-controls {
+      display: grid;
+      gap: 8px;
     }
-    .patient-side-controls button {
+    .patient-side-controls,
+    .instructor-side-controls {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 6px;
+      align-items: start;
+    }
+    .patient-side-controls button,
+    .instructor-side-controls button {
       margin: 0;
       text-decoration: underline;
       text-underline-offset: 3px;
@@ -597,8 +604,9 @@
     <section class="scenario-workspace combined-workspace">
       <div class="recorder-column">
         <div class="patient-entry-row">
-          <div class="patient-side-controls">
-            <button
+          <div class="entry-side-controls">
+            <div class="patient-side-controls">
+              <button
                 id="actionVoiceButton"
                 class="voice-btn"
                 type="button"
@@ -606,7 +614,7 @@
               >
                 Voice
               </button>
-            <button
+              <button
                 id="patientButton"
                 class="patient-btn"
                 type="button"
@@ -614,43 +622,8 @@
               >
                 Patient
               </button>
-          </div>
-          <textarea
-          id="actionEntry"
-          aria-label="Patient question, assessment, treatment, or instructor question"
-        ></textarea>
-        </div>
-
-        <div class="entry-controls">
-          <div class="patient-assessment-controls">
-            <div class="button-row">
-              
-
-              <button
-                class="record-btn"
-                type="button"
-                onclick="recordAction()"
-              >
-                Assessment/treatment
-              </button>
             </div>
-
-            <div class="button-row">
-              
-            </div>
-          </div>
-
-          <div class="button-row instructor-control">
-            <button
-              id="actionInstructorButton"
-              class="instructor-btn"
-              type="button"
-              onclick="submitInstructorEntry()"
-            >
-              Ask Instructor
-            </button>
-
-            <div class="button-row">
+            <div class="instructor-side-controls">
               <button
                 id="instructorVoiceButton"
                 class="voice-btn"
@@ -659,8 +632,20 @@
               >
                 Voice
               </button>
+              <button
+              id="actionInstructorButton"
+              class="instructor-btn"
+              type="button"
+              onclick="submitInstructorEntry()"
+            >
+              Instructor
+            </button>
             </div>
           </div>
+          <textarea id="actionEntry" aria-label="Patient question, assessment, treatment, or instructor question"></textarea>
+        </div>
+        <div class="entry-controls">
+          <button class="record-btn" type="button" onclick="recordAction()">Assessment/treatment</button>
         </div>
 
         <div class="shared-responses">
