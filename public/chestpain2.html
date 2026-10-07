@@ -547,6 +547,32 @@
       max-width: 100%;
       margin-top: 24px;
     }
+
+    /* Voice and Patient remain beside the left side of the textarea. */
+    .patient-entry-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: start;
+      gap: 10px;
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .patient-side-controls {
+      display: flex;
+      gap: 6px;
+      align-items: flex-start;
+    }
+    .patient-side-controls button {
+      margin: 0;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .combined-workspace .patient-entry-row #actionEntry {
+      width: 100%;
+      min-width: 0;
+      margin: 0;
+    }
   </style>
 </head>
 
@@ -570,22 +596,35 @@
 
     <section class="scenario-workspace combined-workspace">
       <div class="recorder-column">
-        <textarea
-          id="actionEntry"
-          aria-label="Patient question, assessment, treatment, or instructor question"
-        ></textarea>
-
-        <div class="entry-controls">
-          <div class="patient-assessment-controls">
-            <div class="button-row">
-              <button
+        <div class="patient-entry-row">
+          <div class="patient-side-controls">
+            <button
+                id="actionVoiceButton"
+                class="voice-btn"
+                type="button"
+                onclick="speakSharedEntry()"
+              >
+                Voice
+              </button>
+            <button
                 id="patientButton"
                 class="patient-btn"
                 type="button"
                 onclick="submitPatientEntry()"
               >
-                Ask Patient
+                Patient
               </button>
+          </div>
+          <textarea
+          id="actionEntry"
+          aria-label="Patient question, assessment, treatment, or instructor question"
+        ></textarea>
+        </div>
+
+        <div class="entry-controls">
+          <div class="patient-assessment-controls">
+            <div class="button-row">
+              
 
               <button
                 class="record-btn"
@@ -597,14 +636,7 @@
             </div>
 
             <div class="button-row">
-              <button
-                id="actionVoiceButton"
-                class="voice-btn"
-                type="button"
-                onclick="speakSharedEntry()"
-              >
-                Voice
-              </button>
+              
             </div>
           </div>
 
@@ -2311,36 +2343,11 @@
     });
 
     function alignSharedTextareaWithButtons() {
+      // The grid positions the controls beside the textarea at every screen width.
       const textarea = document.getElementById("actionEntry");
-      const controls = document.querySelector(".entry-controls");
-
-      const buttons = [
-        document.getElementById("patientButton"),
-        controls.querySelector(".record-btn"),
-        document.getElementById("actionInstructorButton")
-      ];
-
-      const bounds = buttons.map(button =>
-        button.getBoundingClientRect()
-      );
-
-      const left = Math.min(...bounds.map(rect => rect.left));
-      const right = Math.max(...bounds.map(rect => rect.right));
-
-      const parent = textarea.parentElement;
-      const parentBounds = parent.getBoundingClientRect();
-
-      const paddingLeft =
-        parseFloat(getComputedStyle(parent).paddingLeft) || 0;
-
-      if (right > left) {
-        textarea.style.width = (right - left) + "px";
-
-        textarea.style.marginLeft =
-          Math.max(0, left - parentBounds.left - paddingLeft) + "px";
-
-        textarea.style.marginRight = "0";
-      }
+      textarea.style.removeProperty("width");
+      textarea.style.removeProperty("margin-left");
+      textarea.style.removeProperty("margin-right");
     }
 
     window.addEventListener("DOMContentLoaded", function() {
