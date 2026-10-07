@@ -561,82 +561,143 @@ async function createChatReply(
    OPQRST SCORING
 ========================================================= */
 
-function evaluateOpqrst(text) {
-  const completeRequest = includesAny(
-    text,
-    [
-      "complete opqrst assessment performed",
-      "perform a complete opqrst",
-      "perform complete opqrst",
-      "full opqrst assessment",
-      "assess using opqrst",
-      "go through opqrst"
-    ]
+function evaluateOpqrst(text = "") {
+  const work = String(text)
+    .toLowerCase()
+    .replace(/[’']/g, "")
+    .replace(/[-–—]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const has = (...patterns) =>
+    patterns.some(pattern => pattern.test(work));
+
+  // ONSET: When the symptom began.
+  const onset = has(
+    /\bopqrst onset assessed\b/,
+    /\bonset assessed\b/,
+    /\bwhen did (?:the |your )?(?:chest pain|pain|symptoms?|discomfort|this|it) (?:start|begin)\b/,
+    /\bwhen (?:did|was) (?:this|it) first (?:noticed|noticeable|start|begin)\b/,
+    /\bsudden or gradual\b/,
+    /\bwhat were you doing when .{0,60}(?:started|began)\b/,
+    /\bwhat were you doing at (?:the )?onset\b/
   );
 
+  // PROVOCATION: What worsens the symptom.
+  const worse = has(
+    /\b(?:opqrst )?provocation assessed\b/,
+    /\bwhat makes .{0,45}(?:worse|increase)\b/,
+    /\b(?:anything|does anything) make .{0,45}worse\b/,
+    /\bwhat (?:worsens|aggravates|triggers) .{0,45}(?:pain|symptom|discomfort)\b/,
+    /\bdoes .{0,45}(?:make|makes) .{0,35}worse\b/
+  );
+
+  // PALLIATION: What improves the symptom.
+  const better = has(
+    /\b(?:opqrst )?palliation assessed\b/,
+    /\bwhat makes .{0,45}better\b/,
+    /\b(?:anything|does anything) make .{0,45}better\b/,
+    /\bwhat (?:relieves|helps|eases) .{0,45}(?:pain|symptom|discomfort)\b/,
+    /\bdoes .{0,45}(?:help|relieve|ease) .{0,35}(?:pain|symptom|discomfort)\b/
+  );
+
+  const bothProvocationAndPalliation = has(
+    /\b(?:opqrst )?provocation and palliation assessed\b/,
+    /\bwhat makes .{0,45}(?:better or worse|worse or better|better and worse|worse and better)\b/
+  );
+
+  // QUALITY: What the symptom feels like.
+  const quality = has(
+    /\b(?:opqrst )?quality assessed\b/,
+    /\bdescribe (?:the |your )?(?:chest pain|pain|discomfort|symptoms?)\b/,
+    /\bwhat does .{0,35}(?:pain|discomfort) feel like\b/,
+    /\bhow would you describe .{0,35}(?:pain|discomfort)\b/,
+    /\bis .{0,30}(?:sharp|dull|burning|pressure|aching|crushing)\b/
+  );
+
+  // REGION: Where the symptom is located.
+  const region = has(
+    /\b(?:opqrst )?(?:region|location) assessed\b/,
+    /\bwhere (?:is|does) .{0,35}(?:pain|hurt|discomfort)\b/,
+    /\bwhere are you (?:having|feeling) .{0,35}(?:pain|discomfort)\b/,
+    /\b(?:show|point to|tell me) where .{0,35}(?:hurts|pain|discomfort)\b/
+  );
+
+  // RADIATION: Whether the symptom spreads elsewhere.
+  const spreads = has(
+    /\b(?:opqrst )?radiation assessed\b/,
+    /\bdoes .{0,35}(?:pain|discomfort) (?:radiate|travel|spread|move)\b/,
+    /\bwhere does .{0,35}(?:pain|discomfort) go\b/,
+    /\b(?:pain|discomfort) anywhere else\b/
+  );
+
+  const regionAndRadiation = has(
+    /\b(?:opqrst )?region and radiation assessed\b/,
+    /\b(?:opqrst )?location and radiation assessed\b/
+  );
+
+  // SEVERITY: A rating or assessment of intensity.
+  const severity = has(
+    /\b(?:opqrst )?severity assessed\b/,
+    /\brate (?:the |your )?(?:chest pain|pain|discomfort|symptoms?)\b/,
+    /\bhow (?:bad|severe|intense) is .{0,35}(?:pain|discomfort)\b/,
+    /\b(?:pain|severity) (?:scale|rating)\b/,
+    /\b(?:scale of |from |between )?(?:0|zero) to (?:10|ten)\b/,
+    /\b(?:scale of |from |between )(?:1|one) to (?:10|ten)\b/
+  );
+
+  // TIME: Duration and symptom pattern.
+  const duration = has(
+    /\b(?:opqrst )?duration assessed\b/,
+    /\bhow long (?:has|have) .{0,45}(?:lasted|been going on|been present|had|having)\b/,
+    /\bhow long (?:does|did) .{0,35}(?:last|episode)\b/,
+    /\bhow long have you had .{0,35}(?:pain|symptoms?|discomfort)\b/
+  );
+
+  const pattern = has(
+    /\b(?:opqrst )?(?:time pattern|timing|symptom pattern) assessed\b/,
+    /\b(?:has|is) .{0,35}(?:pain|discomfort|symptom).{0,25}(?:constant|continuous|intermittent)\b/,
+    /\bdoes .{0,35}(?:pain|discomfort|it) come and go\b/,
+    /\b(?:pain|symptom|discomfort).{0,35}(?:getting better|getting worse|changed over time)\b/,
+    /\b(?:constant or intermittent|constant or comes and goes)\b/
+  );
+
+  const durationAndPattern = has(
+    /\b(?:opqrst )?duration and (?:pattern|timing) assessed\b/,
+    /\b(?:opqrst )?time assessed\b/
+  );
+
+  // Preserve the component names used by the existing server.
   const components = {
-    onset: includesAny(text, [
-      "opqrst onset assessed",
-      "when did the pain start",
-      "when did the chest pain start",
-      "when did this begin",
-      "sudden or gradual"
-    ]),
+    onset,
+    provocation: bothProvocationAndPalliation || (worse && better),
+    quality,
+    radiation: regionAndRadiation || (region && spreads),
+    severity,
+    time: durationAndPattern || (duration && pattern)
+  };
 
-    provocation: includesAny(text, [
-      "opqrst provocation and palliation assessed",
-      "what makes the pain better",
-      "what makes the pain worse",
-      "anything make it better",
-      "anything make it worse"
-    ]),
-
-    quality: includesAny(text, [
-      "opqrst quality assessed",
-      "describe the pain",
-      "what does the pain feel like",
-      "quality of the pain",
-      "sharp dull or pressure"
-    ]),
-
-    radiation: includesAny(text, [
-      "opqrst radiation assessed",
-      "does the pain radiate",
-      "does the pain travel",
-      "where does the pain go"
-    ]),
-
-    severity: includesAny(text, [
-      "opqrst severity assessed",
-      "rate your pain",
-      "pain scale",
-      "zero to ten",
-      "0 to 10"
-    ]),
-
-    time: includesAny(text, [
-      "opqrst time assessed",
-      "how long has the pain lasted",
-      "has the pain been constant",
-      "does the pain come and go"
-    ])
+  const labels = {
+    onset: "Onset",
+    provocation: "Provocation / Palliation",
+    quality: "Quality",
+    radiation: "Region / Radiation",
+    severity: "Severity",
+    time: "Duration / Pattern"
   };
 
   const completedCount =
-    Object.values(components)
-      .filter(Boolean)
-      .length;
+    Object.values(components).filter(Boolean).length;
 
   return {
-    complete:
-      completeRequest ||
-      completedCount === 6,
-
+    complete: completedCount === 6,
     completedCount,
-    components
+    components,
+    missingComponents: Object.keys(components)
+      .filter(key => !components[key])
+      .map(key => labels[key])
   };
 }
-
 /* =========================================================
    SAMPLE SCORING
 ========================================================= */
@@ -911,11 +972,41 @@ function buildChecklist(body = {}) {
     },
 
     {
-      id: "opqrst",
-      name: "Complete OPQRST",
-      points: 6,
-      pass: opqrst.complete
-    },
+  id: "opqrstOnset",
+  name: "OPQRST — Onset",
+  points: 1,
+  pass: opqrst.components.onset
+},
+{
+  id: "opqrstProvocation",
+  name: "OPQRST — Provocation / Palliation",
+  points: 1,
+  pass: opqrst.components.provocation
+},
+{
+  id: "opqrstQuality",
+  name: "OPQRST — Quality",
+  points: 1,
+  pass: opqrst.components.quality
+},
+{
+  id: "opqrstRadiation",
+  name: "OPQRST — Region / Radiation",
+  points: 1,
+  pass: opqrst.components.radiation
+},
+{
+  id: "opqrstSeverity",
+  name: "OPQRST — Severity",
+  points: 1,
+  pass: opqrst.components.severity
+},
+{
+  id: "opqrstTime",
+  name: "OPQRST — Duration / Pattern",
+  points: 1,
+  pass: opqrst.components.time
+},
 
     {
       id: "sample",
