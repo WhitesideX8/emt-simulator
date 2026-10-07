@@ -2433,25 +2433,44 @@
 
         scheduleResponseHide(responseId, areaId);
       });
-    function matchRecordedBoxWidth() {
-  const patientEntry = document.getElementById("actionEntry");
+   function matchRecordedBoxWidth() {
   const recordedBox = document.getElementById("completedAssessments");
+  const section = recordedBox.closest(".recorded-column");
+  const verbalButton = section.querySelector(".verbal-report-btn");
+  const resetButton = section.querySelector(".reset-btn");
+
+  const verbalRect = verbalButton.getBoundingClientRect();
+  const resetRect = resetButton.getBoundingClientRect();
+  const sectionRect = section.getBoundingClientRect();
+  const sectionStyle = getComputedStyle(section);
+
+  const contentLeft =
+    sectionRect.left +
+    (parseFloat(sectionStyle.borderLeftWidth) || 0) +
+    (parseFloat(sectionStyle.paddingLeft) || 0);
 
   recordedBox.style.width =
-    patientEntry.getBoundingClientRect().width + "px";
+    (resetRect.right - verbalRect.left) + "px";
 
-  recordedBox.style.marginLeft = "auto";
-  recordedBox.style.marginRight = "auto";
+  recordedBox.style.marginLeft =
+    (verbalRect.left - contentLeft) + "px";
+
+  recordedBox.style.marginRight = "0";
 }
 
 window.addEventListener("DOMContentLoaded", function() {
   matchRecordedBoxWidth();
 
-  const patientEntry = document.getElementById("actionEntry");
+  const section = document.querySelector(".recorded-column");
 
   if (typeof ResizeObserver !== "undefined") {
     const observer = new ResizeObserver(matchRecordedBoxWidth);
-    observer.observe(patientEntry);
+    observer.observe(section);
+    observer.observe(section.querySelector(".button-row"));
+  }
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(matchRecordedBoxWidth);
   }
 });
 
