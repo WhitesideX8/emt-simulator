@@ -905,7 +905,8 @@
         if (recognition.submitToInstructor) {
           askInstructorTyped();
         } else {
-          submitCombinedEntry("voice assessment");
+          // Patient Voice uses the same submission as the Patient text button.
+          submitPatientEntry();
         }
 
         saveScenarioState();
@@ -942,7 +943,7 @@
           document.getElementById("recordStatus").innerText =
             sendToInstructor
               ? "Listening. Press Stop Voice to send your question to the instructor."
-              : "Listening. Press Stop Voice to ask the patient or record the assessment/treatment. Use Ask Instructor to send this entry to the instructor.";
+              : "Listening to your patient entry. Press Stop Voice to send it to the patient.";
         }
 
         textBox.focus();
