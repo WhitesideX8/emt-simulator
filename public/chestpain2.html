@@ -2433,29 +2433,15 @@
 
         scheduleResponseHide(responseId, areaId);
       });
-   function matchRecordedBoxWidth() {
+ function matchRecordedBoxWidth() {
+  const textarea = document.getElementById("actionEntry");
   const recordedBox = document.getElementById("completedAssessments");
-  const section = recordedBox.closest(".recorded-column");
-  const verbalButton = section.querySelector(".verbal-report-btn");
-  const resetButton = section.querySelector(".reset-btn");
-
-  const verbalRect = verbalButton.getBoundingClientRect();
-  const resetRect = resetButton.getBoundingClientRect();
-  const sectionRect = section.getBoundingClientRect();
-  const sectionStyle = getComputedStyle(section);
-
-  const contentLeft =
-    sectionRect.left +
-    (parseFloat(sectionStyle.borderLeftWidth) || 0) +
-    (parseFloat(sectionStyle.paddingLeft) || 0);
 
   recordedBox.style.width =
-  (resetRect.right - verbalRect.left - 40) + "px";
+    textarea.getBoundingClientRect().width + "px";
 
-  recordedBox.style.marginLeft =
-    (verbalRect.left - contentLeft) + "px";
-
-  recordedBox.style.marginRight = "0";
+  recordedBox.style.marginLeft = "auto";
+  recordedBox.style.marginRight = "auto";
 }
 
 window.addEventListener("DOMContentLoaded", function() {
