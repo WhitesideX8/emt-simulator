@@ -1599,17 +1599,71 @@ app.post("/grade", async (req, res) => {
         })
         .join("\n\n");
 
-    const gradingPrompt = `
+   const gradingPrompt = `
 You are grading a Connecticut EMT medical-assessment practice simulation.
 
-IMPORTANT:
+GRADING RULES:
 
 - This is a practice simulation, not an official state examination.
-- Do not change the deterministic checklist results.
-- Do not award a complete OPQRST unless the checklist marks it complete.
-- Do not award a complete SAMPLE history unless the checklist marks it complete.
-- Evaluate treatment appropriateness, treatment order, transport priority, oxygen use and professionalism.
-- Be strict but educational.
+- The deterministic checklist is authoritative for item credit and points.
+- Do not change checklist results, add deductions, or invent points.
+- Evaluate the student's entire submitted session.
+- Credit recognized assessments whether documented early or later.
+- OPQRST and SAMPLE questions may be asked separately throughout the session.
+- Do not require OPQRST or SAMPLE to be completed in one uninterrupted exchange.
+- Do not require their questions to follow acronym order.
+
+ASSESSMENT ORDER AND TIMING:
+
+- Do not criticize an assessment merely because another assessment came first.
+- Do not describe a completed assessment as "initially missed,"
+  "delayed," "late," or "eventually obtained" without evidence of
+  a specific applicable sequence requirement being violated.
+- A later entry in the log does not by itself prove a harmful delay.
+- Do not infer elapsed time or clinical delay from the order of text alone.
+- Do not claim a skill-sheet sequence violation unless the applicable
+  requirement is explicitly supplied in this grading context.
+- If a sequence violation is supported, identify the exact requirement
+  and the student actions that violated it.
+- Evaluate clearly dangerous treatment actions using the documented
+  evidence and existing critical-criteria results.
+- Do not convert a REVIEW criterion into a confirmed failure without
+  sufficient evidence. Explain when instructor review is required.
+
+OPQRST AND SAMPLE:
+
+- Do not award complete OPQRST unless the checklist marks every required
+  OPQRST component complete.
+- Do not award complete SAMPLE unless the checklist marks every required
+  SAMPLE component complete.
+- Distinguish region (symptom location) from radiation (symptom spread).
+- If radiation was assessed, do not say radiation was missed merely
+  because region was not assessed.
+- Identify specific missing components only when the supplied evidence
+  supports that conclusion.
+- When the checklist contains separate component items, report those
+  individual results.
+- When an all-or-nothing checklist item receives no credit, explain that
+  the complete-history requirement was not met. Do not imply every
+  component was omitted.
+- Do not say allergies, medications, past history, or oral intake were
+  omitted when the submitted work documents those assessments.
+
+EVIDENCE AND COMMENTS:
+
+- Student questions and statements are evidence of student work.
+- Patient or instructor answers alone do not prove the student performed
+  an assessment or treatment.
+- Do not invent student actions, findings, delays, or consequences.
+- Every negative instructor comment must identify a documented omission,
+  a supported unsafe action, or a supplied critical criterion.
+- Comments must agree with the deterministic checklist.
+- If checklist results conflict with documented student work, identify
+  the discrepancy for instructor review without changing the score.
+- Avoid unsupported statements such as:
+  "The initial failure to assess radiation delayed understanding."
+- Instead state the specific supported finding, such as:
+  "Radiation was assessed; symptom location was not documented."
 
 SCENARIO:
 
@@ -1651,26 +1705,50 @@ INSTRUCTOR COMMENTS
 
 OVERALL RESULT
 
-Overall-result rules:
+SECTION REQUIREMENTS:
 
+CHECKLIST RESULT:
+- Report the supplied point score accurately.
+- Summarize completed and incomplete checklist items.
+
+CRITICAL CRITERIA:
+- Preserve the supplied PASS, FAIL, and REVIEW statuses.
+- Clearly separate confirmed failures from items needing review.
+
+ITEMS MISSED:
+- List checklist items marked no credit.
+- Explain partial completion when supported by the submitted work.
+- Do not list credited items as missed.
+- Flag any scoring discrepancy for instructor review.
+
+INSTRUCTOR COMMENTS:
+- Explain documented strengths and specific areas for improvement.
+- Do not criticize assessment order without a supported requirement.
+- Do not introduce additional scoring deductions.
+
+OVERALL RESULT:
 - FAIL when one or more valid critical failures are present.
-- FAIL for a clearly dangerous intervention.
+- FAIL for a clearly dangerous intervention supported by evidence.
 - FAIL when the score is below 33 points.
 - Criteria marked REVIEW require instructor judgment.
 - Otherwise determine PASS or FAIL based on the total performance.
-    `;
+`;
 
-    const feedback =
-      await createChatReply(
-        `
-You are a strict but helpful EMT instructor grading a patient-assessment simulation.
+const feedback = await createChatReply(
+  `
+You are a strict but helpful EMT instructor grading a
+patient-assessment practice simulation.
 
-Use clear checklist-style feedback.
-Do not invent student actions.
-        `,
-        gradingPrompt
-      );
-
+Follow the supplied evidence and deterministic checklist.
+Do not alter scores or invent student actions.
+Do not invent assessment-order requirements or clinical delays.
+Treat completed assessments as completed regardless of where
+they appear in the session, unless an explicitly supplied
+sequence requirement establishes a violation.
+Use clear, specific checklist-style feedback.
+  `,
+  gradingPrompt
+);
     return res.json({
       feedback,
       checklist,
