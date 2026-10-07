@@ -434,14 +434,33 @@
       document.body.classList.add("pdf-mode");
 
       const options = {
-        margin: [0.35, 0.35, 0.35, 0.35],
-        filename: createPdfFilename(),
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
-        jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
-        pagebreak: { mode: ["css", "legacy"], avoid: [".section", ".input-item", ".dispute-item"] }
-      };
+  margin: [0.35, 0.35, 0.35, 0.35],
+  filename: createPdfFilename(),
 
+  image: {
+    type: "jpeg",
+    quality: 0.98
+  },
+
+  html2canvas: {
+    scale: 2,
+    useCORS: true,
+    backgroundColor: "#ffffff",
+    scrollX: 0,
+    scrollY: 0
+  },
+
+  jsPDF: {
+    unit: "in",
+    format: "letter",
+    orientation: "portrait"
+  },
+
+  pagebreak: {
+    mode: ["css", "legacy"],
+    avoid: ["h1", "h2", "h3"]
+  }
+};
       try {
         await html2pdf().set(options).from(document.querySelector(".container")).save();
         statusBox.textContent = "PDF downloaded.";
