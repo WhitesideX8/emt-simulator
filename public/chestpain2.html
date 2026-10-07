@@ -583,6 +583,12 @@
       min-width: 0;
       margin: 0;
     }
+    .assessment-voice-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
   </style>
 </head>
 
@@ -648,7 +654,10 @@
           <textarea id="actionEntry" aria-label="Patient question, assessment, treatment, or instructor question"></textarea>
         </div>
         <div class="entry-controls">
-          <button class="record-btn" type="button" onclick="recordAction()">Assessment/treatment</button>
+          <div class="assessment-voice-controls">
+            <button class="record-btn" type="button" onclick="recordAction()">Assessment/treatment</button>
+            <button id="assessmentVoiceButton" class="voice-btn" type="button" onclick="speakAssessmentEntry()">Voice</button>
+          </div>
         </div>
 
         <div class="shared-responses">
@@ -845,7 +854,8 @@
       textareaId,
       buttonId,
       recordWhenFinished = false,
-      sendToInstructor = false
+      sendToInstructor = false,
+      recordAssessment = false
     ) {
       if (!SpeechRecognition) {
         alert(
@@ -870,6 +880,7 @@
       const textBox = document.getElementById(textareaId);
       const recognition = new SpeechRecognition();
       recognition.submitToInstructor = sendToInstructor;
+      recognition.recordAssessment = recordAssessment;
 
       const existingText = textBox.value.trim();
       let heardSpeech = false;
@@ -892,6 +903,8 @@
 
         if (recognition.submitToInstructor) {
           askInstructorTyped();
+        } else if (recognition.recordAssessment) {
+          recordAction("voice assessment/treatment");
         } else {
           // Patient Voice uses the same submission as the Patient text button.
           submitPatientEntry();
@@ -931,7 +944,9 @@
           document.getElementById("recordStatus").innerText =
             sendToInstructor
               ? "Listening. Press Stop Voice to send your question to the instructor."
-              : "Listening to your patient entry. Press Stop Voice to send it to the patient.";
+              : recordAssessment
+                ? "Listening. Press Stop Voice to record your assessment or treatment."
+                : "Listening to your patient entry. Press Stop Voice to send it to the patient.";
         }
 
         textBox.focus();
@@ -1852,6 +1867,10 @@
 
     function speakInstructorEntry() {
       toggleVoiceInput("actionEntry", "instructorVoiceButton", true, true);
+    }
+
+    function speakAssessmentEntry() {
+      toggleVoiceInput("actionEntry", "assessmentVoiceButton", true, false, true);
     }
 
     async function askPatientTyped() {
