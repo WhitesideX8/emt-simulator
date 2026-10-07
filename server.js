@@ -714,7 +714,6 @@ function evaluateSample(text) {
 
 function buildChecklist(body = {}) {
   const text = combineStudentWork(body);
-
   const opqrst = evaluateOpqrst(text);
   const sample = evaluateSample(text);
 
@@ -723,7 +722,6 @@ function buildChecklist(body = {}) {
       id: "bsi",
       name: "BSI precautions",
       points: 1,
-
       pass: includesAny(text, [
         "bsi precautions",
         "bsi",
@@ -738,7 +736,6 @@ function buildChecklist(body = {}) {
       id: "sceneSafety",
       name: "Scene safety",
       points: 1,
-
       pass: includesAny(text, [
         "scene safety assessed",
         "scene safety",
@@ -749,12 +746,20 @@ function buildChecklist(body = {}) {
 
     {
       id: "natureOfIllness",
-      name: "Nature of illness",
+      name: "Determines mechanism of injury / nature of illness",
       points: 1,
-
       pass: includesAny(text, [
+        "mechanism of injury assessed",
+        "mechanism of injury determined",
+        "determine the mechanism of injury",
+        "assess the mechanism of injury",
+        "what happened",
+        "how did the injury happen",
+        "how were you injured",
         "nature of illness assessed",
-        "nature of illness",
+        "nature of illness determined",
+        "determine the nature of illness",
+        "assess the nature of illness",
         "reason for the call",
         "why were we called"
       ])
@@ -764,7 +769,6 @@ function buildChecklist(body = {}) {
       id: "generalImpression",
       name: "General impression",
       points: 1,
-
       pass: includesAny(text, [
         "general impression formed",
         "general impression",
@@ -776,7 +780,6 @@ function buildChecklist(body = {}) {
       id: "mentalStatus",
       name: "Mental status",
       points: 2,
-
       pass: includesAny(text, [
         "mental status assessed",
         "mental status",
@@ -791,7 +794,6 @@ function buildChecklist(body = {}) {
       id: "airway",
       name: "Airway assessment",
       points: 2,
-
       pass: includesAny(text, [
         "airway assessed",
         "assess the airway",
@@ -805,7 +807,6 @@ function buildChecklist(body = {}) {
       id: "breathing",
       name: "Breathing assessment",
       points: 2,
-
       pass: includesAny(text, [
         "breathing assessed",
         "assess breathing",
@@ -819,7 +820,6 @@ function buildChecklist(body = {}) {
       id: "lungSounds",
       name: "Lung sounds",
       points: 1,
-
       pass: includesAny(text, [
         "lung sounds assessed",
         "lung sounds",
@@ -832,7 +832,6 @@ function buildChecklist(body = {}) {
       id: "circulation",
       name: "Circulation assessment",
       points: 2,
-
       pass: includesAny(text, [
         "circulation assessed",
         "assess circulation",
@@ -846,7 +845,6 @@ function buildChecklist(body = {}) {
       id: "bleeding",
       name: "Major bleeding assessment",
       points: 1,
-
       pass: includesAny(text, [
         "major bleeding assessed",
         "check for major bleeding",
@@ -859,7 +857,6 @@ function buildChecklist(body = {}) {
       id: "priority",
       name: "Patient priority identified",
       points: 2,
-
       pass: includesAny(text, [
         "patient priority",
         "high priority patient",
@@ -871,15 +868,46 @@ function buildChecklist(body = {}) {
 
     {
       id: "chiefComplaint",
-      name: "Chief complaint",
+      name: "Determines chief complaint / apparent life threats",
       points: 1,
 
-      pass: includesAny(text, [
-        "chief complaint identified",
-        "chief complaint",
-        "what is bothering you",
-        "what is wrong today"
-      ])
+      // Both chief complaint and life-threat assessment are required.
+      pass:
+        includesAny(text, [
+          "chief complaint identified",
+          "chief complaint determined",
+          "identify the chief complaint",
+          "determine the chief complaint",
+          "what is bothering you",
+          "what is wrong today",
+          "what is your main problem",
+          "why did you call 911"
+        ]) &&
+        includesAny(text, [
+          "apparent life threats assessed",
+          "apparent life threats identified",
+          "life threats assessed",
+          "life threats identified",
+          "assess for life threats",
+          "check for life threats",
+          "assess for apparent life threats",
+          "check for apparent life threats",
+          "no apparent life threats",
+          "no immediate life threats",
+          "no life threats found",
+          "life threatening conditions assessed",
+          "check for life threatening conditions"
+        ])
+    },
+
+    {
+      id: "fieldImpression",
+      name: "States field impression",
+      points: 1,
+
+      // Requires text after the introductory phrase.
+      // This checks documentation, not diagnostic accuracy.
+      pass: /\b(?:my field impression is|field impression is|field impression:|my clinical impression is|clinical impression is|clinical impression:|my working diagnosis is|working diagnosis is|working diagnosis:|i suspect|suspected condition is)\s+[a-z0-9]/i.test(text)
     },
 
     {
@@ -900,7 +928,6 @@ function buildChecklist(body = {}) {
       id: "bloodPressure",
       name: "Blood pressure",
       points: 1,
-
       pass: includesAny(text, [
         "blood pressure obtained",
         "check blood pressure",
@@ -914,7 +941,6 @@ function buildChecklist(body = {}) {
       id: "pulse",
       name: "Pulse",
       points: 1,
-
       pass: includesAny(text, [
         "pulse assessed",
         "check the pulse",
@@ -927,7 +953,6 @@ function buildChecklist(body = {}) {
       id: "respiratoryRate",
       name: "Respiratory rate",
       points: 1,
-
       pass: includesAny(text, [
         "respiratory rate obtained",
         "respiratory rate",
@@ -940,7 +965,6 @@ function buildChecklist(body = {}) {
       id: "spo2",
       name: "Oxygen saturation",
       points: 1,
-
       pass: includesAny(text, [
         "oxygen saturation obtained",
         "oxygen saturation",
@@ -954,7 +978,6 @@ function buildChecklist(body = {}) {
       id: "secondaryAssessment",
       name: "Secondary assessment",
       points: 3,
-
       pass: includesAny(text, [
         "secondary assessment performed",
         "secondary assessment",
@@ -967,7 +990,6 @@ function buildChecklist(body = {}) {
       id: "treatment",
       name: "Appropriate treatment",
       points: 3,
-
       pass: includesAny(text, [
         "aspirin administered or considered",
         "administer aspirin",
@@ -986,7 +1008,6 @@ function buildChecklist(body = {}) {
       id: "transport",
       name: "Transport decision",
       points: 2,
-
       pass: includesAny(text, [
         "patient priority and transport decision made",
         "rapid transport initiated",
@@ -1002,7 +1023,6 @@ function buildChecklist(body = {}) {
       id: "reassessment",
       name: "Reassessment",
       points: 2,
-
       pass: includesAny(text, [
         "reassessment performed",
         "reassess the patient",
@@ -1016,7 +1036,6 @@ function buildChecklist(body = {}) {
       id: "report",
       name: "Verbal handoff report",
       points: 1,
-
       pass: includesAny(text, [
         "accurate verbal report provided",
         "verbal report",
@@ -1028,7 +1047,6 @@ function buildChecklist(body = {}) {
     }
   ];
 }
-
 /* =========================================================
    CRITICAL-FAIL REVIEW
 ========================================================= */
