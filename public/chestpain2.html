@@ -2433,7 +2433,29 @@
 
         scheduleResponseHide(responseId, areaId);
       });
-    });
+    function matchRecordedBoxWidth() {
+  const patientEntry = document.getElementById("actionEntry");
+  const recordedBox = document.getElementById("completedAssessments");
+
+  recordedBox.style.width =
+    patientEntry.getBoundingClientRect().width + "px";
+
+  recordedBox.style.marginLeft = "auto";
+  recordedBox.style.marginRight = "auto";
+}
+
+window.addEventListener("DOMContentLoaded", function() {
+  matchRecordedBoxWidth();
+
+  const patientEntry = document.getElementById("actionEntry");
+
+  if (typeof ResizeObserver !== "undefined") {
+    const observer = new ResizeObserver(matchRecordedBoxWidth);
+    observer.observe(patientEntry);
+  }
+});
+
+window.addEventListener("resize", matchRecordedBoxWidth);
   </script>
 </body>
 </html>
