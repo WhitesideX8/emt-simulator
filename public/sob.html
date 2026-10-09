@@ -2566,6 +2566,7 @@
       );
 
       responseBox.innerText = "Contacting patient...";
+      scheduleResponseHide("patientResponse", "patientResponseArea");
 
       document.getElementById("recordStatus").innerText =
         "Patient question submitted. Waiting for the response...";
@@ -2605,6 +2606,7 @@
         showRecordedStatus(recordedSkills, "the patient");
 
         responseBox.innerText = patientReply;
+        scheduleResponseHide("patientResponse", "patientResponseArea");
         questionBox.value = "";
         questionBox.focus();
       } catch (error) {
@@ -2616,6 +2618,7 @@
           "Error contacting patient server.\n\n" + error.message;
       } finally {
         patientButton.disabled = false;
+        scheduleResponseHide("patientResponse", "patientResponseArea");
       }
     }
 
@@ -2648,6 +2651,7 @@
 
       document.getElementById("instructorResponseArea").hidden = false;
       responseBox.textContent = "Contacting instructor...";
+      scheduleResponseHide("instructorResponse", "instructorResponseArea");
       statusBox.textContent =
         "Instructor question submitted. Waiting for the answer...";
 
@@ -2718,6 +2722,7 @@
         }
 
         responseBox.textContent = instructorReply;
+        scheduleResponseHide("instructorResponse", "instructorResponseArea");
 
         instructorHistory +=
           `Student to instructor: ${question}\nInstructor: ${instructorReply}\n\n`;
@@ -2761,6 +2766,7 @@
         clearTimeout(timeout);
         instructorRequestPending = false;
         instructorButton.disabled = false;
+        scheduleResponseHide("instructorResponse", "instructorResponseArea");
       }
     }
 
@@ -3096,7 +3102,6 @@
         const observer = new MutationObserver(function() {
           scheduleResponseHide(responseId, areaId);
         });
-      });   
 
         observer.observe(document.getElementById(responseId), {
           childList: true,
@@ -3106,6 +3111,8 @@
 
         scheduleResponseHide(responseId, areaId);
       });
+    });
+
  function matchRecordedBoxWidth() {
   const textarea = document.getElementById("actionEntry");
   const recordedBox = document.getElementById("completedAssessments");
