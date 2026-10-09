@@ -927,7 +927,7 @@
 
       activeRecognition = recognition;
       activeVoiceButton = selectedButton;
-      selectedButton.innerText = "⏹ Stop Voice";
+      selectedButton.innerText = "â¹ Stop Voice";
       selectedButton.classList.add("listening");
 
       recognition.onresult = function(event) {
@@ -1676,14 +1676,47 @@
     // Additional assessment phrases retained from the diabetic scenario.
     assessmentMap.find(item => item.skill === "Scene safety assessed").keywords.push(...["is scene safe", "safe to enter", "safe to approach", "any scene hazards"]);
     assessmentMap.find(item => item.skill === "Mental status assessed").keywords.push(...["is the patient alert", "is he alert and oriented"]);
-    assessmentMap.push({"skill": "Blood glucose obtained", "keywords": ["check blood glucose", "obtain blood glucose", "what is the blood glucose", "check blood sugar", "what is the blood sugar", "what is the glucose level", "check the bgl", "what is the bgl", "perform a finger stick", "use the glucometer"]});
+    assessmentMap.push({
+      skill: "Blood glucose obtained",
+      keywords: [
+          "check blood glucose",
+          "obtain blood glucose",
+          "what is the blood glucose",
+          "check blood sugar",
+          "what is the blood sugar",
+          "what is the glucose level",
+          "check the bgl",
+          "what is the bgl",
+          "perform a finger stick",
+          "use the glucometer"
+      ]
+    });
     assessmentMap.find(item => item.skill === "Medications assessed").keywords.push(...["do you take insulin", "did you take your insulin", "diabetes medications"]);
     assessmentMap.find(item => item.skill === "Pertinent medical history assessed").keywords.push(...["do you have diabetes", "history of diabetes"]);
     assessmentMap.find(item => item.skill === "Events leading to illness assessed").keywords.push(...["what happened prior to becoming confused"]);
     assessmentMap.find(item => item.skill === "OPQRST onset assessed").keywords.push(...["when did the complaint start", "when did the symptoms start"]);
     assessmentMap.find(item => item.skill === "OPQRST provocation and palliation assessed").keywords.push(...["what makes it better", "what makes it worse"]);
-    assessmentMap.push({"skill": "Neurologic assessment performed", "keywords": ["perform a neurologic assessment", "perform a neurological assessment", "check motor function", "check sensation", "assess grip strength", "check for arm drift", "perform a stroke assessment"]});
-    assessmentMap.push({"skill": "Temperature obtained", "keywords": ["check the temperature", "obtain a temperature", "what is the temperature", "does the patient have a fever"]});
+    assessmentMap.push({
+      skill: "Neurologic assessment performed",
+      keywords: [
+          "perform a neurologic assessment",
+          "perform a neurological assessment",
+          "check motor function",
+          "check sensation",
+          "assess grip strength",
+          "check for arm drift",
+          "perform a stroke assessment"
+      ]
+    });
+    assessmentMap.push({
+      skill: "Temperature obtained",
+      keywords: [
+          "check the temperature",
+          "obtain a temperature",
+          "what is the temperature",
+          "does the patient have a fever"
+      ]
+    });
     assessmentMap.find(item => item.skill === "Reassessment performed").keywords.push(...["repeat the glucose"]);
 
     function normalizeText(text) {
