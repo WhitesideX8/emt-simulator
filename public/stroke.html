@@ -596,7 +596,22 @@
   margin-right: auto;
   box-sizing: border-box;
 }
-     </style>
+     
+    .shared-responses {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      margin: 12px auto 0;
+    }
+    .shared-responses > div {
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .shared-responses > [hidden] { display: none; }
+  </style>
 </head>
 
 <body>
@@ -731,6 +746,16 @@
     let instructorRequestPending = false;
     let studentInputLog = [];
     let completedSkills = new Set();
+    function newCaseSessionId() {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return window.crypto.randomUUID();
+      }
+      return "case_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+    }
+    function currentWrittenScene() {
+      return document.getElementById("scenarioInfo").textContent.replace(/\s+/g, " ").trim();
+    }
+    let caseSessionId = newCaseSessionId();
     let scenarioStartTime = Date.now();
 
     const scenario = "stroke";
@@ -738,6 +763,8 @@
 
     function saveScenarioState() {
       const state = {
+        caseSessionId,
+        writtenScene: currentWrittenScene(),
         patientHistory,
         instructorHistory,
         assessmentLog,
@@ -769,6 +796,11 @@
 
       try {
         const state = JSON.parse(savedState);
+        if (!state.caseSessionId || state.writtenScene !== currentWrittenScene()) {
+          sessionStorage.removeItem(SCENARIO_STATE_KEY);
+          return false;
+        }
+        caseSessionId = state.caseSessionId;
 
         patientHistory = state.patientHistory || "";
         instructorHistory = state.instructorHistory || "";
@@ -786,6 +818,11 @@
         completedSkills = new Set(
           Array.isArray(state.completedSkills) ? state.completedSkills : []
         );
+
+        // Preserve completion when reopening a session saved with the old label.
+        if (completedSkills.delete("Nature of illness assessed")) {
+          completedSkills.add("Determines the mechanism of injury/nature of illness");
+        }
 
         scenarioStartTime = Number(state.scenarioStartTime) || Date.now();
 
@@ -1024,15 +1061,30 @@
 "no hazards",
 "scene secure"
 ]},
-{"skill": "Nature of illness assessed",
-"keywords": [
-"nature of illness",
-"what happened today",
-"why were we called",
-"reason for the call",
-"medical complaint",
-"what brought us here"
-]},
+{
+  skill: "Determines the mechanism of injury/nature of illness",
+  keywords: [
+    "mechanism of injury", "nature of illness", "moi", "noi",
+    "determine moi noi", "assess moi noi",
+    "what happened today", "why were we called", "reason for the call",
+    "medical complaint", "what brought us here",
+    "what caused the injury", "how were you injured", "how did the injury happen",
+    "how did you get hurt", "what was the mechanism",
+    "was there a fall", "was there an accident", "was there any trauma",
+    "is this medical or trauma", "this is a medical call",
+    "this is a medical emergency", "this is a trauma call",
+    "no trauma medical illness", "noi is suspected stroke",
+    "nature of illness is a possible stroke", "moi is a fall",
+    "mechanism is a motor vehicle collision"
+  ],
+  patterns: [
+    /\b(mechanism of injury|nature of illness|moi|noi)\b/,
+    /\b(determine|determined|determining|assess|assessed|assessing|identify|identified|evaluate|evaluated)\b.*\b(mechanism|medical versus trauma|medical or trauma)\b/,
+    /\b(how|what)\b.*\b(injury|injured|hurt|caused the injury)\b/,
+    /\b(mechanism)\b.*\b(fall|collision|crash|accident|penetrating|blunt|gunshot|stab)\b/,
+    /\b(medical|trauma)\b.*\b(call|emergency|nature of illness|mechanism of injury)\b/
+  ]
+},
 {"skill": "Number of patients determined",
 "keywords": [
 "how many patients",
@@ -2571,6 +2623,7 @@
       );
 
       responseBox.innerText = "Contacting patient...";
+      scheduleResponseHide("patientResponse", "patientResponseArea");
 
       document.getElementById("recordStatus").innerText =
         "Patient question submitted. Waiting for the response...";
@@ -2586,6 +2639,8 @@
           body: JSON.stringify({
             studentQuestion: question,
             history: patientHistory,
+            caseSessionId,
+            scenarioInfo: currentWrittenScene(),
             scenario
           })
         });
@@ -2610,6 +2665,7 @@
         showRecordedStatus(recordedSkills, "the patient");
 
         responseBox.innerText = patientReply;
+        scheduleResponseHide("patientResponse", "patientResponseArea");
         questionBox.value = "";
         questionBox.focus();
       } catch (error) {
@@ -2653,6 +2709,7 @@
 
       document.getElementById("instructorResponseArea").hidden = false;
       responseBox.textContent = "Contacting instructor...";
+      scheduleResponseHide("instructorResponse", "instructorResponseArea");
       statusBox.textContent =
         "Instructor question submitted. Waiting for the answer...";
 
@@ -2660,7 +2717,7 @@
       instructorButton.disabled = true;
 
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 45000);
+      const timeout = setTimeout(() => controller.abort(), 90000);
 
       try {
         recordStudentInput("Ask the Instructor", question);
@@ -2675,6 +2732,8 @@
             studentQuestion: question,
             question,
             history: patientHistory,
+            caseSessionId,
+            scenarioInfo: currentWrittenScene(),
             scenario
           })
         });
@@ -2723,6 +2782,7 @@
         }
 
         responseBox.textContent = instructorReply;
+        scheduleResponseHide("instructorResponse", "instructorResponseArea");
 
         instructorHistory +=
           `Student to instructor: ${question}\nInstructor: ${instructorReply}\n\n`;
@@ -2866,7 +2926,7 @@
 
       const timeoutId = setTimeout(
         () => controller.abort(),
-        30000
+        90000
       );
 
       try {
@@ -2885,6 +2945,8 @@
             studentInputLog,
             completedSkills: completedSkillsArray,
             historyComponents: getHistoryComponentStatus(),
+            caseSessionId,
+            scenarioInfo: currentWrittenScene(),
             scenario,
             elapsedSeconds
           })
@@ -2940,7 +3002,7 @@
 
         const fallbackFeedback =
           error.name === "AbortError"
-            ? "The grading server did not respond within 30 seconds. Your assessments and treatments were saved, but the server did not return a grading report."
+            ? "The grading server did not respond within 90 seconds. Your assessments and treatments were saved, but the server did not return a grading report."
             : "The grading server returned an error: " + error.message;
 
         const gradingData = {
@@ -2984,6 +3046,7 @@
       lastRecordedAction = "";
       studentInputLog = [];
       completedSkills = new Set();
+      caseSessionId = newCaseSessionId();
       scenarioStartTime = Date.now();
 
       sessionStorage.removeItem("emtGradingResults");
