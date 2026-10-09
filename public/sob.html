@@ -596,7 +596,28 @@
   margin-right: auto;
   box-sizing: border-box;
 }
-     </style>
+     
+    /* Each visible response occupies its own centered row. */
+    .shared-responses {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      margin: 12px auto 0;
+    }
+
+    .shared-responses > div {
+      width: 100%;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .shared-responses > [hidden] {
+      display: none;
+    }
+  </style>
 </head>
 
 <body>
@@ -3144,3 +3165,4 @@ window.addEventListener("resize", matchRecordedBoxWidth);
   </script>
 </body>
 </html>
+
