@@ -589,7 +589,7 @@
       gap: 4px;
     }
     #completedAssessments {
-  width: 70%;
+  width: 70% !important;
   min-width: 0;
   max-width: 100%;
   margin-left: auto;
@@ -927,7 +927,7 @@
 
       activeRecognition = recognition;
       activeVoiceButton = selectedButton;
-      selectedButton.innerText = "â¹ Stop Voice";
+      selectedButton.innerText = "⏹ Stop Voice";
       selectedButton.classList.add("listening");
 
       recognition.onresult = function(event) {
