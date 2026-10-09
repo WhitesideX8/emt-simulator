@@ -617,6 +617,21 @@
     .shared-responses > [hidden] {
       display: none;
     }
+  
+    .shared-responses {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      margin: 12px auto 0;
+    }
+    .shared-responses > div {
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .shared-responses > [hidden] { display: none; }
   </style>
 </head>
 
@@ -752,6 +767,16 @@
     let instructorRequestPending = false;
     let studentInputLog = [];
     let completedSkills = new Set();
+    function newCaseSessionId() {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return window.crypto.randomUUID();
+      }
+      return "case_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+    }
+    function currentWrittenScene() {
+      return document.getElementById("scenarioInfo").textContent.replace(/\s+/g, " ").trim();
+    }
+    let caseSessionId = newCaseSessionId();
     let scenarioStartTime = Date.now();
 
     const scenario = "shortnessOfBreath";
@@ -759,6 +784,8 @@
 
     function saveScenarioState() {
       const state = {
+        caseSessionId,
+        writtenScene: currentWrittenScene(),
         patientHistory,
         instructorHistory,
         assessmentLog,
@@ -790,6 +817,11 @@
 
       try {
         const state = JSON.parse(savedState);
+        if (!state.caseSessionId || state.writtenScene !== currentWrittenScene()) {
+          sessionStorage.removeItem(SCENARIO_STATE_KEY);
+          return false;
+        }
+        caseSessionId = state.caseSessionId;
 
         patientHistory = state.patientHistory || "";
         instructorHistory = state.instructorHistory || "";
@@ -2603,6 +2635,8 @@
           body: JSON.stringify({
             studentQuestion: question,
             history: patientHistory,
+            caseSessionId,
+            scenarioInfo: currentWrittenScene(),
             scenario
           })
         });
@@ -2680,7 +2714,7 @@
       instructorButton.disabled = true;
 
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 45000);
+      const timeout = setTimeout(() => controller.abort(), 90000);
 
       try {
         recordStudentInput("Ask the Instructor", question);
@@ -2695,6 +2729,8 @@
             studentQuestion: question,
             question,
             history: patientHistory,
+            caseSessionId,
+            scenarioInfo: currentWrittenScene(),
             scenario
           })
         });
@@ -2888,7 +2924,7 @@
 
       const timeoutId = setTimeout(
         () => controller.abort(),
-        30000
+        90000
       );
 
       try {
@@ -2907,6 +2943,8 @@
             studentInputLog,
             completedSkills: completedSkillsArray,
             historyComponents: getHistoryComponentStatus(),
+            caseSessionId,
+            scenarioInfo: currentWrittenScene(),
             scenario,
             elapsedSeconds
           })
@@ -2962,7 +3000,7 @@
 
         const fallbackFeedback =
           error.name === "AbortError"
-            ? "The grading server did not respond within 30 seconds. Your assessments and treatments were saved, but the server did not return a grading report."
+            ? "The grading server did not respond within 90 seconds. Your assessments and treatments were saved, but the server did not return a grading report."
             : "The grading server returned an error: " + error.message;
 
         const gradingData = {
@@ -3006,12 +3044,12 @@
       lastRecordedAction = "";
       studentInputLog = [];
       completedSkills = new Set();
+      caseSessionId = newCaseSessionId();
       scenarioStartTime = Date.now();
 
       sessionStorage.removeItem("emtGradingResults");
       sessionStorage.removeItem(SCENARIO_STATE_KEY);
 
-      document.getElementById("actionEntry").value = "";
       document.getElementById("actionEntry").value = "";
 
       document.getElementById("patientResponse").innerText =
