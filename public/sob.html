@@ -14,22 +14,15 @@
       font-family: Arial, sans-serif;
       margin: 0;
       min-height: 100vh;
-      background:
-        url("https://raw.githubusercontent.com/WhitesideX8/emt-simulator/main/public/IMG_0989.jpg")
-        no-repeat center center fixed;
-      background-size: cover;
+      background: #333333;
     }
 
     body::before {
       content: "";
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.52);
+      background: transparent;
       z-index: 0;
-    }
-
-    .navigation {
-      margin-bottom: 5px;
     }
 
     .container {
@@ -47,10 +40,6 @@
     h2,
     h3 {
       margin: 4px 0;
-    }
-
-    h1,
-    h2 {
       color: white;
     }
 
@@ -63,13 +52,12 @@
     }
 
     h3 {
-      color: white;
       font-size: 15px;
     }
 
     .question-column h3,
-    .recorder-column h3 {
-      color: white;
+    .recorder-column h3,
+    .recorded-column h3 {
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
     }
 
@@ -84,7 +72,8 @@
       cursor: pointer;
     }
 
-    button:hover {
+    button:hover,
+    .verbal-report-btn:hover {
       opacity: 0.86;
     }
 
@@ -97,7 +86,8 @@
       background: #333;
     }
 
-    .patient-btn {
+    .patient-btn,
+    .record-btn {
       background: #087f23;
     }
 
@@ -105,12 +95,16 @@
       background: #663399;
     }
 
-    .record-btn {
-      background: #087f23;
-    }
-
     .voice-btn {
       background: #b36b00;
+    }
+
+    .grade-btn {
+      background: #005fa3;
+    }
+
+    .reset-btn {
+      background: #a32626;
     }
 
     .voice-btn.listening {
@@ -119,12 +113,12 @@
     }
 
     @keyframes voicePulse {
-      from { opacity: 1; }
-      to { opacity: 0.68; }
-    }
-
-    .grade-btn {
-      background: #005fa3;
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: 0.68;
+      }
     }
 
     .verbal-report-btn {
@@ -142,14 +136,6 @@
       border-radius: 5px;
       cursor: pointer;
       vertical-align: middle;
-    }
-
-    .verbal-report-btn:hover {
-      opacity: 0.86;
-    }
-
-    .reset-btn {
-      background: #a32626;
     }
 
     .box {
@@ -174,29 +160,50 @@
       background: #d9d9d9;
     }
 
-    .question-area {
+    /* Two upper containers:
+       50px top margin and 100px left/right margins. */
+    .scenario-workspace {
       display: grid;
-      grid-template-columns: 360px;
-      width: fit-content;
-      max-width: 95%;
-      margin: 10px auto 0;
-      justify-content: center;
+      grid-template-columns: minmax(0, 360px) minmax(0, 360px);
+      justify-content: space-between;
       align-items: start;
+      gap: 20px;
+      margin: 50px 100px 0;
+    }
+
+    .question-area,
+    .assessment-stack {
+      min-width: 0;
+    }
+
+    .assessment-stack {
+      display: grid;
+      gap: 10px;
     }
 
     .question-column,
-    .recorder-column {
+    .recorder-column,
+    .recorded-column {
+      width: 100%;
+      margin: 0;
       padding: 8px;
-      background: rgba(255, 255, 255, 0.18);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      border: 1px solid rgba(255, 255, 255, 0.35);
+      border: none;
       border-radius: 7px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
     }
 
     .question-column {
-      width: 360px;
+      background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      box-shadow: none;
+    }
+
+    .recorder-column,
+    .recorded-column {
+      background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      box-shadow: none;
     }
 
     textarea {
@@ -247,12 +254,6 @@
       background: white;
     }
 
-    .recorder-column {
-      width: 600px;
-      max-width: 70%;
-      margin: 10px auto 0;
-    }
-
     .record-status {
       min-height: 22px;
       margin: 5px 0 3px;
@@ -262,7 +263,6 @@
       text-align: center;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
     }
-
 
     #completedAssessments {
       min-height: 55px;
@@ -280,13 +280,17 @@
       line-height: 1.35;
       text-align: left;
     }
-    @media (max-width: 900px) {
-      .question-area {
-        grid-template-columns: 330px;
-      }
 
-      .question-column {
-        width: 330px;
+    @media (max-width: 1100px) {
+      .scenario-workspace {
+        margin-right: 16px;
+        margin-left: 16px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .scenario-workspace {
+        grid-template-columns: minmax(0, 330px) minmax(0, 330px);
       }
     }
 
@@ -299,19 +303,11 @@
         width: 92%;
       }
 
-      .question-area {
-        grid-template-columns: 1fr;
+      .scenario-workspace {
+        grid-template-columns: minmax(0, 1fr);
         width: 92%;
-        gap: 8px;
-        margin-top: 10px;
-      }
-
-      .question-column {
-        width: 92%;
-      }
-
-      .recorder-column {
-        width: 70%;
+        margin: 50px auto 0;
+        gap: 10px;
       }
 
       #patientQuestion,
@@ -323,7 +319,284 @@
         height: 86px;
       }
     }
-  </style>
+
+    /* Center the separate recorded assessments container. */
+    .recorded-column {
+      width: 360px;
+      max-width: 92%;
+      margin: 20px auto 0;
+    }
+
+    /* Match the heights of the two upper containers. */
+    @media (min-width: 751px) {
+      .question-column,
+      .recorder-column {
+        height: 310px;
+        overflow-y: auto;
+      }
+    }
+
+    /* Long assessment lists scroll within their box. */
+    #completedAssessments {
+      max-height: clamp(100px, 28vh, 240px);
+      max-height: clamp(100px, 28dvh, 240px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      overflow-wrap: anywhere;
+      scrollbar-gutter: stable;
+    }
+
+    .recorder-column {
+      height: auto;
+      min-height: 310px;
+      overflow-y: visible;
+    }
+
+    .recorder-column h3 {
+      white-space: nowrap;
+      font-size: 13px;
+    }
+
+    #patientQuestion,
+    #actionEntry {
+      width: 100%;
+      height: 78px;
+      min-height: 78px;
+    }
+
+    #patientQuestion,
+    #actionEntry {
+      background: rgba(255, 255, 255, 0.55);
+      color: #222;
+    }
+
+    #patientQuestion,
+    #actionEntry {
+      color: #000;
+      font-weight: bold;
+    }
+
+    #patientQuestion::placeholder,
+    #actionEntry::placeholder {
+      color: #333;
+      opacity: 1;
+    }
+
+    #patientQuestion,
+    #actionEntry {
+      border: none;
+      box-shadow: none;
+    }
+
+    #patientResponse,
+    #instructorResponse,
+    #completedAssessments {
+      background: rgba(255, 255, 255, 0.55);
+      color: #000;
+    }
+
+    /* Ask the Patient and Record Assessment headings */
+    .question-column h3,
+    .recorder-column h3 {
+      font-size: 18px;
+    }
+
+    /* Patient Response and Instructor Response labels */
+    .response-label {
+      font-size: 16px;
+    }
+
+    #patientQuestion,
+    #actionEntry {
+      font-size: 15px;
+      font-weight: 700;
+      color: #000;
+    }
+
+    textarea,
+    #scenarioInfo,
+    #patientResponse,
+    #instructorResponse,
+    #completedAssessments {
+      font-size: 15px;
+      font-weight: 700;
+      color: #000;
+    }
+
+    h2,
+    .question-column h3,
+    .recorder-column h3,
+    .recorded-column h3,
+    .response-label,
+    .section-label {
+      text-align: center;
+    }
+
+    label[for="patientResponse"] {
+      display: block;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* One combined container; original inputs and actions are preserved. */
+    .combined-workspace {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      justify-content: normal;
+      width: 100%;
+      max-width: 920px;
+      margin: 50px auto 0;
+      padding: 8px;
+      gap: 24px;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+
+    .combined-workspace .question-column,
+    .combined-workspace .recorder-column {
+      height: auto;
+      min-height: 0;
+      overflow-y: visible;
+    }
+
+    .combined-workspace .question-column h3,
+    .combined-workspace .recorder-column h3 {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: normal;
+    }
+
+    @media (max-width: 750px) {
+      .combined-workspace {
+        grid-template-columns: minmax(0, 1fr);
+        width: 92%;
+        gap: 16px;
+      }
+
+      .combined-workspace .question-column h3,
+      .combined-workspace .recorder-column h3 {
+        min-height: 0;
+      }
+    }
+
+    .combined-workspace {
+      display: block;
+      max-width: 920px;
+    }
+
+    .combined-workspace .recorder-column h3 {
+      min-height: 0;
+    }
+
+    .shared-responses {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 750px) {
+      .shared-responses {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+      }
+    }
+
+    /* Center Speak beneath the patient/assessment button pair. */
+    .entry-controls {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .patient-assessment-controls {
+      min-width: 0;
+      text-align: center;
+    }
+
+    .patient-assessment-controls .button-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 500px) {
+      .entry-controls {
+        flex-wrap: wrap;
+      }
+    }
+
+    /* Textarea edges follow the outer edges of the action buttons. */
+    .combined-workspace #actionEntry {
+      display: block;
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .shared-responses > [hidden] {
+      display: none;
+    }
+
+    /* Keep the recorded list and grading controls compact on screen. */
+    .recorded-column {
+      width: 680px;
+      max-width: 100%;
+      margin-top: 24px;
+    }
+
+    /* Voice and Patient remain beside the left side of the textarea. */
+    .patient-entry-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: start;
+      gap: 4px;
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .entry-side-controls {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-self: stretch;
+      gap: 8px;
+    }
+    .patient-side-controls,
+    .instructor-side-controls {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 6px;
+      align-items: start;
+    }
+    .patient-side-controls button,
+    .instructor-side-controls button {
+      margin: 0;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .combined-workspace .patient-entry-row #actionEntry {
+  width: 80%;
+  min-width: 0;
+  margin: 0 ;
+    }    .assessment-voice-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    #completedAssessments {
+  width: 70% !important;
+  min-width: 0;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+     </style>
 </head>
 
 <body>
@@ -342,106 +615,84 @@
 
     <h2>Scenario Information</h2>
 
-    <div id="scenarioInfo" class="box">
-      You are dispatched to a residence for a 67-year-old female with COPD who is having difficulty breathing and speaking in short sentences.
-    </div>
+    <div id="scenarioInfo" class="box">You are dispatched to a residence for a 67-year-old female with COPD who is having difficulty breathing and speaking in short sentences.</div>
 
-    <div class="question-area">
-
-      <section class="question-column">
-        <h3>Ask the Patient</h3>
-
-        <textarea
-          id="patientQuestion"
-          placeholder="Type a question for the patient..."
-        ></textarea>
-
-        <div class="button-row">
-          <button
-            id="patientVoiceButton"
-            class="voice-btn"
-            type="button"
-            onclick="toggleVoiceInput('patientQuestion', 'patientVoiceButton')"
-          >
-            🎤 Speak
-          </button>
-
-          <button
-            id="patientButton"
-            class="patient-btn"
-            type="button"
-            onclick="askPatientTyped()"
-          >
-            Ask Patient
-          </button>
+    <section class="scenario-workspace combined-workspace">
+      <div class="recorder-column">
+        <div class="patient-entry-row">
+          <div class="entry-side-controls">
+            <div class="patient-side-controls">
+              <button
+                id="actionVoiceButton"
+                class="voice-btn"
+                type="button"
+                onclick="speakSharedEntry()"
+              >
+                Voice
+              </button>
+              <button
+                id="patientButton"
+                class="patient-btn"
+                type="button"
+                onclick="submitPatientEntry()"
+              >
+                Patient
+              </button>
+            </div>
+            <div class="instructor-side-controls">
+              <button
+                id="instructorVoiceButton"
+                class="voice-btn"
+                type="button"
+                onclick="speakInstructorEntry()"
+              >
+                Voice
+              </button>
+              <button
+              id="actionInstructorButton"
+              class="instructor-btn"
+              type="button"
+              onclick="submitInstructorEntry()"
+            >
+              Instructor
+            </button>
+            </div>
+          </div>
+          <textarea id="actionEntry" aria-label="Patient question, assessment, treatment, or instructor question"></textarea>
+        </div>
+        <div class="entry-controls">
+          <div class="assessment-voice-controls">
+            <button class="record-btn" type="button" onclick="recordAction()">Assessment/treatment</button>
+            <button id="assessmentVoiceButton" class="voice-btn" type="button" onclick="speakAssessmentEntry()">Voice</button>
+          </div>
         </div>
 
-        <div class="response-label">Patient Response</div>
+        <div class="shared-responses">
+          <div id="patientResponseArea" hidden>
+            <div class="response-label">Patient Response</div>
+            <div id="patientResponse" class="box">Patient response will appear here.</div>
+          </div>
 
-        <div id="patientResponse" class="box">
-          Patient response will appear here.
-        </div>
-      </section>
-
-    </div>
-
-    <section class="recorder-column">
-      <h3>Assessment and Treatment</h3>
-
-      <div>
-        <h3>Record Assessment and Treatment</h3>
-
-        <textarea
-          id="actionEntry"
-          placeholder="Example: Assessed airway; airway is patent."
-        ></textarea>
-
-        <div class="button-row">
-          <button
-            id="actionVoiceButton"
-            class="voice-btn"
-            type="button"
-            onclick="toggleVoiceInput('actionEntry', 'actionVoiceButton', true)"
-          >
-            🎤 Speak
-          </button>
-
-          <button
-            id="recordButton"
-            class="record-btn"
-            type="button"
-            onclick="recordAction()"
-          >
-            Record Assessment
-          </button>
-
-          <button
-            id="instructorButton"
-            class="instructor-btn"
-            type="button"
-            onclick="askInstructorTyped()"
-          >
-            Ask Instructor
-          </button>
+          <div id="instructorResponseArea" hidden>
+            <div class="response-label">Instructor Response</div>
+            <div id="instructorResponse" class="box">Instructor answer will appear here.</div>
+          </div>
         </div>
 
-        <div class="response-label">Instructor Response</div>
-
-        <div id="instructorResponse" class="box">
-          Instructor answer will appear here.
-        </div>
+        <div id="recordStatus" class="record-status"></div>
       </div>
+    </section>
 
-      <div id="recordStatus" class="record-status"></div>
+    <section class="recorded-column">
+      <h3>Recorded Assessments and Treatments</h3>
 
-
-      <div class="section-label">
-        Recorded Assessments and Treatments
-      </div>
-
-      <div id="completedAssessments" class="box">
-        No assessments recorded yet.
-      </div>
+      <div
+        id="completedAssessments"
+        class="box"
+        tabindex="0"
+        role="region"
+        aria-label="Recorded Assessments and Treatments"
+      ></div>
 
       <div class="button-row">
         <a
@@ -473,256 +724,331 @@
   </div>
 
   <script>
-  let patientHistory = "";
-  let instructorHistory = "";
-  let assessmentLog = [];
-  let studentInputLog = [];
-  let completedSkills = new Set();
-  let scenarioStartTime = Date.now();
+    let patientHistory = "";
+    let instructorHistory = "";
+    let assessmentLog = [];
+    let lastRecordedAction = "";
+    let instructorRequestPending = false;
+    let studentInputLog = [];
+    let completedSkills = new Set();
+    let scenarioStartTime = Date.now();
 
-  const scenario = "shortnessOfBreath";
-  const SCENARIO_STATE_KEY = `emtScenarioState:${scenario}`;
+    const scenario = "shortnessOfBreath";
+    const SCENARIO_STATE_KEY = `emtScenarioState:${scenario}`;
 
-  function saveScenarioState() {
-    const state = {
-      patientHistory,
-      instructorHistory,
-      assessmentLog,
-      studentInputLog,
-      completedSkills: Array.from(completedSkills),
-      scenarioStartTime,
-      patientQuestion: document.getElementById("patientQuestion").value,
-      actionEntry: document.getElementById("actionEntry").value,
-      patientResponse: document.getElementById("patientResponse").innerText,
-      instructorResponse: document.getElementById("instructorResponse").innerText,
-      recordStatus: document.getElementById("recordStatus").innerText,
-      completedAssessments: document.getElementById("completedAssessments").innerText
-    };
+    function saveScenarioState() {
+      const state = {
+        patientHistory,
+        instructorHistory,
+        assessmentLog,
+        lastRecordedAction,
+        studentInputLog,
+        completedSkills: Array.from(completedSkills),
+        scenarioStartTime,
+        actionEntry: document.getElementById("actionEntry").value,
+        patientResponseVisible:
+          !document.getElementById("patientResponseArea").hidden,
+        instructorResponseVisible:
+          !document.getElementById("instructorResponseArea").hidden,
+        patientResponse:
+          document.getElementById("patientResponse").textContent,
+        instructorResponse:
+          document.getElementById("instructorResponse").textContent,
+        recordStatus:
+          document.getElementById("recordStatus").innerText,
+        completedAssessments:
+          document.getElementById("completedAssessments").innerText
+      };
 
-    sessionStorage.setItem(SCENARIO_STATE_KEY, JSON.stringify(state));
-  }
-
-  function restoreScenarioState() {
-    const savedState = sessionStorage.getItem(SCENARIO_STATE_KEY);
-    if (!savedState) return false;
-
-    try {
-      const state = JSON.parse(savedState);
-
-      patientHistory = state.patientHistory || "";
-      instructorHistory = state.instructorHistory || "";
-      assessmentLog = Array.isArray(state.assessmentLog) ? state.assessmentLog : [];
-      studentInputLog = Array.isArray(state.studentInputLog) ? state.studentInputLog : [];
-      completedSkills = new Set(
-        Array.isArray(state.completedSkills) ? state.completedSkills : []
-      );
-      scenarioStartTime = Number(state.scenarioStartTime) || Date.now();
-
-      document.getElementById("patientQuestion").value = state.patientQuestion || "";
-      document.getElementById("actionEntry").value = state.actionEntry || "";
-      document.getElementById("patientResponse").innerText =
-        state.patientResponse || "Patient response will appear here.";
-      document.getElementById("instructorResponse").innerText =
-        state.instructorResponse || "Instructor answer will appear here.";
-      document.getElementById("recordStatus").innerText = state.recordStatus || "";
-      document.getElementById("completedAssessments").innerText =
-        state.completedAssessments || "No assessments recorded yet.";
-      updateCompletedAssessmentsDisplay();
-
-      return true;
-    } catch (error) {
-      console.error("Could not restore the scenario session:", error);
-      sessionStorage.removeItem(SCENARIO_STATE_KEY);
-      return false;
-    }
-  }
-
-
-  const SpeechRecognition =
-    window.SpeechRecognition || window.webkitSpeechRecognition;
-  let activeRecognition = null;
-  let activeVoiceButton = null;
-
-  function resetVoiceButton(recognitionToReset = activeRecognition) {
-    if (recognitionToReset !== activeRecognition) return;
-
-    if (activeVoiceButton) {
-      activeVoiceButton.innerText = "🎤 Speak";
-      activeVoiceButton.classList.remove("listening");
+      sessionStorage.setItem(SCENARIO_STATE_KEY, JSON.stringify(state));
     }
 
-    activeVoiceButton = null;
-    activeRecognition = null;
-  }
+    function restoreScenarioState() {
+      const savedState = sessionStorage.getItem(SCENARIO_STATE_KEY);
+      if (!savedState) return false;
 
-  function stopVoiceInput() {
-    if (activeRecognition) {
-      activeRecognition.stop();
-    }
-  }
+      try {
+        const state = JSON.parse(savedState);
 
-  function toggleVoiceInput(textareaId, buttonId, recordWhenFinished = false) {
-    if (!SpeechRecognition) {
-      alert("Voice entry is not supported by this browser. Please use Microsoft Edge or Google Chrome.");
-      return;
-    }
+        patientHistory = state.patientHistory || "";
+        instructorHistory = state.instructorHistory || "";
 
-    const selectedButton = document.getElementById(buttonId);
+        assessmentLog = Array.isArray(state.assessmentLog)
+          ? state.assessmentLog
+          : [];
 
-    if (activeRecognition) {
-      const sameButton = activeVoiceButton === selectedButton;
-      const recognitionBeingStopped = activeRecognition;
-      stopVoiceInput();
+        lastRecordedAction = state.lastRecordedAction || "";
 
-      if (sameButton) {
-        setTimeout(function() {
-          if (typeof recognitionBeingStopped.finishVoiceRecording === "function") {
-            recognitionBeingStopped.finishVoiceRecording();
-          }
-        }, 250);
-        return;
-      }
-    }
+        studentInputLog = Array.isArray(state.studentInputLog)
+          ? state.studentInputLog
+          : [];
 
-    const textBox = document.getElementById(textareaId);
-    const recognition = new SpeechRecognition();
-    const existingText = textBox.value.trim();
-    let finalTranscript = "";
-    let heardSpeech = false;
-    let voiceEntryRecorded = false;
-    const voiceDetectedSkills = new Set();
+        completedSkills = new Set(
+          Array.isArray(state.completedSkills) ? state.completedSkills : []
+        );
 
-    function finishVoiceRecording() {
-      if (voiceEntryRecorded || !recordWhenFinished) return;
+        scenarioStartTime = Number(state.scenarioStartTime) || Date.now();
 
-      const spokenEntry = textBox.value.trim();
-      if (!spokenEntry) {
-        document.getElementById("recordStatus").innerText = heardSpeech
-          ? "Speech was heard, but no words were captured. Please try again."
-          : "No speech was detected. Please try again.";
-        return;
-      }
+        document.getElementById("actionEntry").value =
+          state.actionEntry || state.patientQuestion || "";
 
-      voiceEntryRecorded = true;
-      recordAction("voice assessment");
-    }
+        document.getElementById("patientResponse").innerText =
+          state.patientResponse || "Patient response will appear here.";
 
-    recognition.finishVoiceRecording = finishVoiceRecording;
-    recognition.lang = "en-US";
-    recognition.continuous = true;
-    recognition.interimResults = true;
+        document.getElementById("instructorResponse").innerText =
+          (state.instructorResponse || "Instructor answer will appear here.")
+            .replace(/^Question: [^\n]*\n\n(?:Instructor: )?/, "");
 
-    activeRecognition = recognition;
-    activeVoiceButton = selectedButton;
-    selectedButton.innerText = "⏹ Stop Voice";
-    selectedButton.classList.add("listening");
+        document.getElementById("patientResponseArea").hidden =
+          !(state.patientResponseVisible ?? (
+            Boolean(state.patientResponse) &&
+            state.patientResponse !== "Patient response will appear here."
+          ));
 
-    recognition.onresult = function(event) {
-      let interimTranscript = "";
+        document.getElementById("instructorResponseArea").hidden =
+          !(state.instructorResponseVisible ?? (
+            Boolean(state.instructorResponse) &&
+            state.instructorResponse !== "Instructor answer will appear here."
+          ));
 
-      for (let index = event.resultIndex; index < event.results.length; index++) {
-        const words = event.results[index][0].transcript;
-        if (words.trim()) heardSpeech = true;
+        document.getElementById("recordStatus").innerText =
+          state.recordStatus || "";
 
-        if (event.results[index].isFinal) finalTranscript += words + " ";
-        else interimTranscript += words;
-      }
+        document.getElementById("completedAssessments").innerText =
+          state.completedAssessments || "";
 
-      textBox.value = [existingText, finalTranscript.trim(), interimTranscript.trim()]
-        .filter(Boolean)
-        .join(" ");
-
-      if (recordWhenFinished && textBox.value.trim()) {
-        const newSkills = detectAndRecordAssessments(textBox.value, "voice assessment");
-        newSkills.forEach(skill => voiceDetectedSkills.add(skill));
-
-        if (voiceDetectedSkills.size > 0) {
-          showRecordedStatus(Array.from(voiceDetectedSkills), "voice assessment");
-        } else {
-          document.getElementById("recordStatus").innerText =
-            "Listening and checking the spoken assessment...";
+        if (instructorHistory.trim()) {
+          detectAndRecordAssessments(
+            instructorHistory,
+            "saved instructor exchange"
+          );
         }
+
+        updateCompletedAssessmentsDisplay();
+        return true;
+      } catch (error) {
+        console.error("Could not restore the scenario session:", error);
+        sessionStorage.removeItem(SCENARIO_STATE_KEY);
+        return false;
       }
-
-      textBox.focus();
-    };
-
-    recognition.onerror = function(event) {
-      if (event.error !== "aborted" && event.error !== "no-speech") {
-        alert("Voice entry error: " + event.error);
-      }
-      resetVoiceButton(recognition);
-    };
-
-    recognition.onend = function() {
-      resetVoiceButton(recognition);
-      setTimeout(finishVoiceRecording, 150);
-    };
-
-    try {
-      recognition.start();
-    } catch (error) {
-      resetVoiceButton(recognition);
-      alert("The microphone could not be started. Please allow microphone access and try again.");
     }
-  }
 
-  function recordStudentInput(type, text) {
-    const cleanedText = String(text || "").trim();
-    if (!cleanedText) return;
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
 
-    studentInputLog.push({
-      type,
-      text: cleanedText,
-      time: new Date().toLocaleTimeString([], {
-        hour: "numeric",
-        minute: "2-digit",
-        second: "2-digit"
-      })
-    });
-  }
+    let activeRecognition = null;
+    let activeVoiceButton = null;
 
-  /*
-    These phrases are intentionally specific so unrelated words
-    do not accidentally receive credit.
+    function resetVoiceButton(recognitionToReset = activeRecognition) {
+      if (recognitionToReset !== activeRecognition) return;
 
-    Complete OPQRST is credited only when the student clearly
-    requests the complete assessment. Individual OPQRST components
-    are recorded separately.
-  */
-  const assessmentMap = [
-    {
-      skill: "BSI precautions",
-      keywords: [
-        "bsi", "body substance isolation", "put on gloves", "wear gloves",
+      if (activeVoiceButton) {
+        activeVoiceButton.innerText = "Voice";
+        activeVoiceButton.classList.remove("listening");
+      }
+
+      activeVoiceButton = null;
+      activeRecognition = null;
+    }
+
+    function stopVoiceInput() {
+      if (activeRecognition) {
+        activeRecognition.stop();
+      }
+    }
+
+    function toggleVoiceInput(
+      textareaId,
+      buttonId,
+      recordWhenFinished = false,
+      sendToInstructor = false,
+      recordAssessment = false
+    ) {
+      if (!SpeechRecognition) {
+        alert(
+          "Voice entry is not supported by this browser. Please use Microsoft Edge or Google Chrome."
+        );
+        return;
+      }
+
+      const selectedButton = document.getElementById(buttonId);
+
+      if (activeRecognition) {
+        const sameButton = activeVoiceButton === selectedButton;
+        stopVoiceInput();
+
+        if (sameButton) {
+          return;
+        }
+
+        return;
+      }
+
+      const textBox = document.getElementById(textareaId);
+      const recognition = new SpeechRecognition();
+      recognition.submitToInstructor = sendToInstructor;
+      recognition.recordAssessment = recordAssessment;
+
+      const existingText = textBox.value.trim();
+      let heardSpeech = false;
+      let voiceEntryRecorded = false;
+
+      function finishVoiceRecording() {
+        if (voiceEntryRecorded || !recordWhenFinished) return;
+
+        const spokenEntry = textBox.value.trim();
+
+        if (!spokenEntry) {
+          document.getElementById("recordStatus").innerText =
+            heardSpeech
+              ? "Speech was heard, but no words were captured. Please try again."
+              : "No speech was detected. Please try again.";
+          return;
+        }
+
+        voiceEntryRecorded = true;
+
+        if (recognition.submitToInstructor) {
+          askInstructorTyped();
+        } else if (recognition.recordAssessment) {
+          recordAction("voice assessment/treatment");
+        } else {
+          // Patient Voice uses the same submission as the Patient text button.
+          submitPatientEntry();
+        }
+
+        saveScenarioState();
+      }
+
+      recognition.finishVoiceRecording = finishVoiceRecording;
+      recognition.lang = "en-US";
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      activeRecognition = recognition;
+      activeVoiceButton = selectedButton;
+      selectedButton.innerText = "⏹ Stop Voice";
+      selectedButton.classList.add("listening");
+
+      recognition.onresult = function(event) {
+        let transcript = "";
+
+        for (let index = 0; index < event.results.length; index++) {
+          const words = event.results[index][0].transcript;
+
+          if (words.trim()) {
+            heardSpeech = true;
+          }
+
+          transcript += words + " ";
+        }
+
+        textBox.value = [existingText, transcript.trim()]
+          .filter(Boolean)
+          .join(" ");
+
+        if (recordWhenFinished) {
+          document.getElementById("recordStatus").innerText =
+            sendToInstructor
+              ? "Listening. Press Stop Voice to send your question to the instructor."
+              : recordAssessment
+                ? "Listening. Press Stop Voice to record your assessment or treatment."
+                : "Listening to your patient entry. Press Stop Voice to send it to the patient.";
+        }
+
+        textBox.focus();
+      };
+
+      recognition.onerror = function(event) {
+        if (
+          event.error !== "aborted" &&
+          event.error !== "no-speech"
+        ) {
+          alert("Voice entry error: " + event.error);
+        }
+
+        finishVoiceRecording();
+        resetVoiceButton(recognition);
+      };
+
+      recognition.onend = function() {
+        finishVoiceRecording();
+        resetVoiceButton(recognition);
+      };
+
+      try {
+        recognition.start();
+      } catch (error) {
+        resetVoiceButton(recognition);
+        alert(
+          "The microphone could not be started. Please allow microphone access and try again."
+        );
+      }
+    }
+
+    function recordStudentInput(type, text) {
+      const cleanedText = String(text || "").trim();
+      if (!cleanedText) return;
+
+      studentInputLog.push({
+        type,
+        text: cleanedText,
+        time: new Date().toLocaleTimeString([], {
+          hour: "numeric",
+          minute: "2-digit",
+          second: "2-digit"
+        })
+      });
+    }
+
+    const assessmentMap = [
+{
+        skill: "BSI precautions",
+        keywords: [
+          "bsi", "body substance isolation", "put on gloves", "wear gloves",
+          "use ppe", "personal protective equipment", "gloves on", "ppe on",
+"bsi", "body substance isolation", "put on gloves", "wear gloves",
         "use ppe", "personal protective equipment", "gloves on", "ppe on"
-      ]
-    },
-    {
-      skill: "Scene safety assessed",
-      keywords: [
-        "is the scene safe", "scene safety", "scene is safe", "scene appears safe",
+        ]
+      },
+{
+        skill: "Scene safety assessed",
+        keywords: [
+          "is the scene safe", "scene safety", "scene is safe", "scene appears safe",
+          "check the scene for hazards", "are there any hazards", "no hazards", "scene secure",
+"is the scene safe", "scene safety", "scene is safe", "scene appears safe",
         "check the scene for hazards", "are there any hazards", "no hazards", "scene secure"
-      ]
-    },
-    {
-      skill: "Nature of illness assessed",
-      keywords: [
-        "nature of illness", "what happened today", "why were we called",
+        ]
+      },
+{
+        skill: "Nature of illness assessed",
+        keywords: [
+          "nature of illness", "what happened today", "why were we called",
+          "reason for the call", "medical complaint", "what brought us here",
+"nature of illness", "what happened today", "why were we called",
         "reason for the call", "medical complaint", "what brought us here"
-      ]
-    },
-    {
-      skill: "Number of patients determined",
-      keywords: [
-        "how many patients", "number of patients", "are there any other patients",
+        ]
+      },
+{
+        skill: "Number of patients determined",
+        keywords: [
+          "how many patients", "number of patients", "are there any other patients",
+          "one patient", "single patient", "only patient",
+"how many patients", "number of patients", "are there any other patients",
         "one patient", "single patient", "only patient"
-      ]
-    },
-    {
-      skill: "Need for additional resources considered",
-      keywords: [
-        "request als",
+        ]
+      },
+{
+        skill: "Need for additional resources considered",
+        keywords: [
+          "request als", "requesting als", "going to request als",
+          "i am going to request als", "need als", "call als", "call for als",
+          "contact als", "als intercept", "request intercept",
+          "request a paramedic", "request paramedic", "need a paramedic",
+          "request additional resources", "request additional ems resources",
+          "additional ems resources", "need additional resources",
+          "need additional ems resources", "upgrade to als",
+"request als",
         "requesting als",
         "going to request als",
         "i am going to request als",
@@ -741,78 +1067,186 @@
         "need additional resources",
         "need additional ems resources",
         "upgrade to als"
-      ],
-      patterns: [
-        /\b(request|call|contact|need|want|consider|activate)\b.*\bals\b/,
+        ],
+        patterns: [
+          /\b(request|call|contact|need|want|consider|activate)\b.*\bals\b/,
+          /\bals\b.*\b(request|intercept|backup|resource|paramedic)\b/,
+          /\b(additional|extra)\b.*\b(ems|medical)?\s*resources?\b/,
+          /\brequest\b.*\b(paramedic|intercept|resources?)\b/,
+/\b(request|call|contact|need|want|consider|activate)\b.*\bals\b/,
         /\bals\b.*\b(request|intercept|backup|resource|paramedic)\b/,
         /\b(additional|extra)\b.*\b(ems|medical)?\s*resources?\b/,
         /\brequest\b.*\b(paramedic|intercept|resources?)\b/
-      ]
-    },
-    {
-      skill: "General impression formed",
-      keywords: [
-        "general impression", "what does the patient look like", "how does the patient appear",
+        ]
+      },
+{
+        skill: "C-spine stabilization considered",
+        keywords: [
+          "c-spine", "c spine", "c-spine precautions", "c spine precautions",
+          "c-spine stabilization", "c spine stabilization",
+          "consider c-spine", "consider c spine",
+          "consider c-spine precautions", "consider c spine precautions",
+          "consider c-spine stabilization", "consider c spine stabilization",
+          "spinal precautions", "spinal stabilization", "spine stabilization",
+          "spinal motion restriction", "smr", "immobilization considered",
+          "cervical spine precautions", "cervical spine stabilization",
+"c-spine",
+        "c spine",
+        "c-spine precautions",
+        "c spine precautions",
+        "c-spine stabilization",
+        "c spine stabilization",
+        "consider c-spine",
+        "consider c spine",
+        "consider c-spine precautions",
+        "consider c spine precautions",
+        "consider c-spine stabilization",
+        "consider c spine stabilization",
+        "spinal precautions",
+        "spinal stabilization",
+        "spine stabilization",
+        "spinal motion restriction",
+        "smr",
+        "immobilization considered",
+        "cervical spine precautions",
+        "cervical spine stabilization"
+        ],
+        patterns: [
+          /\b(c\s*-?\s*spine|cervical spine)\b.*\b(consider|precaution|stabil|immobil|restrict)\w*\b/,
+          /\b(consider|apply|maintain)\w*\b.*\b(c\s*-?\s*spine|cervical spine)\b/,
+          /\bspinal\b.*\b(precaution|stabil|motion restriction|immobil)\w*\b/,
+/\b(c\s*-?\s*spine|cervical spine)\b.*\b(consider|precaution|stabil|immobil|restrict)\w*\b/,
+        /\b(consider|apply|maintain)\w*\b.*\b(c\s*-?\s*spine|cervical spine)\b/,
+        /\bspinal\b.*\b(precaution|stabil|motion restriction|immobil)\w*\b/
+        ]
+      },
+{
+        skill: "General impression formed",
+        keywords: [
+          "general impression", "what does the patient look like", "how does the patient appear",
+          "initial impression", "patient appears", "patient looks", "appears ill",
+          "appears distressed", "appears stable", "appears unstable",
+"general impression", "what does the patient look like", "how does the patient appear",
         "initial impression", "patient appears", "patient looks", "appears ill",
         "appears distressed", "appears stable", "appears unstable"
-      ]
-    },
-    {
-      skill: "Mental status assessed",
-      keywords: [
-        "assess mental status", "what is the mental status", "level of consciousness",
+        ]
+      },
+{
+        skill: "Mental status assessed",
+        keywords: [
+          "assess mental status", "what is the mental status", "level of consciousness",
+          "what is the avpu", "glasgow coma scale", "what is the gcs", "check responsiveness",
+          "alert and oriented", "alert but confused", "alert to verbal", "responds to verbal",
+          "responds to voice", "responds to pain", "responds to painful stimuli", "unresponsive",
+          "confused", "disoriented", "oriented to person", "oriented to place", "oriented to time",
+          "oriented to event", "awake and alert", "a and o", "ao x", "gcs is",
+"assess mental status", "what is the mental status", "level of consciousness",
         "what is the avpu", "glasgow coma scale", "what is the gcs", "check responsiveness",
         "alert and oriented", "alert but confused", "alert to verbal", "responds to verbal",
         "responds to voice", "responds to pain", "responds to painful stimuli", "unresponsive",
         "confused", "disoriented", "oriented to person", "oriented to place", "oriented to time",
         "oriented to event", "awake and alert", "a and o", "ao x", "gcs is"
-      ],
-      patterns: [
-        /\balert\b.*\b(confused|disoriented|oriented|verbal|voice)\b/,
+        ],
+        patterns: [
+          /\balert\b.*\b(confused|disoriented|oriented|verbal|voice)\b/,
+          /\b(responds?|responsive)\b.*\b(verbal|voice|pain|stimuli)\b/,
+          /\b(gcs|avpu)\b.*\b\d{1,2}\b/,
+/\balert\b.*\b(confused|disoriented|oriented|verbal|voice)\b/,
         /\b(responds?|responsive)\b.*\b(verbal|voice|pain|stimuli)\b/,
         /\b(gcs|avpu)\b.*\b\d{1,2}\b/
-      ]
-    },
-    {
-      skill: "Airway assessed",
-      keywords: [
-        "assess the airway", "check the airway", "is the airway patent",
+        ]
+      },
+{
+        skill: "Airway assessed",
+        keywords: [
+          "assess the airway", "check the airway", "is the airway patent",
+          "can the patient maintain his airway", "is anything blocking the airway",
+          "airway patent", "airway open", "airway clear", "no airway obstruction",
+          "speaking clearly", "speaking in full sentences", "maintaining airway",
+"assess the airway", "check the airway", "is the airway patent",
         "can the patient maintain his airway", "is anything blocking the airway",
         "airway patent", "airway open", "airway clear", "no airway obstruction",
         "speaking clearly", "speaking in full sentences", "maintaining airway"
-      ],
-      patterns: [
-        /\bairway\b.*\b(patent|open|clear|maintained|intact|obstructed)\b/
-      ]
-    },
-    {
-      skill: "Breathing assessed",
-      keywords: [
-        "assess breathing", "check breathing", "what is the breathing effort",
+        ],
+        patterns: [
+          /\bairway\b.*\b(patent|open|clear|maintained|intact|obstructed)\b/,
+/\bairway\b.*\b(patent|open|clear|maintained|intact|obstructed)\b/
+        ]
+      },
+{
+        skill: "Breathing assessed",
+        keywords: [
+          "assess breathing", "check breathing", "what is the breathing effort",
+          "what is the respiratory effort", "what is the work of breathing",
+          "rate depth and quality", "depth and quality of respirations", "quality of respirations",
+          "breathing unlabored", "breathing labored", "respirations unlabored", "respirations labored",
+          "shallow respirations", "deep respirations", "normal respiratory effort",
+"assess breathing", "check breathing", "what is the breathing effort",
         "what is the respiratory effort", "what is the work of breathing",
         "rate depth and quality", "depth and quality of respirations", "quality of respirations",
         "breathing unlabored", "breathing labored", "respirations unlabored", "respirations labored",
         "shallow respirations", "deep respirations", "normal respiratory effort"
-      ],
-      patterns: [
-        /\b(respirations?|breathing)\b.*\b(labored|unlabored|shallow|deep|regular|irregular|adequate|inadequate)\b/
-      ]
-    },
-    {
-      skill: "Respiratory rate obtained",
-      keywords: [
-        "respiratory rate", "respiration rate", "rate of respirations", "how many respirations",
+        ],
+        patterns: [
+          /\b(respirations?|breathing)\b.*\b(labored|unlabored|shallow|deep|regular|irregular|adequate|inadequate)\b/,
+/\b(respirations?|breathing)\b.*\b(labored|unlabored|shallow|deep|regular|irregular|adequate|inadequate)\b/
+        ]
+      },
+{
+        skill: "Respiratory rate obtained",
+        keywords: [
+          "respiratory rate", "respiration rate", "rate of respirations", "how many respirations",
+          "how many breaths per minute", "what are the respirations", "rate depth and quality",
+"respiratory rate", "respiration rate", "rate of respirations", "how many respirations",
         "how many breaths per minute", "what are the respirations", "rate depth and quality"
-      ],
-      patterns: [
-        /\b(respirations?|rr|respiratory rate)\b\s*(is|are|:)?\s*\d{1,2}\b/,
+        ],
+        patterns: [
+          /\b(respirations?|rr|respiratory rate)\b\s*(is|are|:)?\s*\d{1,2}\b/,
+          /\b\d{1,2}\s*(breaths|respirations)\s*per\s*minute\b/,
+/\b(respirations?|rr|respiratory rate)\b\s*(is|are|:)?\s*\d{1,2}\b/,
         /\b\d{1,2}\s*(breaths|respirations)\s*per\s*minute\b/
-      ]
-    },
-    {
-      skill: "Lung sounds assessed",
-      keywords: [
-        "assess lung sounds",
+        ]
+      },
+{
+        skill: "Lung sounds assessed",
+        keywords: [
+          "assess lung sounds", "assess the lung sounds",
+          "check lung sounds", "check the lung sounds",
+          "listen to lung sounds", "listen to the lung sounds",
+          "listen to lungs", "listen to the lungs",
+          "auscultate lung sounds", "auscultate the lung sounds",
+          "auscultate lungs", "auscultate the lungs",
+          "auscultate breath sounds", "auscultate the breath sounds",
+          "assess breath sounds", "assess the breath sounds",
+          "check breath sounds", "check the breath sounds",
+          "listen to breath sounds", "listen to the breath sounds",
+          "what are the lung sounds", "what do the lung sounds sound like",
+          "what are his lung sounds", "what are her lung sounds",
+          "what are the breath sounds", "what do the breath sounds sound like",
+          "how do the lungs sound", "how do his lungs sound", "how do her lungs sound",
+          "are the lungs clear", "are lung sounds clear", "are breath sounds clear",
+          "are the lungs clear bilaterally", "are breath sounds equal",
+          "are lung sounds equal", "are breath sounds equal bilaterally",
+          "are lung sounds equal bilaterally", "bilateral lung sounds",
+          "bilateral breath sounds", "lung sounds bilaterally", "breath sounds bilaterally",
+          "lungs clear bilaterally", "lung sounds clear bilaterally",
+          "breath sounds clear bilaterally", "clear and equal bilaterally",
+          "clear equal bilaterally", "equal breath sounds", "equal lung sounds",
+          "equal bilateral breath sounds", "equal bilateral lung sounds",
+          "clear breath sounds", "breath sounds clear", "clear lung sounds", "lung sounds clear",
+          "wheezes", "wheezing", "rales", "crackles", "crackling", "rhonchi",
+          "diminished breath sounds", "diminished lung sounds",
+          "decreased breath sounds", "decreased lung sounds",
+          "absent breath sounds", "absent lung sounds",
+          "adventitious breath sounds", "adventitious lung sounds",
+          "coarse breath sounds", "fine crackles", "coarse crackles", "stridor",
+          "listen anteriorly", "listen posteriorly",
+          "listen to anterior lung fields", "listen to posterior lung fields",
+          "assess anterior lung fields", "assess posterior lung fields",
+          "auscultate anterior lung fields", "auscultate posterior lung fields",
+          "compare lung sounds bilaterally", "compare breath sounds bilaterally",
+          "compare left and right lung sounds", "compare left and right breath sounds",
+"assess lung sounds",
         "assess the lung sounds",
         "check lung sounds",
         "check the lung sounds",
@@ -896,193 +1330,107 @@
         "compare breath sounds bilaterally",
         "compare left and right lung sounds",
         "compare left and right breath sounds"
-      ],
-      patterns: [
-        /\b(assess|check|listen|auscultate|evaluate)\w*\b.*\b(lungs?|lung sounds?|breath sounds?|lung fields?)\b/,
+        ],
+        patterns: [
+          /\b(assess|check|listen|auscultate|evaluate)\w*\b.*\b(lungs?|lung sounds?|breath sounds?|lung fields?)\b/,
+          /\b(lungs?|lung sounds?|breath sounds?|lung fields?)\b.*\b(assess|check|listen|auscultate|evaluate)\w*\b/,
+          /\b(lungs?|lung sounds?|breath sounds?)\b.*\b(clear|equal|bilateral|wheez\w*|crackl\w*|rales|rhonchi|diminished|decreased|absent|coarse|stridor)\b/,
+          /\b(clear|equal|wheez\w*|crackl\w*|rales|rhonchi|diminished|decreased|absent|coarse|stridor)\b.*\b(lungs?|lung sounds?|breath sounds?)\b/,
+          /\b(anterior|posterior|bilateral)\b.*\b(lung fields?|lung sounds?|breath sounds?)\b/,
+          /\b(compare|comparison)\b.*\b(left|right|bilateral)\b.*\b(lung sounds?|breath sounds?|lungs?)\b/,
+/\b(assess|check|listen|auscultate|evaluate)\w*\b.*\b(lungs?|lung sounds?|breath sounds?|lung fields?)\b/,
         /\b(lungs?|lung sounds?|breath sounds?|lung fields?)\b.*\b(assess|check|listen|auscultate|evaluate)\w*\b/,
         /\b(lungs?|lung sounds?|breath sounds?)\b.*\b(clear|equal|bilateral|wheez\w*|crackl\w*|rales|rhonchi|diminished|decreased|absent|coarse|stridor)\b/,
         /\b(clear|equal|wheez\w*|crackl\w*|rales|rhonchi|diminished|decreased|absent|coarse|stridor)\b.*\b(lungs?|lung sounds?|breath sounds?)\b/,
         /\b(anterior|posterior|bilateral)\b.*\b(lung fields?|lung sounds?|breath sounds?)\b/,
         /\b(compare|comparison)\b.*\b(left|right|bilateral)\b.*\b(lung sounds?|breath sounds?|lungs?)\b/
-      ]
-    },
-    {
-      skill: "Oxygen saturation obtained",
-      keywords: [
-        "oxygen saturation", "what is the spo2", "check spo2", "pulse oximetry",
+        ]
+      },
+{
+        skill: "Oxygen saturation obtained",
+        keywords: [
+          "oxygen saturation", "what is the spo2", "check spo2", "pulse oximetry",
+          "pulse ox reading", "what is the oxygen level", "o2 saturation", "room air saturation",
+"oxygen saturation", "what is the spo2", "check spo2", "pulse oximetry",
         "pulse ox reading", "what is the oxygen level", "o2 saturation", "room air saturation"
-      ],
-      patterns: [
-        /\b(spo2|spo 2|o2 sat|oxygen saturation|pulse ox)\b[^0-9]{0,10}\d{2,3}%?/
-      ]
-    },
-    {
-      skill: "Ability to speak assessed",
-      keywords: [
-        "can the patient speak in full sentences",
-        "is she speaking in full sentences",
-        "how many words can she speak",
-        "assess ability to speak",
-        "can she talk without stopping for breath"
-      ]
-    },
-    {
-      skill: "Accessory muscle use assessed",
-      keywords: [
-        "is she using accessory muscles",
-        "check accessory muscle use",
-        "assess accessory muscles",
-        "is there retraction",
-        "are there retractions",
-        "is there nasal flaring"
-      ]
-    },
-    {
-      skill: "Chest rise and symmetry assessed",
-      keywords: [
-        "assess chest rise",
-        "check chest rise",
-        "is chest rise equal",
-        "is chest expansion symmetrical",
-        "is the chest moving equally"
-      ]
-    },
-    {
-      skill: "Cough and sputum assessed",
-      keywords: [
-        "do you have a cough",
-        "are you coughing",
-        "are you bringing up sputum",
-        "what color is the sputum",
-        "is the cough productive",
-        "have you been coughing"
-      ]
-    },
-    {
-      skill: "Home oxygen use assessed",
-      keywords: [
-        "do you use oxygen at home",
-        "are you on home oxygen",
-        "what is your normal oxygen flow",
-        "how many liters of oxygen do you use",
-        "did you use your home oxygen"
-      ]
-    },
-    {
-      skill: "Inhaler or nebulizer use assessed",
-      keywords: [
-        "did you use your inhaler",
-        "have you used your inhaler",
-        "did you use a nebulizer",
-        "have you used a nebulizer",
-        "when was your last breathing treatment",
-        "did the inhaler help"
-      ]
-    },
-    {
-      skill: "Position of comfort provided",
-      keywords: [
-        "place patient in position of comfort",
-        "sit the patient upright",
-        "position upright",
-        "high fowlers position",
-        "allow tripod position",
-        "assist patient to tripod"
-      ]
-    },
-    {
-      skill: "Oxygen administered",
-      keywords: [
-        "administer oxygen",
-        "give oxygen",
-        "apply oxygen",
-        "place on oxygen",
-        "oxygen by nasal cannula",
-        "oxygen by nonrebreather",
-        "use a non rebreather"
-      ]
-    },
-    {
-      skill: "Bronchodilator treatment considered",
-      keywords: [
-        "assist with prescribed inhaler",
-        "assist with inhaler",
-        "administer albuterol",
-        "give albuterol",
-        "administer a bronchodilator",
-        "give a nebulizer treatment",
-        "administer nebulized medication",
-        "assist with prescribed bronchodilator"
-      ]
-    },
-    {
-      skill: "Positive-pressure ventilation considered",
-      keywords: [
-        "consider cpap",
-        "apply cpap",
-        "use cpap",
-        "consider positive pressure ventilation",
-        "assist ventilations",
-        "ventilate with a bvm",
-        "use a bag valve mask",
-        "provide bag mask ventilation"
-      ]
-    },
-    {
-      skill: "Rapid transport or ALS considered",
-      keywords: [
-        "request als",
-        "intercept with als",
-        "rapid transport",
-        "transport promptly",
-        "transport without delay",
-        "notify the receiving hospital"
-      ]
-    },
-    {
-      skill: "Circulation assessed",
-      keywords: [
-        "assess circulation", "check circulation", "assess perfusion", "what is the perfusion status",
+        ],
+        patterns: [
+          /\b(spo2|spo 2|o2 sat|oxygen saturation|pulse ox)\b[^0-9]{0,10}\d{2,3}%?/,
+/\b(spo2|spo 2|o2 sat|oxygen saturation|pulse ox)\b[^0-9]{0,10}\d{2,3}%?/
+        ]
+      },
+{
+        skill: "Circulation assessed",
+        keywords: [
+          "assess circulation", "check circulation", "assess perfusion", "what is the perfusion status",
+          "perfusion adequate", "perfusion poor", "capillary refill", "peripheral perfusion",
+"assess circulation", "check circulation", "assess perfusion", "what is the perfusion status",
         "perfusion adequate", "perfusion poor", "capillary refill", "peripheral perfusion"
-      ]
-    },
-    {
-      skill: "Pulse assessed",
-      keywords: [
-        "check the pulse", "assess the pulse", "what is the pulse", "what is the heart rate",
+        ]
+      },
+{
+        skill: "Pulse assessed",
+        keywords: [
+          "check the pulse", "assess the pulse", "what is the pulse", "what is the heart rate",
+          "check heart rate", "radial pulse", "carotid pulse", "pulse strong", "pulse weak",
+          "pulse regular", "pulse irregular",
+"check the pulse", "assess the pulse", "what is the pulse", "what is the heart rate",
         "check heart rate", "radial pulse", "carotid pulse", "pulse strong", "pulse weak",
         "pulse regular", "pulse irregular"
-      ],
-      patterns: [
-        /\b(pulse|heart rate|hr)\b[^0-9]{0,12}\d{2,3}\b/,
+        ],
+        patterns: [
+          /\b(pulse|heart rate|hr)\b[^0-9]{0,12}\d{2,3}\b/,
+          /\b(radial|carotid)\b.*\b(strong|weak|regular|irregular|present|absent)\b/,
+/\b(pulse|heart rate|hr)\b[^0-9]{0,12}\d{2,3}\b/,
         /\b(radial|carotid)\b.*\b(strong|weak|regular|irregular|present|absent)\b/
-      ]
-    },
-    {
-      skill: "Skin signs assessed",
-      keywords: [
-        "assess skin signs", "check skin signs", "what are the skin signs",
+        ]
+      },
+{
+        skill: "Skin signs assessed",
+        keywords: [
+          "assess skin signs", "check skin signs", "what are the skin signs",
+          "skin color temperature and condition", "skin color temperature and moisture",
+          "what is the skin color", "is the skin warm or cool", "is the patient diaphoretic",
+          "skin pale", "skin cool", "skin warm", "skin clammy", "skin dry", "skin diaphoretic",
+          "pink warm and dry", "pale cool and clammy",
+"assess skin signs", "check skin signs", "what are the skin signs",
         "skin color temperature and condition", "skin color temperature and moisture",
         "what is the skin color", "is the skin warm or cool", "is the patient diaphoretic",
         "skin pale", "skin cool", "skin warm", "skin clammy", "skin dry", "skin diaphoretic",
         "pink warm and dry", "pale cool and clammy"
-      ],
-      patterns: [
-        /\bskin\b.*\b(pale|pink|cyanotic|flushed|cool|warm|hot|cold|clammy|dry|diaphoretic|moist)\b/
-      ]
-    },
-    {
-      skill: "Major bleeding assessed",
-      keywords: [
-        "check for major bleeding", "check for severe bleeding", "any major bleeding",
+        ],
+        patterns: [
+          /\bskin\b.*\b(pale|pink|cyanotic|flushed|cool|warm|hot|cold|clammy|dry|diaphoretic|moist)\b/,
+/\bskin\b.*\b(pale|pink|cyanotic|flushed|cool|warm|hot|cold|clammy|dry|diaphoretic|moist)\b/
+        ]
+      },
+{
+        skill: "Major bleeding assessed",
+        keywords: [
+          "check for major bleeding", "check for severe bleeding", "any major bleeding",
+          "any uncontrolled bleeding", "assess for hemorrhage", "no major bleeding",
+          "no uncontrolled bleeding", "no severe bleeding", "no obvious hemorrhage",
+"check for major bleeding", "check for severe bleeding", "any major bleeding",
         "any uncontrolled bleeding", "assess for hemorrhage", "no major bleeding",
         "no uncontrolled bleeding", "no severe bleeding", "no obvious hemorrhage"
-      ]
-    },
-    {
-      skill: "Blood pressure obtained",
-      keywords: [
-        "check blood pressure", "obtain blood pressure", "what is the blood pressure",
+        ]
+      },
+{
+        skill: "Blood pressure obtained",
+        keywords: [
+          "check blood pressure", "obtain blood pressure", "what is the blood pressure",
+          "what is the bp", "take a blood pressure",
+          "assess blood pressure", "assessed blood pressure", "assessing blood pressure",
+          "blood pressure assessed", "blood pressure was assessed",
+          "check the blood pressure", "checked the blood pressure",
+          "obtain the blood pressure", "obtained the blood pressure",
+          "take the blood pressure", "took the blood pressure",
+          "get a blood pressure", "got a blood pressure", "get the bp", "got the bp",
+          "measure blood pressure", "measured blood pressure",
+          "bp assessed", "bp obtained", "bp checked", "bp measured",
+          "assess all vitals", "assessed all vitals", "reassessed all vitals",
+          "all vital signs assessed", "all vital signs obtained", "all vitals obtained",
+"check blood pressure", "obtain blood pressure", "what is the blood pressure",
         "what is the bp", "take a blood pressure",
         "assess blood pressure", "assessed blood pressure", "assessing blood pressure",
         "blood pressure assessed", "blood pressure was assessed",
@@ -1094,86 +1442,133 @@
         "bp assessed", "bp obtained", "bp checked", "bp measured",
         "assess all vitals", "assessed all vitals", "reassessed all vitals",
         "all vital signs assessed", "all vital signs obtained", "all vitals obtained"
-      ],
-      patterns: [
-        /\b(bp|blood pressure)\b[^0-9]{0,10}\d{2,3}\s*\/\s*\d{2,3}\b/,
+        ],
+        patterns: [
+          /\b(bp|blood pressure)\b[^0-9]{0,10}\d{2,3}\s*\/\s*\d{2,3}\b/,
+          /\b(bp|blood pressure)\b[^0-9]{0,15}\d{2,3}\s*(?:over|by)\s*\d{2,3}\b/,
+          /\b(assess|assessed|assessing|check|checked|checking|obtain|obtained|obtaining|take|took|taking|get|got|getting|measure|measured|measuring|record|recorded|recording)\w*\b.*\b(bp|blood pressure)\b/,
+          /\b(bp|blood pressure)\b.*\b(assess|assessed|checked|obtained|taken|measured|recorded)\w*\b/,
+          /\b(assess|assessed|reassess|reassessed|obtain|obtained|repeat|repeated|check|checked)\w*\b.*\b(all|complete|full)\b.*\b(vitals|vital signs)\b/,
+          /\b\d{2,3}\s*\/\s*\d{2,3}\b/,
+/\b(bp|blood pressure)\b[^0-9]{0,10}\d{2,3}\s*\/\s*\d{2,3}\b/,
         /\b(bp|blood pressure)\b[^0-9]{0,15}\d{2,3}\s*(?:over|by)\s*\d{2,3}\b/,
         /\b(assess|assessed|assessing|check|checked|checking|obtain|obtained|obtaining|take|took|taking|get|got|getting|measure|measured|measuring|record|recorded|recording)\w*\b.*\b(bp|blood pressure)\b/,
         /\b(bp|blood pressure)\b.*\b(assess|assessed|checked|obtained|taken|measured|recorded)\w*\b/,
         /\b(assess|assessed|reassess|reassessed|obtain|obtained|repeat|repeated|check|checked)\w*\b.*\b(all|complete|full)\b.*\b(vitals|vital signs)\b/,
         /\b\d{2,3}\s*\/\s*\d{2,3}\b/
-      ]
-    },
-    {
-      skill: "Pupils assessed",
-      keywords: [
-        "check the pupils", "assess the pupils", "what do the pupils look like",
+        ]
+      },
+{
+        skill: "Pupils assessed",
+        keywords: [
+          "check the pupils", "assess the pupils", "what do the pupils look like",
+          "are the pupils equal and reactive", "what is the pupil response", "check perrl",
+          "pupils equal and reactive", "pupils round and reactive", "perrl", "pearl",
+"check the pupils", "assess the pupils", "what do the pupils look like",
         "are the pupils equal and reactive", "what is the pupil response", "check perrl",
         "pupils equal and reactive", "pupils round and reactive", "perrl", "pearl"
-      ],
-      patterns: [
-        /\bpupils?\b.*\b(equal|reactive|round|dilated|constricted|sluggish|fixed)\b/
-      ]
-    },
-    {
-      skill: "Chief complaint identified",
-      keywords: [
-        "what is your chief complaint", "what is bothering you", "why did you call ems",
+        ],
+        patterns: [
+          /\bpupils?\b.*\b(equal|reactive|round|dilated|constricted|sluggish|fixed)\b/,
+/\bpupils?\b.*\b(equal|reactive|round|dilated|constricted|sluggish|fixed)\b/
+        ]
+      },
+{
+        skill: "Chief complaint identified",
+        keywords: [
+          "what is your chief complaint", "what is bothering you", "why did you call ems",
+          "what is wrong today", "chief complaint is", "complains of", "c o chest pain",
+"what is your chief complaint", "what is bothering you", "why did you call ems",
         "what is wrong today", "chief complaint is", "complains of", "c o chest pain"
-      ]
-    },
-    {
-      skill: "Signs and symptoms assessed",
-      keywords: [
-        "what symptoms are you having", "what signs and symptoms", "how are you feeling",
+        ]
+      },
+{
+        skill: "Signs and symptoms assessed",
+        keywords: [
+          "what symptoms are you having", "what signs and symptoms", "how are you feeling",
+          "what are you experiencing", "associated symptoms", "other symptoms",
+          "tell me what you are feeling", "what else are you feeling", "any other complaints",
+          "any other discomfort", "are you short of breath", "any trouble breathing",
+          "are you nauseated", "have you vomited", "are you dizzy", "did you pass out",
+          "patient reports", "patient complains of", "denies other symptoms",
+          "signs symptoms", "sample signs and symptoms", "sampl signs and symptoms",
+"what symptoms are you having", "what signs and symptoms", "how are you feeling",
         "what are you experiencing", "associated symptoms", "other symptoms",
         "tell me what you are feeling", "what else are you feeling", "any other complaints",
         "any other discomfort", "are you short of breath", "any trouble breathing",
         "are you nauseated", "have you vomited", "are you dizzy", "did you pass out",
         "patient reports", "patient complains of", "denies other symptoms",
         "signs symptoms", "sample signs and symptoms", "sampl signs and symptoms"
-      ],
-      patterns: [
-        /\b(what|which|any)\b.*\b(symptoms?|complaints?|problems?|discomfort)\b/,
+        ],
+        patterns: [
+          /\b(what|which|any)\b.*\b(symptoms?|complaints?|problems?|discomfort)\b/,
+          /\b(how|what)\b.*\b(feel|feeling|experiencing)\b/,
+          /\b(short of breath|difficulty breathing|nausea|vomiting|dizzy|dizziness|syncope|sweating|diaphoretic)\b/,
+/\b(what|which|any)\b.*\b(symptoms?|complaints?|problems?|discomfort)\b/,
         /\b(how|what)\b.*\b(feel|feeling|experiencing)\b/,
         /\b(short of breath|difficulty breathing|nausea|vomiting|dizzy|dizziness|syncope|sweating|diaphoretic)\b/
-      ]
-    },
-    {
-      skill: "Allergies assessed",
-      keywords: [
-        "do you have any allergies", "are you allergic to anything", "any medication allergies",
+        ]
+      },
+{
+        skill: "Allergies assessed",
+        keywords: [
+          "do you have any allergies", "are you allergic to anything", "any medication allergies",
+          "what are your allergies", "no known allergies", "no known drug allergies", "nkda",
+          "allergic to", "any known allergies", "do you have drug allergies",
+          "are you allergic to medications", "food allergies", "environmental allergies",
+          "allergy history", "patient has no allergies", "denies allergies",
+          "sample allergies", "sampl allergies",
+"do you have any allergies", "are you allergic to anything", "any medication allergies",
         "what are your allergies", "no known allergies", "no known drug allergies", "nkda",
         "allergic to", "any known allergies", "do you have drug allergies",
         "are you allergic to medications", "food allergies", "environmental allergies",
         "allergy history", "patient has no allergies", "denies allergies",
         "sample allergies", "sampl allergies"
-      ],
-      patterns: [
-        /\b(allerg(?:y|ies|ic)|nkda|nka)\b/,
+        ],
+        patterns: [
+          /\b(allerg(?:y|ies|ic)|nkda|nka)\b/,
+          /\breact(?:ion|ed)\b.*\b(medication|medicine|drug|food)\b/,
+/\b(allerg(?:y|ies|ic)|nkda|nka)\b/,
         /\breact(?:ion|ed)\b.*\b(medication|medicine|drug|food)\b/
-      ]
-    },
-    {
-      skill: "Medications assessed",
-      keywords: [
-        "what medications do you take", "are you taking any medications", "what medicines do you take",
+        ]
+      },
+{
+        skill: "Medications assessed",
+        keywords: [
+          "what medications do you take", "are you taking any medications", "what medicines do you take",
+          "did you take aspirin", "did you take nitroglycerin", "cardiac medications",
+          "takes lisinopril", "takes atorvastatin", "medication list", "home medications",
+          "do you take any medicine", "are you on any medications", "what prescriptions do you take",
+          "what are your daily medications", "what pills do you take", "any over the counter medications",
+          "has not taken medications", "denies taking medications", "patient takes",
+          "sample medications", "sampl medications",
+"what medications do you take", "are you taking any medications", "what medicines do you take",
         "did you take aspirin", "did you take nitroglycerin", "cardiac medications",
         "takes lisinopril", "takes atorvastatin", "medication list", "home medications",
         "do you take any medicine", "are you on any medications", "what prescriptions do you take",
         "what are your daily medications", "what pills do you take", "any over the counter medications",
         "has not taken medications", "denies taking medications", "patient takes",
         "sample medications", "sampl medications"
-      ],
-      patterns: [
-        /\b(what|which|any)\b.*\b(medications?|medicines?|prescriptions?|pills?)\b/,
+        ],
+        patterns: [
+          /\b(what|which|any)\b.*\b(medications?|medicines?|prescriptions?|pills?)\b/,
+          /\b(takes?|taking|on|uses?)\b.*\b(medications?|medicine|lisinopril|atorvastatin|aspirin|nitro(?:glycerin)?)\b/,
+/\b(what|which|any)\b.*\b(medications?|medicines?|prescriptions?|pills?)\b/,
         /\b(takes?|taking|on|uses?)\b.*\b(medications?|medicine|lisinopril|atorvastatin|aspirin|nitro(?:glycerin)?)\b/
-      ]
-    },
-    {
-      skill: "Pertinent medical history assessed",
-      keywords: [
-        "what is your medical history", "past medical history", "history of heart problems",
+        ]
+      },
+{
+        skill: "Pertinent medical history assessed",
+        keywords: [
+          "what is your medical history", "past medical history", "history of heart problems",
+          "history of heart attack", "history of angina", "medical problems", "have you had this before",
+          "history of hypertension", "history of high blood pressure", "history of high cholesterol",
+          "history includes", "do you have any medical conditions", "what medical conditions do you have",
+          "any significant medical history", "any past illnesses", "previous health problems",
+          "have you ever had this problem", "has this happened before", "any prior episodes",
+          "prior heart attack", "prior stroke", "denies medical history", "no medical history",
+          "sample past history", "sampl past history", "pertinent history",
+"what is your medical history", "past medical history", "history of heart problems",
         "history of heart attack", "history of angina", "medical problems", "have you had this before",
         "history of hypertension", "history of high blood pressure", "history of high cholesterol",
         "history includes", "do you have any medical conditions", "what medical conditions do you have",
@@ -1181,75 +1576,135 @@
         "have you ever had this problem", "has this happened before", "any prior episodes",
         "prior heart attack", "prior stroke", "denies medical history", "no medical history",
         "sample past history", "sampl past history", "pertinent history"
-      ],
-      patterns: [
-        /\b(history|previous|prior|past)\b.*\b(medical|illness|condition|problem|episode|heart attack|stroke|angina)\b/,
+        ],
+        patterns: [
+          /\b(history|previous|prior|past)\b.*\b(medical|illness|condition|problem|episode|heart attack|stroke|angina)\b/,
+          /\b(has|have)\b.*\b(happened|occurred)\b.*\b(before|previously)\b/,
+/\b(history|previous|prior|past)\b.*\b(medical|illness|condition|problem|episode|heart attack|stroke|angina)\b/,
         /\b(has|have)\b.*\b(happened|occurred)\b.*\b(before|previously)\b/
-      ]
-    },
-    {
-      skill: "Last oral intake assessed",
-      keywords: [
-        "when did you last eat", "what did you last eat", "last oral intake", "when was your last meal",
+        ]
+      },
+{
+        skill: "Last oral intake assessed",
+        keywords: [
+          "when did you last eat", "what did you last eat", "last oral intake", "when was your last meal",
+          "did you eat today", "have you eaten today", "ate breakfast", "last meal was", "last ate",
+          "when did you last drink", "what did you last drink", "last food or drink",
+          "most recent meal", "what time did you eat", "anything to eat or drink",
+          "last intake", "has not eaten", "has not had anything to drink",
+          "sample last oral intake", "sampl last oral intake",
+"when did you last eat", "what did you last eat", "last oral intake", "when was your last meal",
         "did you eat today", "have you eaten today", "ate breakfast", "last meal was", "last ate",
         "when did you last drink", "what did you last drink", "last food or drink",
         "most recent meal", "what time did you eat", "anything to eat or drink",
         "last intake", "has not eaten", "has not had anything to drink",
         "sample last oral intake", "sampl last oral intake"
-      ],
-      patterns: [
-        /\b(when|what|time)\b.*\b(last|most recent)\b.*\b(eat|ate|meal|food|drink|intake)\b/,
+        ],
+        patterns: [
+          /\b(when|what|time)\b.*\b(last|most recent)\b.*\b(eat|ate|meal|food|drink|intake)\b/,
+          /\b(last|most recent)\b.*\b(meal|food|drink|oral intake|intake)\b/,
+/\b(when|what|time)\b.*\b(last|most recent)\b.*\b(eat|ate|meal|food|drink|intake)\b/,
         /\b(last|most recent)\b.*\b(meal|food|drink|oral intake|intake)\b/
-      ]
-    },
-    {
-      skill: "Events leading to illness assessed",
-      keywords: [
-        "what happened before this started", "what were you doing when this started",
+        ]
+      },
+{
+        skill: "Events leading to illness assessed",
+        keywords: [
+          "what happened before this started", "what were you doing when this started",
+          "events leading up to this", "what happened prior to the chest pain", "what led up to this",
+          "started while", "began while", "was doing when", "tell me what happened",
+          "what happened today", "what were you doing beforehand", "what occurred before this",
+          "what led to the symptoms", "events before the illness", "events before the injury",
+          "symptoms began while", "patient was doing", "onset during activity",
+          "sample events", "sampl events", "events leading",
+"what happened before this started", "what were you doing when this started",
         "events leading up to this", "what happened prior to the chest pain", "what led up to this",
         "started while", "began while", "was doing when", "tell me what happened",
         "what happened today", "what were you doing beforehand", "what occurred before this",
         "what led to the symptoms", "events before the illness", "events before the injury",
         "symptoms began while", "patient was doing", "onset during activity",
         "sample events", "sampl events", "events leading"
-      ],
-      patterns: [
-        /\b(what|events?)\b.*\b(happened|occurred|led|leading)\b.*\b(before|prior|up to|symptoms?|pain|illness|injury)\b/,
+        ],
+        patterns: [
+          /\b(what|events?)\b.*\b(happened|occurred|led|leading)\b.*\b(before|prior|up to|symptoms?|pain|illness|injury)\b/,
+          /\b(what were you doing|doing when|began while|started while|onset during)\b/,
+/\b(what|events?)\b.*\b(happened|occurred|led|leading)\b.*\b(before|prior|up to|symptoms?|pain|illness|injury)\b/,
         /\b(what were you doing|doing when|began while|started while|onset during)\b/
-      ]
-    },
-    {
-      skill: "Complete OPQRST assessment performed",
-      keywords: [
-        "perform a complete opqrst", "perform complete opqrst", "perform an opqrst assessment",
+        ]
+      },
+{
+        skill: "Complete SAMPLE history performed",
+        keywords: [
+          "perform a complete sample", "perform complete sample", "perform a sample history",
+          "complete sample history", "full sample history", "assess using sample",
+          "obtain a complete sample", "go through sample", "complete sampl history",
+          "perform sampl", "obtain sampl", "sample assessment",
+"perform a complete sample", "perform complete sample", "perform a sample history",
+        "complete sample history", "full sample history", "assess using sample",
+        "obtain a complete sample", "go through sample", "complete sampl history",
+        "perform sampl", "obtain sampl", "sample assessment"
+        ],
+        patterns: [
+          /\b(complete|full|entire)\b.*\b(sample|sampl)\b/,
+          /\b(perform|obtain|assess|gather|take)\b.*\b(sample|sampl)\b.*\b(history|assessment)?\b/,
+/\b(complete|full|entire)\b.*\b(sample|sampl)\b/,
+        /\b(perform|obtain|assess|gather|take)\b.*\b(sample|sampl)\b.*\b(history|assessment)?\b/
+        ]
+      },
+{
+        skill: "Complete OPQRST assessment performed",
+        keywords: [
+          "perform a complete opqrst", "perform complete opqrst", "perform an opqrst assessment",
+          "complete opqrst assessment", "full opqrst assessment", "assess using opqrst",
+          "obtain a complete opqrst", "go through opqrst", "perform oprst", "complete oprst",
+          "full oprst", "obtain oprst", "go through oprst", "opqrst history", "oprst history",
+"perform a complete opqrst", "perform complete opqrst", "perform an opqrst assessment",
         "complete opqrst assessment", "full opqrst assessment", "assess using opqrst",
         "obtain a complete opqrst", "go through opqrst", "perform oprst", "complete oprst",
         "full oprst", "obtain oprst", "go through oprst", "opqrst history", "oprst history"
-      ],
-      patterns: [
-        /\b(complete|full|entire)\b.*\b(opqrst|oprst)\b/,
+        ],
+        patterns: [
+          /\b(complete|full|entire)\b.*\b(opqrst|oprst)\b/,
+          /\b(perform|obtain|assess|go through)\b.*\b(opqrst|oprst)\b/,
+/\b(complete|full|entire)\b.*\b(opqrst|oprst)\b/,
         /\b(perform|obtain|assess|go through)\b.*\b(opqrst|oprst)\b/
-      ]
-    },
-    {
-      skill: "OPQRST onset assessed",
-      keywords: [
-        "when did the chest pain start", "when did the pain start", "when did the discomfort start",
+        ]
+      },
+{
+        skill: "OPQRST onset assessed",
+        keywords: [
+          "when did the chest pain start", "when did the pain start", "when did the discomfort start",
+          "when did this begin", "what time did this begin", "was the onset sudden or gradual",
+          "pain started", "symptoms started", "onset was", "when did it start", "when did it begin",
+          "what time did it start", "how did it start", "did it start suddenly", "did it come on gradually",
+          "sudden onset", "gradual onset", "began suddenly", "began gradually",
+          "first noticed", "when were you last normal", "opqrst onset", "oprst onset",
+"when did the chest pain start", "when did the pain start", "when did the discomfort start",
         "when did this begin", "what time did this begin", "was the onset sudden or gradual",
         "pain started", "symptoms started", "onset was", "when did it start", "when did it begin",
         "what time did it start", "how did it start", "did it start suddenly", "did it come on gradually",
         "sudden onset", "gradual onset", "began suddenly", "began gradually",
         "first noticed", "when were you last normal", "opqrst onset", "oprst onset"
-      ],
-      patterns: [
-        /\b(when|what time|how)\b.*\b(start|started|begin|began|onset|first notice)\b/,
+        ],
+        patterns: [
+          /\b(when|what time|how)\b.*\b(start|started|begin|began|onset|first notice)\b/,
+          /\b(sudden|suddenly|gradual|gradually)\b.*\b(onset|start|started|begin|began|came on)\b/,
+/\b(when|what time|how)\b.*\b(start|started|begin|began|onset|first notice)\b/,
         /\b(sudden|suddenly|gradual|gradually)\b.*\b(onset|start|started|begin|began|came on)\b/
-      ]
-    },
-    {
-      skill: "OPQRST provocation and palliation assessed",
-      keywords: [
-        "what makes the pain better", "what makes the pain worse", "does anything make it better",
+        ]
+      },
+{
+        skill: "OPQRST provocation and palliation assessed",
+        keywords: [
+          "what makes the pain better", "what makes the pain worse", "does anything make it better",
+          "does anything make it worse", "what relieves the discomfort", "what causes the discomfort to worsen",
+          "better with", "worse with", "relieved by", "worsened by", "improves with",
+          "what brings the pain on", "does movement make it worse", "does rest make it better",
+          "what aggravates it", "what relieves it", "what improves it", "what triggers it",
+          "anything aggravate the pain", "anything relieve the pain", "better or worse with breathing",
+          "worse with exertion", "better with rest", "changes with movement", "changes with position",
+          "provocation palliation", "opqrst provocation", "oprst provocation",
+"what makes the pain better", "what makes the pain worse", "does anything make it better",
         "does anything make it worse", "what relieves the discomfort", "what causes the discomfort to worsen",
         "better with", "worse with", "relieved by", "worsened by", "improves with",
         "what brings the pain on", "does movement make it worse", "does rest make it better",
@@ -1257,64 +1712,101 @@
         "anything aggravate the pain", "anything relieve the pain", "better or worse with breathing",
         "worse with exertion", "better with rest", "changes with movement", "changes with position",
         "provocation palliation", "opqrst provocation", "oprst provocation"
-      ],
-      patterns: [
-        /\b(what|anything)\b.*\b(make|makes)\b.*\b(pain|discomfort|it)\b.*\b(better|worse)\b/,
+        ],
+        patterns: [
+          /\b(what|anything)\b.*\b(make|makes)\b.*\b(pain|discomfort|it)\b.*\b(better|worse)\b/,
+          /\b(aggravat|reliev|improv|worsen|trigger)\w*\b.*\b(pain|discomfort|symptoms?|it)\b/,
+          /\b(pain|discomfort|symptoms?|it)\b.*\b(better|worse|relieved|aggravated)\b.*\b(with|by|when)\b/,
+/\b(what|anything)\b.*\b(make|makes)\b.*\b(pain|discomfort|it)\b.*\b(better|worse)\b/,
         /\b(aggravat|reliev|improv|worsen|trigger)\w*\b.*\b(pain|discomfort|symptoms?|it)\b/,
         /\b(pain|discomfort|symptoms?|it)\b.*\b(better|worse|relieved|aggravated)\b.*\b(with|by|when)\b/
-      ]
-    },
-    {
-      skill: "OPQRST quality assessed",
-      keywords: [
-        "describe the chest pain", "describe the pain", "describe the discomfort",
+        ]
+      },
+{
+        skill: "OPQRST quality assessed",
+        keywords: [
+          "describe the chest pain", "describe the pain", "describe the discomfort",
+          "what does the pain feel like", "what does the discomfort feel like",
+          "is the pain sharp dull or pressure", "quality of the pain", "quality of the discomfort",
+          "pressure like", "crushing pain", "sharp pain", "dull pain", "tightness",
+          "how would you describe it", "tell me what it feels like", "what kind of pain is it",
+          "is it pressure or pain", "burning pain", "stabbing pain", "aching pain", "tearing pain",
+          "heavy feeling", "squeezing sensation", "chest heaviness", "opqrst quality", "oprst quality",
+"describe the chest pain", "describe the pain", "describe the discomfort",
         "what does the pain feel like", "what does the discomfort feel like",
         "is the pain sharp dull or pressure", "quality of the pain", "quality of the discomfort",
         "pressure like", "crushing pain", "sharp pain", "dull pain", "tightness",
         "how would you describe it", "tell me what it feels like", "what kind of pain is it",
         "is it pressure or pain", "burning pain", "stabbing pain", "aching pain", "tearing pain",
         "heavy feeling", "squeezing sensation", "chest heaviness", "opqrst quality", "oprst quality"
-      ],
-      patterns: [
-        /\b(what|how)\b.*\b(pain|discomfort|it)\b.*\b(feel|feels|describe|like)\b/,
+        ],
+        patterns: [
+          /\b(what|how)\b.*\b(pain|discomfort|it)\b.*\b(feel|feels|describe|like)\b/,
+          /\b(sharp|dull|pressure|crushing|tight|tightness|burning|stabbing|aching|tearing|heavy|squeezing)\b.*\b(pain|discomfort|feeling|sensation)?\b/,
+/\b(what|how)\b.*\b(pain|discomfort|it)\b.*\b(feel|feels|describe|like)\b/,
         /\b(sharp|dull|pressure|crushing|tight|tightness|burning|stabbing|aching|tearing|heavy|squeezing)\b.*\b(pain|discomfort|feeling|sensation)?\b/
-      ]
-    },
-    {
-      skill: "OPQRST radiation assessed",
-      keywords: [
-        "does the pain radiate", "does the pain travel", "does the discomfort radiate",
+        ]
+      },
+{
+        skill: "OPQRST radiation assessed",
+        keywords: [
+          "does the pain radiate", "does the pain travel", "does the discomfort radiate",
+          "does the discomfort travel", "where does the pain go", "does it move anywhere",
+          "radiates to", "travels to", "moves to", "does the pain spread", "does it spread anywhere",
+          "where else do you feel it", "does it go anywhere else", "pain goes into",
+          "pain extends to", "stays in one place", "non radiating", "no radiation",
+          "left arm", "right arm", "jaw", "back", "shoulder", "opqrst radiation", "oprst radiation",
+"does the pain radiate", "does the pain travel", "does the discomfort radiate",
         "does the discomfort travel", "where does the pain go", "does it move anywhere",
         "radiates to", "travels to", "moves to", "does the pain spread", "does it spread anywhere",
         "where else do you feel it", "does it go anywhere else", "pain goes into",
         "pain extends to", "stays in one place", "non radiating", "no radiation",
         "left arm", "right arm", "jaw", "back", "shoulder", "opqrst radiation", "oprst radiation"
-      ],
-      patterns: [
-        /\b(pain|discomfort|it)\b.*\b(radiat|travel|spread|move|go|extend)\w*\b.*\b(to|into|anywhere|else)\b/,
+        ],
+        patterns: [
+          /\b(pain|discomfort|it)\b.*\b(radiat|travel|spread|move|go|extend)\w*\b.*\b(to|into|anywhere|else)\b/,
+          /\b(radiat|travel|spread)\w*\b.*\b(arm|jaw|back|shoulder|neck)\b/,
+          /\b(no|non)\s+radiat\w*\b/,
+/\b(pain|discomfort|it)\b.*\b(radiat|travel|spread|move|go|extend)\w*\b.*\b(to|into|anywhere|else)\b/,
         /\b(radiat|travel|spread)\w*\b.*\b(arm|jaw|back|shoulder|neck)\b/,
         /\b(no|non)\s+radiat\w*\b/
-      ]
-    },
-    {
-      skill: "OPQRST severity assessed",
-      keywords: [
-        "rate your pain", "rate the discomfort", "pain scale", "zero to ten pain",
+        ]
+      },
+{
+        skill: "OPQRST severity assessed",
+        keywords: [
+          "rate your pain", "rate the discomfort", "pain scale", "zero to ten pain",
+          "0 to 10 pain", "how severe is the pain", "pain is 8 out of 10", "pain 8 10",
+          "how bad is the pain", "how much does it hurt", "give the pain a number",
+          "on a scale of one to ten", "on a scale from zero to ten", "pain rating",
+          "discomfort is eight out of ten", "rates pain", "opqrst severity", "oprst severity",
+"rate your pain", "rate the discomfort", "pain scale", "zero to ten pain",
         "0 to 10 pain", "how severe is the pain", "pain is 8 out of 10", "pain 8 10",
         "how bad is the pain", "how much does it hurt", "give the pain a number",
         "on a scale of one to ten", "on a scale from zero to ten", "pain rating",
         "discomfort is eight out of ten", "rates pain", "opqrst severity", "oprst severity"
-      ],
-      patterns: [
-        /\b(pain|discomfort)\b[^0-9]{0,20}\d{1,2}\s*(out of|of|\/)\s*10\b/,
+        ],
+        patterns: [
+          /\b(pain|discomfort)\b[^0-9]{0,20}\d{1,2}\s*(out of|of|\/)\s*10\b/,
+          /\b(scale|rating)\b.*\b(0|zero|1|one)\b.*\b(10|ten)\b/,
+          /\bhow (bad|severe|strong|intense)\b.*\b(pain|discomfort|it)\b/,
+/\b(pain|discomfort)\b[^0-9]{0,20}\d{1,2}\s*(out of|of|\/)\s*10\b/,
         /\b(scale|rating)\b.*\b(0|zero|1|one)\b.*\b(10|ten)\b/,
         /\bhow (bad|severe|strong|intense)\b.*\b(pain|discomfort|it)\b/
-      ]
-    },
-    {
-      skill: "OPQRST time assessed",
-      keywords: [
-        "how long has the pain lasted", "how long have you had the discomfort",
+        ]
+      },
+{
+        skill: "OPQRST time assessed",
+        keywords: [
+          "how long has the pain lasted", "how long have you had the discomfort",
+          "has the pain been constant", "does the pain come and go", "how long have the symptoms been present",
+          "pain has lasted", "symptoms for", "constant pain", "intermittent pain",
+          "how long has this been going on", "is the pain constant", "does it come and go",
+          "how long ago did it start", "how long has it been there", "has it stopped at all",
+          "is it always there", "is it continuous", "is it intermittent", "does it stay or go away",
+          "comes and goes", "has been present for", "duration of pain", "duration of symptoms",
+          "opqrst time", "oprst time",
+"how long has the pain lasted", "how long have you had the discomfort",
         "has the pain been constant", "does the pain come and go", "how long have the symptoms been present",
         "pain has lasted", "symptoms for", "constant pain", "intermittent pain",
         "how long has this been going on", "is the pain constant", "does it come and go",
@@ -1322,106 +1814,105 @@
         "is it always there", "is it continuous", "is it intermittent", "does it stay or go away",
         "comes and goes", "has been present for", "duration of pain", "duration of symptoms",
         "opqrst time", "oprst time"
-      ],
-      patterns: [
-        /\bhow long\b.*\b(pain|discomfort|symptom|it|this)\w*\b/,
+        ],
+        patterns: [
+          /\bhow long\b.*\b(pain|discomfort|symptom|it|this)\w*\b/,
+          /\b(constant|continuous|intermittent|comes and goes|present for|duration)\b.*\b(pain|discomfort|symptoms?|it)?\b/,
+          /\b(pain|discomfort|symptoms?|it)\b.*\b(constant|continuous|intermittent|comes and goes|lasted|present for)\b/,
+/\bhow long\b.*\b(pain|discomfort|symptom|it|this)\w*\b/,
         /\b(constant|continuous|intermittent|comes and goes|present for|duration)\b.*\b(pain|discomfort|symptoms?|it)?\b/,
         /\b(pain|discomfort|symptoms?|it)\b.*\b(constant|continuous|intermittent|comes and goes|lasted|present for)\b/
-      ]
-    },
-    {
-      skill: "Secondary assessment performed",
-      keywords: [
-        "perform a secondary assessment", "perform a focused physical exam",
+        ]
+      },
+{
+        skill: "Secondary assessment performed",
+        keywords: [
+          "perform a secondary assessment", "perform a focused physical exam",
+          "perform a head to toe assessment", "complete a rapid assessment", "perform a physical examination",
+          "secondary assessment completed", "focused exam completed",
+          "assess for dcap", "assessed for dcap", "check for dcap", "checked for dcap",
+          "dcap btls assessment", "dcap-btls assessment", "assess using dcap btls",
+          "expose the chest and assess", "exposed the chest and assessed",
+          "xpose the chest and assess", "xposed the chest and assessed",
+"perform a secondary assessment", "perform a focused physical exam",
         "perform a head to toe assessment", "complete a rapid assessment", "perform a physical examination",
         "secondary assessment completed", "focused exam completed",
         "assess for dcap", "assessed for dcap", "check for dcap", "checked for dcap",
         "dcap btls assessment", "dcap-btls assessment", "assess using dcap btls",
         "expose the chest and assess", "exposed the chest and assessed",
         "xpose the chest and assess", "xposed the chest and assessed"
-      ],
-      patterns: [
-        /\b(assess|assessed|assessing|check|checked|checking|inspect|inspected)\w*\b.*\bdcap\b(?:\s*btls\b)?/,
+        ],
+        patterns: [
+          /\b(assess|assessed|assessing|check|checked|checking|inspect|inspected)\w*\b.*\bdcap\b(?:\s*btls\b)?/,
+          /\bdcap\b(?:\s*btls\b)?.*\b(assess|assessed|assessment|check|checked|exam|examination)\w*\b/,
+          /\b(e?xpose|e?xposed|e?xposing)\w*\b.*\b(chest|thorax)\b.*\b(assess|assessed|assessing|inspect|inspected|palpate|palpated|dcap)\w*\b/,
+/\b(assess|assessed|assessing|check|checked|checking|inspect|inspected)\w*\b.*\bdcap\b(?:\s*btls\b)?/,
         /\bdcap\b(?:\s*btls\b)?.*\b(assess|assessed|assessment|check|checked|exam|examination)\w*\b/,
         /\b(e?xpose|e?xposed|e?xposing)\w*\b.*\b(chest|thorax)\b.*\b(assess|assessed|assessing|inspect|inspected|palpate|palpated|dcap)\w*\b/
-      ]
-    },
-    {
-      skill: "Neurologic assessment performed",
-      keywords: [
-        "perform a neurologic assessment",
-        "perform a neurological assessment",
-        "check motor function",
-        "check sensation",
-        "assess grip strength",
-        "check for arm drift",
-        "perform a stroke assessment"
-      ]
-    },
-    {
-      skill: "Temperature obtained",
-      keywords: [
-        "check the temperature",
-        "obtain a temperature",
-        "what is the temperature",
-        "does the patient have a fever"
-      ]
-    },
-    {
-      skill: "Cardiac rhythm assessed",
-      keywords: [
-        "place the patient on the cardiac monitor", "assess cardiac rhythm", "what is the cardiac rhythm",
+        ]
+      },
+{
+        skill: "Cardiac assessment performed",
+        keywords: [
+          "perform a cardiac assessment", "assess the chest", "inspect and palpate the chest",
+          "check for chest tenderness", "chest non tender", "chest tenderness", "chest wall assessed",
+          "expose the chest and assess", "exposed the chest and assessed",
+          "xpose the chest and assess", "xposed the chest and assessed",
+          "assess the chest for dcap", "assessed the chest for dcap"
+        ],
+        patterns: [
+          /\b(e?xpose|e?xposed|e?xposing)\w*\b.*\b(chest|thorax)\b.*\b(assess|assessed|assessing|inspect|inspected|palpate|palpated|dcap)\w*\b/,
+          /\b(assess|assessed|assessing|inspect|inspected|palpate|palpated|check|checked)\w*\b.*\b(chest|thorax|chest wall)\b.*\bdcap\b/,
+          /\b(chest|thorax|chest wall)\b.*\b(assess|assessed|assessing|inspect|inspected|palpate|palpated|tenderness|dcap)\w*\b/
+        ]
+      },
+{
+        skill: "Cardiac rhythm assessed",
+        keywords: [
+          "place the patient on the cardiac monitor", "assess cardiac rhythm", "what is the cardiac rhythm",
+          "obtain an ecg", "obtain an ekg", "obtain a 12 lead", "obtain a twelve lead",
+          "cardiac monitor applied", "12 lead obtained", "ekg obtained", "ecg obtained",
+"place the patient on the cardiac monitor", "assess cardiac rhythm", "what is the cardiac rhythm",
         "obtain an ecg", "obtain an ekg", "obtain a 12 lead", "obtain a twelve lead",
         "cardiac monitor applied", "12 lead obtained", "ekg obtained", "ecg obtained"
-      ]
-    },
-    {
-      skill: "C-spine stabilization considered",
-      keywords: [
-        "c-spine",
-        "c spine",
-        "c-spine precautions",
-        "c spine precautions",
-        "c-spine stabilization",
-        "c spine stabilization",
-        "consider c-spine",
-        "consider c spine",
-        "consider c-spine precautions",
-        "consider c spine precautions",
-        "consider c-spine stabilization",
-        "consider c spine stabilization",
-        "spinal precautions",
-        "spinal stabilization",
-        "spine stabilization",
-        "spinal motion restriction",
-        "smr",
-        "immobilization considered",
-        "cervical spine precautions",
-        "cervical spine stabilization"
-      ],
-      patterns: [
-        /\b(c\s*-?\s*spine|cervical spine)\b.*\b(consider|precaution|stabil|immobil|restrict)\w*\b/,
-        /\b(consider|apply|maintain)\w*\b.*\b(c\s*-?\s*spine|cervical spine)\b/,
-        /\bspinal\b.*\b(precaution|stabil|motion restriction|immobil)\w*\b/
-      ]
-    },
-    {
-      skill: "Complete SAMPLE history performed",
-      keywords: [
-        "perform a complete sample", "perform complete sample", "perform a sample history",
-        "complete sample history", "full sample history", "assess using sample",
-        "obtain a complete sample", "go through sample", "complete sampl history",
-        "perform sampl", "obtain sampl", "sample assessment"
-      ],
-      patterns: [
-        /\b(complete|full|entire)\b.*\b(sample|sampl)\b/,
-        /\b(perform|obtain|assess|gather|take)\b.*\b(sample|sampl)\b.*\b(history|assessment)?\b/
-      ]
-    },
-    {
-      skill: "Patient priority identified",
-      keywords: [
-        "high priority",
+        ]
+      },
+{
+        skill: "Position of comfort provided",
+        keywords: [
+          "position of comfort", "place the patient in a position of comfort", "sit the patient upright",
+          "semi fowlers", "semi-fowlers", "patient positioned upright", "sitting upright",
+"place patient in position of comfort",
+        "sit the patient upright",
+        "position upright",
+        "high fowlers position",
+        "allow tripod position",
+        "assist patient to tripod"
+        ]
+      },
+{
+        skill: "Patient priority identified",
+        keywords: [
+          "high priority", "high-priority", "priority patient", "priority transport",
+          "high priority transport", "make this a priority", "make him a priority",
+          "make her a priority", "this is a priority patient",
+          "this is a high priority patient", "this is a high priority transport",
+          "patient is high priority", "patient is a high priority",
+          "critical patient", "patient is critical", "potentially unstable",
+          "patient is unstable", "unstable patient", "serious patient", "seriously ill",
+          "time sensitive", "time-sensitive", "time critical", "time-critical",
+          "emergent patient", "emergent transport", "urgent transport",
+          "needs rapid transport", "requires rapid transport",
+          "requires immediate transport", "needs immediate transport",
+          "due to chest pain this is high priority",
+          "because of chest pain this is high priority",
+          "due to the chief complaint this is a priority transport",
+          "because of the chief complaint this is a priority transport",
+          "i am going to make this a priority transport",
+          "i will make this a priority transport",
+          "i consider this patient high priority",
+          "i consider this patient a high priority",
+"high priority",
         "high-priority",
         "priority patient",
         "priority transport",
@@ -1460,19 +1951,45 @@
         "i will make this a priority transport",
         "i consider this patient high priority",
         "i consider this patient a high priority"
-      ],
-      patterns: [
-        /\b(high|urgent|emergent|critical|time[- ]?sensitive|time[- ]?critical)\b.*\b(priority|transport|patient)\b/,
+        ],
+        patterns: [
+          /\b(high|urgent|emergent|critical|time[- ]?sensitive|time[- ]?critical)\b.*\b(priority|transport|patient)\b/,
+          /\bpriority\b.*\b(patient|transport)\b/,
+          /\bpatient\b.*\b(high priority|unstable|critical|time[- ]?sensitive|emergent)\b/,
+          /\b(make|consider|classify|identify)\w*\b.*\b(patient|this)\b.*\b(priority|high priority|unstable|critical)\b/,
+          /\b(chief complaint|chest pain|cardiac event)\b.*\b(priority|high priority|urgent|emergent|rapid transport)\b/,
+/\b(high|urgent|emergent|critical|time[- ]?sensitive|time[- ]?critical)\b.*\b(priority|transport|patient)\b/,
         /\bpriority\b.*\b(patient|transport)\b/,
         /\bpatient\b.*\b(high priority|unstable|critical|time[- ]?sensitive|emergent)\b/,
         /\b(make|consider|classify|identify)\w*\b.*\b(patient|this)\b.*\b(priority|high priority|unstable|critical)\b/,
         /\b(chief complaint|shortness of breath|respiratory distress)\b.*\b(priority|high priority|urgent|emergent|rapid transport)\b/
-      ]
-    },
-    {
-      skill: "Rapid transport initiated",
-      keywords: [
-        "rapid transport",
+        ]
+      },
+{
+        skill: "Rapid transport initiated",
+        keywords: [
+          "rapid transport", "transport promptly", "begin transport", "beginning transport",
+          "initiate transport", "initiating transport", "start transport", "starting transport",
+          "transport now", "transport immediately", "immediate transport",
+          "urgent transport", "emergent transport", "expedited transport",
+          "priority transport", "high priority transport", "load and go", "load and transport",
+          "move to the ambulance", "move him to the ambulance", "move her to the ambulance",
+          "bring him to the ambulance", "bring her to the ambulance",
+          "place him on the stretcher", "place her on the stretcher",
+          "place patient on stretcher", "move patient to stretcher",
+          "secure to stretcher", "secure him to the stretcher", "secure her to the stretcher",
+          "transport to the hospital", "transport to hospital",
+          "transport to emergency department", "transport to the emergency department",
+          "transport to cardiac center", "transport to a cardiac center",
+          "transport to pci center", "transport to an appropriate facility",
+          "transport to the closest appropriate facility",
+          "head to the hospital", "go to the hospital", "leave the scene for transport",
+          "depart for the hospital", "we are transporting",
+          "i am going to transport", "i will transport",
+          "begin transport while continuing assessment", "continue assessment en route",
+          "continue treatment en route", "reassess during transport",
+          "transport without delay", "do not delay transport", "minimize scene time",
+"rapid transport",
         "transport promptly",
         "begin transport",
         "beginning transport",
@@ -1525,21 +2042,41 @@
         "transport without delay",
         "do not delay transport",
         "minimize scene time"
-      ],
-      patterns: [
-        /\b(begin|start|initiate|commence|continue)\w*\b.*\btransport\w*\b/,
+        ],
+        patterns: [
+          /\b(begin|start|initiate|commence|continue)\w*\b.*\btransport\w*\b/,
+          /\btransport\w*\b.*\b(now|immediate|immediately|promptly|rapidly|urgently|without delay)\b/,
+          /\b(move|bring|place|load|secure)\w*\b.*\b(patient|him|her)\b.*\b(stretcher|ambulance)\b/,
+          /\b(stretcher|ambulance)\b.*\b(transport|move|load|secure)\w*\b/,
+          /\btransport\w*\b.*\b(hospital|emergency department|ed|cardiac center|pci center|facility)\b/,
+          /\b(load and go|load and transport|minimize scene time)\b/,
+          /\b(reassess|assessment|treatment)\b.*\b(en route|during transport)\b/,
+/\b(begin|start|initiate|commence|continue)\w*\b.*\btransport\w*\b/,
         /\btransport\w*\b.*\b(now|immediate|immediately|promptly|rapidly|urgently|without delay)\b/,
         /\b(move|bring|place|load|secure)\w*\b.*\b(patient|him|her)\b.*\b(stretcher|ambulance)\b/,
         /\b(stretcher|ambulance)\b.*\b(transport|move|load|secure)\w*\b/,
         /\btransport\w*\b.*\b(hospital|emergency department|ed|appropriate hospital|appropriate hospital|facility)\b/,
         /\b(load and go|load and transport|minimize scene time)\b/,
         /\b(reassess|assessment|treatment)\b.*\b(en route|during transport)\b/
-      ]
-    },
-    {
-      skill: "Treatment and transport decision made",
-      keywords: [
-        "treatment and transport decision",
+        ]
+      },
+{
+        skill: "Treatment and transport decision made",
+        keywords: [
+          "treatment and transport decision", "treatment plan", "transport decision",
+          "decision to transport", "decide to transport", "going to transport",
+          "will transport", "plan to transport", "needs transport", "requires transport",
+          "transport is indicated", "transport is appropriate", "hospital transport indicated",
+          "appropriate destination", "closest appropriate facility", "appropriate receiving facility",
+          "cardiac center", "pci center", "continue treatment during transport",
+          "continue treatment en route", "continue monitoring during transport",
+          "continue monitoring en route", "treat and transport", "stabilize and transport",
+          "manage and transport", "transport while monitoring", "transport while reassessing",
+          "transport with als intercept", "request als and transport",
+          "begin transport and request als", "aspirin and transport",
+          "treat for shock and transport", "keep warm and transport",
+          "position of comfort and transport",
+"treatment and transport decision",
         "treatment plan",
         "transport decision",
         "decision to transport",
@@ -1573,48 +2110,31 @@
         "treat for shock and transport",
         "keep warm and transport",
         "position of comfort and transport"
-      ],
-      patterns: [
-        /\b(decide|decision|plan|intend|going|will)\w*\b.*\btransport\w*\b/,
+        ],
+        patterns: [
+          /\b(decide|decision|plan|intend|going|will)\w*\b.*\btransport\w*\b/,
+          /\b(treat|treatment|manage|monitor|reassess|stabilize)\w*\b.*\b(and|while|during)\b.*\btransport\w*\b/,
+          /\btransport\w*\b.*\b(and|while|with)\b.*\b(treat|monitor|reassess|als|aspirin|shock)\w*\b/,
+          /\b(appropriate|closest)\b.*\b(facility|hospital|destination|cardiac center|pci center)\b/,
+/\b(decide|decision|plan|intend|going|will)\w*\b.*\btransport\w*\b/,
         /\b(treat|treatment|manage|monitor|reassess|stabilize)\w*\b.*\b(and|while|during)\b.*\btransport\w*\b/,
         /\btransport\w*\b.*\b(and|while|with)\b.*\b(treat|monitor|reassess|als|aspirin|shock)\w*\b/,
         /\b(appropriate|closest)\b.*\b(facility|hospital|destination|appropriate hospital|appropriate hospital)\b/
-      ]
-    },
-    {
-      skill: "Adequate ventilation assessed and supported",
-      keywords: [
-        "assess ventilation", "is ventilation adequate", "check breathing depth and quality",
-        "assist ventilations", "support ventilations", "ventilate with bvm",
-        "bag valve mask ventilation", "provide positive pressure ventilation"
-      ]
-    },
-    {
-      skill: "Respiratory quality assessed",
-      keywords: [
-        "assess respiratory quality", "check depth and quality of breathing",
-        "assess depth of breathing", "shallow respirations", "labored respirations",
-        "respiratory rate and quality", "rate depth and quality"
-      ]
-    },
-    {
-      skill: "Field impression stated",
-      keywords: [
-        "field impression", "my impression is", "suspected copd exacerbation",
-        "suspect respiratory distress", "my working diagnosis"
-      ]
-    },
-    {
-      skill: "Verbal report provided",
-      keywords: [
-        "provide verbal report", "give a verbal report", "report to arriving ems",
-        "handoff report", "verbal handoff", "report to receiving crew"
-      ]
-    },
-    {
-      skill: "Reassessment performed",
-      keywords: [
-        "perform a reassessment", "reassess the patient", "repeat all vital signs",
+        ]
+      },
+{
+        skill: "Reassessment performed",
+        keywords: [
+          "perform a reassessment", "reassess the patient", "repeat all vital signs",
+          "repeat the blood pressure", "repeat the pain assessment", "recheck the patient",
+          "repeat vitals", "reassessed patient", "recheck vital signs",
+          "reassess all vitals", "reassessed all vitals", "reassessing all vitals",
+          "reassess all vital signs", "reassessed all vital signs",
+          "repeat all vitals", "repeated all vitals", "vitals reassessed",
+          "vital signs reassessed", "obtained another set of vitals",
+          "obtain another set of vital signs", "second set of vitals",
+          "repeat a full set of vitals", "repeat full set of vital signs",
+"perform a reassessment", "reassess the patient", "repeat all vital signs",
         "repeat the blood pressure", "repeat the pain assessment", "recheck the patient",
         "repeat vitals", "reassessed patient", "recheck vital signs",
         "reassess all vitals", "reassessed all vitals", "reassessing all vitals",
@@ -1623,544 +2143,978 @@
         "vital signs reassessed", "obtained another set of vitals",
         "obtain another set of vital signs", "second set of vitals",
         "repeat a full set of vitals", "repeat full set of vital signs"
-      ],
-      patterns: [
-        /\b(reassess|reassessed|reassessing|recheck|rechecked|rechecking|repeat|repeated|repeating)\w*\b.*\b(all|full|complete|another|second)?\s*(set of\s*)?(vitals|vital signs)\b/,
+        ],
+        patterns: [
+          /\b(reassess|reassessed|reassessing|recheck|rechecked|rechecking|repeat|repeated|repeating)\w*\b.*\b(all|full|complete|another|second)?\s*(set of\s*)?(vitals|vital signs)\b/,
+          /\b(vitals|vital signs)\b.*\b(reassess|reassessed|rechecked|repeated|again)\w*\b/,
+          /\b(reassess|reassessed|reassessing|repeat|repeated)\w*\b.*\b(patient|assessment|blood pressure|pulse|respirations|pain)\b/,
+/\b(reassess|reassessed|reassessing|recheck|rechecked|rechecking|repeat|repeated|repeating)\w*\b.*\b(all|full|complete|another|second)?\s*(set of\s*)?(vitals|vital signs)\b/,
         /\b(vitals|vital signs)\b.*\b(reassess|reassessed|rechecked|repeated|again)\w*\b/,
         /\b(reassess|reassessed|reassessing|repeat|repeated)\w*\b.*\b(patient|assessment|blood pressure|pulse|respirations|pain)\b/
+        ]
+      },
+{
+      skill: "Ability to speak assessed",
+      keywords: [
+        "can the patient speak in full sentences",
+        "is she speaking in full sentences",
+        "how many words can she speak",
+        "assess ability to speak",
+        "can she talk without stopping for breath"
+      ]
+    },
+{
+      skill: "Accessory muscle use assessed",
+      keywords: [
+        "is she using accessory muscles",
+        "check accessory muscle use",
+        "assess accessory muscles",
+        "is there retraction",
+        "are there retractions",
+        "is there nasal flaring"
+      ]
+    },
+{
+      skill: "Chest rise and symmetry assessed",
+      keywords: [
+        "assess chest rise",
+        "check chest rise",
+        "is chest rise equal",
+        "is chest expansion symmetrical",
+        "is the chest moving equally"
+      ]
+    },
+{
+      skill: "Cough and sputum assessed",
+      keywords: [
+        "do you have a cough",
+        "are you coughing",
+        "are you bringing up sputum",
+        "what color is the sputum",
+        "is the cough productive",
+        "have you been coughing"
+      ]
+    },
+{
+      skill: "Home oxygen use assessed",
+      keywords: [
+        "do you use oxygen at home",
+        "are you on home oxygen",
+        "what is your normal oxygen flow",
+        "how many liters of oxygen do you use",
+        "did you use your home oxygen"
+      ]
+    },
+{
+      skill: "Inhaler or nebulizer use assessed",
+      keywords: [
+        "did you use your inhaler",
+        "have you used your inhaler",
+        "did you use a nebulizer",
+        "have you used a nebulizer",
+        "when was your last breathing treatment",
+        "did the inhaler help"
+      ]
+    },
+{
+      skill: "Oxygen administered",
+      keywords: [
+        "administer oxygen",
+        "give oxygen",
+        "apply oxygen",
+        "place on oxygen",
+        "oxygen by nasal cannula",
+        "oxygen by nonrebreather",
+        "use a non rebreather"
+      ]
+    },
+{
+      skill: "Bronchodilator treatment considered",
+      keywords: [
+        "assist with prescribed inhaler",
+        "assist with inhaler",
+        "administer albuterol",
+        "give albuterol",
+        "administer a bronchodilator",
+        "give a nebulizer treatment",
+        "administer nebulized medication",
+        "assist with prescribed bronchodilator"
+      ]
+    },
+{
+      skill: "Positive-pressure ventilation considered",
+      keywords: [
+        "consider cpap",
+        "apply cpap",
+        "use cpap",
+        "consider positive pressure ventilation",
+        "assist ventilations",
+        "ventilate with a bvm",
+        "use a bag valve mask",
+        "provide bag mask ventilation"
+      ]
+    },
+{
+      skill: "Rapid transport or ALS considered",
+      keywords: [
+        "request als",
+        "intercept with als",
+        "rapid transport",
+        "transport promptly",
+        "transport without delay",
+        "notify the receiving hospital"
+      ]
+    },
+{
+      skill: "Neurologic assessment performed",
+      keywords: [
+        "perform a neurologic assessment",
+        "perform a neurological assessment",
+        "check motor function",
+        "check sensation",
+        "assess grip strength",
+        "check for arm drift",
+        "perform a stroke assessment"
+      ]
+    },
+{
+      skill: "Temperature obtained",
+      keywords: [
+        "check the temperature",
+        "obtain a temperature",
+        "what is the temperature",
+        "does the patient have a fever"
+      ]
+    },
+{
+      skill: "Adequate ventilation assessed and supported",
+      keywords: [
+        "assess ventilation", "is ventilation adequate", "check breathing depth and quality",
+        "assist ventilations", "support ventilations", "ventilate with bvm",
+        "bag valve mask ventilation", "provide positive pressure ventilation"
+      ]
+    },
+{
+      skill: "Respiratory quality assessed",
+      keywords: [
+        "assess respiratory quality", "check depth and quality of breathing",
+        "assess depth of breathing", "shallow respirations", "labored respirations",
+        "respiratory rate and quality", "rate depth and quality"
+      ]
+    },
+{
+      skill: "Field impression stated",
+      keywords: [
+        "field impression", "my impression is", "suspected copd exacerbation",
+        "suspect respiratory distress", "my working diagnosis"
+      ]
+    },
+{
+      skill: "Verbal report provided",
+      keywords: [
+        "provide verbal report", "give a verbal report", "report to arriving ems",
+        "handoff report", "verbal handoff", "report to receiving crew"
       ]
     }
-  ];
+    ];
 
-  function normalizeText(text) {
-    return text
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-  }
-
-  async function readJsonResponse(response) {
-    const contentType = response.headers.get("content-type") || "";
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(
-        errorText || `Server returned status ${response.status}.`
-      );
+    function normalizeText(text) {
+      return text
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
     }
 
-    if (!contentType.includes("application/json")) {
-      const responseText = await response.text();
-      throw new Error(
-        responseText || "The server did not return valid JSON."
-      );
-    }
+    async function readJsonResponse(response) {
+      const contentType = response.headers.get("content-type") || "";
 
-    return response.json();
-  }
-
-  function phraseMatches(normalizedText, phrase) {
-    const normalizedPhrase = normalizeText(phrase);
-    if (!normalizedPhrase) return false;
-
-    // Direct phrase match first.
-    if (normalizedText.includes(normalizedPhrase)) return true;
-
-    // Allow natural word order variations for longer phrases while
-    // requiring every meaningful word to be present.
-    const stopWords = new Set([
-      "a", "an", "the", "is", "are", "was", "were", "to", "of", "for",
-      "and", "or", "with", "his", "her", "your", "my", "patient"
-    ]);
-
-    const words = normalizedPhrase
-      .split(" ")
-      .filter(word => word.length > 2 && !stopWords.has(word));
-
-    if (words.length < 2) return false;
-    return words.every(word => normalizedText.includes(word));
-  }
-
-  function detectAndRecordAssessments(text, source) {
-    const normalizedText = normalizeText(text);
-    const newlyRecorded = [];
-
-    assessmentMap.forEach(item => {
-      const keywordMatched = (item.keywords || []).some(keyword =>
-        phraseMatches(normalizedText, keyword)
-      );
-
-      const patternMatched = (item.patterns || []).some(pattern =>
-        pattern.test(normalizedText)
-      );
-
-      const matched = keywordMatched || patternMatched;
-
-      if (matched && !completedSkills.has(item.skill)) {
-        completedSkills.add(item.skill);
-        assessmentLog.push(
-          `${item.skill} - recognized through ${source}`
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          errorText || `Server returned status ${response.status}.`
         );
-        newlyRecorded.push(item.skill);
       }
-    });
 
-    updateCompleteHistorySkills();
+      if (!contentType.includes("application/json")) {
+        const responseText = await response.text();
+        throw new Error(
+          responseText || "The server did not return valid JSON."
+        );
+      }
 
-    updateCompletedAssessmentsDisplay();
-    return newlyRecorded;
-  }
-
-  function getHistoryComponentStatus() {
-    const opqrst = {
-      onset: completedSkills.has("OPQRST onset assessed"),
-      provocationPalliation: completedSkills.has("OPQRST provocation and palliation assessed"),
-      quality: completedSkills.has("OPQRST quality assessed"),
-      radiation: completedSkills.has("OPQRST radiation assessed"),
-      severity: completedSkills.has("OPQRST severity assessed"),
-      time: completedSkills.has("OPQRST time assessed")
-    };
-
-    const sample = {
-      signsSymptoms: completedSkills.has("Signs and symptoms assessed"),
-      allergies: completedSkills.has("Allergies assessed"),
-      medications: completedSkills.has("Medications assessed"),
-      pertinentHistory: completedSkills.has("Pertinent medical history assessed"),
-      lastOralIntake: completedSkills.has("Last oral intake assessed"),
-      events: completedSkills.has("Events leading to illness assessed")
-    };
-
-    return {
-      opqrst,
-      sample,
-      opqrstScore: Object.values(opqrst).filter(Boolean).length,
-      sampleScore: Object.values(sample).filter(Boolean).length
-    };
-  }
-
-  function updateCompleteHistorySkills() {
-    const historyStatus = getHistoryComponentStatus();
-
-    if (
-      historyStatus.opqrstScore === 6 &&
-      !completedSkills.has("Complete OPQRST assessment performed")
-    ) {
-      completedSkills.add("Complete OPQRST assessment performed");
-      assessmentLog.push(
-        "Complete OPQRST assessment performed - all OPQRST components recognized"
-      );
+      return response.json();
     }
 
-    if (
-      historyStatus.sampleScore === 6 &&
-      !completedSkills.has("Complete SAMPLE history performed")
-    ) {
-      completedSkills.add("Complete SAMPLE history performed");
-      assessmentLog.push(
-        "Complete SAMPLE history performed - all SAMPLE components recognized"
-      );
+    function phraseMatches(normalizedText, phrase) {
+      const normalizedPhrase = normalizeText(phrase);
+      if (!normalizedPhrase) return false;
+
+      if (normalizedText.includes(normalizedPhrase)) return true;
+
+      const stopWords = new Set([
+        "a", "an", "the", "is", "are", "was", "were", "to", "of", "for",
+        "and", "or", "with", "his", "her", "your", "my", "patient"
+      ]);
+
+      const words = normalizedPhrase
+        .split(" ")
+        .filter(word => word.length > 2 && !stopWords.has(word));
+
+      if (words.length < 2) return false;
+
+      return words.every(word => normalizedText.includes(word));
     }
 
-    return historyStatus;
-  }
+    function detectAndRecordAssessments(text, source) {
+      const normalizedText = normalizeText(text);
+      const newlyRecorded = [];
 
-  function updateCompletedAssessmentsDisplay() {
-    const completedBox = document.getElementById("completedAssessments");
-    completedBox.innerText = completedSkills.size
-      ? Array.from(completedSkills)
-          .map((skill, index) => `${index + 1}. \u2713 ${skill}`)
-          .join("\n")
-      : "No assessments recorded yet.";
-  }
+      assessmentMap.forEach(item => {
+        const keywordMatched = (item.keywords || []).some(keyword =>
+          phraseMatches(normalizedText, keyword)
+        );
 
-  function showRecordedStatus(newSkills, source) {
-    const statusBox = document.getElementById("recordStatus");
+        const patternMatched = (item.patterns || []).some(pattern =>
+          pattern.test(normalizedText)
+        );
 
-    if (newSkills.length === 0) {
-      statusBox.innerText =
-        `Question sent to ${source}. No new assessment was automatically recorded.`;
-      return;
-    }
+        const matched = keywordMatched || patternMatched;
 
-    if (newSkills.length === 1) {
-      statusBox.innerText =
-        `Automatically recorded: ${newSkills[0]}`;
-      return;
-    }
+        if (matched && !completedSkills.has(item.skill)) {
+          completedSkills.add(item.skill);
 
-    statusBox.innerText =
-      `${newSkills.length} assessments automatically recorded.`;
-  }
+          assessmentLog.push(
+            `${item.skill} - recognized through ${source}`
+          );
 
-  async function askPatientTyped() {
-    const questionBox = document.getElementById("patientQuestion");
-    const responseBox = document.getElementById("patientResponse");
-    const patientButton = document.getElementById("patientButton");
-    const question = questionBox.value.trim();
-
-    if (!question) {
-      responseBox.innerText =
-        "Type a question for the patient first.";
-      questionBox.focus();
-      return;
-    }
-
-    recordStudentInput("Ask the Patient", question);
-
-    const questionSkills = detectAndRecordAssessments(
-      question,
-      "Ask the Patient question"
-    );
-
-    responseBox.innerText = "Contacting patient...";
-    document.getElementById("recordStatus").innerText =
-      "Patient question submitted. Waiting for the response...";
-    patientButton.disabled = true;
-
-    try {
-      const response = await fetch("/ask", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          studentQuestion: question,
-          history: patientHistory,
-          scenario
-        })
+          newlyRecorded.push(item.skill);
+        }
       });
 
-      const data = await readJsonResponse(response);
-      const patientReply =
-        data.reply || data.answer || "The patient did not respond.";
-
-      patientHistory += `Student to patient: ${question}\n`;
-      patientHistory += `Patient: ${patientReply}\n\n`;
-
-      // Evaluate the patient's answer as well as the student's question.
-      // This allows assessment findings obtained through Ask the Patient
-      // to appear in Automatically Recorded Assessments.
-      const responseSkills = detectAndRecordAssessments(
-        `${question}\n${patientReply}`,
-        "Ask the Patient interview"
-      );
-
-      const recordedSkills = Array.from(
-        new Set([...questionSkills, ...responseSkills])
-      );
-
-      showRecordedStatus(recordedSkills, "the patient");
-
-      responseBox.innerText = patientReply;
-      questionBox.value = "";
-      questionBox.focus();
-    } catch (error) {
-      console.error("Patient request error:", error);
-      showRecordedStatus(questionSkills, "the patient");
-      responseBox.innerText =
-        "Error contacting patient server.\n\n" + error.message;
-    } finally {
-      patientButton.disabled = false;
-    }
-  }
-
-  async function askInstructorTyped() {
-    const questionBox =
-      document.getElementById("actionEntry");
-    const responseBox =
-      document.getElementById("instructorResponse");
-    const instructorButton =
-      document.getElementById("instructorButton");
-    const typedQuestion = questionBox.value.trim();
-    const question =
-      typedQuestion || assessmentLog[assessmentLog.length - 1] || "";
-
-    if (!question) {
-      responseBox.innerText =
-        "Type or speak an assessment or treatment first.";
-      questionBox.focus();
-      return;
-    }
-
-    recordStudentInput("Ask the Instructor", question);
-
-    if (typedQuestion) {
-      recordStudentInput("Assessment / Treatment", typedQuestion);
-      assessmentLog.push(typedQuestion);
-      questionBox.value = "";
-    }
-
-    const newSkills = detectAndRecordAssessments(
-      question,
-      "instructor assessment"
-    );
-    updateCompletedAssessmentsDisplay();
-    saveScenarioState();
-
-    showRecordedStatus(newSkills, "the instructor");
-
-    responseBox.innerText = "Contacting instructor...";
-    instructorButton.disabled = true;
-
-    try {
-      const response = await fetch("/instructor", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          studentQuestion: question,
-          history: patientHistory,
-          scenario
-        })
-      });
-
-      const data = await readJsonResponse(response);
-      const instructorReply =
-        data.reply || data.answer || "The instructor did not respond.";
-
-      instructorHistory += `Student to instructor: ${question}\n`;
-      instructorHistory += `Instructor: ${instructorReply}\n\n`;
-
-      responseBox.innerText = instructorReply;
-      questionBox.focus();
-    } catch (error) {
-      console.error("Instructor request error:", error);
-      responseBox.innerText =
-        "Error contacting instructor.\n\n" + error.message;
-    } finally {
-      instructorButton.disabled = false;
-    }
-  }
-
-  function recordAction(source = "manual entry") {
-    const entryBox = document.getElementById("actionEntry");
-    const statusBox = document.getElementById("recordStatus");
-    const entry = entryBox.value.trim();
-
-    if (!entry) {
-      statusBox.innerText =
-        "Type an assessment or treatment before recording.";
-      entryBox.focus();
-      return;
-    }
-
-    const detectedSkills = detectAndRecordAssessments(
-      entry,
-      source
-    );
-
-    recordStudentInput("Assessment / Treatment", entry);
-    assessmentLog.push(entry);
-    updateCompletedAssessmentsDisplay();
-
-    if (detectedSkills.length === 1) {
-      statusBox.innerText =
-        `Action recorded. Recognized: ${detectedSkills[0]}`;
-    } else if (detectedSkills.length > 1) {
-      statusBox.innerText =
-        `Action recorded. ${detectedSkills.length} assessments recognized.`;
-    } else {
-      statusBox.innerText =
-        `Action recorded. Total entries: ${assessmentLog.length}`;
-    }
-
-    entryBox.value = "";
-    entryBox.placeholder =
-      "Enter the next assessment, finding, treatment, or decision...";
-    saveScenarioState();
-    entryBox.focus();
-  }
-
-  async function gradeStudent() {
-    const gradeButton = document.getElementById("gradeButton");
-    const actionEntry = document.getElementById("actionEntry");
-    const pendingEntry = actionEntry.value.trim();
-    const studentName = (sessionStorage.getItem("emtStudentName") || "").trim();
-    saveScenarioState();
-
-    if (pendingEntry) {
-      detectAndRecordAssessments(pendingEntry, "manual entry");
-      recordStudentInput("Assessment / Treatment", pendingEntry);
-      assessmentLog.push(pendingEntry);
-      actionEntry.value = "";
+      updateCompleteHistorySkills();
       updateCompletedAssessmentsDisplay();
+
+      return newlyRecorded;
+    }
+
+    function getHistoryComponentStatus() {
+      const opqrst = {
+        onset: completedSkills.has("OPQRST onset assessed"),
+        provocationPalliation:
+          completedSkills.has("OPQRST provocation and palliation assessed"),
+        quality: completedSkills.has("OPQRST quality assessed"),
+        radiation: completedSkills.has("OPQRST radiation assessed"),
+        severity: completedSkills.has("OPQRST severity assessed"),
+        time: completedSkills.has("OPQRST time assessed")
+      };
+
+      const sample = {
+        signsSymptoms: completedSkills.has("Signs and symptoms assessed"),
+        allergies: completedSkills.has("Allergies assessed"),
+        medications: completedSkills.has("Medications assessed"),
+        pertinentHistory:
+          completedSkills.has("Pertinent medical history assessed"),
+        lastOralIntake: completedSkills.has("Last oral intake assessed"),
+        events: completedSkills.has("Events leading to illness assessed")
+      };
+
+      return {
+        opqrst,
+        sample,
+        opqrstScore: Object.values(opqrst).filter(Boolean).length,
+        sampleScore: Object.values(sample).filter(Boolean).length
+      };
+    }
+
+    function updateCompleteHistorySkills() {
+      const historyStatus = getHistoryComponentStatus();
+
+      if (
+        historyStatus.opqrstScore === 6 &&
+        !completedSkills.has("Complete OPQRST assessment performed")
+      ) {
+        completedSkills.add("Complete OPQRST assessment performed");
+
+        assessmentLog.push(
+          "Complete OPQRST assessment performed - all OPQRST components recognized"
+        );
+      }
+
+      if (
+        historyStatus.sampleScore === 6 &&
+        !completedSkills.has("Complete SAMPLE history performed")
+      ) {
+        completedSkills.add("Complete SAMPLE history performed");
+
+        assessmentLog.push(
+          "Complete SAMPLE history performed - all SAMPLE components recognized"
+        );
+      }
+
+      return historyStatus;
+    }
+
+    function updateCompletedAssessmentsDisplay() {
+      const completedBox =
+        document.getElementById("completedAssessments");
+
+      if (completedSkills.size === 0) {
+        completedBox.innerText = "";
+        return;
+      }
+
+      completedBox.innerText = Array
+        .from(completedSkills)
+        .map((skill, index) => `${index + 1}. \u2713 ${skill}`)
+        .join("\n");
+    }
+
+    function showRecordedStatus(newSkills, source) {
+      const statusBox = document.getElementById("recordStatus");
+
+      if (newSkills.length === 0) {
+        statusBox.innerText =
+          `Question sent to ${source}. No new assessment was automatically recorded.`;
+        return;
+      }
+
+      if (newSkills.length === 1) {
+        statusBox.innerText =
+          `Automatically recorded: ${newSkills[0]}`;
+        return;
+      }
+
+      statusBox.innerText =
+        `${newSkills.length} assessments automatically recorded.`;
+    }
+
+    function submitPatientEntry() {
+      return askPatientTyped();
+    }
+
+    function submitInstructorEntry() {
+      if (activeRecognition) {
+        activeRecognition.submitToInstructor = true;
+        stopVoiceInput();
+        return;
+      }
+
+      return askInstructorTyped();
+    }
+
+    function submitCombinedEntry(source = "manual entry") {
+      const entry = document.getElementById("actionEntry").value.trim();
+
+      if (isInstructorQuestion(entry)) {
+        return askPatientTyped();
+      }
+
+      return recordAction(source);
+    }
+
+    function speakSharedEntry() {
+      toggleVoiceInput("actionEntry", "actionVoiceButton", true);
+    }
+
+    function speakInstructorEntry() {
+      toggleVoiceInput("actionEntry", "instructorVoiceButton", true, true);
+    }
+
+    function speakAssessmentEntry() {
+      toggleVoiceInput("actionEntry", "assessmentVoiceButton", true, false, true);
+    }
+
+    async function askPatientTyped() {
+      const questionBox = document.getElementById("actionEntry");
+      const responseBox = document.getElementById("patientResponse");
+      const patientButton = document.getElementById("patientButton");
+      const question = questionBox.value.trim();
+
+      if (!question) {
+        responseBox.innerText =
+          "Type a question for the patient first.";
+        questionBox.focus();
+        return;
+      }
+
+      document.getElementById("patientResponseArea").hidden = false;
+      recordStudentInput("Ask the Patient", question);
+
+      const questionSkills = detectAndRecordAssessments(
+        question,
+        "Ask the Patient question"
+      );
+
+      responseBox.innerText = "Contacting patient...";
+
+      document.getElementById("recordStatus").innerText =
+        "Patient question submitted. Waiting for the response...";
+
+      patientButton.disabled = true;
+
+      try {
+        const response = await fetch("/ask", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            studentQuestion: question,
+            history: patientHistory,
+            scenario
+          })
+        });
+
+        const data = await readJsonResponse(response);
+
+        const patientReply =
+          data.reply || data.answer || "The patient did not respond.";
+
+        patientHistory += `Student to patient: ${question}\n`;
+        patientHistory += `Patient: ${patientReply}\n\n`;
+
+        const responseSkills = detectAndRecordAssessments(
+          `${question}\n${patientReply}`,
+          "Ask the Patient interview"
+        );
+
+        const recordedSkills = Array.from(
+          new Set([...questionSkills, ...responseSkills])
+        );
+
+        showRecordedStatus(recordedSkills, "the patient");
+
+        responseBox.innerText = patientReply;
+        questionBox.value = "";
+        questionBox.focus();
+      } catch (error) {
+        console.error("Patient request error:", error);
+
+        showRecordedStatus(questionSkills, "the patient");
+
+        responseBox.innerText =
+          "Error contacting patient server.\n\n" + error.message;
+      } finally {
+        patientButton.disabled = false;
+      }
+    }
+
+    function isInstructorQuestion(entry) {
+      return /\?\s*$/.test(entry) ||
+        /^(what|how|when|where|why|who|which|can|could|would|should|is|are|do|does|did|will|may|tell me|please tell me)\b/i.test(entry);
+    }
+
+    async function askInstructorTyped() {
+      const questionBox = document.getElementById("actionEntry");
+      const responseBox = document.getElementById("instructorResponse");
+      const instructorButton =
+        document.getElementById("actionInstructorButton");
+      const statusBox = document.getElementById("recordStatus");
+
+      if (instructorRequestPending) {
+        statusBox.textContent = "Waiting for the instructor answer...";
+        return;
+      }
+
+      const question = questionBox.value.trim();
+
+      if (!question) {
+        document.getElementById("instructorResponseArea").hidden = false;
+        responseBox.textContent =
+          "Type a question in the shared text area, then click Ask Instructor. You can also use the Voice button under Ask Instructor.";
+        questionBox.focus();
+        return;
+      }
+
+      document.getElementById("instructorResponseArea").hidden = false;
+      responseBox.textContent = "Contacting instructor...";
+      statusBox.textContent =
+        "Instructor question submitted. Waiting for the answer...";
+
+      instructorRequestPending = true;
+      instructorButton.disabled = true;
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 45000);
+
+      try {
+        recordStudentInput("Ask the Instructor", question);
+
+        const response = await fetch("/instructor", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          signal: controller.signal,
+          body: JSON.stringify({
+            studentQuestion: question,
+            question,
+            history: patientHistory,
+            scenario
+          })
+        });
+
+        const raw = await response.text();
+        let data;
+
+        try {
+          data = JSON.parse(raw);
+        } catch {
+          throw new Error(
+            "The instructor server returned an invalid response (status " +
+            response.status + "). Please try again."
+          );
+        }
+
+        if (!response.ok) {
+          throw new Error(
+            data.error || data.message ||
+            "Instructor server returned status " + response.status + "."
+          );
+        }
+
+        const candidates = typeof data === "string"
+          ? [data]
+          : [
+              data.reply,
+              data.answer,
+              data.response,
+              data.instructorResponse,
+              data.message,
+              data.text,
+              data.content
+            ];
+
+        const instructorReply = candidates.find(value =>
+          typeof value === "string" && value.trim()
+        );
+
+        if (!instructorReply) {
+          throw new Error(
+            typeof data.error === "string"
+              ? data.error
+              : "The instructor server returned no answer. Please try again."
+          );
+        }
+
+        responseBox.textContent = instructorReply;
+
+        instructorHistory +=
+          `Student to instructor: ${question}\nInstructor: ${instructorReply}\n\n`;
+
+        if (questionBox.value.trim() === question) {
+          questionBox.value = "";
+        }
+
+        try {
+          const skills = detectAndRecordAssessments(
+            question + "\n" + instructorReply,
+            "Ask the Instructor exchange"
+          );
+
+          statusBox.textContent = skills.length
+            ? "Instructor answered. Recorded: " + skills.join(", ")
+            : "Instructor answered.";
+
+          saveScenarioState();
+        } catch (recordingError) {
+          console.error(
+            "Instructor answer received; recording failed:",
+            recordingError
+          );
+
+          statusBox.textContent =
+            "Instructor answered. The session could not be saved.";
+        }
+
+        questionBox.focus();
+      } catch (error) {
+        console.error("Instructor request error:", error);
+
+        responseBox.textContent = error.name === "AbortError"
+          ? "The instructor request timed out. Your question is still in the text area; click Ask Instructor to retry."
+          : "Error contacting instructor: " + error.message;
+
+        statusBox.textContent =
+          "Instructor request failed. Your question has been kept for retry.";
+      } finally {
+        clearTimeout(timeout);
+        instructorRequestPending = false;
+        instructorButton.disabled = false;
+      }
+    }
+
+    function recordAction(source = "manual entry") {
+      const entryBox = document.getElementById("actionEntry");
+      const statusBox = document.getElementById("recordStatus");
+      const entry = entryBox.value.trim();
+
+      if (!entry) {
+        statusBox.innerText =
+          "Type an assessment or treatment before recording.";
+        entryBox.focus();
+        return;
+      }
+
+      const detectedSkills = detectAndRecordAssessments(
+        entry,
+        source
+      );
+
+      recordStudentInput("Assessment / Treatment", entry);
+      assessmentLog.push(entry);
+      lastRecordedAction = entry;
+
+      updateCompletedAssessmentsDisplay();
+
+      if (detectedSkills.length === 1) {
+        statusBox.innerText =
+          `Action recorded. Recognized: ${detectedSkills[0]}`;
+      } else if (detectedSkills.length > 1) {
+        statusBox.innerText =
+          `Action recorded. ${detectedSkills.length} assessments recognized.`;
+      } else {
+        statusBox.innerText =
+          `Action recorded. Total entries: ${assessmentLog.length}`;
+      }
+
+      entryBox.value = "";
+      entryBox.placeholder = "";
+      entryBox.focus();
+
       saveScenarioState();
     }
 
-    if (assessmentLog.length === 0 && !patientHistory.trim()) {
-      alert(
-        "Record at least one assessment, treatment, or patient interview before submitting."
+    async function gradeStudent() {
+      const gradeButton = document.getElementById("gradeButton");
+      const actionEntry = document.getElementById("actionEntry");
+      const pendingEntry = actionEntry.value.trim();
+
+      if (instructorRequestPending) {
+        document.getElementById("recordStatus").innerText =
+          "Wait for the instructor answer before submitting for grading.";
+        return;
+      }
+
+      if (pendingEntry && isInstructorQuestion(pendingEntry)) {
+        await askPatientTyped();
+
+        document.getElementById("recordStatus").innerText =
+          "Patient question sent. Submit for grading after reviewing the answer.";
+
+        return;
+      }
+
+      if (pendingEntry) {
+        detectAndRecordAssessments(pendingEntry, "manual entry");
+        recordStudentInput("Assessment / Treatment", pendingEntry);
+        assessmentLog.push(pendingEntry);
+        updateCompletedAssessmentsDisplay();
+        actionEntry.value = "";
+      }
+
+      if (assessmentLog.length === 0 && !patientHistory.trim()) {
+        alert(
+          "Record at least one assessment, treatment, or patient interview before submitting."
+        );
+
+        actionEntry.focus();
+        return;
+      }
+
+      const treatmentPlan = assessmentLog
+        .map((action, index) => `${index + 1}. ${action}`)
+        .join("\n");
+
+      const completedSkillsArray = Array.from(completedSkills);
+
+      const elapsedSeconds = Math.floor(
+        (Date.now() - scenarioStartTime) / 1000
       );
-      actionEntry.focus();
-      return;
-    }
 
-    const treatmentPlan = assessmentLog
-      .map((action, index) => `${index + 1}. ${action}`)
-      .join("\n");
+      const originalButtonText = gradeButton.innerText;
 
-    const completedSkillsArray = Array.from(completedSkills);
+      gradeButton.innerText = "Scoring...";
+      gradeButton.disabled = true;
 
-    const elapsedSeconds = Math.floor(
-      (Date.now() - scenarioStartTime) / 1000
-    );
+      const controller = new AbortController();
 
-    const originalButtonText = gradeButton.innerText;
-    gradeButton.innerText = "Scoring...";
-    gradeButton.disabled = true;
+      const timeoutId = setTimeout(
+        () => controller.abort(),
+        30000
+      );
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000);
+      try {
+        const response = await fetch("/grade", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          signal: controller.signal,
+          body: JSON.stringify({
+            studentAnswer: patientHistory,
+            patientHistory,
+            instructorHistory,
+            treatmentPlan,
+            assessmentLog,
+            studentInputLog,
+            completedSkills: completedSkillsArray,
+            historyComponents: getHistoryComponentStatus(),
+            scenario,
+            elapsedSeconds
+          })
+        });
 
-    try {
-      const response = await fetch("/grade", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        signal: controller.signal,
-        body: JSON.stringify({
-          studentAnswer: patientHistory,
-          patientHistory,
-          instructorHistory,
+        clearTimeout(timeoutId);
+
+        const data = await readJsonResponse(response);
+
+        const gradingData = {
+          earnedPoints: Number(data.earnedPoints) || 0,
+          possiblePoints: Number(data.possiblePoints) || 0,
+
+          checklist: Array.isArray(data.checklist)
+            ? data.checklist
+            : [],
+
+          criticalCriteria: Array.isArray(data.criticalCriteria)
+            ? data.criticalCriteria
+            : [],
+
+          originalEarnedPoints: Number(data.earnedPoints) || 0,
+          adjustedEarnedPoints: Number(data.earnedPoints) || 0,
+          scenario: "Shortness of Breath Scenario",
+          scenarioCode: scenario,
+          scenarioUrl: window.location.href,
+
+          feedback:
+            data.feedback ||
+            data.reply ||
+            "No grading feedback was returned.",
+
           treatmentPlan,
           assessmentLog,
           studentInputLog,
           completedSkills: completedSkillsArray,
           historyComponents: getHistoryComponentStatus(),
-          scenario,
-          elapsedSeconds
-        })
+          patientHistory,
+          instructorHistory,
+          elapsedSeconds,
+          date: new Date().toLocaleString()
+        };
+
+        sessionStorage.setItem(
+          "emtGradingResults",
+          JSON.stringify(gradingData)
+        );
+
+        window.location.href = "feedback.html";
+      } catch (error) {
+        clearTimeout(timeoutId);
+        console.error("Grading error:", error);
+
+        const fallbackFeedback =
+          error.name === "AbortError"
+            ? "The grading server did not respond within 30 seconds. Your assessments and treatments were saved, but the server did not return a grading report."
+            : "The grading server returned an error: " + error.message;
+
+        const gradingData = {
+          scenario: "Shortness of Breath Scenario",
+          scenarioCode: scenario,
+          scenarioUrl: window.location.href,
+          feedback: fallbackFeedback,
+          treatmentPlan,
+          assessmentLog,
+          studentInputLog,
+          completedSkills: completedSkillsArray,
+          historyComponents: getHistoryComponentStatus(),
+          patientHistory,
+          instructorHistory,
+          elapsedSeconds,
+          gradingError: true,
+          date: new Date().toLocaleString()
+        };
+
+        sessionStorage.setItem(
+          "emtGradingResults",
+          JSON.stringify(gradingData)
+        );
+
+        gradeButton.innerText = originalButtonText;
+        gradeButton.disabled = false;
+
+        alert(fallbackFeedback);
+      }
+    }
+
+    function resetScenario() {
+      stopVoiceInput();
+
+      document.getElementById("patientResponseArea").hidden = true;
+      document.getElementById("instructorResponseArea").hidden = true;
+
+      patientHistory = "";
+      instructorHistory = "";
+      assessmentLog = [];
+      lastRecordedAction = "";
+      studentInputLog = [];
+      completedSkills = new Set();
+      scenarioStartTime = Date.now();
+
+      sessionStorage.removeItem("emtGradingResults");
+      sessionStorage.removeItem(SCENARIO_STATE_KEY);
+
+      document.getElementById("actionEntry").value = "";
+      document.getElementById("actionEntry").value = "";
+
+      document.getElementById("patientResponse").innerText =
+        "Patient response will appear here.";
+
+      document.getElementById("instructorResponse").innerText =
+        "Instructor answer will appear here.";
+
+      document.getElementById("recordStatus").innerText = "";
+      document.getElementById("completedAssessments").innerText = "";
+      document.getElementById("actionEntry").placeholder = "";
+      document.getElementById("actionEntry").focus();
+    }
+
+    document
+      .getElementById("actionEntry")
+      .addEventListener("keydown", function(event) {
+        if (
+          event.key === "Enter" &&
+          !event.shiftKey &&
+          !event.isComposing
+        ) {
+          event.preventDefault();
+          submitCombinedEntry();
+        }
       });
 
-      clearTimeout(timeoutId);
+    document.addEventListener("input", saveScenarioState);
+    window.addEventListener("pagehide", saveScenarioState);
 
-      const data = await readJsonResponse(response);
-
-      const gradingData = {
-        earnedPoints: Number(data.earnedPoints) || 0,
-        possiblePoints: Number(data.possiblePoints) || 0,
-        checklist: Array.isArray(data.checklist) ? data.checklist : [],
-        criticalCriteria: Array.isArray(data.criticalCriteria) ? data.criticalCriteria : [],
-        originalEarnedPoints: Number(data.earnedPoints) || 0,
-        adjustedEarnedPoints: Number(data.earnedPoints) || 0,
-        scenario: "Shortness of Breath Scenario",
-        studentName,
-        scenarioUrl: window.location.href,
-        scenarioCode: scenario,
-        feedback:
-          data.feedback ||
-          data.reply ||
-          "No grading feedback was returned.",
-        treatmentPlan,
-        assessmentLog,
-        studentInputLog,
-        completedSkills: completedSkillsArray,
-        historyComponents: getHistoryComponentStatus(),
-        patientHistory,
-        instructorHistory,
-        elapsedSeconds,
-        date: new Date().toLocaleString()
-      };
-
-      sessionStorage.setItem(
-        "emtGradingResults",
-        JSON.stringify(gradingData)
-      );
-
-      window.location.href = "feedback.html";
-
-    } catch (error) {
-      clearTimeout(timeoutId);
-      console.error("Grading error:", error);
-
-      const fallbackFeedback =
-        error.name === "AbortError"
-          ? "The grading server did not respond within 30 seconds. Your assessments and treatments were saved, but the server did not return a grading report."
-          : "The grading server returned an error: " + error.message;
-
-      const gradingData = {
-        scenario: "Shortness of Breath Scenario",
-        studentName,
-        scenarioUrl: window.location.href,
-        scenarioCode: scenario,
-        feedback: fallbackFeedback,
-        treatmentPlan,
-        assessmentLog,
-        studentInputLog,
-        completedSkills: completedSkillsArray,
-        historyComponents: getHistoryComponentStatus(),
-        patientHistory,
-        instructorHistory,
-        elapsedSeconds,
-        gradingError: true,
-        date: new Date().toLocaleString()
-      };
-
-      sessionStorage.setItem(
-        "emtGradingResults",
-        JSON.stringify(gradingData)
-      );
-
-      gradeButton.innerText = originalButtonText;
-      gradeButton.disabled = false;
-
-      alert(fallbackFeedback);
-    }
-  }
-
-  function resetScenario() {
-    stopVoiceInput();
-    patientHistory = "";
-    instructorHistory = "";
-    assessmentLog = [];
-    studentInputLog = [];
-    completedSkills = new Set();
-    scenarioStartTime = Date.now();
-    sessionStorage.removeItem("emtGradingResults");
-    sessionStorage.removeItem(SCENARIO_STATE_KEY);
-
-    document.getElementById("patientQuestion").value = "";
-    document.getElementById("actionEntry").value = "";
-
-    document.getElementById("patientResponse").innerText =
-      "Patient response will appear here.";
-
-    document.getElementById("instructorResponse").innerText =
-      "Instructor answer will appear here.";
-
-    document.getElementById("recordStatus").innerText = "";
-
-    document.getElementById("completedAssessments").innerText =
-      "No assessments recorded yet.";
-document.getElementById("actionEntry").placeholder =
-      "Example: Assessed airway; airway is patent.";
-
-    document.getElementById("patientQuestion").focus();
-  }
-
-  document
-    .getElementById("patientQuestion")
-    .addEventListener("keydown", function(event) {
-      if (event.key === "Enter" && !event.shiftKey) {
-        event.preventDefault();
-        askPatientTyped();
+    window.addEventListener("DOMContentLoaded", function() {
+      if (!restoreScenarioState()) {
+        resetScenario();
       }
     });
 
-  document
-    .getElementById("actionEntry")
-    .addEventListener("keydown", function(event) {
-      if (event.key === "Enter" && !event.shiftKey) {
-        event.preventDefault();
-        recordAction();
+    function alignSharedTextareaWithButtons() {
+      // The grid positions the controls beside the textarea at every screen width.
+      const textarea = document.getElementById("actionEntry");
+      textarea.style.removeProperty("width");
+      textarea.style.removeProperty("margin-left");
+      textarea.style.removeProperty("margin-right");
+    }
+
+    window.addEventListener("DOMContentLoaded", function() {
+      alignSharedTextareaWithButtons();
+
+      if (typeof ResizeObserver !== "undefined") {
+        const controlsObserver =
+          new ResizeObserver(alignSharedTextareaWithButtons);
+
+        controlsObserver.observe(
+          document.querySelector(".entry-controls")
+        );
+      }
+
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(alignSharedTextareaWithButtons);
       }
     });
 
-  document.addEventListener("input", saveScenarioState);
-  window.addEventListener("pagehide", saveScenarioState);
+    window.addEventListener("resize", alignSharedTextareaWithButtons);
 
-  window.addEventListener("DOMContentLoaded", function() {
-    if (!restoreScenarioState()) {
-      resetScenario();
+    // Hide each response five seconds after its output appears.
+    const responseHideTimers = new Map();
+
+    function scheduleResponseHide(responseId, areaId) {
+      const responseBox = document.getElementById(responseId);
+      const area = document.getElementById(areaId);
+      const text = responseBox.textContent.trim();
+
+      clearTimeout(responseHideTimers.get(responseId));
+      responseHideTimers.delete(responseId);
+
+      if (
+        area.hidden ||
+        !text ||
+        text === "Contacting patient..." ||
+        text === "Contacting instructor..." ||
+        text === "Patient response will appear here." ||
+        text === "Instructor answer will appear here."
+      ) {
+        return;
+      }
+
+      responseHideTimers.set(
+        responseId,
+        setTimeout(function() {
+          area.hidden = true;
+          responseHideTimers.delete(responseId);
+
+          try {
+            saveScenarioState();
+          } catch (error) {
+            console.error(
+              "Could not save response visibility:",
+              error
+            );
+          }
+        }, 5000)
+      );
     }
-  });
-</script>
+
+    window.addEventListener("DOMContentLoaded", function() {
+      [
+        ["patientResponse", "patientResponseArea"],
+        ["instructorResponse", "instructorResponseArea"]
+      ].forEach(function([responseId, areaId]) {
+        const observer = new MutationObserver(function() {
+          scheduleResponseHide(responseId, areaId);
+        });
+      });   
+
+        observer.observe(document.getElementById(responseId), {
+          childList: true,
+          characterData: true,
+          subtree: true
+        });
+
+        scheduleResponseHide(responseId, areaId);
+      });
+ function matchRecordedBoxWidth() {
+  const textarea = document.getElementById("actionEntry");
+  const recordedBox = document.getElementById("completedAssessments");
+
+  recordedBox.style.width =
+    textarea.getBoundingClientRect().width + "px";
+
+  recordedBox.style.marginLeft = "auto";
+  recordedBox.style.marginRight = "auto";
+}
+
+window.addEventListener("DOMContentLoaded", function() {
+  matchRecordedBoxWidth();
+
+  const section = document.querySelector(".recorded-column");
+
+  if (typeof ResizeObserver !== "undefined") {
+    const observer = new ResizeObserver(matchRecordedBoxWidth);
+    observer.observe(section);
+    observer.observe(section.querySelector(".button-row"));
+  }
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(matchRecordedBoxWidth);
+  }
+});
+
+window.addEventListener("resize", matchRecordedBoxWidth);
+  </script>
 </body>
 </html>
