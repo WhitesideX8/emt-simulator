@@ -787,6 +787,10 @@
           Array.isArray(state.completedSkills) ? state.completedSkills : []
         );
 
+        if (completedSkills.delete("Nature of illness assessed")) {
+          completedSkills.add("Determines the mechanism of injury/nature of illness");
+        }
+
         scenarioStartTime = Number(state.scenarioStartTime) || Date.now();
 
         document.getElementById("actionEntry").value =
@@ -1021,14 +1025,29 @@
         ]
       },
 {
-        skill: "Nature of illness assessed",
-        keywords: [
-          "nature of illness", "what happened today", "why were we called",
-          "reason for the call", "medical complaint", "what brought us here",
-"nature of illness", "what happened today", "why were we called",
-        "reason for the call", "medical complaint", "what brought us here"
-        ]
-      },
+  skill: "Determines the mechanism of injury/nature of illness",
+  keywords: [
+    "mechanism of injury", "nature of illness", "moi", "noi",
+    "determine moi noi", "assess moi noi",
+    "what happened today", "why were we called", "reason for the call",
+    "medical complaint", "what brought us here",
+    "what caused the injury", "how were you injured", "how did the injury happen",
+    "how did you get hurt", "what was the mechanism",
+    "was there a fall", "was there an accident", "was there any trauma",
+    "is this medical or trauma", "this is a medical call",
+    "this is a medical emergency", "this is a trauma call",
+    "no trauma medical illness", "noi is difficulty breathing",
+    "nature of illness is a respiratory emergency", "moi is a fall",
+    "mechanism is a motor vehicle collision"
+  ],
+  patterns: [
+    /\b(mechanism of injury|nature of illness|moi|noi)\b/,
+    /\b(determine|determined|determining|assess|assessed|assessing|identify|identified|evaluate|evaluated)\b.*\b(mechanism|medical versus trauma|medical or trauma)\b/,
+    /\b(how|what)\b.*\b(injury|injured|hurt|caused the injury)\b/,
+    /\b(mechanism)\b.*\b(fall|collision|crash|accident|penetrating|blunt|gunshot|stab)\b/,
+    /\b(medical|trauma)\b.*\b(call|emergency|nature of illness|mechanism of injury)\b/
+  ]
+},
 {
         skill: "Number of patients determined",
         keywords: [
