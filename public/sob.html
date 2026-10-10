@@ -3064,18 +3064,8 @@
       document.getElementById("actionEntry").focus();
     }
 
-    document
-      .getElementById("actionEntry")
-      .addEventListener("keydown", function(event) {
-        if (
-          event.key === "Enter" &&
-          !event.shiftKey &&
-          !event.isComposing
-        ) {
-          event.preventDefault();
-          submitCombinedEntry();
-        }
-      });
+    // Text entry remains a draft. Enter adds a newline; only the
+    // Patient, Assessment/Treatment, Instructor, and Voice buttons submit.
 
     document.addEventListener("input", saveScenarioState);
     window.addEventListener("pagehide", saveScenarioState);
