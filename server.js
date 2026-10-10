@@ -615,7 +615,8 @@ function evaluateOpqrst(text = "") {
   const onset = has(
     /\bopqrst onset assessed\b/,
     /\bonset assessed\b/,
-    /\bwhen did (?:the |your )?(?:chest pain|pain|symptoms?|discomfort|this|it) (?:start|begin)\b/,
+    /\bwhen did (?:the |your )?(?:chest pain|pain|symptoms?|discomfort|sob|shortness of breath|difficulty breathing|this|it) (?:start|begin)\b/,
+    /\b(?:what|when|at what) time (?:did|does) .{0,60}(?:start|begin)\b/,
     /\bwhen (?:did|was) (?:this|it) first (?:noticed|noticeable|start|begin)\b/,
     /\bsudden or gradual\b/,
     /\bwhat were you doing when .{0,60}(?:started|began)\b/,
@@ -654,14 +655,6 @@ function evaluateOpqrst(text = "") {
     /\bis .{0,30}(?:sharp|dull|burning|pressure|aching|crushing)\b/
   );
 
-  // REGION: Where the symptom is located.
-  const region = has(
-    /\b(?:opqrst )?(?:region|location) assessed\b/,
-    /\bwhere (?:is|does) .{0,35}(?:pain|hurt|discomfort)\b/,
-    /\bwhere are you (?:having|feeling) .{0,35}(?:pain|discomfort)\b/,
-    /\b(?:show|point to|tell me) where .{0,35}(?:hurts|pain|discomfort)\b/
-  );
-
   // RADIATION: Whether the symptom spreads elsewhere.
   const spreads = has(
     /\b(?:opqrst )?radiation assessed\b/,
@@ -685,25 +678,12 @@ function evaluateOpqrst(text = "") {
     /\b(?:scale of |from |between )(?:1|one) to (?:10|ten)\b/
   );
 
-  // TIME: Duration and symptom pattern.
-  const duration = has(
-    /\b(?:opqrst )?duration assessed\b/,
-    /\bhow long (?:has|have) .{0,45}(?:lasted|been going on|been present|had|having)\b/,
-    /\bhow long (?:does|did) .{0,35}(?:last|episode)\b/,
-    /\bhow long have you had .{0,35}(?:pain|symptoms?|discomfort)\b/
-  );
-
-  const pattern = has(
-    /\b(?:opqrst )?(?:time pattern|timing|symptom pattern) assessed\b/,
-    /\b(?:has|is) .{0,35}(?:pain|discomfort|symptom).{0,25}(?:constant|continuous|intermittent)\b/,
-    /\bdoes .{0,35}(?:pain|discomfort|it) come and go\b/,
-    /\b(?:pain|symptom|discomfort).{0,35}(?:getting better|getting worse|changed over time)\b/,
-    /\b(?:constant or intermittent|constant or comes and goes)\b/
-  );
-
-  const durationAndPattern = has(
-    /\b(?:opqrst )?duration and (?:pattern|timing) assessed\b/,
-    /\b(?:opqrst )?time assessed\b/
+  // TIME: Time of symptom onset; duration/pattern questions are not required.
+  const timeOfOnset = onset || has(
+    /\b(?:opqrst )?time assessed\b/,
+    /\b(?:opqrst )?time of onset assessed\b/,
+    /\b(?:opqrst )?onset time assessed\b/,
+    /\b(?:what|when|at what) time .{0,60}(?:start|started|begin|began)\b/
   );
 
   // Preserve the component names used by the existing server.
@@ -711,18 +691,18 @@ function evaluateOpqrst(text = "") {
     onset,
     provocation: bothProvocationAndPalliation || (worse && better),
     quality,
-    radiation: regionAndRadiation || (region && spreads),
+    radiation: regionAndRadiation || spreads,
     severity,
-    time: durationAndPattern || (duration && pattern)
+    time: timeOfOnset
   };
 
   const labels = {
     onset: "Onset",
     provocation: "Provocation / Palliation",
     quality: "Quality",
-    radiation: "Region / Radiation",
+    radiation: "Radiation",
     severity: "Severity",
-    time: "Duration / Pattern"
+    time: "Time of Onset"
   };
 
   const completedCount =
@@ -861,7 +841,84 @@ function buildChecklist(body = {}) {
         "determine the nature of illness",
         "assess the nature of illness",
         "reason for the call",
-        "why were we called"
+        "why were we called",
+
+        // Labels supplied by the scenario-page recognition checklist.
+        "determines the mechanism of injury/nature of illness",
+        "determines mechanism of injury/nature of illness",
+        "mechanism of injury/nature of illness assessed",
+        "moi/noi assessed",
+        "noi/moi assessed",
+
+        // Nature of illness: assessment statements and spoken variations.
+        "determines the nature of illness",
+        "determines nature of illness",
+        "nature of illness identified",
+        "nature of illness established",
+        "nature of illness evaluated",
+        "nature of illness obtained",
+        "nature of illness is",
+        "nature of illness appears to be",
+        "nature of the illness is",
+        "nature of the illness appears to be",
+        "i assessed the nature of illness",
+        "i determined the nature of illness",
+        "i identified the nature of illness",
+        "i am assessing the nature of illness",
+        "i will assess the nature of illness",
+        "i will determine the nature of illness",
+        "noi assessed",
+        "noi determined",
+        "noi identified",
+        "noi is",
+        "noi appears to be",
+        "this is a medical call",
+        "this is a medical emergency",
+        "this is a medical complaint",
+        "this is a non traumatic illness",
+        "reason for dispatch is",
+        "reason for the call is",
+        "we were called for",
+        "we were dispatched for",
+
+        // Mechanism of injury: assessment statements and spoken variations.
+        "determines the mechanism of injury",
+        "determines mechanism of injury",
+        "mechanism of injury identified",
+        "mechanism of injury established",
+        "mechanism of injury evaluated",
+        "mechanism of injury obtained",
+        "mechanism of injury is",
+        "mechanism of injury appears to be",
+        "mechanism of the injury is",
+        "mechanism of the injury appears to be",
+        "i assessed the mechanism of injury",
+        "i determined the mechanism of injury",
+        "i identified the mechanism of injury",
+        "i am assessing the mechanism of injury",
+        "i will assess the mechanism of injury",
+        "i will determine the mechanism of injury",
+        "moi assessed",
+        "moi determined",
+        "moi identified",
+        "moi is",
+        "moi appears to be",
+        "injury mechanism assessed",
+        "injury mechanism identified",
+        "injury mechanism is",
+        "how did this happen",
+        "how did you get hurt",
+        "how did you get injured",
+        "what caused the injury",
+        "what was the mechanism of injury",
+        "tell me how the injury happened",
+        "tell me what happened",
+        "how far did you fall",
+        "what height did you fall from",
+        "were you wearing a seat belt",
+        "were you wearing a seatbelt",
+        "did the airbags deploy",
+        "how fast were you going"
       ])
     },
 
@@ -1030,7 +1087,7 @@ function buildChecklist(body = {}) {
 },
 {
   id: "opqrstRadiation",
-  name: "OPQRST — Region / Radiation",
+  name: "OPQRST — Radiation",
   points: 1,
   pass: opqrst.components.radiation
 },
@@ -1042,7 +1099,7 @@ function buildChecklist(body = {}) {
 },
 {
   id: "opqrstTime",
-  name: "OPQRST — Duration / Pattern",
+  name: "OPQRST — Time of Onset",
   points: 1,
   pass: opqrst.components.time
 },
@@ -1111,8 +1168,40 @@ function buildChecklist(body = {}) {
       pass: includesAny(text, [
         "secondary assessment performed",
         "secondary assessment",
+        "secondary survey",
         "focused physical exam",
-        "head to toe assessment"
+        "focused physical examination",
+        "focused exam",
+        "focused examination",
+        "focused assessment",
+        "focused patient assessment",
+        "focused medical assessment",
+        "focused trauma assessment",
+        "focused respiratory assessment",
+        "focused chest assessment",
+        "focused chest exam",
+        "focused chest examination",
+        "focused lung exam",
+        "focused pulmonary exam",
+        "focused cardiovascular exam",
+        "focused abdominal exam",
+        "focused neurological exam",
+        "head to toe assessment",
+        "head to toe examination",
+        "head to toe exam",
+        "head to toe survey",
+        "detailed physical exam",
+        "detailed physical examination",
+        "examine and palpate her chest",
+        "examine and palpate his chest",
+        "examine and palpate the chest",
+        "examine and palpate the patients chest",
+        "examine and palpate the patient s chest",
+        "inspect and palpate her chest",
+        "inspect and palpate his chest",
+        "inspect and palpate the chest",
+        "inspect and palpate the patients chest",
+        "inspect and palpate the patient s chest"
       ])
     },
 
@@ -1130,7 +1219,101 @@ function buildChecklist(body = {}) {
         "administer glucose",
         "oxygen administered when indicated",
         "cardiac rhythm assessed",
-        "obtain a 12 lead"
+        "obtain a 12 lead",
+        "oxygen administered",
+        "oxygen applied",
+        "oxygen provided",
+        "oxygen given",
+        "supplemental oxygen administered",
+        "supplemental oxygen applied",
+        "administer oxygen",
+        "give oxygen",
+        "apply oxygen",
+        "provide oxygen",
+        "start oxygen",
+        "started oxygen",
+        "start her on oxygen",
+        "start him on oxygen",
+        "place her on oxygen",
+        "place him on oxygen",
+        "oxygen therapy initiated",
+        "oxygen therapy started",
+        "o2 administered",
+        "o2 applied",
+        "administer o2",
+        "give o2",
+        "apply o2",
+        "start o2",
+        "non rebreather applied",
+        "nonrebreather applied",
+        "apply a non rebreather",
+        "apply a nonrebreather",
+        "place a non rebreather",
+        "place a nonrebreather",
+        "start her on a non rebreather",
+        "start him on a non rebreather",
+        "start the patient on a non rebreather",
+        "oxygen via non rebreather",
+        "oxygen by non rebreather",
+        "oxygen via nonrebreather",
+        "oxygen via nrb",
+        "nrb applied",
+        "nasal cannula applied",
+        "apply a nasal cannula",
+        "oxygen via nasal cannula",
+        "oxygen by nasal cannula",
+        "increase oxygen",
+        "increase the oxygen",
+        "increased oxygen",
+        "increase her oxygen",
+        "increase his oxygen",
+        "oxygen increased",
+        "titrate oxygen",
+        "oxygen titrated",
+        "titrate the oxygen",
+        "continuing the oxygen",
+        "continue oxygen",
+        "continue the oxygen",
+        "oxygen continued",
+        "15 liters of oxygen",
+        "15 litres of oxygen",
+        "oxygen at 15 liters",
+        "oxygen at 15 litres",
+        "ventilations assisted",
+        "assist ventilations",
+        "assisted ventilations",
+        "bag valve mask ventilation",
+        "bvm ventilation",
+        "ventilate with a bvm",
+        "aspirin administered",
+        "aspirin given",
+        "administered aspirin",
+        "nitroglycerin assisted",
+        "assist with prescribed nitroglycerin",
+        "assisted with nitroglycerin",
+        "oral glucose administered",
+        "oral glucose given",
+        "assist with the mdi",
+        "assist the patient with the mdi",
+        "assist the patient in using the mdi",
+        "assist the patient for using the mdi",
+        "mdi assisted",
+        "mdi assistance provided",
+        "assisted with inhaler",
+        "assist with the inhaler",
+        "assist with prescribed inhaler",
+        "bronchodilator treatment considered",
+        "epinephrine administered",
+        "epinephrine auto injector administered",
+        "naloxone administered",
+        "naloxone given",
+        "bleeding controlled",
+        "control external bleeding",
+        "direct pressure applied",
+        "tourniquet applied",
+        "aed applied",
+        "cpr initiated",
+        "cpr started"
       ])
     },
 
@@ -1677,9 +1860,14 @@ OPQRST AND SAMPLE:
   OPQRST component complete.
 - Do not award complete SAMPLE unless the checklist marks every required
   SAMPLE component complete.
-- Distinguish region (symptom location) from radiation (symptom spread).
-- If radiation was assessed, do not say radiation was missed merely
-  because region was not assessed.
+- R means radiation only. Award credit for assessing whether symptoms
+  radiate or spread; a separate region/location assessment is not required.
+- T means time of onset. A question about when symptoms started satisfies T.
+  Separate duration, constant/intermittent pattern, or progression questions
+  are not required for this item.
+- A question about when symptoms started may satisfy both O and T.
+- Do not deduct points or criticize missing region/location, duration, or
+  symptom pattern as additional requirements for R or T.
 - Identify specific missing components only when the supplied evidence
   supports that conclusion.
 - When the checklist contains separate component items, report those
@@ -1704,7 +1892,7 @@ EVIDENCE AND COMMENTS:
 - Avoid unsupported statements such as:
   "The initial failure to assess radiation delayed understanding."
 - Instead state the specific supported finding, such as:
-  "Radiation was assessed; symptom location was not documented."
+  "Radiation was assessed and receives credit."
 
 SCENARIO:
 
