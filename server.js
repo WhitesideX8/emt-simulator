@@ -830,11 +830,12 @@ function studentAssessedRadiation(body = {}) {
   });
 }
 
-// MOI/NOI credit requires original student evidence of a specific illness,
-// mechanism, or a direct question that establishes the mechanism/call nature.
+// MOI/NOI credit requires the student to explicitly use the named criterion
+// in a specific determination or a direct question about that criterion.
 function studentDeterminedMoiNoi(body = {}) {
   return studentRadiationEvidence(body).split(/\r?\n/).some(line => {
     const text = normalizeText(line);
+    if (!/\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/.test(text)) return false;
     // Do not turn uncertainty, refusal, or a plan into a completed determination.
     if (/\b(?:did not|do not|cannot|cant|unable to|have not|havent)\b.{0,40}\b(?:determine|identify|establish|assess)\b/.test(text) ||
         /\b(?:unknown|not determined|not identified|not assessed)\b/.test(text) ||
@@ -844,24 +845,16 @@ function studentDeterminedMoiNoi(body = {}) {
     const mechanism = /\b(?:fall|fell|motor vehicle (?:collision|crash|accident)|mvc|mva|car (?:crash|accident)|collision|pedestrian struck|struck by|assault|gunshot|stabbing|penetrating injury|blunt trauma|burn|explosion|crush injury|sports injury|drowning)\b/;
 
     // Explicitly connect a concrete complaint/mechanism to MOI/NOI.
-    const declaration = text.match(/\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|injury mechanism|moi)\s+(?:is|was|appears to be|seems to be|suspected to be|identified as|determined (?:as|to be))\s+(.+)/);
+    const declaration = text.match(/\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\s+(?:is|was|appears to be|seems to be|suspected to be|identified as|determined (?:as|to be))\s+(.+)/);
     if (declaration) {
       return (illness.test(declaration[1]) || mechanism.test(declaration[1])) &&
         !/^(?:unknown|unclear|not known|not sure)\b/.test(declaration[1]);
     }
-    if (/\b(?:this is|this appears to be|we have) (?:a |an )?(?:medical call|medical emergency|medical complaint|non traumatic illness)\b/.test(text)) return true;
-    if (/\b(?:dispatched|called) (?:to .{0,35} )?for\b/.test(text) &&
-        (illness.test(text) || mechanism.test(text))) return true;
-
-    // Asking whether an injury/trauma exists (including medical-versus-trauma
-    // screening) does not identify what happened or the nature of the illness.
-    // Only specific mechanism/nature questions below qualify.
+    // Only questions that explicitly name NOI/MOI qualify. Generic injury,
+    // fall, dispatch, and medical-versus-trauma questions do not qualify.
     return [
-      /\bhow (?:did|were) (?:the injury happen|you injured|you get hurt|you get injured|the patient injured)\b/,
-      /\bwhat (?:caused the injury|was the mechanism of injury|is the mechanism of injury|is the nature of illness|was the nature of illness)\b/,
-      /\b(?:tell me|describe) how (?:the injury|this injury) happened\b/,
-      /\b(?:how far did you fall|what height did you fall from|how did you fall)\b/,
-      /\b(?:why were we called|what is the reason for (?:the )?(?:call|dispatch))\b/
+      /\b(?:what|which) (?:is|was|would be) (?:the |this patient s |the patient s )?(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/,
+      /\b(?:tell me|describe|identify|determine|assess|check) (?:the |this patient s |the patient s )?(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/
     ].some(pattern => pattern.test(text));
   });
 }
@@ -1894,8 +1887,12 @@ MENTAL STATUS / AVPU CREDIT:
 
 MOI / NOI CREDIT:
 
-- MOI/NOI credit requires the student's original specific determination or
-  a direct mechanism/nature question recognized by the checklist.
+- The student MUST explicitly say "nature of illness", "NOI", "mechanism
+  of injury", or "MOI" in their own input to earn this credit.
+- The wording must be part of a specific determination or a direct question
+  about that criterion. A bare label alone earns no credit.
+- Generic descriptions, dispatch information, "How did you get hurt?", and
+  "How far did you fall?" earn no MOI/NOI credit without the required wording.
 - Asking "Is there any traumatic injury?", "Any trauma?", "Was the patient
   injured?", or "Is this medical or trauma?" is only trauma screening and MUST
   NOT earn MOI/NOI credit. Absence of trauma does not establish NOI.
@@ -1903,7 +1900,8 @@ MOI / NOI CREDIT:
   instructor answer alone earns no credit.
 - A statement of intent to determine MOI/NOI is not a completed determination.
 - Do not require an exact diagnosis: a concrete complaint such as chest pain
-  or shortness of breath can establish NOI when the student identifies it.
+  or shortness of breath can establish NOI when explicitly identified as NOI
+  or nature of illness.
 
 OPQRST AND SAMPLE:
 
