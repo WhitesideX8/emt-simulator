@@ -894,6 +894,25 @@ function studentAssessedAvpu(body = {}) {
   });
 }
 
+// Field impression is a student-stated suspected condition, not a keyword,
+// a future plan, or a diagnosis volunteered in a generated answer.
+function studentStatedFieldImpression(body = {}) {
+  return studentRadiationEvidence(body).split(/\r?\n/).some(line => {
+    const raw = String(line).toLowerCase();
+    const text = normalizeText(raw);
+    if (/\b(?:will|going to|plan to|need to)\b.{0,35}\b(?:state|give|form|determine)\b/.test(text) ||
+        /\b(?:did not|have not|cannot|unable to)\b.{0,35}\b(?:state|form|determine)\b/.test(text)) return false;
+    const match = raw.match(/\b(?:(?:my )?(?:field impression|clinical impression|working diagnosis|provisional diagnosis|suspected condition)\s*(?:is\b|would be\b|appears to be\b|:)|i\s+(?:suspect|think|believe)\b|this\s+(?:appears|seems)\s+to\s+be\b)\s*([\s\S]+)/i);
+    if (!match) return false;
+    const impression = normalizeText(match[1]);
+    if (/^(?:unknown|unclear|not sure|undetermined|i dont know|i do not know)\b/.test(impression) ||
+        /\b(?:not enough information|unable to determine|cannot determine|no impression)\b/.test(impression)) return false;
+    // Recognize clinical categories as well as suspected diagnoses. This does
+    // not verify diagnostic accuracy; instructor review remains separate.
+    return /\b(?:acute coronary syndrome|acs|myocardial infarction|heart attack|cardiac (?:event|ischemia|emergency)|angina|copd|asthma|bronchospasm|respiratory (?:distress|failure|emergency)|difficulty breathing|shortness of breath|pulmonary edema|heart failure|chf|pneumonia|pulmonary embolism|stroke|cva|tia|seizure|postictal|hypoglycemia|hyperglycemia|diabetic (?:emergency|ketoacidosis)|dka|altered mental status|syncope|dehydration|sepsis|shock|anaphylaxis|allergic reaction|overdose|poisoning|intoxication|opioid toxicity|chest pain|abdominal pain|gastrointestinal bleeding|gi bleed|hemorrhage|internal bleeding|fracture|dislocation|head injury|traumatic brain injury|concussion|spinal injury|pneumothorax|tamponade|trauma|burns?|heat (?:stroke|exhaustion)|hypothermia|drowning|obstetric emergency|behavioral emergency)\b/.test(impression);
+  });
+}
+
 function buildChecklist(body = {}) {
   const text = combineStudentWork(body);
   const opqrst = evaluateOpqrst(text);
@@ -1065,10 +1084,7 @@ function buildChecklist(body = {}) {
       id: "fieldImpression",
       name: "States field impression",
       points: 1,
-
-      // Requires text after the introductory phrase.
-      // This checks documentation, not diagnostic accuracy.
-      pass: /\b(?:my field impression is|field impression is|field impression:|my clinical impression is|clinical impression is|clinical impression:|my working diagnosis is|working diagnosis is|working diagnosis:|i suspect|suspected condition is)\s+[a-z0-9]/i.test(text)
+      pass: studentStatedFieldImpression(body)
     },
 
     {
@@ -1857,6 +1873,15 @@ ASSESSMENT ORDER AND TIMING:
   evidence and existing critical-criteria results.
 - Do not convert a REVIEW criterion into a confirmed failure without
   sufficient evidence. Explain when instructor review is required.
+
+FIELD IMPRESSION CREDIT:
+
+- Award the field-impression point only from a student's explicit suspected
+  clinical condition or category recognized by the deterministic checklist.
+- Bare labels, unfinished statements, unknown impressions, future plans,
+  and diagnoses supplied only by patient/instructor answers earn no credit.
+- A provisional impression may use "possible," "suspected," or "I suspect."
+- This point measures stating an impression; diagnostic accuracy is separate.
 
 MENTAL STATUS / AVPU CREDIT:
 
