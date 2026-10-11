@@ -918,7 +918,9 @@ function studentNamedAssessment(body, criterion) {
     const completed = new RegExp("\\b" + term + " (?:is |was |has been )?(?:assessed|checked|evaluated|determined|identified)\\b");
     if (action.test(text) || completed.test(text)) return true;
     if (criterion === "airway") {
-      return /\bairway (?:is |was |appears |appears to be )?(?:patent|clear|open|obstructed|blocked|compromised)\b/.test(text) ||
+      // "Patient" may be a voice-transcription error for "patent".
+      if (/\bis (?:the |the patient s |patient s )?airway (?:patent|patient|open|safe|clear)\b/.test(text)) return true;
+      return /\bairway (?:is |was |appears |appears to be )?(?:patent|clear|open|safe|obstructed|blocked|compromised)\b/.test(text) ||
         /\b(?:is|was) (?:the |the patient s |patient s )?airway\b/.test(text) ||
         /\b(?:what is|how is) (?:the |the patient s |patient s )?airway\b/.test(text);
     }
@@ -1057,27 +1059,16 @@ function buildChecklist(body = {}) {
 
     {
       id: "chiefComplaint",
-      name: "Determines chief complaint / apparent life threats",
+      name: "Determines chief complaint",
       points: 1,
+      pass: /\bchief complaint\b/.test(normalizeText(studentRadiationEvidence(body)))
+    },
 
-      // Both chief complaint and life-threat assessment are required.
-      pass:
-        studentNamedAssessment(body, "chiefComplaint") &&
-        includesAny(studentRadiationEvidence(body), [
-          "apparent life threats assessed",
-          "apparent life threats identified",
-          "life threats assessed",
-          "life threats identified",
-          "assess for life threats",
-          "check for life threats",
-          "assess for apparent life threats",
-          "check for apparent life threats",
-          "no apparent life threats",
-          "no immediate life threats",
-          "no life threats found",
-          "life threatening conditions assessed",
-          "check for life threatening conditions"
-        ])
+    {
+      id: "apparentLifeThreats",
+      name: "Determines apparent life threats",
+      points: 1,
+      pass: /\b(?:apparent )?life threats?\b/.test(normalizeText(studentRadiationEvidence(body)))
     },
 
     {
@@ -1874,18 +1865,24 @@ ASSESSMENT ORDER AND TIMING:
 - Do not convert a REVIEW criterion into a confirmed failure without
   sufficient evidence. Explain when instructor review is required.
 
-AIRWAY AND CHIEF COMPLAINT CREDIT:
+AIRWAY, CHIEF COMPLAINT, AND APPARENT LIFE THREATS CREDIT:
 
 - Airway credit requires the student's own input to explicitly use "airway"
-  in an assessment, direct question, or airway finding.
-- Chief-complaint credit requires the student's own input to explicitly use
-  "chief complaint" in an assessment, direct question, or stated finding.
-- Generic questions such as "What is bothering you?" or "Why did you call
-  911?" do not qualify without the required chief-complaint wording.
-- Bare labels, future plans, and generated labels or patient/instructor
-  answers alone earn no credit for these items.
-- The combined chief-complaint/apparent-life-threats item still requires
-  student evidence of life-threat assessment as well.
+  in an assessment, direct question, or airway finding. Accept "Is the airway
+  patent?" and the transcription "Is the airway patient?", plus findings
+  "the airway is open", "the airway is safe", and "the airway is patent".
+  Bare airway labels,
+  future plans, and patient/instructor answers alone earn no airway credit.
+- Chief complaint and apparent life threats are separate checklist items,
+  worth ONE point EACH. Neither item requires the other to receive credit.
+- Award the chief-complaint point when the student's own input contains the
+  phrase "chief complaint", including a label, statement, or question.
+- Award the apparent-life-threats point when the student's own input contains
+  "apparent life threats", "life threats", or the singular "life threat".
+- These two items use wording-only credit: do not impose an additional finding
+  or completed-assessment requirement beyond the deterministic checklist.
+- Patient/instructor answers and generated completion labels alone cannot
+  supply the required student wording.
 
 FIELD IMPRESSION CREDIT:
 
