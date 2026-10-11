@@ -853,14 +853,14 @@ function studentDeterminedMoiNoi(body = {}) {
     if (/\b(?:dispatched|called) (?:to .{0,35} )?for\b/.test(text) &&
         (illness.test(text) || mechanism.test(text))) return true;
 
-    // Direct questions about mechanism/nature; isolated trauma screening or
-    // safety questions (seatbelt/airbag alone) do not establish MOI/NOI.
+    // Asking whether an injury/trauma exists (including medical-versus-trauma
+    // screening) does not identify what happened or the nature of the illness.
+    // Only specific mechanism/nature questions below qualify.
     return [
       /\bhow (?:did|were) (?:the injury happen|you injured|you get hurt|you get injured|the patient injured)\b/,
       /\bwhat (?:caused the injury|was the mechanism of injury|is the mechanism of injury|is the nature of illness|was the nature of illness)\b/,
       /\b(?:tell me|describe) how (?:the injury|this injury) happened\b/,
       /\b(?:how far did you fall|what height did you fall from|how did you fall)\b/,
-      /\b(?:is this|is the call|is this call) (?:medical or trauma|medical or traumatic|a medical or trauma call)\b/,
       /\b(?:why were we called|what is the reason for (?:the )?(?:call|dispatch))\b/
     ].some(pattern => pattern.test(text));
   });
@@ -1896,8 +1896,11 @@ MOI / NOI CREDIT:
 
 - MOI/NOI credit requires the student's original specific determination or
   a direct mechanism/nature question recognized by the checklist.
-- A generic trauma screening question, ruling out C-spine stabilization,
-  a generated completion label, or an instructor answer alone earns no credit.
+- Asking "Is there any traumatic injury?", "Any trauma?", "Was the patient
+  injured?", or "Is this medical or trauma?" is only trauma screening and MUST
+  NOT earn MOI/NOI credit. Absence of trauma does not establish NOI.
+- Ruling out C-spine stabilization, a generated completion label, or an
+  instructor answer alone earns no credit.
 - A statement of intent to determine MOI/NOI is not a completed determination.
 - Do not require an exact diagnosis: a concrete complaint such as chest pain
   or shortness of breath can establish NOI when the student identifies it.
