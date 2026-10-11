@@ -830,6 +830,70 @@ function studentAssessedRadiation(body = {}) {
   });
 }
 
+// MOI/NOI credit requires original student evidence of a specific illness,
+// mechanism, or a direct question that establishes the mechanism/call nature.
+function studentDeterminedMoiNoi(body = {}) {
+  return studentRadiationEvidence(body).split(/\r?\n/).some(line => {
+    const text = normalizeText(line);
+    // Do not turn uncertainty, refusal, or a plan into a completed determination.
+    if (/\b(?:did not|do not|cannot|cant|unable to|have not|havent)\b.{0,40}\b(?:determine|identify|establish|assess)\b/.test(text) ||
+        /\b(?:unknown|not determined|not identified|not assessed)\b/.test(text) ||
+        /\b(?:will|going to|plan to|need to)\b.{0,30}\b(?:determine|identify|establish|assess)\b/.test(text)) return false;
+
+    const illness = /\b(?:shortness of breath|sob|difficulty breathing|respiratory (?:distress|emergency)|chest pain|chest discomfort|cardiac complaint|stroke|seizure|altered mental status|hypoglycemia|hyperglycemia|diabetic emergency|allergic reaction|anaphylaxis|overdose|poisoning|abdominal pain|syncope|fainting|medical (?:call|illness|emergency|complaint)|non traumatic illness)\b/;
+    const mechanism = /\b(?:fall|fell|motor vehicle (?:collision|crash|accident)|mvc|mva|car (?:crash|accident)|collision|pedestrian struck|struck by|assault|gunshot|stabbing|penetrating injury|blunt trauma|burn|explosion|crush injury|sports injury|drowning)\b/;
+
+    // Explicitly connect a concrete complaint/mechanism to MOI/NOI.
+    const declaration = text.match(/\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|injury mechanism|moi)\s+(?:is|was|appears to be|seems to be|suspected to be|identified as|determined (?:as|to be))\s+(.+)/);
+    if (declaration) {
+      return (illness.test(declaration[1]) || mechanism.test(declaration[1])) &&
+        !/^(?:unknown|unclear|not known|not sure)\b/.test(declaration[1]);
+    }
+    if (/\b(?:this is|this appears to be|we have) (?:a |an )?(?:medical call|medical emergency|medical complaint|non traumatic illness)\b/.test(text)) return true;
+    if (/\b(?:dispatched|called) (?:to .{0,35} )?for\b/.test(text) &&
+        (illness.test(text) || mechanism.test(text))) return true;
+
+    // Direct questions about mechanism/nature; isolated trauma screening or
+    // safety questions (seatbelt/airbag alone) do not establish MOI/NOI.
+    return [
+      /\bhow (?:did|were) (?:the injury happen|you injured|you get hurt|you get injured|the patient injured)\b/,
+      /\bwhat (?:caused the injury|was the mechanism of injury|is the mechanism of injury|is the nature of illness|was the nature of illness)\b/,
+      /\b(?:tell me|describe) how (?:the injury|this injury) happened\b/,
+      /\b(?:how far did you fall|what height did you fall from|how did you fall)\b/,
+      /\b(?:is this|is the call|is this call) (?:medical or trauma|medical or traumatic|a medical or trauma call)\b/,
+      /\b(?:why were we called|what is the reason for (?:the )?(?:call|dispatch))\b/
+    ].some(pattern => pattern.test(text));
+  });
+}
+
+// AVPU credit requires a student question/action that assesses responsiveness,
+// or a student-documented AVPU finding. Bare keywords and AI replies do not count.
+function studentAssessedAvpu(body = {}) {
+  return studentRadiationEvidence(body).split(/\r?\n/).some(line => {
+    const text = normalizeText(line);
+    if (/\b(?:did not|do not|cannot|cant|unable to|have not|havent)\b.{0,35}\b(?:assess|check|determine|evaluate)\b/.test(text) ||
+        /\b(?:will|going to|plan to|need to)\b.{0,30}\b(?:assess|check|determine|evaluate)\b/.test(text) ||
+        /\b(?:not assessed|not checked|avpu unknown|avpu is unknown)\b/.test(text)) return false;
+    return [
+      /\b(?:assessed|checked|evaluated|determined)\b.{0,35}\b(?:avpu|responsiveness|level of consciousness|mental status)\b/,
+      /\b(?:avpu|responsiveness|level of consciousness|mental status)\b.{0,15}\b(?:assessed|checked|evaluated|determined)\b/,
+      /\b(?:assess|check|evaluate|determine)\b.{0,35}\b(?:avpu|responsiveness)\b/,
+      /\b(?:what is|whats)\b.{0,25}\b(?:avpu|level of consciousness|mental status|responsiveness)\b/,
+      /\b(?:is|does)\b.{0,25}\b(?:patient|she|he)\b.{0,20}\b(?:alert|responsive|respond|unresponsive|unconscious)\b/,
+      /\b(?:patient|she|he)\b.{0,25}\b(?:is|appears|seems|remains|was)\b.{0,15}\b(?:alert|unresponsive|unconscious)\b/,
+      /\b(?:patient|she|he)\b.{0,20}\b(?:responds|responsive|responding|response)\b.{0,20}\b(?:voice|verbal|pain|painful)\b/,
+      /\b(?:patient|she|he)\b.{0,20}\b(?:does not|doesnt|no)\b.{0,15}\b(?:respond|response)\b/,
+      /\b(?:does|will|can)\b.{0,25}\b(?:patient|she|he)\b.{0,15}\brespond\b.{0,20}\b(?:voice|verbal|pain|painful)\b/,
+      /\b(?:check|assess|test|checked|assessed|tested)\b.{0,25}\b(?:response|responsiveness)\b.{0,20}\b(?:voice|verbal|pain|painful)\b/,
+      /\bavpu\s+(?:is |of |equals |level |score )?(?:a|v|p|u|alert|verbal|pain|unresponsive)\b/,
+      /\b(?:alert and oriented|a and o|a o)\s*(?:x\s*[1-4])?\b/,
+      /\b(?:can you|please)\s+(?:open your eyes|squeeze my hand)\b/,
+      /\b(?:do you|can you tell me if you)\s+know where you are\b/,
+      /\b(?:check|assess|test|checked|assessed|tested)\b.{0,25}\b(?:orientation to|oriented to)\b/
+    ].some(pattern => pattern.test(text));
+  });
+}
+
 function buildChecklist(body = {}) {
   const text = combineStudentWork(body);
   const opqrst = evaluateOpqrst(text);
@@ -866,98 +930,7 @@ function buildChecklist(body = {}) {
       id: "natureOfIllness",
       name: "Determines mechanism of injury / nature of illness",
       points: 1,
-      pass: includesAny(text, [
-        "mechanism of injury assessed",
-        "mechanism of injury determined",
-        "determine the mechanism of injury",
-        "assess the mechanism of injury",
-        "what happened",
-        "how did the injury happen",
-        "how were you injured",
-        "nature of illness assessed",
-        "nature of illness determined",
-        "determine the nature of illness",
-        "assess the nature of illness",
-        "reason for the call",
-        "why were we called",
-
-        // Labels supplied by the scenario-page recognition checklist.
-        "determines the mechanism of injury/nature of illness",
-        "determines mechanism of injury/nature of illness",
-        "mechanism of injury/nature of illness assessed",
-        "moi/noi assessed",
-        "noi/moi assessed",
-
-        // Nature of illness: assessment statements and spoken variations.
-        "determines the nature of illness",
-        "determines nature of illness",
-        "nature of illness identified",
-        "nature of illness established",
-        "nature of illness evaluated",
-        "nature of illness obtained",
-        "nature of illness is",
-        "nature of illness appears to be",
-        "nature of the illness is",
-        "nature of the illness appears to be",
-        "i assessed the nature of illness",
-        "i determined the nature of illness",
-        "i identified the nature of illness",
-        "i am assessing the nature of illness",
-        "i will assess the nature of illness",
-        "i will determine the nature of illness",
-        "noi assessed",
-        "noi determined",
-        "noi identified",
-        "noi is",
-        "noi appears to be",
-        "this is a medical call",
-        "this is a medical emergency",
-        "this is a medical complaint",
-        "this is a non traumatic illness",
-        "reason for dispatch is",
-        "reason for the call is",
-        "we were called for",
-        "we were dispatched for",
-
-        // Mechanism of injury: assessment statements and spoken variations.
-        "determines the mechanism of injury",
-        "determines mechanism of injury",
-        "mechanism of injury identified",
-        "mechanism of injury established",
-        "mechanism of injury evaluated",
-        "mechanism of injury obtained",
-        "mechanism of injury is",
-        "mechanism of injury appears to be",
-        "mechanism of the injury is",
-        "mechanism of the injury appears to be",
-        "i assessed the mechanism of injury",
-        "i determined the mechanism of injury",
-        "i identified the mechanism of injury",
-        "i am assessing the mechanism of injury",
-        "i will assess the mechanism of injury",
-        "i will determine the mechanism of injury",
-        "moi assessed",
-        "moi determined",
-        "moi identified",
-        "moi is",
-        "moi appears to be",
-        "injury mechanism assessed",
-        "injury mechanism identified",
-        "injury mechanism is",
-        "how did this happen",
-        "how did you get hurt",
-        "how did you get injured",
-        "what caused the injury",
-        "what was the mechanism of injury",
-        "tell me how the injury happened",
-        "tell me what happened",
-        "how far did you fall",
-        "what height did you fall from",
-        "were you wearing a seat belt",
-        "were you wearing a seatbelt",
-        "did the airbags deploy",
-        "how fast were you going"
-      ])
+      pass: studentDeterminedMoiNoi(body)
     },
 
     {
@@ -973,16 +946,9 @@ function buildChecklist(body = {}) {
 
     {
       id: "mentalStatus",
-      name: "Mental status",
+      name: "Mental status / AVPU",
       points: 2,
-      pass: includesAny(text, [
-        "mental status assessed",
-        "mental status",
-        "level of consciousness",
-        "avpu",
-        "gcs",
-        "alert and oriented"
-      ])
+      pass: studentAssessedAvpu(body)
     },
 
     {
@@ -1891,6 +1857,25 @@ ASSESSMENT ORDER AND TIMING:
   evidence and existing critical-criteria results.
 - Do not convert a REVIEW criterion into a confirmed failure without
   sufficient evidence. Explain when instructor review is required.
+
+MENTAL STATUS / AVPU CREDIT:
+
+- Use the deterministic AVPU checklist result for mental-status points.
+- Credit a student responsiveness assessment/question or documented finding
+  of alert, responsive to voice, responsive to pain, or unresponsive.
+- Do not require testing painful stimuli when the student establishes alertness.
+- Bare AVPU, mental-status, or GCS keywords and AI answers alone earn no credit.
+- A future plan to assess mental status is not a completed assessment.
+
+MOI / NOI CREDIT:
+
+- MOI/NOI credit requires the student's original specific determination or
+  a direct mechanism/nature question recognized by the checklist.
+- A generic trauma screening question, ruling out C-spine stabilization,
+  a generated completion label, or an instructor answer alone earns no credit.
+- A statement of intent to determine MOI/NOI is not a completed determination.
+- Do not require an exact diagnosis: a concrete complaint such as chest pain
+  or shortness of breath can establish NOI when the student identifies it.
 
 OPQRST AND SAMPLE:
 
