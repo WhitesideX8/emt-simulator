@@ -792,6 +792,44 @@ function evaluateSample(text) {
    CTOEMS-STYLE CHECKLIST
 ========================================================= */
 
+// Radiation credit must come from original student work, not generated labels
+// or information volunteered by the patient/instructor.
+function studentRadiationEvidence(body = {}) {
+  if (Array.isArray(body.studentInputLog)) {
+    return body.studentInputLog
+      .map(entry => typeof entry === "string" ? entry : String(entry?.text || ""))
+      .join("\n");
+  }
+
+  // Older pages store student questions and generated answers on separate lines.
+  return [body.studentAnswer, body.patientHistory, body.instructorHistory]
+    .filter(Boolean)
+    .join("\n")
+    .split(/\r?\n/)
+    .filter(line => /^\s*Student(?: to instructor)?\s*:/i.test(line))
+    .map(line => line.replace(/^\s*Student(?: to instructor)?\s*:\s*/i, ""))
+    .join("\n");
+}
+
+function studentAssessedRadiation(body = {}) {
+  const lines = studentRadiationEvidence(body).split(/\r?\n/);
+  return lines.some(line => {
+    const text = normalizeText(line);
+    return [
+      /\b(?:opqrst |oprst )?(?:radiation|region and radiation|location and radiation) assessed\b/,
+      /\b(?:assess|check|evaluate|ask about|determine)\b.{0,50}\b(?:radiation|radiating|whether.{0,20}(?:spreads|travels))\b/,
+      /\b(?:does|did|is|has|can)\b.{0,45}\b(?:pain|discomfort|it)\b.{0,35}\b(?:radiat\w*|spread\w*|travel\w*|move\w*)\b/,
+      /\bwhere does\b.{0,35}\b(?:pain|discomfort|it)\b.{0,20}\bgo\b/,
+      /\b(?:does|did) it go anywhere else\b/,
+      /\bwhere else do you feel\b/,
+      /\b(?:do you|does the patient|does she|does he)\b.{0,35}\b(?:pain|discomfort)\b.{0,25}\banywhere else\b/,
+      /\b(?:does|did)\b.{0,35}\b(?:pain|discomfort|it)\b.{0,25}\b(?:go|extend)\b.{0,20}\b(?:arm|jaw|back|shoulder|neck|anywhere|else)\b/,
+      /\b(?:pain|discomfort)\b.{0,25}\b(?:radiates|spreads|travels) to\b/,
+      /\b(?:pain|discomfort)\b.{0,25}\b(?:non radiating|does not radiate|no radiation)\b/
+    ].some(pattern => pattern.test(text));
+  });
+}
+
 function buildChecklist(body = {}) {
   const text = combineStudentWork(body);
   const opqrst = evaluateOpqrst(text);
@@ -1089,7 +1127,7 @@ function buildChecklist(body = {}) {
   id: "opqrstRadiation",
   name: "OPQRST — Radiation",
   points: 1,
-  pass: opqrst.components.radiation
+  pass: studentAssessedRadiation(body)
 },
 {
   id: "opqrstSeverity",
