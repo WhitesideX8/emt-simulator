@@ -906,6 +906,28 @@ function studentStatedFieldImpression(body = {}) {
   });
 }
 
+// These criteria require named assessment evidence from the student only.
+function studentNamedAssessment(body, criterion) {
+  const term = criterion === "airway" ? "airway" : "chief complaint";
+  return studentRadiationEvidence(body).split(/\r?\n/).some(line => {
+    const text = normalizeText(line);
+    if (!new RegExp("\\b" + term + "\\b").test(text)) return false;
+    if (/\b(?:will|going to|plan to|need to|did not|have not|cannot|unable to)\b.{0,35}\b(?:assess|check|evaluate|determine|identify)\b/.test(text) ||
+        /\b(?:not assessed|not checked|not identified|not determined|unknown)\b/.test(text)) return false;
+    const action = new RegExp("\\b(?:assess|assessed|check|checked|evaluate|evaluated|determine|determined|identify|identified|inspect|inspected) (?:the |a |an |patient s |the patient s )?" + term + "\\b");
+    const completed = new RegExp("\\b" + term + " (?:is |was |has been )?(?:assessed|checked|evaluated|determined|identified)\\b");
+    if (action.test(text) || completed.test(text)) return true;
+    if (criterion === "airway") {
+      return /\bairway (?:is |was |appears |appears to be )?(?:patent|clear|open|obstructed|blocked|compromised)\b/.test(text) ||
+        /\b(?:is|was) (?:the |the patient s |patient s )?airway\b/.test(text) ||
+        /\b(?:what is|how is) (?:the |the patient s |patient s )?airway\b/.test(text);
+    }
+    return /\b(?:what is|what was|tell me|describe) (?:the |your |the patient s |patient s )?chief complaint\b/.test(text) ||
+      /\bchief complaint (?:is|was|appears to be) (?!unknown\b|unclear\b|not\b)\w+/.test(text) ||
+      /\bchief complaint\s*:\s*\w+/.test(line.toLowerCase());
+  });
+}
+
 function buildChecklist(body = {}) {
   const text = combineStudentWork(body);
   const opqrst = evaluateOpqrst(text);
@@ -967,13 +989,7 @@ function buildChecklist(body = {}) {
       id: "airway",
       name: "Airway assessment",
       points: 2,
-      pass: includesAny(text, [
-        "airway assessed",
-        "assess the airway",
-        "check the airway",
-        "airway is patent",
-        "airway patent"
-      ])
+      pass: studentNamedAssessment(body, "airway")
     },
 
     {
@@ -1046,17 +1062,8 @@ function buildChecklist(body = {}) {
 
       // Both chief complaint and life-threat assessment are required.
       pass:
-        includesAny(text, [
-          "chief complaint identified",
-          "chief complaint determined",
-          "identify the chief complaint",
-          "determine the chief complaint",
-          "what is bothering you",
-          "what is wrong today",
-          "what is your main problem",
-          "why did you call 911"
-        ]) &&
-        includesAny(text, [
+        studentNamedAssessment(body, "chiefComplaint") &&
+        includesAny(studentRadiationEvidence(body), [
           "apparent life threats assessed",
           "apparent life threats identified",
           "life threats assessed",
@@ -1866,6 +1873,19 @@ ASSESSMENT ORDER AND TIMING:
   evidence and existing critical-criteria results.
 - Do not convert a REVIEW criterion into a confirmed failure without
   sufficient evidence. Explain when instructor review is required.
+
+AIRWAY AND CHIEF COMPLAINT CREDIT:
+
+- Airway credit requires the student's own input to explicitly use "airway"
+  in an assessment, direct question, or airway finding.
+- Chief-complaint credit requires the student's own input to explicitly use
+  "chief complaint" in an assessment, direct question, or stated finding.
+- Generic questions such as "What is bothering you?" or "Why did you call
+  911?" do not qualify without the required chief-complaint wording.
+- Bare labels, future plans, and generated labels or patient/instructor
+  answers alone earn no credit for these items.
+- The combined chief-complaint/apparent-life-threats item still requires
+  student evidence of life-threat assessment as well.
 
 FIELD IMPRESSION CREDIT:
 
