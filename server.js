@@ -833,32 +833,55 @@ function studentAssessedRadiation(body = {}) {
 // MOI/NOI credit requires the student to explicitly use the named criterion
 // in a specific determination or a direct question about that criterion.
 function studentDeterminedMoiNoi(body = {}) {
-  return studentRadiationEvidence(body).split(/\r?\n/).some(line => {
-    const text = normalizeText(line);
-    if (!/\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/.test(text)) return false;
-    // Do not turn uncertainty, refusal, or a plan into a completed determination.
-    if (/\b(?:did not|do not|cannot|cant|unable to|have not|havent)\b.{0,40}\b(?:determine|identify|establish|assess)\b/.test(text) ||
+  return studentRadiationEvidence(body)
+    .split(/[.!?;\r\n]+/)
+    .some(line => {
+      // Accept "nature of illness (NOI)" and "mechanism of injury (MOI)".
+      const text = normalizeText(
+        line.replace(/\(\s*(?:noi|moi)\s*\)/gi, " ")
+      );
+
+      // Required wording must appear in this same sentence.
+      const requiredWording =
+        /\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/;
+
+      if (!requiredWording.test(text)) return false;
+
+      // Uncertainty, refusal, and future plans do not earn credit.
+      if (
+        /\b(?:did not|do not|cannot|cant|unable to|have not|havent)\b.{0,40}\b(?:determine|identify|establish|assess)\b/.test(text) ||
         /\b(?:unknown|not determined|not identified|not assessed)\b/.test(text) ||
-        /\b(?:will|going to|plan to|need to)\b.{0,30}\b(?:determine|identify|establish|assess)\b/.test(text)) return false;
+        /\b(?:will|going to|plan to|need to)\b.{0,30}\b(?:determine|identify|establish|assess)\b/.test(text)
+      ) {
+        return false;
+      }
 
-    const illness = /\b(?:shortness of breath|sob|difficulty breathing|respiratory (?:distress|emergency)|chest pain|chest discomfort|cardiac complaint|stroke|seizure|altered mental status|hypoglycemia|hyperglycemia|diabetic emergency|allergic reaction|anaphylaxis|overdose|poisoning|abdominal pain|syncope|fainting|medical (?:call|illness|emergency|complaint)|non traumatic illness)\b/;
-    const mechanism = /\b(?:fall|fell|motor vehicle (?:collision|crash|accident)|mvc|mva|car (?:crash|accident)|collision|pedestrian struck|struck by|assault|gunshot|stabbing|penetrating injury|blunt trauma|burn|explosion|crush injury|sports injury|drowning)\b/;
+      const illness =
+        /\b(?:shortness of breath|sob|difficulty breathing|respiratory (?:distress|emergency)|chest pain|chest discomfort|cardiac complaint|stroke|seizure|altered mental status|hypoglycemia|hyperglycemia|diabetic emergency|allergic reaction|anaphylaxis|overdose|poisoning|abdominal pain|syncope|fainting|medical (?:call|illness|emergency|complaint)|non traumatic illness)\b/;
 
-    // Explicitly connect a concrete complaint/mechanism to MOI/NOI.
-    const declaration = text.match(/\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\s+(?:is|was|appears to be|seems to be|suspected to be|identified as|determined (?:as|to be))\s+(.+)/);
-    if (declaration) {
-      return (illness.test(declaration[1]) || mechanism.test(declaration[1])) &&
-        !/^(?:unknown|unclear|not known|not sure)\b/.test(declaration[1]);
-    }
-    // Only questions that explicitly name NOI/MOI qualify. Generic injury,
-    // fall, dispatch, and medical-versus-trauma questions do not qualify.
-    return [
-      /\b(?:what|which) (?:is|was|would be) (?:the |this patient s |the patient s )?(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/,
-      /\b(?:tell me|describe|identify|determine|assess|check) (?:the |this patient s |the patient s )?(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/
-    ].some(pattern => pattern.test(text));
-  });
+      const mechanism =
+        /\b(?:fall|fell|motor vehicle (?:collision|crash|accident)|mvc|mva|car (?:crash|accident)|collision|pedestrian struck|struck by|assault|gunshot|stabbing|penetrating injury|blunt trauma|burn|explosion|crush injury|sports injury|drowning)\b/;
+
+      // Example: "Nature of illness (NOI) is chest pain."
+      const declaration = text.match(
+        /\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\s+(?:is|was|appears to be|seems to be|suspected to be|identified as|determined (?:as|to be))\s+(.+)/
+      );
+
+      if (declaration) {
+        return (
+          (illness.test(declaration[1]) ||
+            mechanism.test(declaration[1])) &&
+          !/^(?:unknown|unclear|not known|not sure)\b/.test(declaration[1])
+        );
+      }
+
+      // Direct questions must explicitly name MOI/NOI.
+      return [
+        /\b(?:what|which) (?:is|was|would be) (?:the |this patient s |the patient s )?(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/,
+        /\b(?:tell me|describe|identify|determine|assess|check) (?:the |this patient s |the patient s )?(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/
+      ].some(pattern => pattern.test(text));
+    });
 }
-
 // AVPU credit requires a student question/action that assesses responsiveness,
 // or a student-documented AVPU finding. Bare keywords and AI replies do not count.
 function studentAssessedAvpu(body = {}) {
