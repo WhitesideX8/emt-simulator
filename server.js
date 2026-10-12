@@ -1054,6 +1054,8 @@ function buildChecklist(body = {}) {
         "put on gloves",
         "wear gloves",
         "use ppe"
+         "wearing PPE"
+         "I am wearing PPE"
       ])
     },
 
@@ -1136,6 +1138,7 @@ function buildChecklist(body = {}) {
         "perfusion status",
         "pulse assessed",
         "skin signs assessed"
+         "radial pulse"
       ])
     },
 
