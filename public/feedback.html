@@ -7,38 +7,29 @@
 
   <style>
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #e9ecef;
       color: #222;
     }
-
     .container {
       width: 90%;
       max-width: 1000px;
       margin: 30px auto;
     }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 5px;
-    }
-
+    h1 { text-align: center; margin-bottom: 5px; }
     #scenarioTitle {
       text-align: center;
       color: #555;
       margin-top: 0;
     }
-
     #studentNameDisplay {
       text-align: center;
       font-size: 18px;
       font-weight: bold;
       margin: 8px 0 22px;
     }
-
     .section {
       background: white;
       border: 1px solid #bbb;
@@ -46,23 +37,16 @@
       padding: 18px;
       margin: 18px 0;
     }
-
     .section h2 {
       margin-top: 0;
       border-bottom: 2px solid #333;
       padding-bottom: 6px;
     }
-
-    #feedback,
-    #treatmentPlan {
+    #feedback, #treatmentPlan {
       white-space: pre-wrap;
       line-height: 1.5;
     }
-
-    #feedback {
-      font-size: 16px;
-    }
-
+    #feedback { font-size: 16px; }
     #scoreSummary {
       margin-bottom: 14px;
       padding: 12px 14px;
@@ -72,19 +56,13 @@
       font-size: 18px;
       font-weight: bold;
     }
-
-    .input-list {
-      display: grid;
-      gap: 10px;
-    }
-
+    .input-list { display: grid; gap: 10px; }
     .input-item {
       padding: 11px 13px;
       border-left: 5px solid #176b9e;
       border-radius: 5px;
       background: #f4f7f9;
     }
-
     .input-heading {
       display: flex;
       flex-wrap: wrap;
@@ -94,109 +72,69 @@
       color: #12304a;
       font-weight: bold;
     }
-
     .input-time {
       color: #666;
       font-size: 13px;
       font-weight: normal;
     }
-
-    .input-text {
-      white-space: pre-wrap;
-      line-height: 1.45;
-    }
-
-    .empty-message {
-      color: #666;
-      font-style: italic;
-    }
-
+    .input-text { white-space: pre-wrap; line-height: 1.45; }
+    .empty-message { color: #666; font-style: italic; }
     .dispute-help {
       margin: 0 0 14px;
       line-height: 1.45;
       color: #444;
     }
-
-    .dispute-form {
-      display: grid;
-      gap: 12px;
-    }
-
+    .dispute-form { display: grid; gap: 12px; }
     .form-group label {
       display: block;
       margin-bottom: 5px;
       font-weight: bold;
     }
-
-    .form-group input,
-    .form-group textarea {
+    .form-group input, .form-group textarea {
       width: 100%;
       padding: 10px;
       border: 1px solid #999;
       border-radius: 5px;
       font: inherit;
     }
-
-    .form-group textarea {
-      min-height: 95px;
-      resize: vertical;
-    }
-
+    .form-group textarea { min-height: 95px; resize: vertical; }
     .dispute-btn {
       width: fit-content;
       margin: 0;
       background: #b35a00;
     }
-
-    .dispute-btn:hover {
-      background: #823f00;
-    }
-
+    .dispute-btn:hover { background: #823f00; }
     .dispute-list {
       display: grid;
       gap: 12px;
       margin-top: 18px;
     }
-
     .dispute-item {
       padding: 13px;
       border-left: 5px solid #b35a00;
       border-radius: 5px;
       background: #fff7ed;
     }
-
     .dispute-heading {
       display: flex;
       justify-content: space-between;
       gap: 10px;
       font-weight: bold;
     }
-
-    .dispute-status {
-      color: #8a4300;
-    }
-
+    .dispute-status { color: #8a4300; }
     .dispute-reason {
       margin-top: 8px;
       white-space: pre-wrap;
       line-height: 1.45;
     }
-
     .remove-dispute {
       padding: 6px 10px;
       margin: 10px 0 0;
       font-size: 13px;
       background: #9d2020;
     }
-
-    .review-disputes {
-      background: #663399;
-    }
-
-    .review-disputes:hover {
-      background: #48216d;
-    }
-
+    .review-disputes { background: #663399; }
+    .review-disputes:hover { background: #48216d; }
     .ai-review-note {
       margin-top: 8px;
       padding: 8px;
@@ -204,19 +142,13 @@
       background: #f3eef8;
       line-height: 1.4;
     }
-
     #disputeStatus {
       min-height: 20px;
       margin-top: 8px;
       color: #166534;
       font-weight: bold;
     }
-
-    .buttons {
-      text-align: center;
-      margin-top: 20px;
-    }
-
+    .buttons { text-align: center; margin-top: 20px; }
     button {
       background: green;
       color: white;
@@ -227,34 +159,17 @@
       font-size: 16px;
       cursor: pointer;
     }
-
-    button:hover {
-      background: darkgreen;
-    }
-
-    .secondary {
-      background: #333;
-    }
-
-    .secondary:hover {
-      background: #111;
-    }
-
-    .download {
-      background: #176b9e;
-    }
-
-    .download:hover {
-      background: #0f4f78;
-    }
-
+    button:hover { background: darkgreen; }
+    .secondary { background: #333; }
+    .secondary:hover { background: #111; }
+    .download { background: #176b9e; }
+    .download:hover { background: #0f4f78; }
     #downloadStatus {
       min-height: 20px;
       margin-top: 8px;
       text-align: center;
       font-weight: bold;
     }
-
     body.pdf-mode .buttons,
     body.pdf-mode .dispute-form,
     body.pdf-mode .dispute-help,
@@ -263,38 +178,17 @@
     body.pdf-mode .remove-dispute {
       display: none;
     }
-
-    body.pdf-mode {
-      background: white;
-    }
-
-    body.pdf-mode .container {
-      width: 100%;
-      margin: 0;
-    }
+    body.pdf-mode { background: white; }
+    body.pdf-mode .container { width: 100%; margin: 0; }
 
     @media print {
-      .buttons,
-      .dispute-form,
-      .dispute-help,
-      #disputeStatus,
-      #downloadStatus,
-      .remove-dispute {
+      .buttons, .dispute-form, .dispute-help,
+      #disputeStatus, #downloadStatus, .remove-dispute {
         display: none;
       }
-
-      body {
-        background: white;
-      }
-
-      .container {
-        width: 100%;
-        margin: 0;
-      }
-
-      .section {
-        break-inside: avoid;
-      }
+      body { background: white; }
+      .container { width: 100%; margin: 0; }
+      .section { break-inside: avoid; }
     }
   </style>
 </head>
@@ -319,6 +213,20 @@
       <h2>Evaluation</h2>
       <div id="scoreSummary"></div>
       <div id="feedback"></div>
+    </div>
+
+    <div class="section" id="verbalReportSection">
+      <h2>Verbal Report Grading</h2>
+      <div id="verbalReportScore"></div>
+
+      <h3>Report Transcript</h3>
+      <div
+        id="verbalReportTranscript"
+        style="white-space: pre-wrap; line-height: 1.5;"
+      ></div>
+
+      <h3>Verbal Report Checklist</h3>
+      <div id="verbalReportChecklist" class="input-list"></div>
     </div>
 
     <div class="section">
@@ -436,12 +344,10 @@
         gradingData.returnUrl ||
         gradingData.sourcePage;
 
-      const referringPage = document.referrer;
-
       const candidates = [
         returnParameter,
         savedInResults,
-        referringPage
+        document.referrer
       ];
 
       const scenarioUrl = candidates.find(isScenarioUrl);
@@ -481,7 +387,6 @@
 
       container.replaceChildren();
 
-      // Compatibility with older saved reports.
       if (inputs.length === 0) {
         inputs = [];
 
@@ -516,7 +421,6 @@
         const empty = document.createElement("div");
         empty.className = "empty-message";
         empty.textContent = "No student inputs were recorded.";
-
         container.appendChild(empty);
         return;
       }
@@ -531,7 +435,6 @@
         const type = document.createElement("span");
         type.textContent =
           (index + 1) + ". " + (input.type || "Student Input");
-
         heading.appendChild(type);
 
         if (input.time) {
@@ -573,7 +476,6 @@
 
         scoreSummary.textContent =
           `Score: ${earnedPoints} of ${possiblePoints} points (${percentage}%)`;
-
         return;
       }
 
@@ -589,7 +491,6 @@
       let inOverallResult = false;
 
       for (const line of String(feedback).split(/\r?\n/)) {
-        // Recognize plain or Markdown Overall Result(s) headings.
         const heading = line.trim()
           .replace(/^#{1,6}\s*/, "")
           .replace(/^[*-]\s+/, "")
@@ -601,7 +502,6 @@
           continue;
         }
 
-        // Preserve any following report section.
         if (
           inOverallResult &&
           /^(?:checklist result|critical criteria|items missed|instructor comments)\s*:?\s*$/i.test(
@@ -613,7 +513,6 @@
 
         if (inOverallResult) continue;
 
-        // Preserve the earlier removal of standalone pass/fail lines.
         if (
           /^\s*(?:(?:overall\s+)?(?:result|status|outcome|grade)\s*:\s*)?(?:pass|passed|fail|failed)\s*[.!]?\s*$/i.test(
             line
@@ -650,7 +549,6 @@
         empty.className = "empty-message";
         empty.textContent =
           "No scoring disputes have been entered.";
-
         container.appendChild(empty);
         return;
       }
@@ -707,15 +605,7 @@
         });
 
         heading.append(title, status);
-
-        item.append(
-          heading,
-          reason,
-          submitted,
-          aiNote,
-          remove
-        );
-
+        item.append(heading, reason, submitted, aiNote, remove);
         container.appendChild(item);
       });
     }
@@ -731,7 +621,6 @@
       if (!item || !reason) {
         statusBox.textContent =
           "Enter both the scoring item and the reason for the dispute.";
-
         statusBox.style.color = "#9d2020";
         return;
       }
@@ -746,7 +635,6 @@
           Date.now() +
           "-" +
           Math.random().toString(16).slice(2),
-
         item,
         reason,
         status: "Pending instructor review",
@@ -768,19 +656,15 @@
       try {
         const response = await fetch("/review-dispute", {
           method: "POST",
-
           headers: {
             "Content-Type": "application/json"
           },
-
           body: JSON.stringify({
-            dispute: dispute,
+            dispute,
             scenario: gradingData.scenario,
-
             earnedPoints:
               gradingData.originalEarnedPoints ??
               gradingData.earnedPoints,
-
             possiblePoints: gradingData.possiblePoints,
             checklist: gradingData.checklist,
             studentInputLog: gradingData.studentInputLog,
@@ -800,7 +684,6 @@
           "AI recommendation prepared. An instructor must make the final decision.";
       } catch (error) {
         dispute.aiReviewError = error.message;
-
         statusBox.style.color = "#9d2020";
         statusBox.textContent =
           "Dispute saved, but AI review was unavailable. The instructor can review it manually.";
@@ -811,12 +694,9 @@
     }
 
     function removeDispute(index) {
-      if (!Array.isArray(gradingData.scoringDisputes)) {
-        return;
-      }
+      if (!Array.isArray(gradingData.scoringDisputes)) return;
 
       gradingData.scoringDisputes.splice(index, 1);
-
       saveGradingData();
       renderDisputes();
 
@@ -831,7 +711,6 @@
       ) {
         getElement("disputeStatus").textContent =
           "Add at least one scoring dispute first.";
-
         return;
       }
 
@@ -855,15 +734,12 @@
 
       if (typeof html2pdf === "undefined") {
         statusBox.style.color = "#9d2020";
-
         statusBox.textContent =
           "The PDF tool did not load. Check the internet connection and try again.";
-
         return;
       }
 
       downloadButton.disabled = true;
-
       statusBox.style.color = "#166534";
       statusBox.textContent = "Preparing PDF...";
 
@@ -872,12 +748,10 @@
       const options = {
         margin: [0.35, 0.35, 0.35, 0.35],
         filename: createPdfFilename(),
-
         image: {
           type: "jpeg",
           quality: 0.98
         },
-
         html2canvas: {
           scale: 2,
           useCORS: true,
@@ -885,13 +759,11 @@
           scrollX: 0,
           scrollY: 0
         },
-
         jsPDF: {
           unit: "in",
           format: "letter",
           orientation: "portrait"
         },
-
         pagebreak: {
           mode: ["css", "legacy"],
           avoid: ["h1", "h2", "h3"]
@@ -907,13 +779,92 @@
         statusBox.textContent = "PDF downloaded.";
       } catch (error) {
         console.error("PDF download failed:", error);
-
         statusBox.style.color = "#9d2020";
         statusBox.textContent =
           "The PDF could not be created. Please try Print Report instead.";
       } finally {
         document.body.classList.remove("pdf-mode");
         downloadButton.disabled = false;
+      }
+    }
+
+    function renderVerbalReport(data = {}) {
+      const score = getElement("verbalReportScore");
+      const transcript = getElement("verbalReportTranscript");
+      const list = getElement("verbalReportChecklist");
+
+      list.replaceChildren();
+
+      let grade;
+
+      try {
+        const grades = JSON.parse(
+          sessionStorage.getItem("emtVerbalReportGrades") || "{}"
+        );
+
+        let code = data.scenarioCode;
+
+        if (!code && data.scenarioUrl) {
+          const page = new URL(
+            data.scenarioUrl,
+            location.href
+          ).pathname;
+
+          code = /sob/i.test(page)
+            ? "sob"
+            : /stroke/i.test(page)
+              ? "stroke"
+              : /diabetic/i.test(page)
+                ? "diabetic"
+                : "chestPain";
+        }
+
+        grade = grades[code || "chestPain"];
+
+        const state = JSON.parse(
+          sessionStorage.getItem(
+            "emtScenarioState:" + (code || "chestPain")
+          ) || "{}"
+        );
+
+        if (
+          grade &&
+          grade.caseSessionId &&
+          state.caseSessionId &&
+          grade.caseSessionId !== state.caseSessionId
+        ) {
+          grade = null;
+        }
+      } catch (error) {
+        grade = null;
+      }
+
+      if (!grade) {
+        score.textContent =
+          "No scored verbal report is available for this scenario. Select Score Report on the verbal-report page first.";
+        transcript.textContent = "";
+        return;
+      }
+
+      const percentage = Math.round(
+        grade.earnedPoints / grade.possiblePoints * 100
+      );
+
+      score.textContent =
+        `Verbal report score: ${grade.earnedPoints} of ${grade.possiblePoints} points (${percentage}%)`;
+
+      transcript.textContent = grade.transcript || "";
+
+      for (const item of grade.checklist || []) {
+        const row = document.createElement("div");
+        row.className = "input-item";
+
+        row.textContent =
+          `${item.pass ? "✓" : "✗"} ${item.name}: ` +
+          `${item.pass ? "Reported" : "Not recognized"} ` +
+          `(${item.pass ? 1 : 0}/1)`;
+
+        list.appendChild(row);
       }
     }
 
@@ -929,6 +880,7 @@
         getElement("feedback").textContent =
           "No grading information was found. Please complete a scenario first.";
 
+        renderVerbalReport({});
         renderStudentInputs({});
         renderDisputes();
         return;
@@ -960,6 +912,7 @@
         getElement("feedback").textContent =
           removePassFailResult(gradingData.feedback);
 
+        renderVerbalReport(gradingData);
         renderStudentInputs(gradingData);
         renderDisputes();
       } catch (error) {
@@ -973,6 +926,7 @@
         getElement("feedback").textContent =
           "The saved grading information could not be read.";
 
+        renderVerbalReport({});
         renderStudentInputs({});
         renderDisputes();
       }
@@ -1011,6 +965,10 @@
         window.location.href = "index.html";
       }
     );
+
+    window.addEventListener("focus", function () {
+      renderVerbalReport(gradingData);
+    });
 
     loadReport();
   </script>
