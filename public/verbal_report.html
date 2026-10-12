@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> Verbal Patient Report Practice</title>
+  <title>Verbal Patient Report Practice</title>
+
   <style>
     * { box-sizing: border-box; }
 
@@ -42,7 +43,11 @@
       text-shadow: 0 2px 4px rgba(0, 0, 0, .55);
     }
 
-    h1 { margin: 0; font-size: clamp(24px, 4vw, 36px); }
+    h1 {
+      margin: 0;
+      font-size: clamp(24px, 4vw, 36px);
+    }
+
     header p { margin: 7px 0 16px; }
 
     .panel {
@@ -86,7 +91,10 @@
     }
 
     button:hover { filter: brightness(1.08); }
-    button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+    button:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 2px;
+    }
     button:disabled { cursor: not-allowed; opacity: .55; }
 
     .start { background: var(--green); }
@@ -140,7 +148,10 @@
       resize: vertical;
     }
 
-    textarea:focus { border-color: var(--blue); outline: 2px solid rgba(23, 107, 158, .2); }
+    textarea:focus {
+      border-color: var(--blue);
+      outline: 2px solid rgba(23, 107, 158, .2);
+    }
 
     .help {
       margin: 7px 0 0;
@@ -232,24 +243,51 @@
     }
   </style>
 </head>
+
 <body>
   <main class="page">
     <header>
       <h1>Verbal Patient Report</h1>
     </header>
 
-    <section class="panel report-panel" aria-labelledby="reportHeading">
-      <h2 id="reportHeading" style="margin:0; color:var(--navy); text-align:center;">Record Your Report</h2>
+    <section
+      class="panel report-panel"
+      aria-labelledby="reportHeading"
+    >
+      <h2
+        id="reportHeading"
+        style="margin:0; color:var(--navy); text-align:center;"
+      >
+        Record Your Report
+      </h2>
 
       <div id="unsupported" class="unsupported" role="alert">
-        Voice recognition is not available in this browser. Open the page in the current version of Chrome or Edge, or type the report in the box below.
+        Voice recognition is not available in this browser.
+        Open the page in the current version of Chrome or Edge,
+        or type the report in the box below.
       </div>
 
       <div class="controls">
-        <button id="startButton" class="start" type="button">🎙 Start Verbal Report</button>
-        <button id="stopButton" class="stop" type="button" disabled>■ Stop Recording</button>
-        <button id="scoreButton" class="score" type="button">✓ Score Report</button>
-        <button id="clearButton" class="clear" type="button">Clear / Start Over</button>
+        <button id="startButton" class="start" type="button">
+          🎙 Start Verbal Report
+        </button>
+
+        <button
+          id="stopButton"
+          class="stop"
+          type="button"
+          disabled
+        >
+          ■ Stop Recording
+        </button>
+
+        <button id="scoreButton" class="score" type="button">
+          ✓ Score Report
+        </button>
+
+        <button id="clearButton" class="clear" type="button">
+          Clear / Start Over
+        </button>
       </div>
 
       <div class="status-row" aria-live="polite">
@@ -258,17 +296,30 @@
       </div>
 
       <label for="transcript">Verbal report transcript</label>
-      <textarea id="transcript" placeholder="Your spoken report will appear here. You may also type a report for practice." spellcheck="true"></textarea>
-      <p class="help">Microphone permission is required. Voice recognition works best over HTTPS in Chrome or Edge.</p>
+
+      <textarea
+        id="transcript"
+        placeholder="Your spoken report will appear here. You may also type a report for practice."
+        spellcheck="true"
+      ></textarea>
+
+      <p class="help">
+        Microphone permission is required.
+        Voice recognition works best over HTTPS in Chrome or Edge.
+      </p>
     </section>
 
-    <section id="results" class="panel results" aria-live="polite">
+    <section
+      id="results"
+      class="panel results"
+      aria-live="polite"
+    >
       <div class="score-heading">
         <h2>Practice Evaluation</h2>
-        <span id="scoreBadge" class="score-badge">0 / 12</span>
+        <span id="scoreBadge" class="score-badge">0 / 9</span>
       </div>
+
       <div id="checklist" class="checklist"></div>
-  
     </section>
 
     <div class="controls">
@@ -285,7 +336,10 @@
   <script>
     "use strict";
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition =
+      window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
+
     const startButton = document.getElementById("startButton");
     const stopButton = document.getElementById("stopButton");
     const scoreButton = document.getElementById("scoreButton");
@@ -314,160 +368,274 @@
       window.location.href = "chestpain2.html";
     }
 
+    const VERBAL_KEY = "emtVerbalReportGrades";
+
+    function reportStorage() {
+      try {
+        if (
+          window.opener &&
+          !window.opener.closed &&
+          window.opener.location.origin === location.origin
+        ) {
+          return window.opener.sessionStorage;
+        }
+      } catch (error) {}
+
+      return sessionStorage;
+    }
+
+    function verbalContext() {
+      const storage = reportStorage();
+      let url = "";
+
+      try {
+        url = window.opener && !window.opener.closed
+          ? window.opener.location.href
+          : "";
+      } catch (error) {}
+
+      url =
+        url ||
+        storage.getItem("emtCurrentScenarioUrl") ||
+        document.referrer;
+
+      const page = new URL(
+        url || "chestpain2.html",
+        location.href
+      ).pathname.split("/").pop().toLowerCase();
+
+      const scenarioCode = /sob/.test(page)
+        ? "sob"
+        : /stroke/.test(page)
+          ? "stroke"
+          : /diabetic/.test(page)
+            ? "diabetic"
+            : "chestPain";
+
+      let state = {};
+
+      try {
+        state = JSON.parse(
+          storage.getItem(
+            "emtScenarioState:" + scenarioCode
+          ) || "{}"
+        );
+      } catch (error) {}
+
+      return {
+        scenarioCode,
+        caseSessionId: state.caseSessionId || "",
+        scenarioUrl: url
+      };
+    }
+
+    const currentVerbalContext = verbalContext();
+
+    function saveVerbalGrade(result) {
+      const storage = reportStorage();
+      let grades = {};
+
+      try {
+        grades = JSON.parse(
+          storage.getItem(VERBAL_KEY) || "{}"
+        );
+      } catch (error) {}
+
+      if (result) {
+        grades[currentVerbalContext.scenarioCode] = result;
+      } else {
+        delete grades[currentVerbalContext.scenarioCode];
+      }
+
+      const json = JSON.stringify(grades);
+
+      storage.setItem(VERBAL_KEY, json);
+      sessionStorage.setItem(VERBAL_KEY, json);
+    }
+
     const reportElements = [
       {
         name: "Provider or unit identification",
         help: "Identifies the unit, crew, or provider level.",
-        patterns: [/\b(unit|ambulance|rescue|ems|emr|emt|medic|paramedic|crew)\b/i]
+        patterns: [
+          /\b(unit|ambulance|rescue|ems|emr|emt|medic|paramedic|crew)\b/i
+        ]
       },
+
       {
         name: "Patient age",
         help: "States the patient's age.",
-        patterns: [/\b\d{1,3}[ -]?(year|yr)s?[ -]?old\b/i, /\b(age|aged)\s+\d{1,3}\b/i]
+        patterns: [
+          /\b\d{1,3}[ -]?(year|yr)s?[ -]?old\b/i,
+          /\b(age|aged)\s+\d{1,3}\b/i
+        ]
       },
+
       {
         name: "Patient sex",
         help: "States male, female, man, or woman.",
-        patterns: [/\b(male|female|man|woman|boy|girl)\b/i]
+        patterns: [
+          /\b(male|female|man|woman|boy|girl)\b/i
+        ]
       },
+
       {
         name: "Chief complaint or mechanism",
         help: "Reports the principal problem, injury, or mechanism.",
-        patterns: [/\b(chief complaint|complains? of|presenting with|called for|mechanism|injur(?:y|ed)|pain|pressure|shortness of breath|difficulty breathing|weakness|fall|collision|crash)\b/i]
+        patterns: [
+          /\b(chief complaint|complains? of|presenting with|called for|mechanism|injur(?:y|ed)|pain|pressure|shortness of breath|difficulty breathing|weakness|fall|collision|crash)\b/i
+        ]
       },
+
       {
         name: "Mental status",
         help: "Reports orientation, AVPU, GCS, confusion, or responsiveness.",
-        patterns: [/\b(alert|oriented|a\s*&?\s*o|avpu|gcs|responsive|unresponsive|confused|mental status|responds? to (voice|verbal|pain))\b/i]
+        patterns: [
+          /\b(alert|oriented|a\s*&?\s*o|avpu|gcs|responsive|unresponsive|confused|mental status|responds? to (voice|verbal|pain))\b/i
+        ]
       },
-      
+
       {
         name: "Vital signs",
         help: "Reports at least three measured vital signs, including common numeric and abbreviated wording.",
+
         test: function (text) {
           const vitalCategories = [
-            // Blood pressure: "BP 120/80", "120 over 80", "systolic 120".
             [
               /\b(?:bp|blood pressure)\s*(?:is|of|was|at|:)?\s*\d{2,3}\s*(?:\/|over)\s*\d{2,3}\b/i,
               /\b\d{2,3}\s+(?:over)\s+\d{2,3}\b/i,
               /\b(?:systolic|diastolic)\s*(?:is|was|of|at|:)?\s*\d{2,3}\b/i
             ],
 
-            // Pulse/heart rate: "pulse 76", "heart rate is 88", "HR 92 regular".
             [
               /\b(?:pulse|heart rate|hr)\s*(?:is|of|was|at|:)?\s*\d{2,3}\b/i,
               /\b\d{2,3}\s*(?:beats per minute|bpm)\b/i,
               /\b(?:pulse|heart rate)\b.{0,30}\b(?:regular|irregular|strong|weak|bounding|thready)\b/i
             ],
 
-            // Respirations: "respirations 18", "RR 20", "breathing at 16".
             [
               /\b(?:respirations?|respiratory rate|rr|breathing)\s*(?:is|are|of|was|at|:)?\s*\d{1,2}\b/i,
               /\b\d{1,2}\s*(?:breaths per minute|respirations per minute)\b/i,
               /\b(?:respirations?|breathing)\b.{0,35}\b(?:regular|irregular|labored|unlabored|shallow|deep|adequate|inadequate)\b/i
             ],
 
-            // Oxygen saturation: "SpO2 98", "sat is 96%", "pulse ox 95 on room air".
             [
               /\b(?:spo\s*2|o2 sat(?:uration)?|oxygen sat(?:uration)?|pulse ox|sat)\s*(?:is|of|was|at|:)?\s*\d{2,3}\s*(?:percent|%)?/i,
               /\boxygen saturation\b.{0,25}\b\d{2,3}\b/i,
               /\b\d{2,3}\s*(?:percent|%)\s*(?:on room air|on oxygen|spo\s*2|saturation)?/i
             ],
 
-            // Temperature.
             [
               /\b(?:temperature|temp)\s*(?:is|of|was|at|:)?\s*\d{2,3}(?:\.\d)?\s*(?:degrees?|fahrenheit|celsius|f|c)?\b/i,
               /\b(?:afebrile|febrile)\b/i
             ],
 
-            // Blood glucose.
             [
               /\b(?:blood glucose|blood sugar|glucose|bgl|bg|finger stick)\s*(?:is|of|was|at|:)?\s*\d{2,3}\b/i,
               /\b\d{2,3}\s*(?:mg\/?dl|milligrams per deciliter)\b/i
             ],
 
-            // Pain score.
             [
               /\b(?:pain|discomfort)\s*(?:is|was|at|rated|score)?\s*(?:a\s*)?\d{1,2}\s*(?:out of|\/|of)\s*10\b/i,
               /\b\d{1,2}\s*(?:out of|\/)\s*10\s*(?:pain|chest pain|discomfort)?/i
             ],
 
-            // Level of consciousness may be reported with the vital-sign set.
             [
               /\b(?:gcs|glasgow coma scale)\s*(?:is|of|was|at|:)?\s*\d{1,2}\b/i,
               /\b(?:alert and oriented|a\s*(?:and|&)\s*o)\s*(?:times|x)?\s*[1-4]?\b/i
             ]
           ];
 
-          const recognizedVitals = vitalCategories.filter(function (patterns) {
-            return patterns.some(function (pattern) {
-              return pattern.test(text);
-            });
-          }).length;
+          const recognizedVitals = vitalCategories.filter(
+            function (patterns) {
+              return patterns.some(function (pattern) {
+                return pattern.test(text);
+              });
+            }
+          ).length;
 
-          // Require actual findings. Merely saying "vital signs obtained" is not enough.
           return recognizedVitals >= 3;
         }
       },
+
       {
         name: "Pertinent history",
         help: "Includes relevant symptoms, allergies, medications, history, or events.",
-        patterns: [/\b(sample|opqrst|allerg(?:y|ies|ic)|medication|meds|medical history|past history|history of|onset|provocation|quality|radiat(?:es|ion|ing)|last oral intake|events leading)\b/i]
+        patterns: [
+          /\b(sample|opqrst|allerg(?:y|ies|ic)|medication|meds|medical history|past history|history of|onset|provocation|quality|radiat(?:es|ion|ing)|last oral intake|events leading)\b/i
+        ]
       },
-      
+
       {
         name: "Treatment and response",
         help: "States treatment or explicitly reports none, plus the patient's response or reassessment when treatment was given.",
+
         test: function (text) {
-          const noTreatmentReported = /\b(?:no|without)\s+(?:treatment|interventions?|medications?|care)\s+(?:was\s+)?(?:given|provided|administered|required|indicated|needed|performed)?\b/i.test(text) ||
+          const noTreatmentReported =
+            /\b(?:no|without)\s+(?:treatment|interventions?|medications?|care)\s+(?:was\s+)?(?:given|provided|administered|required|indicated|needed|performed)?\b/i.test(text) ||
             /\b(?:treatment|intervention)\s+(?:was\s+)?not\s+(?:required|indicated|needed|provided)\b/i.test(text);
 
           const treatmentPatterns = [
-            // General treatment language.
             /\b(?:treated|treatment|intervention|care provided|administered|gave|given|provided|placed|applied|initiated|started)\b/i,
 
-            // Airway, oxygen, and ventilation.
             /\b(?:oxygen|o2|nasal cannula|nc|nonrebreather|non-rebreather|nrb|bag valve mask|bvm|ventilat(?:ed|ing|ions?)|assisted ventilations?|cpap|opa|npa|suction(?:ed|ing)?)\b/i,
+
             /\b(?:liters?|litres?)\s*(?:per minute|\/min|lpm)\b/i,
+
             /\b(?:high flow|low flow)\s+oxygen\b/i,
 
-            // Medications commonly reported at the EMR/EMT level.
             /\b(?:aspirin|asa|nitroglycerin|nitro|oral glucose|glucose|epinephrine|epi(?:nephrine)? auto[- ]?injector|naloxone|narcan|albuterol|metered dose inhaler|mdi|activated charcoal)\b/i,
+
             /\b(?:milligrams?|mg|grams?|g|micrograms?|mcg|milliliters?|ml|puffs?|sprays?|tablets?|tabs?)\b/i,
 
-            // Positioning, bleeding control, shock care, and trauma care.
             /\b(?:position of comfort|semi[- ]?fowler|fowler|supine|recovery position|left lateral|kept warm|covered with (?:a )?blanket|shock position)\b/i,
+
             /\b(?:direct pressure|tourniquet|wound packing|hemostatic|bandage|bandaged|dressing|occlusive dressing|chest seal|bleeding control|controlled (?:the )?bleeding)\b/i,
+
             /\b(?:splint|splinted|immobilized|immobilization|cervical collar|c[- ]?collar|spinal motion restriction|traction splint|pelvic binder)\b/i,
 
-            // Other common care statements.
             /\b(?:aed|defibrillat(?:ed|ion)|cpr|chest compressions?|coached breathing|reassurance|calmed|monitored|cardiac monitor|twelve lead|12[- ]?lead)\b/i
           ];
 
           const responsePatterns = [
             /\b(?:response|responded|improved|better|relief|resolved|decreased|unchanged|no change|worsened|worse|deteriorated|tolerated well)\b/i,
+
             /\b(?:after|following|post)\s+(?:the\s+)?(?:treatment|intervention|medication|oxygen|aspirin|nitro|glucose|epinephrine|naloxone|narcan|albuterol|splinting)\b/i,
+
             /\b(?:reassess(?:ed|ment|ing)?|reevaluat(?:ed|ion|ing)?|rechecked|repeat(?:ed)?\s+(?:vitals?|blood pressure|pulse|respirations?|oxygen saturation|spo\s*2|pain score))\b/i,
+
             /\b(?:pain|discomfort)\s+(?:is|was|decreased to|improved to|remained at|now)\s*(?:a\s*)?\d{1,2}\s*(?:out of|\/|of)\s*10\b/i,
+
             /\b(?:spo\s*2|oxygen saturation|pulse ox|sat)\s+(?:improved|increased|rose|remained|is now|was now)\b/i,
+
             /\b(?:patient|he|she|they)\s+(?:states?|reports?|says?|feels?|appears?)\s+(?:better|worse|improved|unchanged|the same)\b/i
           ];
 
-          const treatmentFound = treatmentPatterns.some(function (pattern) {
-            return pattern.test(text);
-          });
+          const treatmentFound = treatmentPatterns.some(
+            function (pattern) {
+              return pattern.test(text);
+            }
+          );
 
-          const responseFound = responsePatterns.some(function (pattern) {
-            return pattern.test(text);
-          });
+          const responseFound = responsePatterns.some(
+            function (pattern) {
+              return pattern.test(text);
+            }
+          );
 
-          return noTreatmentReported || (treatmentFound && responseFound);
+          return (
+            noTreatmentReported ||
+            (treatmentFound && responseFound)
+          );
         }
       },
+
       {
         name: "Transport information",
         help: "Reports destination, transport priority, or estimated arrival time.",
-        patterns: [/\b(transport(?:ing|ed)?|en route|destination|hospital|emergency department|ed|eta|estimated time|minutes? out|priority|code (one|two|three|1|2|3))\b/i]
+        patterns: [
+          /\b(transport(?:ing|ed)?|en route|destination|hospital|emergency department|ed|eta|estimated time|minutes? out|priority|code (one|two|three|1|2|3))\b/i
+        ]
       }
     ];
 
@@ -477,17 +645,28 @@
 
     function setStatus(message, listening) {
       statusText.textContent = message;
-      statusText.classList.toggle("listening", Boolean(listening));
+
+      statusText.classList.toggle(
+        "listening",
+        Boolean(listening)
+      );
     }
 
     function updateTimer() {
-      const minutes = String(Math.floor(elapsedSeconds / 60)).padStart(2, "0");
-      const seconds = String(elapsedSeconds % 60).padStart(2, "0");
+      const minutes = String(
+        Math.floor(elapsedSeconds / 60)
+      ).padStart(2, "0");
+
+      const seconds = String(
+        elapsedSeconds % 60
+      ).padStart(2, "0");
+
       timerText.textContent = minutes + ":" + seconds;
     }
 
     function startTimer() {
       clearInterval(timerInterval);
+
       timerInterval = setInterval(function () {
         elapsedSeconds += 1;
         updateTimer();
@@ -505,9 +684,15 @@
     }
 
     if (!SpeechRecognition) {
-      document.getElementById("unsupported").style.display = "block";
+      document.getElementById("unsupported").style.display =
+        "block";
+
       startButton.disabled = true;
-      setStatus("Voice recognition unavailable. You may type your report.", false);
+
+      setStatus(
+        "Voice recognition unavailable. You may type your report.",
+        false
+      );
     } else {
       recognition = new SpeechRecognition();
       recognition.continuous = true;
@@ -517,14 +702,23 @@
       recognition.onstart = function () {
         isListening = true;
         setRecordingControls(true);
-        setStatus("Listening… speak your complete patient report.", true);
+
+        setStatus(
+          "Listening… speak your complete patient report.",
+          true
+        );
       };
 
       recognition.onresult = function (event) {
         let interimSpeech = "";
 
-        for (let i = event.resultIndex; i < event.results.length; i += 1) {
+        for (
+          let i = event.resultIndex;
+          i < event.results.length;
+          i += 1
+        ) {
           const words = event.results[i][0].transcript;
+
           if (event.results[i].isFinal) {
             completedSpeech += words + " ";
           } else {
@@ -532,17 +726,34 @@
           }
         }
 
-        transcriptBox.value = normalizeSpacing(completedSpeech + interimSpeech);
+        transcriptBox.value = normalizeSpacing(
+          completedSpeech + interimSpeech
+        );
       };
 
       recognition.onerror = function (event) {
         if (event.error === "no-speech") {
-          setStatus("No speech detected. Continue speaking or restart the report.", false);
-        } else if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+          setStatus(
+            "No speech detected. Continue speaking or restart the report.",
+            false
+          );
+        } else if (
+          event.error === "not-allowed" ||
+          event.error === "service-not-allowed"
+        ) {
           shouldContinue = false;
-          setStatus("Microphone permission was denied. Allow microphone access or type the report.", false);
+
+          setStatus(
+            "Microphone permission was denied. Allow microphone access or type the report.",
+            false
+          );
         } else if (event.error !== "aborted") {
-          setStatus("Voice recognition error: " + event.error + ". You may type the report.", false);
+          setStatus(
+            "Voice recognition error: " +
+            event.error +
+            ". You may type the report.",
+            false
+          );
         }
       };
 
@@ -560,7 +771,13 @@
 
         stopTimer();
         setRecordingControls(false);
-        setStatus(transcriptBox.value.trim() ? "Recording stopped. Review or score your report." : "Ready to begin.", false);
+
+        setStatus(
+          transcriptBox.value.trim()
+            ? "Recording stopped. Review or score your report."
+            : "Ready to begin.",
+          false
+        );
       };
     }
 
@@ -568,7 +785,9 @@
       if (!recognition || isListening) return;
 
       completedSpeech = transcriptBox.value.trim();
+
       if (completedSpeech) completedSpeech += " ";
+
       shouldContinue = true;
       resultsPanel.style.display = "none";
 
@@ -577,26 +796,49 @@
         startTimer();
       } catch (error) {
         shouldContinue = false;
-        setStatus("Unable to start the microphone. Please try again.", false);
+
+        setStatus(
+          "Unable to start the microphone. Please try again.",
+          false
+        );
       }
     });
 
     stopButton.addEventListener("click", function () {
       shouldContinue = false;
-      if (recognition && isListening) recognition.stop();
+
+      if (recognition && isListening) {
+        recognition.stop();
+      }
+
       stopTimer();
     });
 
     function elementWasReported(element, report) {
-      if (typeof element.test === "function") return element.test(report);
-      const matches = element.patterns.map(function (pattern) { return pattern.test(report); });
-      return element.requireAll ? matches.every(Boolean) : matches.some(Boolean);
+      if (typeof element.test === "function") {
+        return element.test(report);
+      }
+
+      const matches = element.patterns.map(
+        function (pattern) {
+          return pattern.test(report);
+        }
+      );
+
+      return element.requireAll
+        ? matches.every(Boolean)
+        : matches.some(Boolean);
     }
 
     function scoreReport() {
       const report = normalizeSpacing(transcriptBox.value);
+
       if (!report) {
-        setStatus("Record or type a verbal report before scoring.", false);
+        setStatus(
+          "Record or type a verbal report before scoring.",
+          false
+        );
+
         transcriptBox.focus();
         return;
       }
@@ -607,14 +849,25 @@
       }
 
       let completed = 0;
+      const gradedItems = [];
+
       checklistBox.innerHTML = "";
 
       reportElements.forEach(function (element) {
         const met = elementWasReported(element, report);
+
         if (met) completed += 1;
 
+        gradedItems.push({
+          name: element.name,
+          help: element.help,
+          pass: met,
+          points: 1
+        });
+
         const item = document.createElement("div");
-        item.className = "check-item " + (met ? "met" : "missing");
+        item.className =
+          "check-item " + (met ? "met" : "missing");
 
         const icon = document.createElement("span");
         icon.className = "icon";
@@ -623,35 +876,84 @@
         const wording = document.createElement("div");
         const title = document.createElement("strong");
         const detail = document.createElement("small");
-        title.textContent = element.name + (met ? " — Reported" : " — Not recognized");
+
+        title.textContent =
+          element.name +
+          (met ? " — Reported" : " — Not recognized");
+
         detail.textContent = element.help;
+
         wording.append(title, detail);
         item.append(icon, wording);
         checklistBox.appendChild(item);
       });
 
-      const percent = Math.round((completed / reportElements.length) * 100);
-      scoreBadge.textContent = completed + " / " + reportElements.length + " (" + percent + "%)";
-      scoreBadge.style.background = percent >= 80 ? "var(--green)" : percent >= 60 ? "#b26a00" : "var(--red)";
+      const percent = Math.round(
+        (completed / reportElements.length) * 100
+      );
+
+      scoreBadge.textContent =
+        completed +
+        " / " +
+        reportElements.length +
+        " (" +
+        percent +
+        "%)";
+
+      scoreBadge.style.background =
+        percent >= 80
+          ? "var(--green)"
+          : percent >= 60
+            ? "#b26a00"
+            : "var(--red)";
+
+      saveVerbalGrade({
+        ...currentVerbalContext,
+        transcript: report,
+        earnedPoints: completed,
+        possiblePoints: reportElements.length,
+        checklist: gradedItems,
+        gradedAt: new Date().toISOString()
+      });
+
       resultsPanel.style.display = "block";
       setStatus("Practice evaluation completed.", false);
-      resultsPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      resultsPanel.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
     }
+
+    transcriptBox.addEventListener("input", function () {
+      saveVerbalGrade(null);
+      resultsPanel.style.display = "none";
+    });
 
     scoreButton.addEventListener("click", scoreReport);
 
     clearButton.addEventListener("click", function () {
       shouldContinue = false;
-      if (recognition && isListening) recognition.abort();
+
+      if (recognition && isListening) {
+        recognition.abort();
+      }
+
       stopTimer();
+
       elapsedSeconds = 0;
       completedSpeech = "";
       transcriptBox.value = "";
+
+      saveVerbalGrade(null);
+
       checklistBox.innerHTML = "";
       resultsPanel.style.display = "none";
+
       updateTimer();
       setRecordingControls(false);
       setStatus("Ready to begin.", false);
+
       transcriptBox.focus();
     });
   </script>
