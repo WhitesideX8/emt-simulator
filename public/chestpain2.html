@@ -1820,30 +1820,20 @@
         ]
       },
 {
-        skill: "OPQRST radiation assessed",
-        keywords: [
-          "does the pain radiate", "does the pain travel", "does the discomfort radiate",
-          "does the discomfort travel", "where does the pain go", "does it move anywhere",
-          "radiates to", "travels to", "moves to", "does the pain spread", "does it spread anywhere",
-          "where else do you feel it", "does it go anywhere else", "pain goes into",
-          "pain extends to", "stays in one place", "non radiating", "no radiation",
-          "left arm", "right arm", "jaw", "back", "shoulder", "opqrst radiation", "oprst radiation",
-"does the pain radiate", "does the pain travel", "does the discomfort radiate",
-        "does the discomfort travel", "where does the pain go", "does it move anywhere",
-        "radiates to", "travels to", "moves to", "does the pain spread", "does it spread anywhere",
-        "where else do you feel it", "does it go anywhere else", "pain goes into",
-        "pain extends to", "stays in one place", "non radiating", "no radiation",
-        "left arm", "right arm", "jaw", "back", "shoulder", "opqrst radiation", "oprst radiation"
-        ],
-        patterns: [
-          /\b(pain|discomfort|it)\b.*\b(radiat|travel|spread|move|go|extend)\w*\b.*\b(to|into|anywhere|else)\b/,
-          /\b(radiat|travel|spread)\w*\b.*\b(arm|jaw|back|shoulder|neck)\b/,
-          /\b(no|non)\s+radiat\w*\b/,
-/\b(pain|discomfort|it)\b.*\b(radiat|travel|spread|move|go|extend)\w*\b.*\b(to|into|anywhere|else)\b/,
-        /\b(radiat|travel|spread)\w*\b.*\b(arm|jaw|back|shoulder|neck)\b/,
-        /\b(no|non)\s+radiat\w*\b/
-        ]
-      },
+  skill: "OPQRST radiation assessed",
+  keywords: [],
+  patterns: [
+    /\b(?:opqrst |oprst )?radiation assessed\b/,
+    /\b(?:assess|check|evaluate|ask about|determine)\b.{0,40}\b(?:radiation|radiating)\b/,
+    /\b(?:pain|discomfort|it)\s+(?:(?:does|did)\s+)?(?:radiat\w*|spread\w*|travel\w*)\b/,
+    /\b(?:pain|discomfort|it)\s+(?:move(?:s)?|go(?:es)?|extend(?:s)?)\s+(?:to|into|anywhere|else)\b/,
+    /\bwhere does (?:the |your )?(?:pain|discomfort|it) go\b/,
+    /\b(?:does|did) it go anywhere else\b/,
+    /\bwhere else do you feel (?:the pain|the discomfort|it)\b/,
+    /\b(?:pain|discomfort)\b.{0,25}\b(?:non radiating|does not radiate|no radiation)\b/,
+    /\b(?:no radiation|non radiating pain)\b/
+  ]
+},
 {
         skill: "OPQRST severity assessed",
         keywords: [
