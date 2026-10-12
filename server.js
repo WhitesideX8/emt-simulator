@@ -1068,18 +1068,13 @@ function buildChecklist(body = {}) {
     },
 
     {
-      id: "priority",
-      name: "Patient priority identified",
-      points: 2,
-      pass: includesAny(text, [
-        "patient priority",
-        "high priority patient",
-        "immediate transport",
-        "rapid transport",
-        "load and go"
-      ])
-    },
-
+  id: "chiefComplaint",
+  name: "Determines chief complaint",
+  points: 1,
+  pass: /\b(?:chief complaint|complaint|complaining of)\b/.test(
+    normalizeText(studentRadiationEvidence(body))
+  )
+},
     {
       id: "chiefComplaint",
       name: "Determines chief complaint",
