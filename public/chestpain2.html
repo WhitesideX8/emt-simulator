@@ -2325,7 +2325,7 @@
       ]
     },
 {
-      skill: "Rapid transport or ALS considered",
+      skill: "ALS requested",
       keywords: [
         "request als",
         "intercept with als",
@@ -2436,6 +2436,103 @@
       return words.every(word => normalizedText.includes(word));
     }
 
+function studentRadiationEvidence(body = {}) {
+  if (Array.isArray(body.studentInputLog)) {
+    return body.studentInputLog
+      .map(entry => typeof entry === "string" ? entry : String(entry?.text || ""))
+      .join("\n");
+  }
+
+  // Older pages store student questions and generated answers on separate lines.
+  return [body.studentAnswer, body.patientHistory, body.instructorHistory]
+    .filter(Boolean)
+    .join("\n")
+    .split(/\r?\n/)
+    .filter(line => /^\s*Student(?: to instructor)?\s*:/i.test(line))
+    .map(line => line.replace(/^\s*Student(?: to instructor)?\s*:\s*/i, ""))
+    .join("\n");
+}
+
+function studentAssessedRadiation(body = {}) {
+  const lines = studentRadiationEvidence(body).split(/\r?\n/);
+  return lines.some(line => {
+    const text = normalizeText(line);
+    return [
+      /\b(?:opqrst |oprst )?(?:radiation|region and radiation|location and radiation) assessed\b/,
+      /\b(?:assess|check|evaluate|ask about|determine)\b.{0,50}\b(?:radiation|radiating|whether.{0,20}(?:spreads|travels))\b/,
+      /\b(?:does|did|is|has|can)\b.{0,45}\b(?:pain|discomfort|it)\b.{0,35}\b(?:radiat\w*|spread\w*|travel\w*|move\w*)\b/,
+      /\bwhere does\b.{0,35}\b(?:pain|discomfort|it)\b.{0,20}\bgo\b/,
+      /\b(?:does|did) it go anywhere else\b/,
+      /\bwhere else do you feel\b/,
+      /\b(?:do you|does the patient|does she|does he)\b.{0,35}\b(?:pain|discomfort)\b.{0,25}\banywhere else\b/,
+      /\b(?:does|did)\b.{0,35}\b(?:pain|discomfort|it)\b.{0,25}\b(?:go|extend)\b.{0,20}\b(?:arm|jaw|back|shoulder|neck|anywhere|else)\b/,
+      /\b(?:pain|discomfort)\b.{0,25}\b(?:radiates|spreads|travels) to\b/,
+      /\b(?:pain|discomfort)\b.{0,25}\b(?:non radiating|does not radiate|no radiation)\b/
+    ].some(pattern => pattern.test(text));
+  });
+}
+
+// MOI/NOI credit requires the student to explicitly use the named criterion
+// in a specific determination or a direct question about that criterion.
+function studentDeterminedMoiNoi(body = {}) {
+  return studentRadiationEvidence(body)
+    .split(/[.!?;\r\n]+/)
+    .some(line => {
+      // Accept "nature of illness (NOI)" and "mechanism of injury (MOI)".
+      const text = normalizeText(
+        line.replace(/\(\s*(?:noi|moi)\s*\)/gi, " ")
+      );
+
+      // Required wording must appear in this same sentence.
+      const requiredWording =
+        /\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/;
+
+      if (!requiredWording.test(text)) return false;
+
+      // Uncertainty, refusal, and future plans do not earn credit.
+      if (
+        /\b(?:did not|do not|cannot|cant|unable to|have not|havent)\b.{0,40}\b(?:determine|identify|establish|assess)\b/.test(text) ||
+        /\b(?:unknown|not determined|not identified|not assessed)\b/.test(text) ||
+        /\b(?:will|going to|plan to|need to)\b.{0,30}\b(?:determine|identify|establish|assess)\b/.test(text)
+      ) {
+        return false;
+      }
+
+      const illness =
+        /\b(?:shortness of breath|sob|difficulty breathing|respiratory (?:distress|emergency)|chest pain|chest discomfort|cardiac complaint|stroke|seizure|altered mental status|hypoglycemia|hyperglycemia|diabetic emergency|allergic reaction|anaphylaxis|overdose|poisoning|abdominal pain|syncope|fainting|medical (?:call|illness|emergency|complaint)|non traumatic illness)\b/;
+
+      const mechanism =
+        /\b(?:fall|fell|motor vehicle (?:collision|crash|accident)|mvc|mva|car (?:crash|accident)|collision|pedestrian struck|struck by|assault|gunshot|stabbing|penetrating injury|blunt trauma|burn|explosion|crush injury|sports injury|drowning)\b/;
+
+      // Example: "Nature of illness (NOI) is chest pain."
+      const declaration = text.match(
+        /\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\s+(?:is|was|appears to be|seems to be|suspected to be|identified as|determined (?:as|to be))\s+(.+)/
+      );
+
+      if (declaration) {
+        return (
+          (illness.test(declaration[1]) ||
+            mechanism.test(declaration[1])) &&
+          !/^(?:unknown|unclear|not known|not sure)\b/.test(declaration[1])
+        );
+      }
+
+      // Direct questions must explicitly name MOI/NOI.
+      return [
+        /\b(?:what|which) (?:is|was|would be) (?:the |this patient s |the patient s )?(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/,
+        /\b(?:tell me|describe|identify|determine|assess|check) (?:the |this patient s |the patient s )?(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/
+      ].some(pattern => pattern.test(text));
+    });
+}
+function studentTransportDecision(body = {}) {
+  return studentRadiationEvidence(body).split(/[.!?;\r\n]+/).some(line => {
+    const text = normalizeText(line);
+    if (/\b(?:do not|will not|no need to|not going to)\b.{0,30}\btransport\b/.test(text)) return false;
+    return /\b(?:(?:rapid|immediate|urgent|emergent|expedited|priority|high priority) transport|transport (?:promptly|now|immediately|without delay)|(?:begin|beginning|initiate|initiating|start|starting) transport|load and go|transport to (?:the |a |an )?(?:hospital|emergency department|cardiac center|pci center|appropriate facility)|patient priority and transport decision made)\b/.test(text);
+  });
+}
+
+
     function detectAndRecordAssessments(text, source) {
       const normalizedText = normalizeText(text);
       const newlyRecorded = [];
@@ -2449,7 +2546,19 @@
           pattern.test(normalizedText)
         );
 
-        const matched = keywordMatched || patternMatched;
+        const evidence = { studentInputLog: [text] };
+        let matched = keywordMatched || patternMatched;
+        if (item.skill === "Chief complaint identified") {
+          matched = /\bchief complaint\b/.test(normalizedText);
+        } else if (item.skill === "Determines the mechanism of injury/nature of illness") {
+          matched = studentDeterminedMoiNoi(evidence);
+        } else if (item.skill === "OPQRST radiation assessed") {
+          matched = studentAssessedRadiation(evidence);
+        } else if (item.skill === "Rapid transport initiated") {
+          matched = studentTransportDecision(evidence);
+        } else if (item.skill === "ALS requested") {
+          matched = /\b(?:request(?:ing|ed)? als|call(?:ing|ed)? (?:for )?als|als (?:requested|intercept)|intercept with als)\b/.test(normalizedText);
+        }
 
         if (matched && !completedSkills.has(item.skill)) {
           completedSkills.add(item.skill);
