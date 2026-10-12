@@ -874,12 +874,21 @@
         document.getElementById("completedAssessments").innerText =
           state.completedAssessments || "";
 
-        if (instructorHistory.trim()) {
-          detectAndRecordAssessments(
-            instructorHistory,
-            "saved instructor exchange"
-          );
+        // Revalidate saved labels using original student input only.
+        const savedEvidence = { studentInputLog };
+        const strictSavedRules = [
+          ["Chief complaint identified", /\bchief complaint\b/.test(normalizeText(studentRadiationEvidence(savedEvidence)))],
+          ["Rapid transport initiated", studentTransportDecision(savedEvidence)],
+          ["OPQRST radiation assessed", studentAssessedRadiation(savedEvidence)],
+          ["Determines the mechanism of injury/nature of illness", studentDeterminedMoiNoi(savedEvidence)]
+        ];
+        for (const [skill, valid] of strictSavedRules) {
+          if (!valid) {
+            completedSkills.delete(skill);
+            assessmentLog = assessmentLog.filter(entry => !String(entry).startsWith(skill + " - recognized through"));
+          }
         }
+        completedSkills.delete("Rapid transport or ALS considered");
 
         updateCompletedAssessmentsDisplay();
         return true;
@@ -2757,7 +2766,7 @@ function studentTransportDecision(body = {}) {
         patientHistory += `Patient: ${patientReply}\n\n`;
 
         const responseSkills = detectAndRecordAssessments(
-          `${question}\n${patientReply}`,
+          question,
           "Ask the Patient interview"
         );
 
@@ -2897,7 +2906,7 @@ function studentTransportDecision(body = {}) {
 
         try {
           const skills = detectAndRecordAssessments(
-            question + "\n" + instructorReply,
+            question,
             "Ask the Instructor exchange"
           );
 
