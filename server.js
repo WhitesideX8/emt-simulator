@@ -1071,7 +1071,7 @@ function buildChecklist(body = {}) {
   id: "chiefComplaint",
   name: "Determines chief complaint",
   points: 1,
-  pass: /\b(?:chief complaint|complaint|complaining of)\b/.test(
+  pass: /\b(?:chief complaint)\b/.test(
     normalizeText(studentRadiationEvidence(body))
   )
 },
