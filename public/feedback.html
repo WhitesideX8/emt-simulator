@@ -353,16 +353,7 @@
       <div id="disputeStatus" aria-live="polite"></div>
       <div id="disputeList" class="dispute-list"></div>
 
-      <div class="buttons">
-        <button
-          id="reviewDisputesButton"
-          type="button"
-          class="review-disputes"
-        >
-          Open Instructor Dispute Report
-        </button>
-      </div>
-    </div>
+     </div>
 
     <div class="buttons">
       <button id="returnButton" type="button">
@@ -1061,10 +1052,6 @@
       addDispute
     );
 
-    getElement("reviewDisputesButton").addEventListener(
-      "click",
-      openDisputeReview
-    );
 
     getElement("returnButton").addEventListener(
       "click",
