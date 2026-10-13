@@ -589,14 +589,63 @@
       gap: 4px;
     }
     #completedAssessments {
-  width: 70%;
+  width: 70% !important;
   min-width: 0;
   max-width: 100%;
   margin-left: auto;
   margin-right: auto;
   box-sizing: border-box;
 }
-     </style>
+     
+    /* Each visible response occupies its own centered row. */
+    .shared-responses {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      margin: 12px auto 0;
+    }
+
+    .shared-responses > div {
+      width: 100%;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .shared-responses > [hidden] {
+      display: none;
+    }
+  
+    .shared-responses {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      margin: 12px auto 0;
+    }
+    .shared-responses > div {
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .shared-responses > [hidden] { display: none; }
+
+    .shared-responses > #patientResponseArea,
+    .shared-responses > #instructorResponseArea {
+      align-self: flex-start;
+      max-width: none;
+      margin-right: 0;
+      box-sizing: border-box;
+    }
+    #patientResponse,
+    #instructorResponse {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  </style>
 </head>
 
 <body>
@@ -2484,6 +2533,38 @@ window.addEventListener("DOMContentLoaded", function() {
 });
 
 window.addEventListener("resize", matchRecordedBoxWidth);
+    // Match both answer containers to the textarea's actual left and right edges.
+    function matchAnswerContainerMargins() {
+      const textarea = document.getElementById("actionEntry");
+      const responses = document.querySelector(".shared-responses");
+      if (!textarea || !responses) return;
+
+      const textareaRect = textarea.getBoundingClientRect();
+      const responsesRect = responses.getBoundingClientRect();
+      const leftMargin = textareaRect.left - responsesRect.left;
+
+      ["patientResponseArea", "instructorResponseArea"].forEach(function(id) {
+        const area = document.getElementById(id);
+        if (!area) return;
+        area.style.width = textareaRect.width + "px";
+        area.style.marginLeft = leftMargin + "px";
+        area.style.marginRight = "0";
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", function() {
+      matchAnswerContainerMargins();
+      if (typeof ResizeObserver !== "undefined") {
+        const observer = new ResizeObserver(matchAnswerContainerMargins);
+        observer.observe(document.getElementById("actionEntry"));
+        observer.observe(document.querySelector(".patient-entry-row"));
+        observer.observe(document.querySelector(".shared-responses"));
+      }
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(matchAnswerContainerMargins);
+      }
+    });
+    window.addEventListener("resize", matchAnswerContainerMargins);
   </script>
 </body>
 </html>
