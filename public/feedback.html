@@ -7,29 +7,38 @@
 
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #e9ecef;
       color: #222;
     }
+
     .container {
       width: 90%;
       max-width: 1000px;
       margin: 30px auto;
     }
-    h1 { text-align: center; margin-bottom: 5px; }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 5px;
+    }
+
     #scenarioTitle {
       text-align: center;
       color: #555;
       margin-top: 0;
     }
+
     #studentNameDisplay {
       text-align: center;
       font-size: 18px;
       font-weight: bold;
       margin: 8px 0 22px;
     }
+
     .section {
       background: white;
       border: 1px solid #bbb;
@@ -37,16 +46,21 @@
       padding: 18px;
       margin: 18px 0;
     }
+
     .section h2 {
       margin-top: 0;
       border-bottom: 2px solid #333;
       padding-bottom: 6px;
     }
-    #feedback, #treatmentPlan {
+
+    #feedback,
+    #treatmentPlan {
       white-space: pre-wrap;
       line-height: 1.5;
     }
+
     #feedback { font-size: 16px; }
+
     #scoreSummary {
       margin-bottom: 14px;
       padding: 12px 14px;
@@ -56,13 +70,19 @@
       font-size: 18px;
       font-weight: bold;
     }
-    .input-list { display: grid; gap: 10px; }
+
+    .input-list {
+      display: grid;
+      gap: 10px;
+    }
+
     .input-item {
       padding: 11px 13px;
       border-left: 5px solid #176b9e;
       border-radius: 5px;
       background: #f4f7f9;
     }
+
     .input-heading {
       display: flex;
       flex-wrap: wrap;
@@ -72,69 +92,123 @@
       color: #12304a;
       font-weight: bold;
     }
+
     .input-time {
       color: #666;
       font-size: 13px;
       font-weight: normal;
     }
-    .input-text { white-space: pre-wrap; line-height: 1.45; }
-    .empty-message { color: #666; font-style: italic; }
-    .dispute-help {
-      margin: 0 0 14px;
+
+    .input-text {
+      white-space: pre-wrap;
       line-height: 1.45;
-      color: #444;
     }
-    .dispute-form { display: grid; gap: 12px; }
-    .form-group label {
+
+    #studentInputs {
       display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
     }
-    .form-group input, .form-group textarea {
+
+    #studentInputs .input-item {
+      padding: 0;
+      margin: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      line-height: normal;
+    }
+
+    #studentInputs .input-heading {
+      display: inline;
+      margin: 0;
+    }
+
+    #studentInputs .input-time {
+      margin-left: 8px;
+    }
+
+    #studentInputs .input-text {
+      display: inline;
+      margin-left: 8px;
+      white-space: normal;
+      line-height: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .empty-message {
+      color: #666;
+      font-style: italic;
+    }
+
+    .dispute-form {
+      display: grid;
+      gap: 12px;
+    }
+
+    .form-group textarea {
       width: 100%;
       padding: 10px;
       border: 1px solid #999;
       border-radius: 5px;
       font: inherit;
+      min-height: 95px;
+      resize: vertical;
     }
-    .form-group textarea { min-height: 95px; resize: vertical; }
+
     .dispute-btn {
       width: fit-content;
       margin: 0;
       background: #b35a00;
     }
-    .dispute-btn:hover { background: #823f00; }
+
+    .dispute-btn:hover {
+      background: #823f00;
+    }
+
     .dispute-list {
       display: grid;
       gap: 12px;
       margin-top: 18px;
     }
+
     .dispute-item {
       padding: 13px;
       border-left: 5px solid #b35a00;
       border-radius: 5px;
       background: #fff7ed;
     }
+
     .dispute-heading {
       display: flex;
       justify-content: space-between;
       gap: 10px;
       font-weight: bold;
     }
-    .dispute-status { color: #8a4300; }
+
+    .dispute-status {
+      color: #8a4300;
+    }
+
     .dispute-reason {
       margin-top: 8px;
       white-space: pre-wrap;
       line-height: 1.45;
     }
+
     .remove-dispute {
       padding: 6px 10px;
       margin: 10px 0 0;
       font-size: 13px;
       background: #9d2020;
     }
-    .review-disputes { background: #663399; }
-    .review-disputes:hover { background: #48216d; }
+
+    .review-disputes {
+      background: #663399;
+    }
+
+    .review-disputes:hover {
+      background: #48216d;
+    }
+
     .ai-review-note {
       margin-top: 8px;
       padding: 8px;
@@ -142,13 +216,19 @@
       background: #f3eef8;
       line-height: 1.4;
     }
+
     #disputeStatus {
       min-height: 20px;
       margin-top: 8px;
       color: #166534;
       font-weight: bold;
     }
-    .buttons { text-align: center; margin-top: 20px; }
+
+    .buttons {
+      text-align: center;
+      margin-top: 20px;
+    }
+
     button {
       background: green;
       color: white;
@@ -159,66 +239,57 @@
       font-size: 16px;
       cursor: pointer;
     }
+
     button:hover { background: darkgreen; }
     .secondary { background: #333; }
     .secondary:hover { background: #111; }
     .download { background: #176b9e; }
     .download:hover { background: #0f4f78; }
+
     #downloadStatus {
       min-height: 20px;
       margin-top: 8px;
       text-align: center;
       font-weight: bold;
     }
+
     body.pdf-mode .buttons,
     body.pdf-mode .dispute-form,
-    body.pdf-mode .dispute-help,
     body.pdf-mode #disputeStatus,
     body.pdf-mode #downloadStatus,
     body.pdf-mode .remove-dispute {
       display: none;
     }
-    body.pdf-mode { background: white; }
-    body.pdf-mode .container { width: 100%; margin: 0; }
+
+    body.pdf-mode {
+      background: white;
+    }
+
+    body.pdf-mode .container {
+      width: 100%;
+      margin: 0;
+    }
 
     @media print {
-      .buttons, .dispute-form, .dispute-help,
-      #disputeStatus, #downloadStatus, .remove-dispute {
+      .buttons,
+      .dispute-form,
+      #disputeStatus,
+      #downloadStatus,
+      .remove-dispute {
         display: none;
       }
+
       body { background: white; }
-      .container { width: 100%; margin: 0; }
-      .section { break-inside: avoid; }
+
+      .container {
+        width: 100%;
+        margin: 0;
+      }
+
+      .section {
+        break-inside: avoid;
+      }
     }
-    #studentInputs {
-  display: block;
-}
-
-#studentInputs .input-item {
-  padding: 0;
-  margin: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  line-height: normal;
-}
-
-#studentInputs .input-heading {
-  display: inline;
-  margin: 0;
-}
-
-#studentInputs .input-time {
-  margin-left: 8px;
-}
-
-#studentInputs .input-text {
-  display: inline;
-  margin-left: 8px;
-  white-space: normal;
-  line-height: normal;
-  overflow-wrap: anywhere;
-}
   </style>
 </head>
 
@@ -261,25 +332,11 @@
     <div class="section">
       <h2>Scoring Disputes</h2>
 
-      <p class="dispute-help">
-        If you believe a scoring point was missed, identify the item
-        and explain what you entered or did that supports receiving credit.
-      </p>
-
       <div class="dispute-form">
         <div class="form-group">
-          <label for="disputeItem">Scoring item being disputed</label>
-          <input
-            id="disputeItem"
-            type="text"
-            placeholder="Example: Blood pressure assessed"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="disputeReason">Reason for dispute</label>
           <textarea
             id="disputeReason"
+            aria-label="Dispute explanation"
             placeholder="Explain what you entered and where it appears in the student input log."
           ></textarea>
         </div>
@@ -511,6 +568,43 @@
       scoreSummary.textContent = "Score unavailable";
     }
 
+    function removeInstructorComments(feedback) {
+      const retainedLines = [];
+      let inComments = false;
+
+      for (const line of String(feedback || "").split(/\r?\n/)) {
+        const heading = line.trim()
+          .replace(/^#{1,6}\s*/, "")
+          .replace(/^[*-]\s+/, "")
+          .replace(/[*_]/g, "")
+          .trim();
+
+        if (
+          /^instructor(?:['’]s|s['’]?)?\s+comments?\b\s*(?::|$)/i.test(
+            heading
+          )
+        ) {
+          inComments = true;
+          continue;
+        }
+
+        if (inComments) {
+          const nextSection =
+            /^(?:overall results?|checklist results?|critical criteria|items missed|completed actions|assessment findings|interventions|vital signs|vitals|verbal report|final score|score summary|recommendations|student treatment plan)\s*:?\s*$/i.test(
+              heading
+            ) ||
+            /^#{1,6}\s+/.test(line.trim());
+
+          if (!nextSection) continue;
+          inComments = false;
+        }
+
+        retainedLines.push(line);
+      }
+
+      return retainedLines.join("\n").trim();
+    }
+
     function removePassFailResult(feedback) {
       if (!feedback) {
         return "No grading feedback available.";
@@ -590,7 +684,8 @@
         heading.className = "dispute-heading";
 
         const title = document.createElement("span");
-        title.textContent = (index + 1) + ". " + dispute.item;
+        title.textContent =
+          (index + 1) + ". " + dispute.item;
 
         const status = document.createElement("span");
         status.className = "dispute-status";
@@ -640,16 +735,15 @@
     }
 
     async function addDispute() {
-      const itemInput = getElement("disputeItem");
       const reasonInput = getElement("disputeReason");
       const statusBox = getElement("disputeStatus");
 
-      const item = itemInput.value.trim();
+      const item = "Scoring dispute";
       const reason = reasonInput.value.trim();
 
-      if (!item || !reason) {
+      if (!reason) {
         statusBox.textContent =
-          "Enter both the scoring item and the reason for the dispute.";
+          "Enter the reason for the dispute.";
         statusBox.style.color = "#9d2020";
         return;
       }
@@ -675,7 +769,6 @@
       saveGradingData();
       renderDisputes();
 
-      itemInput.value = "";
       reasonInput.value = "";
 
       statusBox.style.color = "#166534";
@@ -939,7 +1032,9 @@
         renderScore(gradingData);
 
         getElement("feedback").textContent =
-          removePassFailResult(gradingData.feedback);
+          removePassFailResult(
+            removeInstructorComments(gradingData.feedback)
+          );
 
         renderVerbalReport(gradingData);
         renderStudentInputs(gradingData);
