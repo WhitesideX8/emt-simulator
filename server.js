@@ -884,8 +884,12 @@ function studentDeterminedMoiNoi(body = {}) {
       const requiredWording =
         /\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/;
 
-      if (!requiredWording.test(text)) return false;
+      if (!requiredWording.test(text)) {
+        return false;
+      }
 
+      // Do not credit an incomplete assessment,
+      // an unknown finding, or a future plan.
       if (
         /\b(?:did not|do not|cannot|cant|unable to|have not|havent)\b.{0,40}\b(?:determine|identify|establish|assess)\b/.test(text) ||
         /\b(?:unknown|not determined|not identified|not assessed)\b/.test(text) ||
@@ -895,33 +899,36 @@ function studentDeterminedMoiNoi(body = {}) {
       }
 
       const illness =
-        /\b(?:shortness of breath|sob|difficulty breathing|respiratory (?:distress|emergency)|chest pain|chest discomfort|cardiac complaint|stroke|seizure|altered mental status|hypoglycemia|hyperglycemia|diabetic emergency|allergic reaction|anaphylaxis|overdose|poisoning|abdominal pain|syncope|fainting|medical (?:call|illness|emergency|complaint)|non traumatic illness)\b/;
+        /\b(?:shortness of breath|sob|difficulty breathing|breathing (?:problem|problems|difficulty|difficulties)|respiratory (?:distress|emergency)|chest pain|chest discomfort|cardiac complaint|stroke|seizure|altered mental status|hypoglycemia|hyperglycemia|diabetic emergency|allergic reaction|anaphylaxis|overdose|poisoning|abdominal pain|syncope|fainting|medical (?:call|illness|emergency|complaint)|non traumatic illness)\b/;
 
       const mechanism =
         /\b(?:fall|fell|motor vehicle (?:collision|crash|accident)|mvc|mva|car (?:crash|accident)|collision|pedestrian struck|struck by|assault|gunshot|stabbing|penetrating injury|blunt trauma|burn|explosion|crush injury|sports injury|drowning)\b/;
 
+      // Accept "illness is SOB" and the recorded
+      // wording "illness in SOB."
       const declaration = text.match(
-        /\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\s+(?:is|was|appears to be|seems to be|suspected to be|identified as|determined (?:as|to be))\s+(.+)/
+        /\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\s+(?:is|in|was|appears to be|seems to be|suspected to be|identified as|determined (?:as|to be))\s+(.+)/
       );
 
       if (declaration) {
         return (
-          (illness.test(declaration[1]) ||
-            mechanism.test(declaration[1])) &&
+          (
+            illness.test(declaration[1]) ||
+            mechanism.test(declaration[1])
+          ) &&
           !/^(?:unknown|unclear|not known|not sure)\b/.test(
             declaration[1]
           )
         );
       }
 
+      // Credit direct questions using MOI/NOI wording.
       return [
         /\b(?:what|which) (?:is|was|would be) (?:the |this patient s |the patient s )?(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/,
         /\b(?:tell me|describe|identify|determine|assess|check) (?:the |this patient s |the patient s )?(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/
       ].some(pattern => pattern.test(text));
     });
 }
-
-// Requesting ALS alone does not establish a transport decision.
 function studentTransportDecision(body = {}) {
   return studentRadiationEvidence(body)
     .split(/[.!?;\r\n]+/)
@@ -1265,6 +1272,7 @@ function buildChecklist(body = {}) {
     {
       id: "sample",
       name: "Complete SAMPLE history",
+       
       points: 6,
       pass: sample.complete
     },
