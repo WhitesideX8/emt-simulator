@@ -18,6 +18,7 @@ const __dirname = path.dirname(__filename);
 if (!process.env.OPENAI_API_KEY) {
   console.warn(
     "WARNING: OPENAI_API_KEY is missing. AI responses will not work."
+     
   );
 }
 
@@ -92,6 +93,7 @@ Medications:
 Lisinopril and atorvastatin.
 
 Past medical history:
+
 Hypertension and high cholesterol.
 
 Last oral intake:
@@ -1057,9 +1059,16 @@ function studentNamedAssessment(body, criterion) {
       }
 
       if (criterion === "airway") {
-          // Recognize questions such as:
-          // "Does the patient have a patent airway?"
-         // "Does she have an open airway?"
+
+  // Accept additional descriptions of the airway.
+  if (
+    /\bairway is (?:patent|open|clear|safe|unobstructed)\b/.test(text)
+  ) {
+    return true;
+  }
+
+  // Keep the existing airway checks below this.
+   
      if (
         /\b(?:does|did)\s+(?:the patient|patient|she|he|this patient)\s+have\s+(?:a|an)?\s*(?:patent|patient|open|clear|safe|obstructed|blocked|compromised)\s+airway\b/.test(text)
          ) {
