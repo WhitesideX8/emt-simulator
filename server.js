@@ -1057,7 +1057,15 @@ function studentNamedAssessment(body, criterion) {
       }
 
       if (criterion === "airway") {
-        // "Patient" can be a transcription error for "patent".
+          // Recognize questions such as:
+          // "Does the patient have a patent airway?"
+         // "Does she have an open airway?"
+     if (
+        /\b(?:does|did)\s+(?:the patient|patient|she|he|this patient)\s+have\s+(?:a|an)?\s*(?:patent|patient|open|clear|safe|obstructed|blocked|compromised)\s+airway\b/.test(text)
+         ) {
+           return true;
+         }
+         // "Patient" can be a transcription error for "patent".
         if (
           /\bis (?:the |the patient s |patient s )?airway (?:patent|patient|open|safe|clear)\b/.test(text)
         ) {
