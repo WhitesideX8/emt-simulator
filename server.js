@@ -18,7 +18,6 @@ const __dirname = path.dirname(__filename);
 if (!process.env.OPENAI_API_KEY) {
   console.warn(
     "WARNING: OPENAI_API_KEY is missing. AI responses will not work."
-     
   );
 }
 
@@ -93,7 +92,6 @@ Medications:
 Lisinopril and atorvastatin.
 
 Past medical history:
-
 Hypertension and high cholesterol.
 
 Last oral intake:
@@ -852,7 +850,32 @@ function studentRadiationEvidence(body = {}) {
     .join("\n");
 }
 
+// Match a broad pain question to its own immediately following patient reply.
+function patientDeniedPainAfterQuestion(body = {}) {
+  const history = String(body.patientHistory || body.studentAnswer || "");
+  const exchanges = [...history.matchAll(
+    /(?:^|\n)Student to patient:\s*([^\n]*)\nPatient:\s*([\s\S]*?)(?=\nStudent to patient:|$)/gi
+  )];
+
+  // Use the latest broad pain inquiry, so a later positive answer overrides
+  // an earlier denial. A denial of pain in only one body area does not count.
+  for (let i = exchanges.length - 1; i >= 0; i--) {
+    const question = normalizeText(exchanges[i][1]);
+    if (!/^(?:do you have (?:any )?pain(?: anywhere| at all)?|does it hurt anywhere)\s*$/.test(question)) {
+      continue;
+    }
+    const reply = normalizeText(exchanges[i][2]);
+    const denial = /^(?:no|nope|not at all|no pain(?: anywhere| at all)?|i (?:have no|do not have any|dont have any) pain|i (?:do not|dont) hurt anywhere|nothing hurts)(?:\s|$)/.test(reply);
+    const qualified = /\b(?:but|except|although|however|only|just|other than|unless)\b/.test(reply);
+    const remaining = reply.replace(/^(?:no|nope|not at all)\s*/, "");
+    const positivePain = /\b(?:i have|i feel|i am having|im having|there is|there s)\b.{0,35}\b(?:pain|ache|aching|sore|soreness|discomfort)\b/.test(remaining) || /\b(?:hurts|painful)\b/.test(remaining);
+    return denial && !qualified && !positivePain;
+  }
+  return false;
+}
+
 function studentAssessedRadiation(body = {}) {
+  if (patientDeniedPainAfterQuestion(body)) return true;
   const lines = studentRadiationEvidence(body).split(/\r?\n/);
 
   return lines.some(line => {
@@ -886,12 +909,8 @@ function studentDeterminedMoiNoi(body = {}) {
       const requiredWording =
         /\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/;
 
-      if (!requiredWording.test(text)) {
-        return false;
-      }
+      if (!requiredWording.test(text)) return false;
 
-      // Do not credit an incomplete assessment,
-      // an unknown finding, or a future plan.
       if (
         /\b(?:did not|do not|cannot|cant|unable to|have not|havent)\b.{0,40}\b(?:determine|identify|establish|assess)\b/.test(text) ||
         /\b(?:unknown|not determined|not identified|not assessed)\b/.test(text) ||
@@ -906,31 +925,28 @@ function studentDeterminedMoiNoi(body = {}) {
       const mechanism =
         /\b(?:fall|fell|motor vehicle (?:collision|crash|accident)|mvc|mva|car (?:crash|accident)|collision|pedestrian struck|struck by|assault|gunshot|stabbing|penetrating injury|blunt trauma|burn|explosion|crush injury|sports injury|drowning)\b/;
 
-      // Accept "illness is SOB" and the recorded
-      // wording "illness in SOB."
       const declaration = text.match(
         /\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\s+(?:is|in|was|appears to be|seems to be|suspected to be|identified as|determined (?:as|to be))\s+(.+)/
       );
 
       if (declaration) {
         return (
-          (
-            illness.test(declaration[1]) ||
-            mechanism.test(declaration[1])
-          ) &&
+          (illness.test(declaration[1]) ||
+            mechanism.test(declaration[1])) &&
           !/^(?:unknown|unclear|not known|not sure)\b/.test(
             declaration[1]
           )
         );
       }
 
-      // Credit direct questions using MOI/NOI wording.
       return [
         /\b(?:what|which) (?:is|was|would be) (?:the |this patient s |the patient s )?(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/,
         /\b(?:tell me|describe|identify|determine|assess|check) (?:the |this patient s |the patient s )?(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/
       ].some(pattern => pattern.test(text));
     });
 }
+
+// Requesting ALS alone does not establish a transport decision.
 function studentTransportDecision(body = {}) {
   return studentRadiationEvidence(body)
     .split(/[.!?;\r\n]+/)
@@ -1059,22 +1075,11 @@ function studentNamedAssessment(body, criterion) {
       }
 
       if (criterion === "airway") {
+        if (/\b(?:does|did)\s+(?:the patient|patient|she|he|this patient)\s+have\s+(?:a|an)?\s*(?:patent|patient|open|clear|safe|obstructed|blocked|compromised)\s+airway\b/.test(text) || /\bairway is (?:patent|open|clear|safe|unobstructed)\b/.test(text)) {
+          return true;
+        }
 
-  // Accept additional descriptions of the airway.
-  if (
-    /\bairway is (?:patent|open|clear|safe|unobstructed)\b/.test(text)
-  ) {
-    return true;
-  }
-
-  // Keep the existing airway checks below this.
-   
-     if (
-        /\b(?:does|did)\s+(?:the patient|patient|she|he|this patient)\s+have\s+(?:a|an)?\s*(?:patent|patient|open|clear|safe|obstructed|blocked|compromised)\s+airway\b/.test(text)
-         ) {
-           return true;
-         }
-         // "Patient" can be a transcription error for "patent".
+        // "Patient" can be a transcription error for "patent".
         if (
           /\bis (?:the |the patient s |patient s )?airway (?:patent|patient|open|safe|clear)\b/.test(text)
         ) {
@@ -1289,7 +1294,6 @@ function buildChecklist(body = {}) {
     {
       id: "sample",
       name: "Complete SAMPLE history",
-       
       points: 6,
       pass: sample.complete
     },
@@ -1992,6 +1996,10 @@ OPQRST AND SAMPLE:
   OPQRST component complete.
 - Do not award complete SAMPLE unless the checklist marks every required
   SAMPLE component complete.
+- Award the radiation point when the student asks a broad pain question
+  and the paired patient reply clearly denies all pain. Explain:
+  "Patient denied pain; pain radiation not applicable."
+  A question alone or a denial limited to one body area is insufficient.
 - R means radiation only. Award credit for assessing whether symptoms
   radiate or spread; a separate region/location assessment is not required.
 - T means time of onset. A question about when symptoms started satisfies T.
