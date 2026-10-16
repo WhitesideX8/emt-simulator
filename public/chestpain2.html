@@ -888,10 +888,10 @@
           state.completedAssessments || "";
 
         // Revalidate saved labels using original student input only.
-        const savedEvidence = { studentInputLog };
+        const savedEvidence = { studentInputLog, patientHistory };
         const strictSavedRules = [
-          ["Chief complaint identified", /\bchief complaint\b/.test(normalizeText(studentRadiationEvidence(savedEvidence)))],
-          ["Rapid transport initiated", studentTransportDecision(savedEvidence)],
+          ["Determines chief complaint or apparent life threats", /\b(?:chief complaint|(?:apparent )?life threats?)\b/.test(normalizeText(studentRadiationEvidence(savedEvidence)))],
+          ["Identifies patient priority / transport decision", studentIdentifiedPriority(savedEvidence) || studentTransportDecision(savedEvidence)],
           ["OPQRST radiation assessed", studentAssessedRadiation(savedEvidence)],
           ["Determines the mechanism of injury/nature of illness", studentDeterminedMoiNoi(savedEvidence)]
         ];
@@ -901,7 +901,14 @@
             assessmentLog = assessmentLog.filter(entry => !String(entry).startsWith(skill + " - recognized through"));
           }
         }
-        completedSkills.delete("Rapid transport or ALS considered");
+        const retiredLabels = ["Rapid transport or ALS considered", "ALS requested", "Patient priority identified", "Treatment and transport decision made", "Rapid transport initiated", "Chief complaint identified", "Mental status assessed", "C-spine stabilization considered", "Number of patients determined", "Need for additional resources considered"];
+        for (const label of retiredLabels) {
+          completedSkills.delete(label);
+          assessmentLog = assessmentLog.filter(entry => !String(entry).startsWith(label + " - recognized through"));
+        }
+        for (const entry of studentInputLog) {
+          detectAndRecordAssessments(typeof entry === "string" ? entry : String(entry.text || ""), "saved student input");
+        }
 
         updateCompletedAssessmentsDisplay();
         return true;
@@ -1124,7 +1131,7 @@
   ]
 },
 {
-        skill: "Number of patients determined",
+        skill: "Determines number of patients",
         keywords: [
           "how many patients", "number of patients", "are there any other patients",
           "one patient", "single patient", "only patient",
@@ -1133,7 +1140,7 @@
         ]
       },
 {
-        skill: "Need for additional resources considered",
+        skill: "Requests additional resources",
         keywords: [
           "request als", "requesting als", "going to request als",
           "i am going to request als", "need als", "call als", "call for als",
@@ -1174,7 +1181,7 @@
         ]
       },
 {
-        skill: "C-spine stabilization considered",
+        skill: "Considers stabilization of the spine",
         keywords: [
           "c-spine", "c spine", "c-spine precautions", "c spine precautions",
           "c-spine stabilization", "c spine stabilization",
@@ -1226,7 +1233,7 @@
         ]
       },
 {
-        skill: "Mental status assessed",
+        skill: "Determines responsiveness / LOC",
         keywords: [
           "assess mental status", "what is the mental status", "level of consciousness",
           "what is the avpu", "glasgow coma scale", "what is the gcs", "check responsiveness",
@@ -1568,7 +1575,7 @@
         ]
       },
 {
-        skill: "Chief complaint identified",
+        skill: "Determines chief complaint or apparent life threats",
         keywords: [
           "what is your chief complaint", "what is bothering you", "why did you call ems",
           "what is wrong today", "chief complaint is", "complains of", "c o chest pain",
@@ -1982,83 +1989,9 @@
         "assist patient to tripod"
         ]
       },
+
 {
-        skill: "Patient priority identified",
-        keywords: [
-          "high priority", "high-priority", "priority patient", "priority transport",
-          "high priority transport", "make this a priority", "make him a priority",
-          "make her a priority", "this is a priority patient",
-          "this is a high priority patient", "this is a high priority transport",
-          "patient is high priority", "patient is a high priority",
-          "critical patient", "patient is critical", "potentially unstable",
-          "patient is unstable", "unstable patient", "serious patient", "seriously ill",
-          "time sensitive", "time-sensitive", "time critical", "time-critical",
-          "emergent patient", "emergent transport", "urgent transport",
-          "needs rapid transport", "requires rapid transport",
-          "requires immediate transport", "needs immediate transport",
-          "due to chest pain this is high priority",
-          "because of chest pain this is high priority",
-          "due to the chief complaint this is a priority transport",
-          "because of the chief complaint this is a priority transport",
-          "i am going to make this a priority transport",
-          "i will make this a priority transport",
-          "i consider this patient high priority",
-          "i consider this patient a high priority",
-"high priority",
-        "high-priority",
-        "priority patient",
-        "priority transport",
-        "high priority transport",
-        "make this a priority",
-        "make him a priority",
-        "make her a priority",
-        "this is a priority patient",
-        "this is a high priority patient",
-        "this is a high priority transport",
-        "patient is high priority",
-        "patient is a high priority",
-        "critical patient",
-        "patient is critical",
-        "potentially unstable",
-        "patient is unstable",
-        "unstable patient",
-        "serious patient",
-        "seriously ill",
-        "time sensitive",
-        "time-sensitive",
-        "time critical",
-        "time-critical",
-        "emergent patient",
-        "emergent transport",
-        "urgent transport",
-        "needs rapid transport",
-        "requires rapid transport",
-        "requires immediate transport",
-        "needs immediate transport",
-        "due to shortness of breath this is high priority",
-        "because of shortness of breath this is high priority",
-        "due to the chief complaint this is a priority transport",
-        "because of the chief complaint this is a priority transport",
-        "i am going to make this a priority transport",
-        "i will make this a priority transport",
-        "i consider this patient high priority",
-        "i consider this patient a high priority"
-        ],
-        patterns: [
-          /\b(high|urgent|emergent|critical|time[- ]?sensitive|time[- ]?critical)\b.*\b(priority|transport|patient)\b/,
-          /\bpriority\b.*\b(patient|transport)\b/,
-          /\bpatient\b.*\b(high priority|unstable|critical|time[- ]?sensitive|emergent)\b/,
-          /\b(make|consider|classify|identify)\w*\b.*\b(patient|this)\b.*\b(priority|high priority|unstable|critical)\b/,
-          /\b(chief complaint|chest pain|cardiac event)\b.*\b(priority|high priority|urgent|emergent|rapid transport)\b/,
-/\b(high|urgent|emergent|critical|time[- ]?sensitive|time[- ]?critical)\b.*\b(priority|transport|patient)\b/,
-        /\bpriority\b.*\b(patient|transport)\b/,
-        /\bpatient\b.*\b(high priority|unstable|critical|time[- ]?sensitive|emergent)\b/,
-        /\b(make|consider|classify|identify)\w*\b.*\b(patient|this)\b.*\b(priority|high priority|unstable|critical)\b/,
-        /\b(chief complaint|shortness of breath|respiratory distress)\b.*\b(priority|high priority|urgent|emergent|rapid transport)\b/
-        ]
-      },
-{
-        skill: "Rapid transport initiated",
+        skill: "Identifies patient priority / transport decision",
         keywords: [
           "rapid transport", "transport promptly", "begin transport", "beginning transport",
           "initiate transport", "initiating transport", "start transport", "starting transport",
@@ -2152,68 +2085,7 @@
         /\b(reassess|assessment|treatment)\b.*\b(en route|during transport)\b/
         ]
       },
-{
-        skill: "Treatment and transport decision made",
-        keywords: [
-          "treatment and transport decision", "treatment plan", "transport decision",
-          "decision to transport", "decide to transport", "going to transport",
-          "will transport", "plan to transport", "needs transport", "requires transport",
-          "transport is indicated", "transport is appropriate", "hospital transport indicated",
-          "appropriate destination", "closest appropriate facility", "appropriate receiving facility",
-          "cardiac center", "pci center", "continue treatment during transport",
-          "continue treatment en route", "continue monitoring during transport",
-          "continue monitoring en route", "treat and transport", "stabilize and transport",
-          "manage and transport", "transport while monitoring", "transport while reassessing",
-          "transport with als intercept", "request als and transport",
-          "begin transport and request als", "aspirin and transport",
-          "treat for shock and transport", "keep warm and transport",
-          "position of comfort and transport",
-"treatment and transport decision",
-        "treatment plan",
-        "transport decision",
-        "decision to transport",
-        "decide to transport",
-        "going to transport",
-        "will transport",
-        "plan to transport",
-        "needs transport",
-        "requires transport",
-        "transport is indicated",
-        "transport is appropriate",
-        "hospital transport indicated",
-        "appropriate destination",
-        "closest appropriate facility",
-        "appropriate receiving facility",
-        "appropriate hospital",
-        "appropriate hospital",
-        "continue treatment during transport",
-        "continue treatment en route",
-        "continue monitoring during transport",
-        "continue monitoring en route",
-        "treat and transport",
-        "stabilize and transport",
-        "manage and transport",
-        "transport while monitoring",
-        "transport while reassessing",
-        "transport with als intercept",
-        "request als and transport",
-        "begin transport and request als",
-        "oxygen and transport",
-        "treat for shock and transport",
-        "keep warm and transport",
-        "position of comfort and transport"
-        ],
-        patterns: [
-          /\b(decide|decision|plan|intend|going|will)\w*\b.*\btransport\w*\b/,
-          /\b(treat|treatment|manage|monitor|reassess|stabilize)\w*\b.*\b(and|while|during)\b.*\btransport\w*\b/,
-          /\btransport\w*\b.*\b(and|while|with)\b.*\b(treat|monitor|reassess|als|aspirin|shock)\w*\b/,
-          /\b(appropriate|closest)\b.*\b(facility|hospital|destination|cardiac center|pci center)\b/,
-/\b(decide|decision|plan|intend|going|will)\w*\b.*\btransport\w*\b/,
-        /\b(treat|treatment|manage|monitor|reassess|stabilize)\w*\b.*\b(and|while|during)\b.*\btransport\w*\b/,
-        /\btransport\w*\b.*\b(and|while|with)\b.*\b(treat|monitor|reassess|als|aspirin|shock)\w*\b/,
-        /\b(appropriate|closest)\b.*\b(facility|hospital|destination|appropriate hospital|appropriate hospital)\b/
-        ]
-      },
+
 {
         skill: "Reassessment performed",
         keywords: [
@@ -2346,17 +2218,7 @@
         "provide bag mask ventilation"
       ]
     },
-{
-      skill: "ALS requested",
-      keywords: [
-        "request als",
-        "intercept with als",
-        "rapid transport",
-        "transport promptly",
-        "transport without delay",
-        "notify the receiving hospital"
-      ]
-    },
+
 {
       skill: "Neurologic assessment performed",
       keywords: [
@@ -2461,24 +2323,42 @@
 function studentRadiationEvidence(body = {}) {
   if (Array.isArray(body.studentInputLog)) {
     return body.studentInputLog
-      .map(entry => typeof entry === "string" ? entry : String(entry?.text || ""))
+      .map(entry =>
+        typeof entry === "string"
+          ? entry
+          : String(entry?.text || "")
+      )
       .join("\n");
   }
 
-  // Older pages store student questions and generated answers on separate lines.
-  return [body.studentAnswer, body.patientHistory, body.instructorHistory]
+  // Compatibility with older scenario pages.
+  return [
+    body.studentAnswer,
+    body.patientHistory,
+    body.instructorHistory
+  ]
     .filter(Boolean)
     .join("\n")
     .split(/\r?\n/)
-    .filter(line => /^\s*Student(?: to instructor)?\s*:/i.test(line))
-    .map(line => line.replace(/^\s*Student(?: to instructor)?\s*:\s*/i, ""))
+    .filter(line =>
+      /^\s*Student(?: to instructor)?\s*:/i.test(line)
+    )
+    .map(line =>
+      line.replace(
+        /^\s*Student(?: to instructor)?\s*:\s*/i,
+        ""
+      )
+    )
     .join("\n");
 }
 
 function studentAssessedRadiation(body = {}) {
+  if (patientDeniedPainAfterQuestion(body)) return true;
   const lines = studentRadiationEvidence(body).split(/\r?\n/);
+
   return lines.some(line => {
     const text = normalizeText(line);
+
     return [
       /\b(?:opqrst |oprst )?(?:radiation|region and radiation|location and radiation) assessed\b/,
       /\b(?:assess|check|evaluate|ask about|determine)\b.{0,50}\b(?:radiation|radiating|whether.{0,20}(?:spreads|travels))\b/,
@@ -2500,18 +2380,15 @@ function studentDeterminedMoiNoi(body = {}) {
   return studentRadiationEvidence(body)
     .split(/[.!?;\r\n]+/)
     .some(line => {
-      // Accept "nature of illness (NOI)" and "mechanism of injury (MOI)".
       const text = normalizeText(
         line.replace(/\(\s*(?:noi|moi)\s*\)/gi, " ")
       );
 
-      // Required wording must appear in this same sentence.
       const requiredWording =
         /\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/;
 
       if (!requiredWording.test(text)) return false;
 
-      // Uncertainty, refusal, and future plans do not earn credit.
       if (
         /\b(?:did not|do not|cannot|cant|unable to|have not|havent)\b.{0,40}\b(?:determine|identify|establish|assess)\b/.test(text) ||
         /\b(?:unknown|not determined|not identified|not assessed)\b/.test(text) ||
@@ -2521,25 +2398,25 @@ function studentDeterminedMoiNoi(body = {}) {
       }
 
       const illness =
-        /\b(?:shortness of breath|sob|difficulty breathing|respiratory (?:distress|emergency)|chest pain|chest discomfort|cardiac complaint|stroke|seizure|altered mental status|hypoglycemia|hyperglycemia|diabetic emergency|allergic reaction|anaphylaxis|overdose|poisoning|abdominal pain|syncope|fainting|medical (?:call|illness|emergency|complaint)|non traumatic illness)\b/;
+        /\b(?:shortness of breath|sob|difficulty breathing|breathing (?:problem|problems|difficulty|difficulties)|respiratory (?:distress|emergency)|chest pain|chest discomfort|cardiac complaint|stroke|seizure|altered mental status|hypoglycemia|hyperglycemia|diabetic emergency|allergic reaction|anaphylaxis|overdose|poisoning|abdominal pain|syncope|fainting|medical (?:call|illness|emergency|complaint)|non traumatic illness)\b/;
 
       const mechanism =
         /\b(?:fall|fell|motor vehicle (?:collision|crash|accident)|mvc|mva|car (?:crash|accident)|collision|pedestrian struck|struck by|assault|gunshot|stabbing|penetrating injury|blunt trauma|burn|explosion|crush injury|sports injury|drowning)\b/;
 
-      // Example: "Nature of illness (NOI) is chest pain."
       const declaration = text.match(
-        /\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\s+(?:is|was|appears to be|seems to be|suspected to be|identified as|determined (?:as|to be))\s+(.+)/
+        /\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\s+(?:is|in|was|appears to be|seems to be|suspected to be|identified as|determined (?:as|to be))\s+(.+)/
       );
 
       if (declaration) {
         return (
           (illness.test(declaration[1]) ||
             mechanism.test(declaration[1])) &&
-          !/^(?:unknown|unclear|not known|not sure)\b/.test(declaration[1])
+          !/^(?:unknown|unclear|not known|not sure)\b/.test(
+            declaration[1]
+          )
         );
       }
 
-      // Direct questions must explicitly name MOI/NOI.
       return [
         /\b(?:what|which) (?:is|was|would be) (?:the |this patient s |the patient s )?(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/,
         /\b(?:tell me|describe|identify|determine|assess|check) (?:the |this patient s |the patient s )?(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/
@@ -2547,13 +2424,175 @@ function studentDeterminedMoiNoi(body = {}) {
     });
 }
 function studentTransportDecision(body = {}) {
+  return studentRadiationEvidence(body)
+    .split(/[.!?;\r\n]+/)
+    .some(line => {
+      const text = normalizeText(line);
+
+      if (
+        /\b(?:do not|will not|no need to|not going to)\b.{0,30}\btransport\b/.test(text)
+      ) {
+        return false;
+      }
+
+      return /\b(?:(?:rapid|immediate|urgent|emergent|expedited|priority|high priority) transport|transport (?:promptly|now|immediately|without delay)|(?:begin|beginning|initiate|initiating|start|starting) transport|load and go|transport to (?:the |a |an )?(?:hospital|emergency department|cardiac center|pci center|appropriate facility)|patient priority and transport decision made)\b/.test(
+        text
+      );
+    });
+}
+
+
+function patientDeniedPainAfterQuestion(body = {}) {
+  const history = String(body.patientHistory || body.studentAnswer || "");
+  const exchanges = [...history.matchAll(
+    /(?:^|\n)Student to patient:\s*([^\n]*)\nPatient:\s*([\s\S]*?)(?=\nStudent to patient:|$)/gi
+  )];
+
+  // Use the latest broad pain inquiry, so a later positive answer overrides
+  // an earlier denial. A denial of pain in only one body area does not count.
+  for (let i = exchanges.length - 1; i >= 0; i--) {
+    const question = normalizeText(exchanges[i][1]);
+    if (!/^(?:do you have (?:any )?pain(?: anywhere| at all)?|does it hurt anywhere)\s*$/.test(question)) {
+      continue;
+    }
+    const reply = normalizeText(exchanges[i][2]);
+    const denial = /^(?:no|nope|not at all|no pain(?: anywhere| at all)?|i (?:have no|do not have any|dont have any) pain|i (?:do not|dont) hurt anywhere|nothing hurts)(?:\s|$)/.test(reply);
+    const qualified = /\b(?:but|except|although|however|only|just|other than|unless)\b/.test(reply);
+    const remaining = reply.replace(/^(?:no|nope|not at all)\s*/, "");
+    const positivePain = /\b(?:i have|i feel|i am having|im having|there is|there s)\b.{0,35}\b(?:pain|ache|aching|sore|soreness|discomfort)\b/.test(remaining) || /\b(?:hurts|painful)\b/.test(remaining);
+    return denial && !qualified && !positivePain;
+  }
+  return false;
+}
+
+function studentIdentifiedPriority(body = {}) {
   return studentRadiationEvidence(body).split(/[.!?;\r\n]+/).some(line => {
     const text = normalizeText(line);
-    if (/\b(?:do not|will not|no need to|not going to)\b.{0,30}\btransport\b/.test(text)) return false;
-    return /\b(?:(?:rapid|immediate|urgent|emergent|expedited|priority|high priority) transport|transport (?:promptly|now|immediately|without delay)|(?:begin|beginning|initiate|initiating|start|starting) transport|load and go|transport to (?:the |a |an )?(?:hospital|emergency department|cardiac center|pci center|appropriate facility)|patient priority and transport decision made)\b/.test(text);
+    if (/\b(?:not|unknown|undetermined)\b/.test(text)) return false;
+    return /\b(?:patient|she|he)\b.{0,35}\b(?:high|low|immediate|urgent|emergent|non urgent|non emergent) priority\b/.test(text)
+      || /\b(?:patient|transport) priority (?:is |of )?(?:high|low|immediate|urgent|emergent|non urgent|non emergent)\b/.test(text)
+      || /\b(?:patient|she|he) (?:is|appears|remains) (?:stable|unstable|critical)\b/.test(text);
   });
 }
 
+function studentRequestedResources(body = {}) {
+  return studentRadiationEvidence(body)
+    .split(/[.!?;\r\n]+|\bbut\b/i)
+    .some(line => {
+      const text = normalizeText(line);
+      const resource = /\b(?:als|advanced life support|paramedics?|medics?|additional resources?|additional (?:units?|ambulances?|personnel|help)|backup|back up|mutual aid|police|law enforcement|fire department|rescue team)\b/;
+      if (!resource.test(text)) return false;
+      if (/\b(?:do not|dont|did not|will not|wont|not going to|no need to|no need for|not needed|not required|decline|cancel)\b/.test(text)) return false;
+      return /\b(?:request|requesting|requested|call|calling|called|activate|activating|activated|summon|summoning|summoned|need|needs|dispatch|send)\b/.test(text)
+        || /\b(?:als|advanced life support|paramedics?|medics?|backup|back up|additional resources?)\b.{0,20}\b(?:requested|called|activated|needed|dispatched)\b/.test(text);
+    });
+}
+
+function studentAssessedAvpu(body = {}) {
+  return studentRadiationEvidence(body)
+    .split(/\r?\n/)
+    .some(line => {
+      const text = normalizeText(line);
+
+      if (
+        /\b(?:did not|do not|cannot|cant|unable to|have not|havent)\b.{0,35}\b(?:assess|check|determine|evaluate)\b/.test(text) ||
+        /\b(?:will|going to|plan to|need to)\b.{0,30}\b(?:assess|check|determine|evaluate)\b/.test(text) ||
+        /\b(?:not assessed|not checked|avpu unknown|avpu is unknown)\b/.test(text)
+      ) {
+        return false;
+      }
+
+      return [
+        /\b(?:assessed|checked|evaluated|determined)\b.{0,35}\b(?:avpu|responsiveness|level of consciousness|mental status)\b/,
+        /\b(?:avpu|responsiveness|level of consciousness|mental status)\b.{0,15}\b(?:assessed|checked|evaluated|determined)\b/,
+        /\b(?:assess|check|evaluate|determine)\b.{0,35}\b(?:avpu|responsiveness)\b/,
+        /\b(?:what is|whats)\b.{0,25}\b(?:avpu|level of consciousness|mental status|responsiveness)\b/,
+        /\b(?:is|does)\b.{0,25}\b(?:patient|she|he)\b.{0,20}\b(?:alert|responsive|respond|unresponsive|unconscious)\b/,
+        /\b(?:patient|she|he)\b.{0,25}\b(?:is|appears|seems|remains|was)\b.{0,15}\b(?:alert|unresponsive|unconscious)\b/,
+        /\b(?:patient|she|he)\b.{0,20}\b(?:responds|responsive|responding|response)\b.{0,20}\b(?:voice|verbal|pain|painful)\b/,
+        /\b(?:patient|she|he)\b.{0,20}\b(?:does not|doesnt|no)\b.{0,15}\b(?:respond|response)\b/,
+        /\b(?:does|will|can)\b.{0,25}\b(?:patient|she|he)\b.{0,15}\brespond\b.{0,20}\b(?:voice|verbal|pain|painful)\b/,
+        /\b(?:check|assess|test|checked|assessed|tested)\b.{0,25}\b(?:response|responsiveness)\b.{0,20}\b(?:voice|verbal|pain|painful)\b/,
+        /\bavpu\s+(?:is |of |equals |level |score )?(?:a|v|p|u|alert|verbal|pain|unresponsive)\b/,
+        /\b(?:alert and oriented|a and o|a o)\s*(?:x\s*[1-4])?\b/,
+        /\b(?:can you|please)\s+(?:open your eyes|squeeze my hand)\b/,
+        /\b(?:do you|can you tell me if you)\s+know where you are\b/,
+        /\b(?:check|assess|test|checked|assessed|tested)\b.{0,25}\b(?:orientation to|oriented to)\b/
+      ].some(pattern => pattern.test(text));
+    });
+}
+
+function studentNamedAssessment(body, criterion) {
+  const term =
+    criterion === "airway" ? "airway" : "chief complaint";
+
+  return studentRadiationEvidence(body)
+    .split(/\r?\n/)
+    .some(line => {
+      const text = normalizeText(line);
+
+      if (!new RegExp("\\b" + term + "\\b").test(text)) {
+        return false;
+      }
+
+      if (
+        /\b(?:will|going to|plan to|need to|did not|have not|cannot|unable to)\b.{0,35}\b(?:assess|check|evaluate|determine|identify)\b/.test(text) ||
+        /\b(?:not assessed|not checked|not identified|not determined|unknown)\b/.test(text)
+      ) {
+        return false;
+      }
+
+      const action = new RegExp(
+        "\\b(?:assess|assessed|check|checked|evaluate|evaluated|determine|determined|identify|identified|inspect|inspected) (?:the |a |an |patient s |the patient s )?" +
+        term +
+        "\\b"
+      );
+
+      const completed = new RegExp(
+        "\\b" +
+        term +
+        " (?:is |was |has been )?(?:assessed|checked|evaluated|determined|identified)\\b"
+      );
+
+      if (action.test(text) || completed.test(text)) {
+        return true;
+      }
+
+      if (criterion === "airway") {
+        if (/\b(?:does|did)\s+(?:the patient|patient|she|he|this patient)\s+have\s+(?:a|an)?\s*(?:patent|patient|open|clear|safe|obstructed|blocked|compromised)\s+airway\b/.test(text) || /\bairway is (?:patent|open|clear|safe|unobstructed)\b/.test(text)) {
+          return true;
+        }
+
+        // "Patient" can be a transcription error for "patent".
+        if (
+          /\bis (?:the |the patient s |patient s )?airway (?:patent|patient|open|safe|clear)\b/.test(text)
+        ) {
+          return true;
+        }
+
+        return (
+          /\bairway (?:is |was |appears |appears to be )?(?:patent|clear|open|safe|obstructed|blocked|compromised)\b/.test(text) ||
+          /\b(?:is|was) (?:the |the patient s |patient s )?airway\b/.test(text) ||
+          /\b(?:what is|how is) (?:the |the patient s |patient s )?airway\b/.test(text)
+        );
+      }
+
+      return (
+        /\b(?:what is|what was|tell me|describe) (?:the |your |the patient s |patient s )?chief complaint\b/.test(text) ||
+        /\bchief complaint (?:is|was|appears to be) (?!unknown\b|unclear\b|not\b)\w+/.test(text) ||
+        /\bchief complaint\s*:\s*\w+/.test(line.toLowerCase())
+      );
+    });
+}
+
+function includesAny(text, phrases) {
+  const normalizedText = normalizeText(text);
+
+  return phrases.some(phrase => {
+    const normalizedPhrase = normalizeText(phrase);
+    return normalizedText.includes(normalizedPhrase);
+  });
+}
 
     function detectAndRecordAssessments(text, source) {
       const normalizedText = normalizeText(text);
@@ -2568,18 +2607,27 @@ function studentTransportDecision(body = {}) {
           pattern.test(normalizedText)
         );
 
-        const evidence = { studentInputLog: [text] };
+        const evidence = {
+          studentInputLog: [...studentInputLog, { text }],
+          patientHistory
+        };
         let matched = keywordMatched || patternMatched;
-        if (item.skill === "Chief complaint identified") {
-          matched = /\bchief complaint\b/.test(normalizedText);
+        if (item.skill === "Determines chief complaint or apparent life threats") {
+          matched = /\b(?:chief complaint|(?:apparent )?life threats?)\b/.test(normalizeText(studentRadiationEvidence(evidence)));
         } else if (item.skill === "Determines the mechanism of injury/nature of illness") {
           matched = studentDeterminedMoiNoi(evidence);
         } else if (item.skill === "OPQRST radiation assessed") {
           matched = studentAssessedRadiation(evidence);
-        } else if (item.skill === "Rapid transport initiated") {
-          matched = studentTransportDecision(evidence);
-        } else if (item.skill === "ALS requested") {
-          matched = /\b(?:request(?:ing|ed)? als|call(?:ing|ed)? (?:for )?als|als (?:requested|intercept)|intercept with als)\b/.test(normalizedText);
+        } else if (item.skill === "Identifies patient priority / transport decision") {
+          matched = studentIdentifiedPriority(evidence) || studentTransportDecision(evidence);
+        } else if (item.skill === "Requests additional resources") {
+          matched = studentRequestedResources(evidence);
+        } else if (item.skill === "Determines responsiveness / LOC") {
+          matched = studentAssessedAvpu(evidence);
+        } else if (item.skill === "Airway assessed") {
+          matched = studentNamedAssessment(evidence, "airway") && includesAny(studentRadiationEvidence(evidence), [
+            "respiratory rate obtained", "respiratory rate", "respiration rate", "breathing rate", "rate depth and quality"
+          ]);
         }
 
         if (matched && !completedSkills.has(item.skill)) {
