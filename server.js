@@ -946,6 +946,20 @@ function studentDeterminedMoiNoi(body = {}) {
     });
 }
 
+// Resource requests earn their own point, independently of transport.
+function studentRequestedResources(body = {}) {
+  return studentRadiationEvidence(body)
+    .split(/[.!?;\r\n]+|\bbut\b/i)
+    .some(line => {
+      const text = normalizeText(line);
+      const resource = /\b(?:als|advanced life support|paramedics?|medics?|additional resources?|additional (?:units?|ambulances?|personnel|help)|backup|back up|mutual aid|police|law enforcement|fire department|rescue team)\b/;
+      if (!resource.test(text)) return false;
+      if (/\b(?:do not|dont|did not|will not|wont|not going to|no need to|no need for|not needed|not required|decline|cancel)\b/.test(text)) return false;
+      return /\b(?:request|requesting|requested|call|calling|called|activate|activating|activated|summon|summoning|summoned|need|needs|dispatch|send)\b/.test(text)
+        || /\b(?:als|advanced life support|paramedics?|medics?|backup|back up|additional resources?)\b.{0,20}\b(?:requested|called|activated|needed|dispatched)\b/.test(text);
+    });
+}
+
 // Requesting ALS alone does not establish a transport decision.
 function studentTransportDecision(body = {}) {
   return studentRadiationEvidence(body)
@@ -1109,6 +1123,13 @@ function buildChecklist(body = {}) {
   const text = combineStudentWork(body);
   const opqrst = evaluateOpqrst(text);
   const sample = evaluateSample(text);
+  const respiratoryRateDetermined = includesAny(text, [
+    "respiratory rate obtained",
+    "respiratory rate",
+    "respiration rate",
+    "breathing rate",
+    "rate depth and quality"
+  ]);
 
   return [
     {
@@ -1162,15 +1183,15 @@ function buildChecklist(body = {}) {
     {
       id: "mentalStatus",
       name: "Mental status / AVPU",
-      points: 2,
+      points: 1,
       pass: studentAssessedAvpu(body)
     },
 
     {
       id: "airway",
       name: "Airway assessment",
-      points: 2,
-      pass: studentNamedAssessment(body, "airway")
+      points: 1,
+      pass: studentNamedAssessment(body, "airway") && respiratoryRateDetermined
     },
 
     {
@@ -1226,18 +1247,9 @@ function buildChecklist(body = {}) {
 
     {
       id: "chiefComplaint",
-      name: "Determines chief complaint",
+      name: "Determines chief complaint or apparent life threats",
       points: 1,
-      pass: /\bchief complaint\b/.test(
-        normalizeText(studentRadiationEvidence(body))
-      )
-    },
-
-    {
-      id: "apparentLifeThreats",
-      name: "Determines apparent life threats",
-      points: 1,
-      pass: /\b(?:apparent )?life threats?\b/.test(
+      pass: /\b(?:chief complaint|(?:apparent )?life threats?)\b/.test(
         normalizeText(studentRadiationEvidence(body))
       )
     },
@@ -1327,12 +1339,7 @@ function buildChecklist(body = {}) {
       id: "respiratoryRate",
       name: "Respiratory rate",
       points: 1,
-      pass: includesAny(text, [
-        "respiratory rate obtained",
-        "respiratory rate",
-        "respiration rate",
-        "rate depth and quality"
-      ])
+      pass: respiratoryRateDetermined
     },
 
     {
@@ -1502,6 +1509,13 @@ function buildChecklist(body = {}) {
         "cpr initiated",
         "cpr started"
       ])
+    },
+
+    {
+      id: "additionalResources",
+      name: "Requests additional resources",
+      points: 1,
+      pass: studentRequestedResources(body)
     },
 
     {
@@ -1906,6 +1920,9 @@ GRADING RULES:
 
 - This is a practice simulation, not an official state examination.
 - The deterministic checklist is authoritative for item credit and points.
+- Airway assessment is worth 1 point and requires BOTH an explicit airway
+  assessment and determination of breathing/respiratory rate. Airway wording
+  alone earns no airway point. This is the configured course scoring rule.
 - Do not change checklist results, add deductions, or invent points.
 - Evaluate the student's entire submitted session.
 - Credit recognized assessments whether documented early or later.
@@ -1932,6 +1949,8 @@ ASSESSMENT ORDER AND TIMING:
 
 TRANSPORT CREDIT:
 
+- Award the separate additional-resources point for a documented request
+  for ALS or other additional help. This earns no transport credit by itself.
 - Use the deterministic transport checklist result. Requesting ALS alone does
   not establish a transport decision and earns no transport points.
 
@@ -1943,13 +1962,11 @@ AIRWAY, CHIEF COMPLAINT, AND APPARENT LIFE THREATS CREDIT:
   "the airway is open", "the airway is safe", and "the airway is patent".
   Bare airway labels,
   future plans, and patient/instructor answers alone earn no airway credit.
-- Chief complaint and apparent life threats are separate checklist items,
-  worth ONE point EACH. Neither item requires the other to receive credit.
-- Award the chief-complaint point when the student's own input contains the
-  phrase "chief complaint", including a label, statement, or question.
-- Award the apparent-life-threats point when the student's own input contains
-  "apparent life threats", "life threats", or the singular "life threat".
-- These two items use wording-only credit: do not impose an additional finding
+- Chief complaint OR apparent life threats is ONE combined checklist item,
+  worth ONE point total, even if both are assessed.
+- Award this point when the student's own input contains "chief complaint",
+  "apparent life threats", "life threats", or "life threat".
+- This item uses wording-only credit: do not impose an additional finding
   or completed-assessment requirement beyond the deterministic checklist.
 - Patient/instructor answers and generated completion labels alone cannot
   supply the required student wording.
