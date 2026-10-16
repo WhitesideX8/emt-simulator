@@ -960,6 +960,16 @@ function studentRequestedResources(body = {}) {
     });
 }
 
+function studentIdentifiedPriority(body = {}) {
+  return studentRadiationEvidence(body).split(/[.!?;\r\n]+/).some(line => {
+    const text = normalizeText(line);
+    if (/\b(?:not|unknown|undetermined)\b/.test(text)) return false;
+    return /\b(?:patient|she|he)\b.{0,35}\b(?:high|low|immediate|urgent|emergent|non urgent|non emergent) priority\b/.test(text)
+      || /\b(?:patient|transport) priority (?:is |of )?(?:high|low|immediate|urgent|emergent|non urgent|non emergent)\b/.test(text)
+      || /\b(?:patient|she|he) (?:is|appears|remains) (?:stable|unstable|critical)\b/.test(text);
+  });
+}
+
 // Requesting ALS alone does not establish a transport decision.
 function studentTransportDecision(body = {}) {
   return studentRadiationEvidence(body)
@@ -1520,9 +1530,9 @@ function buildChecklist(body = {}) {
 
     {
       id: "transport",
-      name: "Transport decision",
-      points: 2,
-      pass: studentTransportDecision(body)
+      name: "Identifies patient priority / transport decision",
+      points: 1,
+      pass: studentIdentifiedPriority(body) || studentTransportDecision(body)
     },
 
     {
@@ -1951,8 +1961,9 @@ TRANSPORT CREDIT:
 
 - Award the separate additional-resources point for a documented request
   for ALS or other additional help. This earns no transport credit by itself.
-- Use the deterministic transport checklist result. Requesting ALS alone does
-  not establish a transport decision and earns no transport points.
+- The combined patient-priority / transport-decision item is worth ONE point.
+  An explicit patient priority OR an explicit transport decision earns it.
+  Requesting ALS alone earns no credit for this combined item.
 
 AIRWAY, CHIEF COMPLAINT, AND APPARENT LIFE THREATS CREDIT:
 
