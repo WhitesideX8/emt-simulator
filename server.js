@@ -960,6 +960,48 @@ function studentRequestedResources(body = {}) {
     });
 }
 
+// Uses the same keyword and pattern criteria as the scenario C-spine item.
+function studentConsideredSpine(body = {}) {
+  const evidence = studentRadiationEvidence(body);
+  return includesAny(evidence, [
+          "c-spine", "c spine", "c-spine precautions", "c spine precautions",
+          "c-spine stabilization", "c spine stabilization",
+          "consider c-spine", "consider c spine",
+          "consider c-spine precautions", "consider c spine precautions",
+          "consider c-spine stabilization", "consider c spine stabilization",
+          "spinal precautions", "spinal stabilization", "spine stabilization",
+          "spinal motion restriction", "smr", "immobilization considered",
+          "cervical spine precautions", "cervical spine stabilization",
+"c-spine",
+        "c spine",
+        "c-spine precautions",
+        "c spine precautions",
+        "c-spine stabilization",
+        "c spine stabilization",
+        "consider c-spine",
+        "consider c spine",
+        "consider c-spine precautions",
+        "consider c spine precautions",
+        "consider c-spine stabilization",
+        "consider c spine stabilization",
+        "spinal precautions",
+        "spinal stabilization",
+        "spine stabilization",
+        "spinal motion restriction",
+        "smr",
+        "immobilization considered",
+        "cervical spine precautions",
+        "cervical spine stabilization"
+        ]) || [
+          /\b(c\s*-?\s*spine|cervical spine)\b.*\b(consider|precaution|stabil|immobil|restrict)\w*\b/,
+          /\b(consider|apply|maintain)\w*\b.*\b(c\s*-?\s*spine|cervical spine)\b/,
+          /\bspinal\b.*\b(precaution|stabil|motion restriction|immobil)\w*\b/,
+/\b(c\s*-?\s*spine|cervical spine)\b.*\b(consider|precaution|stabil|immobil|restrict)\w*\b/,
+        /\b(consider|apply|maintain)\w*\b.*\b(c\s*-?\s*spine|cervical spine)\b/,
+        /\bspinal\b.*\b(precaution|stabil|motion restriction|immobil)\w*\b/
+        ].some(pattern => pattern.test(evidence.toLowerCase()));
+}
+
 function studentIdentifiedPriority(body = {}) {
   return studentRadiationEvidence(body).split(/[.!?;\r\n]+/).some(line => {
     const text = normalizeText(line);
@@ -1173,10 +1215,31 @@ function buildChecklist(body = {}) {
     },
 
     {
+      id: "numberOfPatients",
+      name: "Determines number of patients",
+      points: 1,
+      pass: includesAny(studentRadiationEvidence(body), [
+        "how many patients",
+        "number of patients",
+        "are there any other patients",
+        "one patient",
+        "single patient",
+        "only patient"
+      ])
+    },
+
+    {
       id: "natureOfIllness",
       name: "Determines mechanism of injury / nature of illness",
       points: 1,
       pass: studentDeterminedMoiNoi(body)
+    },
+
+    {
+      id: "spineStabilization",
+      name: "Considers stabilization of the spine",
+      points: 1,
+      pass: studentConsideredSpine(body)
     },
 
     {
@@ -1192,7 +1255,7 @@ function buildChecklist(body = {}) {
 
     {
       id: "mentalStatus",
-      name: "Mental status / AVPU",
+      name: "Determines responsiveness / LOC",
       points: 1,
       pass: studentAssessedAvpu(body)
     },
@@ -1220,7 +1283,7 @@ function buildChecklist(body = {}) {
     {
       id: "lungSounds",
       name: "Lung sounds",
-      points: 1,
+      points: 0,
       pass: includesAny(text, [
         "lung sounds assessed",
         "lung sounds",
@@ -1930,6 +1993,15 @@ GRADING RULES:
 
 - This is a practice simulation, not an official state examination.
 - The deterministic checklist is authoritative for item credit and points.
+- Lung sounds remains a recognized checklist item worth ZERO points.
+  Report it as assessed or not assessed, but do not deduct points for it.
+- Determines number of patients is worth ONE point. Credit the student
+  asking the patient count, asking about other patients, or stating the count
+  using the deterministic recognition rules. An instructor answer alone
+  does not earn this point.
+- Considers stabilization of the spine is worth ONE point and uses the
+  scenario C-spine stabilization recognition criteria. Considering and
+  ruling out stabilization counts; application is not required.
 - Airway assessment is worth 1 point and requires BOTH an explicit airway
   assessment and determination of breathing/respiratory rate. Airway wording
   alone earns no airway point. This is the configured course scoring rule.
