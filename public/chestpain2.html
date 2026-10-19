@@ -589,7 +589,7 @@
       gap: 4px;
     }
     #completedAssessments {
-  width: 70% !important;
+  /* Width is set by matchRecordedBoxWidth(). */
   min-width: 0;
   max-width: 100%;
   margin-left: auto;
@@ -889,7 +889,7 @@
         // Revalidate saved labels using original student input only.
         const savedEvidence = { studentInputLog, patientHistory };
         const strictSavedRules = [
-          ["Determines chief complaint or apparent life threats", /\b(?:chief complaint|(?:apparent )?life threats?)\b/.test(normalizeText(studentRadiationEvidence(savedEvidence)))],
+          ["Determines chief complaint or apparent life threats", studentDeterminedChiefComplaintOrLifeThreats(savedEvidence)],
           ["Identifies patient priority / transport decision", studentIdentifiedPriority(savedEvidence) || studentTransportDecision(savedEvidence)],
           ["OPQRST radiation assessed", studentAssessedRadiation(savedEvidence)],
           ["Determines the mechanism of injury/nature of illness", studentDeterminedMoiNoi(savedEvidence)]
@@ -979,7 +979,7 @@
       let voiceEntryRecorded = false;
 
       function finishVoiceRecording() {
-        if (voiceEntryRecorded || !recordWhenFinished) return;
+        if (recognition.cancelled || voiceEntryRecorded || !recordWhenFinished) return;
 
         const spokenEntry = textBox.value.trim();
 
@@ -2584,6 +2584,21 @@ function studentNamedAssessment(body, criterion) {
     });
 }
 
+
+function studentDeterminedChiefComplaintOrLifeThreats(body = {}) {
+  return studentRadiationEvidence(body)
+    .split(/[.!?;\r\n]+/)
+    .some(line => {
+      const text = normalizeText(line);
+      if (!/\b(?:chief complaint|(?:apparent )?life threats?)\b/.test(text)) return false;
+      if (
+        /\b(?:did not|do not|have not|has not|cannot|unable to|will not|never)\b.{0,45}\b(?:assess|check|evaluate|determine|identify)\b/.test(text) ||
+        /\b(?:chief complaint|(?:apparent )?life threats?)\b.{0,25}\b(?:not assessed|not checked|not determined|not identified|unknown)\b/.test(text)
+      ) return false;
+      return true;
+    });
+}
+
 function includesAny(text, phrases) {
   const normalizedText = normalizeText(text);
 
@@ -2612,7 +2627,7 @@ function includesAny(text, phrases) {
         };
         let matched = keywordMatched || patternMatched;
         if (item.skill === "Determines chief complaint or apparent life threats") {
-          matched = /\b(?:chief complaint|(?:apparent )?life threats?)\b/.test(normalizeText(studentRadiationEvidence(evidence)));
+          matched = studentDeterminedChiefComplaintOrLifeThreats(evidence);
         } else if (item.skill === "Determines the mechanism of injury/nature of illness") {
           matched = studentDeterminedMoiNoi(evidence);
         } else if (item.skill === "OPQRST radiation assessed") {
@@ -2624,9 +2639,7 @@ function includesAny(text, phrases) {
         } else if (item.skill === "Determines responsiveness / LOC") {
           matched = studentAssessedAvpu(evidence);
         } else if (item.skill === "Airway assessed") {
-          matched = studentNamedAssessment(evidence, "airway") && includesAny(studentRadiationEvidence(evidence), [
-            "respiratory rate obtained", "respiratory rate", "respiration rate", "breathing rate", "rate depth and quality"
-          ]);
+          matched = studentNamedAssessment(evidence, "airway");
         }
 
         if (matched && !completedSkills.has(item.skill)) {
@@ -2925,7 +2938,7 @@ function includesAny(text, phrases) {
 
         if (!response.ok) {
           throw new Error(
-            data.error || data.message ||
+            data.error || data.message || data.reply ||
             "Instructor server returned status " + response.status + "."
           );
         }
@@ -3055,21 +3068,17 @@ function includesAny(text, phrases) {
         return;
       }
 
-      if (pendingEntry && isInstructorQuestion(pendingEntry)) {
-        await askPatientTyped();
-
+      if (activeRecognition) {
         document.getElementById("recordStatus").innerText =
-          "Patient question sent. Submit for grading after reviewing the answer.";
-
+          "Stop Voice and wait for your entry to finish before grading.";
         return;
       }
 
       if (pendingEntry) {
-        detectAndRecordAssessments(pendingEntry, "manual entry");
-        recordStudentInput("Assessment / Treatment", pendingEntry);
-        assessmentLog.push(pendingEntry);
-        updateCompletedAssessmentsDisplay();
-        actionEntry.value = "";
+        document.getElementById("recordStatus").innerText =
+          "Submit your text using Patient, Instructor, or Assessment/treatment before grading.";
+        actionEntry.focus();
+        return;
       }
 
       if (assessmentLog.length === 0 && !patientHistory.trim()) {
@@ -3209,7 +3218,14 @@ function includesAny(text, phrases) {
     }
 
     function resetScenario() {
-      stopVoiceInput();
+      if (activeRecognition) {
+        const recognition = activeRecognition;
+        recognition.cancelled = true;
+        recognition.abort();
+        resetVoiceButton(recognition);
+      }
+      responseHideTimers.forEach(timer => clearTimeout(timer));
+      responseHideTimers.clear();
 
       document.getElementById("patientResponseArea").hidden = true;
       document.getElementById("instructorResponseArea").hidden = true;
@@ -3357,6 +3373,7 @@ window.addEventListener("DOMContentLoaded", function() {
   if (typeof ResizeObserver !== "undefined") {
     const observer = new ResizeObserver(matchRecordedBoxWidth);
     observer.observe(section);
+    observer.observe(document.getElementById("actionEntry"));
     observer.observe(section.querySelector(".button-row"));
   }
 
