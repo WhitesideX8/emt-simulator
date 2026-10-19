@@ -1249,6 +1249,23 @@ function buildChecklist(body = {}) {
 
         /\b(?:assist|assisted|assisting|provide|providing|start)\b.{0,50}\b(?:ventilations|bvm|bag valve mask)\b/,
 
+        // Recognize ventilation findings and support in either word order.
+        /\b(?:breathes?|breathing|ventilates?|ventilating|ventilations?|respirations?)\b.{0,30}\b(?:adequately|effectively|normally|sufficient|sufficiently|adequate|effective|normal|unlabored)\b/,
+
+        /\b(?:adequate|effective|normal|sufficient|unlabored)\b.{0,30}\b(?:breaths?|ventilations?|respiratory effort|tidal volume|air movement|air exchange)\b/,
+
+        /\b(?:tidal volume|air movement|air exchange|chest rise|chest expansion)\b.{0,30}\b(?:adequate|effective|normal|good|equal|sufficient|present|bilateral|symmetrical|symmetric)\b/,
+
+        /\b(?:adequate|effective|normal|good|equal|sufficient|bilateral|symmetrical|symmetric)\b.{0,25}\b(?:chest rise|chest expansion|air movement|air exchange)\b/,
+
+        /\b(?:assess|check|evaluate|ensure|assure|confirm|verify|maintain|monitor|reassess)\w*\b.{0,45}\b(?:ventilations?|ventilatory (?:status|adequacy)|adequacy of (?:breathing|respirations?))\b/,
+
+        /\b(?:assist|support|provide|give|begin|start|initiate|deliver|perform|continue)\w*\b.{0,55}\b(?:ventilations?|rescue breaths?|positive pressure ventilation|ppv|bvm|bag valve mask|bag mask)\b/,
+
+        /\b(?:bvm|bag valve mask|bag mask)\b.{0,45}\b(?:ventilat|assist|support|provid|administer|deliver|use)\w*\b/,
+
+        /\b(?:bagging|bag ventilating)\b.{0,25}\b(?:the patient|this patient|her|him)\b/,
+
         // Assessing breathing earns recognition; adequacy remains for review.
         /\b(?:assess|check|evaluate|inspect|examine|observe|count|measure|monitor|reassess)\w*\b.{0,45}\b(?:breathing|respirations?|respiratory (?:rate|effort|depth|quality|pattern))\b/,
 
