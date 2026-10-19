@@ -1709,63 +1709,256 @@ function buildChecklist(body = {}) {
 }
 
 /* =========================================================
-   CRITICAL-CRITERIA REVIEW
+   CT MEDICAL SHEET: CRITICAL CRITERIA F1–F12
+
+   PASS   = documented requirement met
+   FAIL   = documented critical failure
+   REVIEW = insufficient evidence for an automatic decision
+
+   Clinical failures require factual supporting evidence.
 ========================================================= */
 
-function evaluateCriticalCriteria(body, checklist) {
-  const names = [
-    "Initiates or calls for transport within 15 minutes",
+function evaluateCriticalCriteria(body = {}, checklist = []) {
+  const entries = sheetEntries(body);
 
-    "Takes or verbalizes appropriate PPE precautions",
-
-    "Determines scene safety before approaching patient",
-
-    "Provides appropriate oxygen therapy",
-
-    "Finds/manages airway, breathing, hemorrhage or shock problems if present",
-
-    "Determines immediate transport versus continued scene assessment",
-
-    "Manages life threats before other care",
-
-    "Avoids dangerous or inappropriate interventions",
-
-    "Provides accurate verbal report",
-
-    "Manages patient competently",
-
-    "Exhibits acceptable professional behavior",
-
-    "Earns at least 33 points"
-  ];
+  const getItem = id =>
+    checklist.find(item => item.id === id);
 
   const documented = id =>
-    checklist.find(item => item.id === id)?.pass;
+    getItem(id)?.pass === true;
 
-  return names.map((description, index) => {
-    const id = `F${index + 1}`;
+  const earnedPoints = checklist.reduce(
+    (total, item) =>
+      total + (item.pass ? Number(item.points) || 0 : 0),
+    0
+  );
 
-    const confirmed =
-      (
-        id === "F2" &&
-        documented("bsi")
-      ) ||
-      (
-        id === "F6" &&
-        documented("transport")
-      );
+  /*
+   * These findings must come from a trusted instructor review
+   * or server-side evaluation of the actual scenario.
+   *
+   * Do not treat student-supplied claims as verified findings.
+   */
+  const findings =
+    body.verifiedCriticalFindings || {};
+
+  function criterion(
+    id,
+    description,
+    automaticStatus,
+    automaticReason
+  ) {
+    const verified = findings[id];
+
+    if (
+      verified &&
+      verified.verifiedByInstructor === true &&
+      ["PASS", "FAIL"].includes(verified.status) &&
+      String(verified.reason || "").trim()
+    ) {
+      return {
+        id,
+        description,
+        status: verified.status,
+        reason: String(verified.reason).trim()
+      };
+    }
 
     return {
       id,
       description,
-      status: confirmed ? "PASS" : "REVIEW",
-
-      reason:
-        confirmed
-          ? "Supporting student action documented."
-          : "Instructor review required. Missing wording alone does not establish a clinical critical failure. F1 requires the actual transport-event time; F3 requires scene-safety timing."
+      status: automaticStatus,
+      reason: automaticReason
     };
+  }
+
+  /*
+   * Determine when transport was first initiated or requested.
+   * Relative elapsedSeconds must belong to that specific entry.
+   *
+   * The total scenario duration alone does not establish
+   * whether transport was requested within 15 minutes.
+   */
+  const originalLog = Array.isArray(body.studentInputLog)
+    ? body.studentInputLog
+    : [];
+
+  const transportEntries = entries.filter(entry => {
+    const evidenceBody = {
+      studentInputLog: [{ text: entry.text }]
+    };
+
+    const text = normalizeText(entry.text);
+
+    const explicitDestination =
+      !/\b(?:do not|dont|will not|wont|not going to)\b/.test(text) &&
+      /\b(?:en route to|transporting to|take .{0,25}to)\b.{0,25}\b(?:hospital|emergency department|ed)\b/.test(
+        text
+      );
+
+    return (
+      studentTransportDecision(evidenceBody) ||
+      explicitDestination
+    );
   });
+
+  function entryElapsedSeconds(entry) {
+    const original = originalLog[entry.index - 1];
+
+    if (
+      original &&
+      typeof original === "object" &&
+      original.elapsedSeconds !== null &&
+      original.elapsedSeconds !== undefined &&
+      original.elapsedSeconds !== ""
+    ) {
+      const seconds = Number(original.elapsedSeconds);
+
+      if (Number.isFinite(seconds) && seconds >= 0) {
+        return seconds;
+      }
+    }
+
+    return null;
+  }
+
+  const transportTimes = transportEntries
+    .map(entryElapsedSeconds)
+    .filter(value => value !== null);
+
+  const firstTransportTime = transportTimes.length
+    ? Math.min(...transportTimes)
+    : null;
+
+  const totalElapsed =
+    body.elapsedSeconds !== null &&
+    body.elapsedSeconds !== undefined &&
+    body.elapsedSeconds !== ""
+      ? Number(body.elapsedSeconds)
+      : NaN;
+
+  let transportTimeStatus = "REVIEW";
+  let transportTimeReason =
+    "Verify whether transport was initiated or called for within 15 minutes.";
+
+  if (firstTransportTime !== null) {
+    if (firstTransportTime <= 900) {
+      transportTimeStatus = "PASS";
+      transportTimeReason =
+        `Transport was initiated or requested at ${firstTransportTime} seconds.`;
+    } else if (
+      transportTimes.length === transportEntries.length
+    ) {
+      transportTimeStatus = "FAIL";
+      transportTimeReason =
+        `The first documented transport action occurred at ${firstTransportTime} seconds, after the 15-minute limit.`;
+    } else {
+      transportTimeReason =
+        "A transport action occurred after 15 minutes, but another transport entry has no elapsed time. Verify the earlier entry.";
+    }
+  } else if (
+    transportEntries.length === 0 &&
+    Number.isFinite(totalElapsed) &&
+    totalElapsed >= 900
+  ) {
+    transportTimeStatus = "FAIL";
+    transportTimeReason =
+      "At least 15 minutes elapsed with no recorded initiation of or call for transport.";
+  }
+
+  return [
+    criterion(
+      "F1",
+      "Failure to initiate or call for transport of the patient within 15 minute time limit",
+      transportTimeStatus,
+      transportTimeReason
+    ),
+
+    criterion(
+      "F2",
+      "Failure to take or verbalize appropriate PPE precautions",
+      documented("bsi") ? "PASS" : "FAIL",
+      documented("bsi")
+        ? "PPE precautions were recorded."
+        : "No taking or verbalizing of PPE precautions was recorded."
+    ),
+
+    criterion(
+      "F3",
+      "Failure to determine scene safety before approaching patient",
+      "REVIEW",
+      documented("sceneSafety")
+        ? "Scene safety was recorded. Verify that this occurred before approaching the patient."
+        : "Scene safety was not recorded. Verify whether the student approached the patient without determining scene safety."
+    ),
+
+    criterion(
+      "F4",
+      "Failure to provide oxygen therapy in line with AHA guidelines",
+      "REVIEW",
+      "Compare the oxygen decision, delivery method, and patient findings with applicable AHA guidance. Mentioning oxygen alone does not establish appropriate therapy."
+    ),
+
+    criterion(
+      "F5",
+      "Failure to find or manage problems with airway, breathing, hemorrhage or shock, if present",
+      "REVIEW",
+      "Determine which airway, breathing, hemorrhage, or shock problems were actually present, then verify that the student identified and managed them."
+    ),
+
+    criterion(
+      "F6",
+      "Failure to differentiate need for immediate transportation versus continued assessment or treatment at the scene",
+      documented("transport") ? "PASS" : "FAIL",
+      documented("transport")
+        ? "A patient-priority or transport decision was recorded."
+        : "No patient-priority or transport decision was recorded."
+    ),
+
+    criterion(
+      "F7",
+      "Failure to manage problems with airway, breathing, hemorrhage or shock, if present, prior to other care",
+      "REVIEW",
+      "If a life-threatening airway, breathing, hemorrhage, or shock problem was present, verify that it was managed before other care."
+    ),
+
+    criterion(
+      "F8",
+      "Orders a dangerous or inappropriate intervention",
+      "REVIEW",
+      "Review the actual interventions against the patient findings, contraindications, and applicable scope and protocols."
+    ),
+
+    criterion(
+      "F9",
+      "Failure to provide accurate report to arriving EMS unit, medical direction or ED staff",
+      "REVIEW",
+      "Review the actual verbal report for accuracy. Stating that a report will be given does not establish that an accurate report was provided."
+    ),
+
+    criterion(
+      "F10",
+      "Failure to manage the patient as a competent EMT",
+      "REVIEW",
+      "Instructor judgment is required, with factual documentation supporting any critical failure."
+    ),
+
+    criterion(
+      "F11",
+      "Exhibits unacceptable affect with patient or other personnel",
+      "REVIEW",
+      "Instructor observation is required. Document the specific unacceptable behavior if this criterion is failed."
+    ),
+
+    {
+      id: "F12",
+      description: "Failure to earn minimum of 33 points",
+      status: earnedPoints >= 33 ? "PASS" : "FAIL",
+      reason:
+        `Recorded score: ${earnedPoints}/42. ` +
+        "The minimum is 33 points. Complete pending scoring reviews before treating this as a final examination result."
+    }
+  ];
 }
 
 /* =========================================================
