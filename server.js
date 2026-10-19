@@ -745,65 +745,26 @@ function studentAssessedRadiation(body = {}) {
 ========================================================= */
 
 function studentDeterminedMoiNoi(body = {}) {
+  // Recognize explicit MOI/NOI wording without requiring a diagnosis
+  // or a specific sentence structure. Use original student entries only.
   return studentRadiationEvidence(body)
-    .replace(
-      /(\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\s+(?:is|was))\s*\.+\s*(?=\S)/gi,
-      "$1 "
-    )
+    .replace(/\bm\s*[.\-]\s*o\s*[.\-]\s*i\b\.?/gi, " MOI ")
+    .replace(/\bn\s*[.\-]\s*o\s*[.\-]\s*i\b\.?/gi, " NOI ")
     .split(/[.!?;\r\n]+/)
     .some(line => {
-      const text = normalizeText(
-        line.replace(/\(\s*(?:noi|moi)\s*\)/gi, " ")
-      );
-
+      const text = normalizeText(line);
       const requiredWording =
-        /\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/;
+        /\b(?:nature of (?:the |this |the patient s |this patient s )?illness|mechanism of (?:the |this |the patient s |this patient s )?injury|illness nature|injury mechanism|moi|noi|m o i|n o i)\b/;
 
-      if (!requiredWording.test(text)) {
-        return false;
-      }
+      if (!requiredWording.test(text)) return false;
 
+      // Explicitly unassessed or unknown MOI/NOI does not earn credit.
       if (
-        /\b(?:did not|do not|cannot|cant|unable to|have not|havent)\b.{0,40}\b(?:determine|identify|establish|assess)\b/.test(
-          text
-        ) ||
-        /\b(?:unknown|not determined|not identified|not assessed)\b/.test(
-          text
-        ) ||
-        /\b(?:will|going to|plan to|need to)\b.{0,30}\b(?:determine|identify|establish|assess)\b/.test(
-          text
-        )
-      ) {
-        return false;
-      }
+        /\b(?:did not|do not|cannot|can t|cant|unable to|have not|haven t|havent)\b.{0,40}\b(?:determine|identify|establish|assess)\b/.test(text) ||
+        /\b(?:unknown|unclear|not known|not sure|not determined|not identified|not assessed)\b/.test(text)
+      ) return false;
 
-      const illness =
-        /\b(?:shortness of breath|sob|difficulty breathing|breathing (?:problem|problems|difficulty|difficulties)|respiratory (?:distress|emergency)|chest pain|chest discomfort|cardiac complaint|stroke|seizure|altered mental status|hypoglycemia|hyperglycemia|diabetic emergency|allergic reaction|anaphylaxis|overdose|poisoning|abdominal pain|syncope|fainting|medical (?:call|illness|emergency|complaint)|non traumatic illness)\b/;
-
-      const mechanism =
-        /\b(?:fall|fell|motor vehicle (?:collision|crash|accident)|mvc|mva|car (?:crash|accident)|collision|pedestrian struck|struck by|assault|gunshot|stabbing|penetrating injury|blunt trauma|burn|explosion|crush injury|sports injury|drowning)\b/;
-
-      const declaration = text.match(
-        /\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\s+(?:is|in|was|appears to be|seems to be|suspected to be|identified as|determined (?:as|to be))\s+(.+)/
-      );
-
-      if (declaration) {
-        return (
-          (
-            illness.test(declaration[1]) ||
-            mechanism.test(declaration[1])
-          ) &&
-          !/^(?:unknown|unclear|not known|not sure)\b/.test(
-            declaration[1]
-          )
-        );
-      }
-
-      return [
-        /\b(?:what|which) (?:is|was|would be) (?:the |this patient s |the patient s )?(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/,
-
-        /\b(?:tell me|describe|identify|determine|assess|check) (?:the |this patient s |the patient s )?(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/
-      ].some(pattern => pattern.test(text));
+      return true;
     });
 }
 
