@@ -1227,7 +1227,15 @@ function buildChecklist(body = {}) {
       [
         /\bairway\b.{0,45}\b(?:patent|open|clear|safe|unobstructed|assess|check|obstruct)\w*\b/,
 
-        /\b(?:assess|check|evaluate)\w*\b.{0,40}\bairway\b/
+        /\b(?:assess|check|evaluate|inspect|examine|maintain|open|clear|manage)\w*\b.{0,40}\bairway\b/,
+
+        /\b(?:patent|open|clear|safe|unobstructed|obstructed|blocked|compromised)\b.{0,25}\bairway\b/,
+
+        /\bairway\b.{0,40}\b(?:patency|obstruction|blockage|compromised|intact|protected)\b/,
+
+        /\b(?:what|how)\b.{0,25}\bairway\b/,
+
+        /\bairway\b.{0,25}\b(?:status|condition)\b/
       ]
     ),
 
@@ -1239,7 +1247,18 @@ function buildChecklist(body = {}) {
 
         /\b(?:breathing|ventilation|respirations)\b.{0,25}\b(?:adequate|normal|effective)\b/,
 
-        /\b(?:assist|assisted|assisting|provide|providing|start)\b.{0,50}\b(?:ventilations|bvm|bag valve mask)\b/
+        /\b(?:assist|assisted|assisting|provide|providing|start)\b.{0,50}\b(?:ventilations|bvm|bag valve mask)\b/,
+
+        // Assessing breathing earns recognition; adequacy remains for review.
+        /\b(?:assess|check|evaluate|inspect|examine|observe|count|measure|monitor|reassess)\w*\b.{0,45}\b(?:breathing|respirations?|respiratory (?:rate|effort|depth|quality|pattern))\b/,
+
+        /\b(?:breathing|respirations?|respiratory)\b.{0,45}\b(?:rate|depth|effort|quality|pattern|regularity|work|labored|unlabored|shallow|rapid|slow)\b/,
+
+        /\b(?:rate|depth|effort|quality|pattern|work)\b.{0,30}\b(?:of )?(?:breathing|respirations?)\b/,
+
+        /\b(?:how|what)\b.{0,35}\b(?:breathing|respirations?|ventilation)\b/,
+
+        /\b(?:assess|check|evaluate|observe)\w*\b.{0,35}\b(?:chest rise|chest expansion|chest movement)\b/
       ],
       true
     ),
