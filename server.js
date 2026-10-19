@@ -1351,9 +1351,23 @@ function buildChecklist(body = {}) {
       [
         /\b(?:feel|feels|feeling) like\b/,
 
-        /\bdescribe\b.{0,45}\b(?:pain|discomfort|breathing|symptoms)\b/,
+        /\bdescribe\b.{0,65}\b(?:pain|discomfort|breathing|symptoms?|sensation|tightness|pressure)\b/,
 
-        /\bquality\b/
+        /\b(?:pain|discomfort|breathing|symptoms?|sensation|tightness|pressure)\b.{0,45}\b(?:describe|description|character|quality)\b/,
+
+        /\bquality\b/,
+
+        /\b(?:character|type|kind|nature) of\b.{0,30}\b(?:pain|discomfort|sensation|symptoms?|tightness)\b/,
+
+        /\b(?:how|what)\b.{0,30}\b(?:pain|discomfort|tightness|pressure|breathing|symptoms?)\b.{0,25}\bfeel\b/,
+
+        /\bhow\b.{0,15}\b(?:would|do|does|can)\b.{0,25}\b(?:describe|characterize)\b/,
+
+        /\b(?:is|does|would|feels?|describe)\b.{0,55}\b(?:sharp|dull|aching|achy|burning|stabbing|crushing|squeezing|throbbing|tearing|pressure like|tight|heavy|heaviness)\b/,
+
+        /\b(?:pain|discomfort|sensation|chest|symptoms?)\b.{0,35}\b(?:pressure|tightness)\b/,
+
+        /\b(?:pressure|tightness)\b.{0,25}\b(?:or|versus)\b.{0,25}\b(?:pain|burning|sharp|dull|stabbing|squeezing)\b/
       ]
     ),
 
