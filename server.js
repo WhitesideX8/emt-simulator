@@ -469,8 +469,6 @@ function getScenario(value, scenarioInfo = "") {
 
   const scene = displayedScene || selected.initialInfo;
 
-  // Unchanged scenes retain their original hidden clinical details.
-  // Edited scenes cannot inherit old patient facts.
   const customCase =
     Boolean(displayedScene) &&
     cleanScene(displayedScene) !== cleanScene(selected.initialInfo);
@@ -490,33 +488,39 @@ CASE CONSISTENCY RULES:
       : "This is the unchanged built-in case. Retain its clinical history and findings from the scenario instructions above."
   }
 - Never invent an omitted vital sign, history item, medication, allergy, physical finding, diagnosis, or treatment response.
-- Missing details are unknown, not normal, negative, or absent. For example, missing allergy information does not mean no known allergies.
+- Missing details are unknown, not normal, negative, or absent. Missing allergy information does not mean no known allergies.
 - Maintain the stated scene. A plan to transport does not mean arrival elsewhere.
 - Answer only the current question, briefly, in your assigned role. Do not volunteer the full case.
 `;
 
-  const patientRole = `You are the patient in an EMT practice simulation.
+  const patientRole = `
+You are the patient in an EMT practice simulation.
 Use first-person speech and respond naturally according to the written case.
 Reveal only information the patient could know, and only when asked.
 Do not act as an instructor, coach the student, or explain treatment.
 Do not report equipment measurements unless the case says the patient knows them.
 For missing history details, say you do not know; do not invent a history.
-If the case says the patient cannot speak or is unresponsive, do not invent spoken answers.`;
+If the case says the patient cannot speak or is unresponsive, do not invent spoken answers.
+`;
 
-  const instructorRole = `You are the EMT instructor in a practice simulation.
+  const instructorRole = `
+You are the EMT instructor in a practice simulation.
 Give only requested findings or briefly acknowledge stated actions.
 Use only facts supplied in the written case, including vital signs and examination findings.
 When a requested fact is absent, say "That information is not provided in this scenario."
-Do not invent normal findings or treatment responses. Do not volunteer the full case.`;
+Do not invent normal findings or treatment responses. Do not volunteer the full case.
+`;
 
   return {
     ...selected,
     initialInfo: scene,
     customCase,
     patientPrompt:
-      (customCase ? patientRole : selected.patientPrompt) + sceneRules,
+      (customCase ? patientRole : selected.patientPrompt) +
+      sceneRules,
     instructorPrompt:
-      (customCase ? instructorRole : selected.instructorPrompt) + sceneRules
+      (customCase ? instructorRole : selected.instructorPrompt) +
+      sceneRules
   };
 }
 
@@ -542,27 +546,6 @@ function includesAny(text, phrases) {
   });
 }
 
-function combineStudentWork(body = {}) {
-  const assessmentLog = Array.isArray(body.assessmentLog)
-    ? body.assessmentLog.join("\n")
-    : "";
-
-  const completedSkills = Array.isArray(body.completedSkills)
-    ? body.completedSkills.join("\n")
-    : "";
-
-  return [
-    body.studentAnswer,
-    body.patientHistory,
-    body.instructorHistory,
-    body.treatmentPlan,
-    assessmentLog,
-    completedSkills
-  ]
-    .filter(Boolean)
-    .join("\n");
-}
-
 /* =========================================================
    OPENAI HELPER
 ========================================================= */
@@ -580,16 +563,20 @@ DIRECT RESPONSE RULES:
 - If the requested fact is not in the written scene or locked case, say only that the information is unavailable. Do not invent it.
 - If a question is ambiguous, ask one short clarification rather than guessing.
 `;
-  return common + (role === "patient" ? `
+
+  return common + (
+    role === "patient"
+      ? `
 PATIENT RESPONSE STYLE:
 - Speak naturally in first person, consistent with the case's mental status and breathing limitations.
 - Answer history and symptom questions only. Do not coach or explain treatment.
 - For equipment measurements or findings the patient cannot know, say "I don't know." Do not disclose instructor findings.
 - For an action statement with no question, give only a brief natural acknowledgment if the patient can respond.
-- Examples of STYLE ONLY (never substitute these example facts for the current case):
+- Examples of STYLE ONLY:
   "Any allergies?" -> "Penicillin." if that is the locked allergy.
   "Does the pain radiate?" -> "Yes, into my left arm and jaw." if that is the locked finding.
-` : `
+`
+      : `
 INSTRUCTOR RESPONSE STYLE:
 - Give only the requested assessment findings with units where applicable.
 - For an action statement with no question, answer only "Acknowledged." Do not confirm clinical appropriateness or supply findings.
@@ -598,13 +585,13 @@ INSTRUCTOR RESPONSE STYLE:
 - A direct request such as "Assess airway and breathing" may receive only the requested airway and breathing findings.
 - Do not give a diagnosis, treatment advice, or explain why a finding matters unless explicitly asked.
 - When coaching is explicitly requested, answer only that request briefly and within the scenario.
-- Examples of STYLE ONLY (never substitute these example facts for the current case):
+- Examples of STYLE ONLY:
   "What is the blood pressure?" -> "168/96 mmHg." if that is the locked blood pressure.
   "Is the airway patent?" -> "Yes, the airway is patent." if that is the locked finding.
   "I'm wearing PPE." -> "Acknowledged."
-`);
+`
+  );
 }
-
 
 async function createChatReply(systemPrompt, userPrompt) {
   const completion = await openai.chat.completions.create({
@@ -629,195 +616,9 @@ async function createChatReply(systemPrompt, userPrompt) {
 }
 
 /* =========================================================
-   OPQRST SCORING
+   ORIGINAL STUDENT EVIDENCE
 ========================================================= */
 
-function evaluateOpqrst(text = "") {
-  const work = String(text)
-    .toLowerCase()
-    .replace(/[â€™']/g, "")
-    .replace(/[-â€“â€”]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  const has = (...patterns) =>
-    patterns.some(pattern => pattern.test(work));
-
-  // ONSET: When the symptom began.
-  const onset = has(
-    /\bopqrst onset assessed\b/,
-    /\bonset assessed\b/,
-    /\bwhen did (?:the |your )?(?:chest pain|pain|symptoms?|discomfort|sob|shortness of breath|difficulty breathing|this|it) (?:start|begin)\b/,
-    /\b(?:what|when|at what) time (?:did|does) .{0,60}(?:start|begin)\b/,
-    /\bwhen (?:did|was) (?:this|it) first (?:noticed|noticeable|start|begin)\b/,
-    /\bsudden or gradual\b/,
-    /\bwhat were you doing when .{0,60}(?:started|began)\b/,
-    /\bwhat were you doing at (?:the )?onset\b/
-  );
-
-  // PROVOCATION: What worsens the symptom.
-  const worse = has(
-    /\b(?:opqrst )?provocation assessed\b/,
-    /\bwhat makes .{0,45}(?:worse|increase)\b/,
-    /\b(?:anything|does anything) make .{0,45}worse\b/,
-    /\bwhat (?:worsens|aggravates|triggers) .{0,45}(?:pain|symptom|discomfort)\b/,
-    /\bdoes .{0,45}(?:make|makes) .{0,35}worse\b/
-  );
-
-  // PALLIATION: What improves the symptom.
-  const better = has(
-    /\b(?:opqrst )?palliation assessed\b/,
-    /\bwhat makes .{0,45}better\b/,
-    /\b(?:anything|does anything) make .{0,45}better\b/,
-    /\bwhat (?:relieves|helps|eases) .{0,45}(?:pain|symptom|discomfort)\b/,
-    /\bdoes .{0,45}(?:help|relieve|ease) .{0,35}(?:pain|symptom|discomfort)\b/
-  );
-
-  const bothProvocationAndPalliation = has(
-    /\b(?:opqrst )?provocation and palliation assessed\b/,
-    /\bwhat makes .{0,45}(?:better or worse|worse or better|better and worse|worse and better)\b/
-  );
-
-  // QUALITY: What the symptom feels like.
-  const quality = has(
-    /\b(?:opqrst )?quality assessed\b/,
-    /\bdescribe (?:the |your )?(?:chest pain|pain|discomfort|symptoms?)\b/,
-    /\bwhat does .{0,35}(?:pain|discomfort) feel like\b/,
-    /\bhow would you describe .{0,35}(?:pain|discomfort)\b/,
-    /\bis .{0,30}(?:sharp|dull|burning|pressure|aching|crushing)\b/
-  );
-
-  // RADIATION: Whether the symptom spreads elsewhere.
-  const spreads = has(
-    /\b(?:opqrst )?radiation assessed\b/,
-    /\bdoes .{0,35}(?:pain|discomfort) (?:radiate|travel|spread|move)\b/,
-    /\bwhere does .{0,35}(?:pain|discomfort) go\b/,
-    /\b(?:pain|discomfort) anywhere else\b/
-  );
-
-  const regionAndRadiation = has(
-    /\b(?:opqrst )?region and radiation assessed\b/,
-    /\b(?:opqrst )?location and radiation assessed\b/
-  );
-
-  // SEVERITY: A rating or assessment of intensity.
-  const severity = has(
-    /\b(?:opqrst )?severity assessed\b/,
-    /\brate (?:the |your )?(?:chest pain|pain|discomfort|symptoms?)\b/,
-    /\bhow (?:bad|severe|intense) is .{0,35}(?:pain|discomfort)\b/,
-    /\b(?:pain|severity) (?:scale|rating)\b/,
-    /\b(?:scale of |from |between )?(?:0|zero) to (?:10|ten)\b/,
-    /\b(?:scale of |from |between )(?:1|one) to (?:10|ten)\b/
-  );
-
-  // TIME: Time of onset.
-  const timeOfOnset = onset || has(
-    /\b(?:opqrst )?time assessed\b/,
-    /\b(?:opqrst )?time of onset assessed\b/,
-    /\b(?:opqrst )?onset time assessed\b/,
-    /\b(?:what|when|at what) time .{0,60}(?:start|started|begin|began)\b/
-  );
-
-  const components = {
-    onset,
-    provocation: bothProvocationAndPalliation || (worse && better),
-    quality,
-    radiation: regionAndRadiation || spreads,
-    severity,
-    time: timeOfOnset
-  };
-
-  const labels = {
-    onset: "Onset",
-    provocation: "Provocation / Palliation",
-    quality: "Quality",
-    radiation: "Radiation",
-    severity: "Severity",
-    time: "Time of Onset"
-  };
-
-  const completedCount =
-    Object.values(components).filter(Boolean).length;
-
-  return {
-    complete: completedCount === 6,
-    completedCount,
-    components,
-    missingComponents: Object.keys(components)
-      .filter(key => !components[key])
-      .map(key => labels[key])
-  };
-}
-
-/* =========================================================
-   SAMPLE SCORING
-========================================================= */
-
-function evaluateSample(text) {
-  const completeRequest = includesAny(text, [
-    "complete sample history",
-    "sample history obtained",
-    "perform sample history",
-    "obtain a sample history"
-  ]);
-
-  const components = {
-    signsSymptoms: includesAny(text, [
-      "signs and symptoms assessed",
-      "chief complaint identified",
-      "what symptoms",
-      "what is bothering you"
-    ]),
-
-    allergies: includesAny(text, [
-      "allergies assessed",
-      "any allergies",
-      "allergic to anything"
-    ]),
-
-    medications: includesAny(text, [
-      "medications assessed",
-      "what medications",
-      "what medicines"
-    ]),
-
-    pastHistory: includesAny(text, [
-      "pertinent medical history assessed",
-      "medical history",
-      "past medical history"
-    ]),
-
-    lastOralIntake: includesAny(text, [
-      "last oral intake assessed",
-      "last oral intake",
-      "when did you last eat",
-      "last meal"
-    ]),
-
-    events: includesAny(text, [
-      "events leading to illness assessed",
-      "events leading",
-      "what happened before",
-      "what were you doing"
-    ])
-  };
-
-  const completedCount =
-    Object.values(components).filter(Boolean).length;
-
-  return {
-    complete: completeRequest || completedCount === 6,
-    completedCount,
-    components
-  };
-}
-
-/* =========================================================
-   STUDENT EVIDENCE AND STRICT RECOGNITION
-========================================================= */
-
-// Original student work only: not generated completion labels
-// or information volunteered by the patient/instructor.
 function studentRadiationEvidence(body = {}) {
   if (Array.isArray(body.studentInputLog)) {
     return body.studentInputLog
@@ -829,7 +630,6 @@ function studentRadiationEvidence(body = {}) {
       .join("\n");
   }
 
-  // Compatibility with older scenario pages.
   return [
     body.studentAnswer,
     body.patientHistory,
@@ -850,71 +650,129 @@ function studentRadiationEvidence(body = {}) {
     .join("\n");
 }
 
-// Match a broad pain question to its own immediately following patient reply.
-function patientDeniedPainAfterQuestion(body = {}) {
-  const history = String(body.patientHistory || body.studentAnswer || "");
-  const exchanges = [...history.matchAll(
-    /(?:^|\n)Student to patient:\s*([^\n]*)\nPatient:\s*([\s\S]*?)(?=\nStudent to patient:|$)/gi
-  )];
+/* =========================================================
+   RADIATION RECOGNITION
+========================================================= */
 
-  // Use the latest broad pain inquiry, so a later positive answer overrides
-  // an earlier denial. A denial of pain in only one body area does not count.
+function patientDeniedPainAfterQuestion(body = {}) {
+  const history = String(
+    body.patientHistory || body.studentAnswer || ""
+  );
+
+  const exchanges = [
+    ...history.matchAll(
+      /(?:^|\n)Student to patient:\s*([^\n]*)\nPatient:\s*([\s\S]*?)(?=\nStudent to patient:|$)/gi
+    )
+  ];
+
   for (let i = exchanges.length - 1; i >= 0; i--) {
     const question = normalizeText(exchanges[i][1]);
-    if (!/^(?:do you have (?:any )?pain(?: anywhere| at all)?|does it hurt anywhere)\s*$/.test(question)) {
+
+    if (
+      !/^(?:do you have (?:any )?pain(?: anywhere| at all)?|does it hurt anywhere)\s*$/.test(
+        question
+      )
+    ) {
       continue;
     }
+
     const reply = normalizeText(exchanges[i][2]);
-    const denial = /^(?:no|nope|not at all|no pain(?: anywhere| at all)?|i (?:have no|do not have any|dont have any) pain|i (?:do not|dont) hurt anywhere|nothing hurts)(?:\s|$)/.test(reply);
-    const qualified = /\b(?:but|except|although|however|only|just|other than|unless)\b/.test(reply);
-    const remaining = reply.replace(/^(?:no|nope|not at all)\s*/, "");
-    const positivePain = /\b(?:i have|i feel|i am having|im having|there is|there s)\b.{0,35}\b(?:pain|ache|aching|sore|soreness|discomfort)\b/.test(remaining) || /\b(?:hurts|painful)\b/.test(remaining);
+
+    const denial =
+      /^(?:no|nope|not at all|no pain(?: anywhere| at all)?|i (?:have no|do not have any|dont have any) pain|i (?:do not|dont) hurt anywhere|nothing hurts)(?:\s|$)/.test(
+        reply
+      );
+
+    const qualified =
+      /\b(?:but|except|although|however|only|just|other than|unless)\b/.test(
+        reply
+      );
+
+    const remaining = reply.replace(
+      /^(?:no|nope|not at all)\s*/,
+      ""
+    );
+
+    const positivePain =
+      /\b(?:i have|i feel|i am having|im having|there is|there s)\b.{0,35}\b(?:pain|ache|aching|sore|soreness|discomfort)\b/.test(
+        remaining
+      ) ||
+      /\b(?:hurts|painful)\b/.test(remaining);
+
     return denial && !qualified && !positivePain;
   }
+
   return false;
 }
 
 function studentAssessedRadiation(body = {}) {
-  if (patientDeniedPainAfterQuestion(body)) return true;
-  const lines = studentRadiationEvidence(body).split(/\r?\n/);
+  if (patientDeniedPainAfterQuestion(body)) {
+    return true;
+  }
+
+  const lines = studentRadiationEvidence(body)
+    .split(/\r?\n/);
 
   return lines.some(line => {
     const text = normalizeText(line);
 
     return [
       /\b(?:opqrst |oprst )?(?:radiation|region and radiation|location and radiation) assessed\b/,
+
       /\b(?:assess|check|evaluate|ask about|determine)\b.{0,50}\b(?:radiation|radiating|whether.{0,20}(?:spreads|travels))\b/,
+
       /\b(?:does|did|is|has|can)\b.{0,45}\b(?:pain|discomfort|it)\b.{0,35}\b(?:radiat\w*|spread\w*|travel\w*|move\w*)\b/,
+
       /\bwhere does\b.{0,35}\b(?:pain|discomfort|it)\b.{0,20}\bgo\b/,
+
       /\b(?:does|did) it go anywhere else\b/,
+
       /\bwhere else do you feel\b/,
+
       /\b(?:do you|does the patient|does she|does he)\b.{0,35}\b(?:pain|discomfort)\b.{0,25}\banywhere else\b/,
+
       /\b(?:does|did)\b.{0,35}\b(?:pain|discomfort|it)\b.{0,25}\b(?:go|extend)\b.{0,20}\b(?:arm|jaw|back|shoulder|neck|anywhere|else)\b/,
+
       /\b(?:pain|discomfort)\b.{0,25}\b(?:radiates|spreads|travels) to\b/,
+
       /\b(?:pain|discomfort)\b.{0,25}\b(?:non radiating|does not radiate|no radiation)\b/
     ].some(pattern => pattern.test(text));
   });
 }
 
-// MOI/NOI requires explicit wording in a determination
-// or a direct question within the same sentence.
+/* =========================================================
+   MOI / NOI RECOGNITION
+========================================================= */
+
 function studentDeterminedMoiNoi(body = {}) {
   return studentRadiationEvidence(body)
-    // Repair a voice-transcription period after "is" or "was".
     .replace(
       /(\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\s+(?:is|was))\s*\.+\s*(?=\S)/gi,
       "$1 "
     )
     .split(/[.!?;\r\n]+/)
+    .some(line => {
+      const text = normalizeText(
+        line.replace(/\(\s*(?:noi|moi)\s*\)/gi, " ")
+      );
+
       const requiredWording =
         /\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/;
 
-      if (!requiredWording.test(text)) return false;
+      if (!requiredWording.test(text)) {
+        return false;
+      }
 
       if (
-        /\b(?:did not|do not|cannot|cant|unable to|have not|havent)\b.{0,40}\b(?:determine|identify|establish|assess)\b/.test(text) ||
-        /\b(?:unknown|not determined|not identified|not assessed)\b/.test(text) ||
-        /\b(?:will|going to|plan to|need to)\b.{0,30}\b(?:determine|identify|establish|assess)\b/.test(text)
+        /\b(?:did not|do not|cannot|cant|unable to|have not|havent)\b.{0,40}\b(?:determine|identify|establish|assess)\b/.test(
+          text
+        ) ||
+        /\b(?:unknown|not determined|not identified|not assessed)\b/.test(
+          text
+        ) ||
+        /\b(?:will|going to|plan to|need to)\b.{0,30}\b(?:determine|identify|establish|assess)\b/.test(
+          text
+        )
       ) {
         return false;
       }
@@ -931,8 +789,10 @@ function studentDeterminedMoiNoi(body = {}) {
 
       if (declaration) {
         return (
-          (illness.test(declaration[1]) ||
-            mechanism.test(declaration[1])) &&
+          (
+            illness.test(declaration[1]) ||
+            mechanism.test(declaration[1])
+          ) &&
           !/^(?:unknown|unclear|not known|not sure)\b/.test(
             declaration[1]
           )
@@ -941,78 +801,120 @@ function studentDeterminedMoiNoi(body = {}) {
 
       return [
         /\b(?:what|which) (?:is|was|would be) (?:the |this patient s |the patient s )?(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/,
+
         /\b(?:tell me|describe|identify|determine|assess|check) (?:the |this patient s |the patient s )?(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/
       ].some(pattern => pattern.test(text));
     });
 }
 
-// Resource requests earn their own point, independently of transport.
+/* =========================================================
+   ADDITIONAL RESOURCES
+========================================================= */
+
 function studentRequestedResources(body = {}) {
   return studentRadiationEvidence(body)
     .split(/[.!?;\r\n]+|\bbut\b/i)
     .some(line => {
       const text = normalizeText(line);
-      const resource = /\b(?:als|advanced life support|paramedics?|medics?|additional resources?|additional (?:units?|ambulances?|personnel|help)|backup|back up|mutual aid|police|law enforcement|fire department|rescue team)\b/;
-      if (!resource.test(text)) return false;
-      if (/\b(?:do not|dont|did not|will not|wont|not going to|no need to|no need for|not needed|not required|decline|cancel)\b/.test(text)) return false;
-      return /\b(?:request|requesting|requested|call|calling|called|activate|activating|activated|summon|summoning|summoned|need|needs|dispatch|send)\b/.test(text)
-        || /\b(?:als|advanced life support|paramedics?|medics?|backup|back up|additional resources?)\b.{0,20}\b(?:requested|called|activated|needed|dispatched)\b/.test(text);
+
+      const resource =
+        /\b(?:als|advanced life support|paramedics?|medics?|additional resources?|additional (?:units?|ambulances?|personnel|help)|backup|back up|mutual aid|police|law enforcement|fire department|rescue team)\b/;
+
+      if (!resource.test(text)) {
+        return false;
+      }
+
+      if (
+        /\b(?:do not|dont|did not|will not|wont|not going to|no need to|no need for|not needed|not required|decline|cancel)\b/.test(
+          text
+        )
+      ) {
+        return false;
+      }
+
+      return (
+        /\b(?:request|requesting|requested|call|calling|called|activate|activating|activated|summon|summoning|summoned|need|needs|dispatch|send)\b/.test(
+          text
+        ) ||
+        /\b(?:als|advanced life support|paramedics?|medics?|backup|back up|additional resources?)\b.{0,20}\b(?:requested|called|activated|needed|dispatched)\b/.test(
+          text
+        )
+      );
     });
 }
 
-// Uses the same keyword and pattern criteria as the scenario C-spine item.
+/* =========================================================
+   SPINE CONSIDERATION
+========================================================= */
+
 function studentConsideredSpine(body = {}) {
   const evidence = studentRadiationEvidence(body);
-  return includesAny(evidence, [
-          "c-spine", "c spine", "c-spine precautions", "c spine precautions",
-          "c-spine stabilization", "c spine stabilization",
-          "consider c-spine", "consider c spine",
-          "consider c-spine precautions", "consider c spine precautions",
-          "consider c-spine stabilization", "consider c spine stabilization",
-          "spinal precautions", "spinal stabilization", "spine stabilization",
-          "spinal motion restriction", "smr", "immobilization considered",
-          "cervical spine precautions", "cervical spine stabilization",
-"c-spine",
-        "c spine",
-        "c-spine precautions",
-        "c spine precautions",
-        "c-spine stabilization",
-        "c spine stabilization",
-        "consider c-spine",
-        "consider c spine",
-        "consider c-spine precautions",
-        "consider c spine precautions",
-        "consider c-spine stabilization",
-        "consider c spine stabilization",
-        "spinal precautions",
-        "spinal stabilization",
-        "spine stabilization",
-        "spinal motion restriction",
-        "smr",
-        "immobilization considered",
-        "cervical spine precautions",
-        "cervical spine stabilization"
-        ]) || [
-          /\b(c\s*-?\s*spine|cervical spine)\b.*\b(consider|precaution|stabil|immobil|restrict)\w*\b/,
-          /\b(consider|apply|maintain)\w*\b.*\b(c\s*-?\s*spine|cervical spine)\b/,
-          /\bspinal\b.*\b(precaution|stabil|motion restriction|immobil)\w*\b/,
-/\b(c\s*-?\s*spine|cervical spine)\b.*\b(consider|precaution|stabil|immobil|restrict)\w*\b/,
-        /\b(consider|apply|maintain)\w*\b.*\b(c\s*-?\s*spine|cervical spine)\b/,
-        /\bspinal\b.*\b(precaution|stabil|motion restriction|immobil)\w*\b/
-        ].some(pattern => pattern.test(evidence.toLowerCase()));
+
+  return (
+    includesAny(evidence, [
+      "c-spine",
+      "c spine",
+      "c-spine precautions",
+      "c spine precautions",
+      "c-spine stabilization",
+      "c spine stabilization",
+      "consider c-spine",
+      "consider c spine",
+      "consider c-spine precautions",
+      "consider c spine precautions",
+      "consider c-spine stabilization",
+      "consider c spine stabilization",
+      "spinal precautions",
+      "spinal stabilization",
+      "spine stabilization",
+      "spinal motion restriction",
+      "smr",
+      "immobilization considered",
+      "cervical spine precautions",
+      "cervical spine stabilization"
+    ]) ||
+    [
+      /\b(c\s*-?\s*spine|cervical spine)\b.*\b(consider|precaution|stabil|immobil|restrict)\w*\b/,
+
+      /\b(consider|apply|maintain)\w*\b.*\b(c\s*-?\s*spine|cervical spine)\b/,
+
+      /\bspinal\b.*\b(precaution|stabil|motion restriction|immobil)\w*\b/
+    ].some(pattern =>
+      pattern.test(evidence.toLowerCase())
+    )
+  );
 }
+
+/* =========================================================
+   PRIORITY / TRANSPORT
+========================================================= */
 
 function studentIdentifiedPriority(body = {}) {
-  return studentRadiationEvidence(body).split(/[.!?;\r\n]+/).some(line => {
-    const text = normalizeText(line);
-    if (/\b(?:not|unknown|undetermined)\b/.test(text)) return false;
-    return /\b(?:patient|she|he)\b.{0,35}\b(?:high|low|immediate|urgent|emergent|non urgent|non emergent) priority\b/.test(text)
-      || /\b(?:patient|transport) priority (?:is |of )?(?:high|low|immediate|urgent|emergent|non urgent|non emergent)\b/.test(text)
-      || /\b(?:patient|she|he) (?:is|appears|remains) (?:stable|unstable|critical)\b/.test(text);
-  });
+  return studentRadiationEvidence(body)
+    .split(/[.!?;\r\n]+/)
+    .some(line => {
+      const text = normalizeText(line);
+
+      if (
+        /\b(?:not|unknown|undetermined)\b/.test(text)
+      ) {
+        return false;
+      }
+
+      return (
+        /\b(?:patient|she|he)\b.{0,35}\b(?:high|low|immediate|urgent|emergent|non urgent|non emergent) priority\b/.test(
+          text
+        ) ||
+        /\b(?:patient|transport) priority (?:is |of )?(?:high|low|immediate|urgent|emergent|non urgent|non emergent)\b/.test(
+          text
+        ) ||
+        /\b(?:patient|she|he) (?:is|appears|remains) (?:stable|unstable|critical)\b/.test(
+          text
+        )
+      );
+    });
 }
 
-// Requesting ALS alone does not establish a transport decision.
 function studentTransportDecision(body = {}) {
   return studentRadiationEvidence(body)
     .split(/[.!?;\r\n]+/)
@@ -1020,7 +922,9 @@ function studentTransportDecision(body = {}) {
       const text = normalizeText(line);
 
       if (
-        /\b(?:do not|will not|no need to|not going to)\b.{0,30}\btransport\b/.test(text)
+        /\b(?:do not|will not|no need to|not going to)\b.{0,30}\btransport\b/.test(
+          text
+        )
       ) {
         return false;
       }
@@ -1031,8 +935,10 @@ function studentTransportDecision(body = {}) {
     });
 }
 
-// AVPU requires a responsiveness assessment/question
-// or a student-documented finding.
+/* =========================================================
+   RESPONSIVENESS / LOC
+========================================================= */
+
 function studentAssessedAvpu(body = {}) {
   return studentRadiationEvidence(body)
     .split(/\r?\n/)
@@ -1040,34 +946,57 @@ function studentAssessedAvpu(body = {}) {
       const text = normalizeText(line);
 
       if (
-        /\b(?:did not|do not|cannot|cant|unable to|have not|havent)\b.{0,35}\b(?:assess|check|determine|evaluate)\b/.test(text) ||
-        /\b(?:will|going to|plan to|need to)\b.{0,30}\b(?:assess|check|determine|evaluate)\b/.test(text) ||
-        /\b(?:not assessed|not checked|avpu unknown|avpu is unknown)\b/.test(text)
+        /\b(?:did not|do not|cannot|cant|unable to|have not|havent)\b.{0,35}\b(?:assess|check|determine|evaluate)\b/.test(
+          text
+        ) ||
+        /\b(?:will|going to|plan to|need to)\b.{0,30}\b(?:assess|check|determine|evaluate)\b/.test(
+          text
+        ) ||
+        /\b(?:not assessed|not checked|avpu unknown|avpu is unknown)\b/.test(
+          text
+        )
       ) {
         return false;
       }
 
       return [
         /\b(?:assessed|checked|evaluated|determined)\b.{0,35}\b(?:avpu|responsiveness|level of consciousness|mental status)\b/,
+
         /\b(?:avpu|responsiveness|level of consciousness|mental status)\b.{0,15}\b(?:assessed|checked|evaluated|determined)\b/,
+
         /\b(?:assess|check|evaluate|determine)\b.{0,35}\b(?:avpu|responsiveness)\b/,
+
         /\b(?:what is|whats)\b.{0,25}\b(?:avpu|level of consciousness|mental status|responsiveness)\b/,
+
         /\b(?:is|does)\b.{0,25}\b(?:patient|she|he)\b.{0,20}\b(?:alert|responsive|respond|unresponsive|unconscious)\b/,
+
         /\b(?:patient|she|he)\b.{0,25}\b(?:is|appears|seems|remains|was)\b.{0,15}\b(?:alert|unresponsive|unconscious)\b/,
+
         /\b(?:patient|she|he)\b.{0,20}\b(?:responds|responsive|responding|response)\b.{0,20}\b(?:voice|verbal|pain|painful)\b/,
+
         /\b(?:patient|she|he)\b.{0,20}\b(?:does not|doesnt|no)\b.{0,15}\b(?:respond|response)\b/,
+
         /\b(?:does|will|can)\b.{0,25}\b(?:patient|she|he)\b.{0,15}\brespond\b.{0,20}\b(?:voice|verbal|pain|painful)\b/,
+
         /\b(?:check|assess|test|checked|assessed|tested)\b.{0,25}\b(?:response|responsiveness)\b.{0,20}\b(?:voice|verbal|pain|painful)\b/,
+
         /\bavpu\s+(?:is |of |equals |level |score )?(?:a|v|p|u|alert|verbal|pain|unresponsive)\b/,
+
         /\b(?:alert and oriented|a and o|a o)\s*(?:x\s*[1-4])?\b/,
+
         /\b(?:can you|please)\s+(?:open your eyes|squeeze my hand)\b/,
+
         /\b(?:do you|can you tell me if you)\s+know where you are\b/,
+
         /\b(?:check|assess|test|checked|assessed|tested)\b.{0,25}\b(?:orientation to|oriented to)\b/
       ].some(pattern => pattern.test(text));
     });
 }
 
-// A field impression must be stated by the student.
+/* =========================================================
+   FIELD IMPRESSION
+========================================================= */
+
 function studentStatedFieldImpression(body = {}) {
   return studentRadiationEvidence(body)
     .split(/\r?\n/)
@@ -1076,8 +1005,12 @@ function studentStatedFieldImpression(body = {}) {
       const text = normalizeText(raw);
 
       if (
-        /\b(?:will|going to|plan to|need to)\b.{0,35}\b(?:state|give|form|determine)\b/.test(text) ||
-        /\b(?:did not|have not|cannot|unable to)\b.{0,35}\b(?:state|form|determine)\b/.test(text)
+        /\b(?:will|going to|plan to|need to)\b.{0,35}\b(?:state|give|form|determine)\b/.test(
+          text
+        ) ||
+        /\b(?:did not|have not|cannot|unable to)\b.{0,35}\b(?:state|form|determine)\b/.test(
+          text
+        )
       ) {
         return false;
       }
@@ -1086,13 +1019,19 @@ function studentStatedFieldImpression(body = {}) {
         /\b(?:(?:my )?(?:field impression|clinical impression|working diagnosis|provisional diagnosis|suspected condition)\s*(?:is\b|would be\b|appears to be\b|:)|i\s+(?:suspect|think|believe)\b|this\s+(?:appears|seems)\s+to\s+be\b)\s*([\s\S]+)/i
       );
 
-      if (!match) return false;
+      if (!match) {
+        return false;
+      }
 
       const impression = normalizeText(match[1]);
 
       if (
-        /^(?:unknown|unclear|not sure|undetermined|i dont know|i do not know)\b/.test(impression) ||
-        /\b(?:not enough information|unable to determine|cannot determine|no impression)\b/.test(impression)
+        /^(?:unknown|unclear|not sure|undetermined|i dont know|i do not know)\b/.test(
+          impression
+        ) ||
+        /\b(?:not enough information|unable to determine|cannot determine|no impression)\b/.test(
+          impression
+        )
       ) {
         return false;
       }
@@ -1103,683 +1042,730 @@ function studentStatedFieldImpression(body = {}) {
     });
 }
 
-// Named assessment evidence from the student only.
-function studentNamedAssessment(body, criterion) {
-  const term =
-    criterion === "airway" ? "airway" : "chief complaint";
+/* =========================================================
+   EXTRACT ORIGINAL STUDENT ENTRIES
+========================================================= */
 
-  return studentRadiationEvidence(body)
-    .split(/\r?\n/)
-    .some(line => {
-      const text = normalizeText(line);
+function sheetEntries(body = {}) {
+  let entries = Array.isArray(body.studentInputLog)
+    ? body.studentInputLog.map((entry, index) => ({
+        index: index + 1,
 
-      if (!new RegExp("\\b" + term + "\\b").test(text)) {
-        return false;
-      }
+        text:
+          typeof entry === "string"
+            ? entry
+            : String(entry?.text || ""),
 
-      if (
-        /\b(?:will|going to|plan to|need to|did not|have not|cannot|unable to)\b.{0,35}\b(?:assess|check|evaluate|determine|identify)\b/.test(text) ||
-        /\b(?:not assessed|not checked|not identified|not determined|unknown)\b/.test(text)
-      ) {
-        return false;
-      }
+        timestamp:
+          typeof entry === "object"
+            ? entry?.timestamp ?? entry?.time ?? null
+            : null
+      }))
+    : [];
 
-      const action = new RegExp(
-        "\\b(?:assess|assessed|check|checked|evaluate|evaluated|determine|determined|identify|identified|inspect|inspected) (?:the |a |an |patient s |the patient s )?" +
-        term +
-        "\\b"
-      );
+  if (!entries.some(entry => entry.text.trim())) {
+    const history = [
+      body.studentAnswer,
+      body.patientHistory,
+      body.instructorHistory
+    ]
+      .filter(Boolean)
+      .join("\n");
 
-      const completed = new RegExp(
-        "\\b" +
-        term +
-        " (?:is |was |has been )?(?:assessed|checked|evaluated|determined|identified)\\b"
-      );
+    entries = history
+      .split(/\r?\n/)
+      .filter(line =>
+        /^\s*Student(?: to (?:instructor|patient))?\s*:/i.test(
+          line
+        )
+      )
+      .map((line, index) => ({
+        index: index + 1,
+        timestamp: null,
 
-      if (action.test(text) || completed.test(text)) {
-        return true;
-      }
+        text: line.replace(
+          /^\s*Student(?: to (?:instructor|patient))?\s*:\s*/i,
+          ""
+        )
+      }));
+  }
 
-      if (criterion === "airway") {
-        if (/\b(?:does|did)\s+(?:the patient|patient|she|he|this patient)\s+have\s+(?:a|an)?\s*(?:patent|patient|open|clear|safe|obstructed|blocked|compromised)\s+airway\b/.test(text) || /\bairway is (?:patent|open|clear|safe|unobstructed)\b/.test(text)) {
-          return true;
-        }
-
-        // "Patient" can be a transcription error for "patent".
-        if (
-          /\bis (?:the |the patient s |patient s )?airway (?:patent|patient|open|safe|clear)\b/.test(text)
-        ) {
-          return true;
-        }
-
-        return (
-          /\bairway (?:is |was |appears |appears to be )?(?:patent|clear|open|safe|obstructed|blocked|compromised)\b/.test(text) ||
-          /\b(?:is|was) (?:the |the patient s |patient s )?airway\b/.test(text) ||
-          /\b(?:what is|how is) (?:the |the patient s |patient s )?airway\b/.test(text)
-        );
-      }
-
-      return (
-        /\b(?:what is|what was|tell me|describe) (?:the |your |the patient s |patient s )?chief complaint\b/.test(text) ||
-        /\bchief complaint (?:is|was|appears to be) (?!unknown\b|unclear\b|not\b)\w+/.test(text) ||
-        /\bchief complaint\s*:\s*\w+/.test(line.toLowerCase())
-      );
-    });
+  return entries.filter(entry => entry.text.trim());
 }
 
 /* =========================================================
-   CTOEMS-STYLE CHECKLIST
+   42-POINT MEDICAL CHECKLIST
+
+   PPE and scene size-up:       6
+   Impression / LOC / CC:       3
+   Airway, breathing, oxygen:   3
+   Circulation:                 3
+   Priority / transport:        1
+   HPI:                         8
+   Past medical history:        5
+   Secondary assessment:        5
+   Vital signs:                 4
+   Field impression:            1
+   Interventions / treatment:   1
+   Reassessment:                1
+   Verbal report:               1
+
+   TOTAL:                      42
 ========================================================= */
 
 function buildChecklist(body = {}) {
-  const text = combineStudentWork(body);
-  const opqrst = evaluateOpqrst(text);
-  const sample = evaluateSample(text);
-  const respiratoryRateDetermined = includesAny(text, [
-    "respiratory rate obtained",
-    "respiratory rate",
-    "respiration rate",
-    "breathing rate",
-    "rate depth and quality"
+  const entries = sheetEntries(body);
+
+  const normalized = entries.map(entry => ({
+    ...entry,
+    normalized: normalizeText(entry.text)
+  }));
+
+  const denied =
+    /\b(?:did not|do not|dont|didnt|will not|wont|not going to|unable to|have not|havent|forgot to)\b/;
+
+  const find = patterns =>
+    normalized.filter(entry =>
+      !denied.test(entry.normalized) &&
+      patterns.some(pattern =>
+        pattern.test(entry.normalized)
+      )
+    );
+
+  const one = (
+    id,
+    name,
+    patterns,
+    clinicalReview = false
+  ) => {
+    const evidence = find(patterns);
+
+    return {
+      id,
+      name,
+      points: 1,
+      pass: evidence.length > 0,
+      evidence,
+
+      status:
+        evidence.length
+          ? clinicalReview
+            ? "PROVISIONAL"
+            : "CREDIT"
+          : "NOT_DOCUMENTED",
+
+      requiresInstructorReview: clinicalReview,
+
+      note:
+        clinicalReview
+          ? "Recorded action matched; clinical appropriateness/quality requires instructor review."
+          : ""
+    };
+  };
+
+  const helper = (id, name, fn) => {
+    const evidence = entries.filter(entry =>
+      fn({
+        ...body,
+        studentInputLog: [
+          {
+            text: entry.text
+          }
+        ],
+        patientHistory: "",
+        studentAnswer: "",
+        instructorHistory: ""
+      })
+    );
+
+    return {
+      id,
+      name,
+      points: 1,
+      pass: evidence.length > 0,
+      evidence,
+
+      status:
+        evidence.length
+          ? "CREDIT"
+          : "NOT_DOCUMENTED",
+
+      requiresInstructorReview: false
+    };
+  };
+
+  const rows = [
+    one(
+      "bsi",
+      "Takes or verbalizes appropriate PPE precautions",
+      [
+        /\b(?:ppe|bsi|body substance isolation|gloves|personal protective equipment)\b/
+      ]
+    ),
+
+    one(
+      "sceneSafety",
+      "Determines scene/situation is safe",
+      [
+        /\b(?:scene|situation)\b.{0,35}\b(?:safe|safety|hazards)\b/
+      ]
+    ),
+
+    helper(
+      "natureOfIllness",
+      "Determines mechanism of injury/nature of illness",
+      studentDeterminedMoiNoi
+    ),
+
+    one(
+      "numberOfPatients",
+      "Determines number of patients",
+      [
+        /\b(?:number of patients|how many patients|only patient|one patient|single patient|other patients)\b/
+      ]
+    ),
+
+    helper(
+      "additionalResources",
+      "Requests additional EMS assistance if necessary",
+      studentRequestedResources
+    ),
+
+    helper(
+      "spineStabilization",
+      "Considers stabilization of spine",
+      studentConsideredSpine
+    ),
+
+    one(
+      "generalImpression",
+      "Verbalizes general impression",
+      [
+        /\b(?:general|initial) impression\b/
+      ]
+    ),
+
+    helper(
+      "mentalStatus",
+      "Determines responsiveness/LOC",
+      studentAssessedAvpu
+    ),
+
+    one(
+      "chiefComplaint",
+      "Determines chief complaint/apparent life threats",
+      [
+        /\bchief complaint\b/,
+        /\b(?:apparent )?life threats?\b/
+      ]
+    ),
+
+    one(
+      "airway",
+      "Airway and breathing assessment (1/3)",
+      [
+        /\bairway\b.{0,45}\b(?:patent|open|clear|safe|unobstructed|assess|check|obstruct)\w*\b/,
+
+        /\b(?:assess|check|evaluate)\w*\b.{0,40}\bairway\b/
+      ]
+    ),
+
+    one(
+      "breathing",
+      "Assures adequate ventilation (1/3)",
+      [
+        /\b(?:adequate|normal|effective|spontaneous)\b.{0,25}\b(?:breathing|ventilation|respirations)\b/,
+
+        /\b(?:breathing|ventilation|respirations)\b.{0,25}\b(?:adequate|normal|effective)\b/,
+
+        /\b(?:assist|assisted|assisting|provide|providing|start)\b.{0,50}\b(?:ventilations|bvm|bag valve mask)\b/
+      ],
+      true
+    ),
+
+    one(
+      "oxygenTherapy",
+      "Appropriate oxygen therapy (1/3)",
+      [
+        /\b(?:oxygen|o2|non rebreather|nonrebreather|nasal cannula|nrb|spo2)\b.{0,45}\b(?:apply|administer|give|titrate|withhold|not indicated|not needed|liters|litres|percent)\b/,
+
+        /\b(?:apply|administer|give|provide|place|start|titrate)\w*\b.{0,55}\b(?:oxygen|o2|non rebreather|nonrebreather|nasal cannula|nrb)\b/
+      ],
+      true
+    ),
+
+    one(
+      "circulation",
+      "Circulation: assesses pulse",
+      [
+        /\b(?:pulse|heart rate)\b/
+      ]
+    ),
+
+    one(
+      "skinAssessment",
+      "Circulation: assesses skin",
+      [
+        /\bskin\b.{0,35}\b(?:color|colour|temperature|condition|moisture|signs|warm|cool|dry|clammy)\b/,
+
+        /\b(?:assess|check|inspect)\w*\b.{0,30}\bskin\b/
+      ]
+    ),
+
+    one(
+      "bleeding",
+      "Circulation: assesses major bleeding",
+      [
+        /\b(?:major|severe|obvious|external|massive) bleeding\b/,
+        /\bhemorrhage\b/
+      ]
+    ),
+
+    helper(
+      "transport",
+      "Identifies patient priority and treatment/transport decision",
+      b =>
+        studentIdentifiedPriority(b) ||
+        studentTransportDecision(b)
+    ),
+
+    one(
+      "opqrstOnset",
+      "HPI: onset",
+      [
+        /\bwhen\b.{0,65}\b(?:start|started|begin|began)\b/,
+        /\bonset\b/
+      ]
+    ),
+
+    one(
+      "opqrstProvocation",
+      "HPI: provocation/palliation",
+      [
+        /\b(?:better|relieve|relieves|alleviate|alleviates)\b.*\b(?:worse|aggravate|aggravates)\b/,
+
+        /\b(?:worse|aggravate|aggravates)\b.*\b(?:better|relieve|relieves|alleviate|alleviates)\b/
+      ]
+    ),
+
+    one(
+      "opqrstQuality",
+      "HPI: quality",
+      [
+        /\b(?:feel|feels|feeling) like\b/,
+
+        /\bdescribe\b.{0,45}\b(?:pain|discomfort|breathing|symptoms)\b/,
+
+        /\bquality\b/
+      ]
+    ),
+
+    helper(
+      "opqrstRadiation",
+      "HPI: radiation",
+      studentAssessedRadiation
+    ),
+
+    one(
+      "opqrstSeverity",
+      "HPI: severity",
+      [
+        /\b(?:severity|severe|intense|intensity|scale|rating)\b/,
+
+        /\bhow bad\b/,
+
+        /\brate\b.{0,40}\b(?:pain|discomfort|shortness of breath|symptoms)\b/
+      ]
+    ),
+
+    one(
+      "opqrstTime",
+      "HPI: time (onset accepted)",
+      [
+        /\bwhen\b.{0,65}\b(?:start|started|begin|began)\b/,
+
+        /\b(?:how long|duration|onset|what time)\b/
+      ]
+    ),
+
+    one(
+      "allergies",
+      "PMH: allergies",
+      [
+        /\b(?:allergies|allergic)\b/
+      ]
+    ),
+
+    one(
+      "medications",
+      "PMH: medications",
+      [
+        /\b(?:medications|medicines|meds)\b/,
+
+        /\b(?:prescription|prescribed)\b.{0,25}\b(?:mdi|inhaler)\b/
+      ]
+    ),
+
+    one(
+      "pastHistory",
+      "PMH: past pertinent history",
+      [
+        /\b(?:medical history|past history|medical conditions|health problems|previous episodes)\b/
+      ]
+    ),
+
+    one(
+      "lastOralIntake",
+      "PMH: last oral intake",
+      [
+        /\b(?:last oral intake|last meal|last eat|last drink|last ate|last drank)\b/,
+
+        /\b(?:when|time)\b.{0,35}\b(?:eat|ate|drink|drank)\b/
+      ]
+    ),
+
+    one(
+      "events",
+      "PMH: events leading to illness",
+      [
+        /\b(?:events leading|what were you doing|what happened before)\b/,
+
+        /\banything\b.{0,30}\bled\b.{0,30}\b(?:illness|pain|shortness of breath|symptoms)\b/
+      ]
+    ),
+
+    one(
+      "bloodPressure",
+      "Vital signs: blood pressure",
+      [
+        /\b(?:blood pressure|bp)\b/
+      ]
+    ),
+
+    one(
+      "pulse",
+      "Vital signs: pulse",
+      [
+        /\b(?:pulse|heart rate)\b/
+      ]
+    ),
+
+    one(
+      "respiratoryRate",
+      "Vital signs: respiratory rate",
+      [
+        /\b(?:respiratory|respiration|breathing) rate\b/,
+
+        /\brespirations per minute\b/
+      ]
+    ),
+
+    one(
+      "respiratoryQuality",
+      "Vital signs: respiratory quality",
+      [
+        /\b(?:depth|effort|work of breathing|respiratory quality|breathing quality)\b/
+      ]
+    ),
+
+    helper(
+      "fieldImpression",
+      "States field impression",
+      studentStatedFieldImpression
+    ),
+
+    one(
+      "treatment",
+      "Interventions and treatment",
+      [
+        /\b(?:administer|give|assist|apply|start|place|position|control)\w*\b.{0,80}\b(?:aspirin|nitroglycerin|glucose|mdi|inhaler|epinephrine|naloxone|oxygen|o2|non rebreather|nonrebreather|nrb|cpr|aed|bleeding|comfort|upright)\b/
+      ],
+      true
+    ),
+
+    one(
+      "reassessment",
+      "Demonstrates how and when to reassess",
+      [
+        /\b(?:reassess|recheck|repeat|monitor)\w*\b.{0,45}\b(?:vitals|vital signs|patient|blood pressure|breathing|pulse|condition)\b/
+      ],
+      true
+    )
+  ];
+
+  /* -------------------------------------------------------
+     ADDITIONAL EXPLICIT TRANSPORT WORDING
+  ------------------------------------------------------- */
+
+  const transport = rows.find(
+    item => item.id === "transport"
+  );
+
+  const transportEvidence = find([
+    /\b(?:en route to|transporting to|take .{0,25}to)\b.{0,25}\b(?:hospital|emergency department|ed)\b/
   ]);
 
-  return [
-    {
-      id: "bsi",
-      name: "BSI precautions",
-      points: 1,
-      pass: includesAny(text, [
-        "bsi precautions",
-        "bsi",
-        "body substance isolation",
-        "put on gloves",
-        "wear gloves",
-        "use ppe",
-        "wearing ppe",
-        "i am wearing ppe",
-        "have on my ppe",
-        "have my ppe on"
+  if (transportEvidence.length) {
+    transport.pass = true;
+    transport.status = "CREDIT";
+    transport.evidence.push(...transportEvidence);
+  }
+
+  /* -------------------------------------------------------
+     PROVOCATION AND PALLIATION MAY BE SEPARATE ENTRIES
+  ------------------------------------------------------- */
+
+  const worse = find([
+    /\b(?:worse|aggravate|aggravates)\b/
+  ]);
+
+  const better = find([
+    /\b(?:better|relieve|relieves|alleviate|alleviates)\b/
+  ]);
+
+  const pp = rows.find(
+    item => item.id === "opqrstProvocation"
+  );
+
+  pp.pass = worse.length > 0 && better.length > 0;
+
+  pp.evidence = [
+    ...new Map(
+      [...worse, ...better].map(entry => [
+        entry.index,
+        entry
       ])
-    },
-
-    {
-      id: "sceneSafety",
-      name: "Scene safety",
-      points: 1,
-      pass: includesAny(text, [
-        "scene safety assessed",
-        "scene safety",
-        "scene is safe",
-        "is the scene safe"
-      ])
-    },
-
-    {
-      id: "numberOfPatients",
-      name: "Determines number of patients",
-      points: 1,
-      pass: includesAny(studentRadiationEvidence(body), [
-        "how many patients",
-        "number of patients",
-        "are there any other patients",
-        "one patient",
-        "single patient",
-        "only patient"
-      ])
-    },
-
-    {
-      id: "natureOfIllness",
-      name: "Determines mechanism of injury / nature of illness",
-      points: 1,
-      pass: studentDeterminedMoiNoi(body)
-    },
-
-    {
-      id: "spineStabilization",
-      name: "Considers stabilization of the spine",
-      points: 1,
-      pass: studentConsideredSpine(body)
-    },
-
-    {
-      id: "generalImpression",
-      name: "General impression",
-      points: 1,
-      pass: includesAny(text, [
-        "general impression formed",
-        "general impression",
-        "initial impression"
-      ])
-    },
-
-    {
-      id: "mentalStatus",
-      name: "Determines responsiveness / LOC",
-      points: 1,
-      pass: studentAssessedAvpu(body)
-    },
-
-    {
-      id: "airway",
-      name: "Airway assessment",
-      points: 1,
-      pass: studentNamedAssessment(body, "airway") && respiratoryRateDetermined
-    },
-
-    {
-      id: "breathing",
-      name: "Breathing assessment",
-      points: 2,
-      pass: includesAny(text, [
-        "breathing assessed",
-        "assess breathing",
-        "respiratory effort",
-        "work of breathing",
-        "rate depth and quality"
-      ])
-    },
-
-    {
-      id: "lungSounds",
-      name: "Lung sounds",
-      points: 0,
-      pass: includesAny(text, [
-        "lung sounds assessed",
-        "lung sounds",
-        "breath sounds",
-        "auscultate the lungs"
-      ])
-    },
-
-    {
-      id: "circulation",
-      name: "Circulation assessment",
-      points: 2,
-      pass: includesAny(text, [
-        "circulation assessed",
-        "assess circulation",
-        "perfusion status",
-        "pulse assessed",
-        "skin signs assessed",
-        "radial pulse"
-      ])
-    },
-
-    {
-      id: "bleeding",
-      name: "Major bleeding assessment",
-      points: 1,
-      pass: includesAny(text, [
-        "major bleeding assessed",
-        "check for major bleeding",
-        "check for severe bleeding",
-        "assess for hemorrhage"
-      ])
-    },
-
-    {
-      id: "chiefComplaint",
-      name: "Determines chief complaint or apparent life threats",
-      points: 1,
-      pass: /\b(?:chief complaint|(?:apparent )?life threats?)\b/.test(
-        normalizeText(studentRadiationEvidence(body))
-      )
-    },
-
-    {
-      id: "fieldImpression",
-      name: "States field impression",
-      points: 1,
-      pass: studentStatedFieldImpression(body)
-    },
-
-    {
-      id: "opqrstOnset",
-      name: "OPQRST â€” Onset",
-      points: 1,
-      pass: opqrst.components.onset
-    },
-
-    {
-      id: "opqrstProvocation",
-      name: "OPQRST â€” Provocation / Palliation",
-      points: 1,
-      pass: opqrst.components.provocation
-    },
-
-    {
-      id: "opqrstQuality",
-      name: "OPQRST â€” Quality",
-      points: 1,
-      pass: opqrst.components.quality
-    },
-
-    {
-      id: "opqrstRadiation",
-      name: "OPQRST â€” Radiation",
-      points: 1,
-      pass: studentAssessedRadiation(body)
-    },
-
-    {
-      id: "opqrstSeverity",
-      name: "OPQRST â€” Severity",
-      points: 1,
-      pass: opqrst.components.severity
-    },
-
-    {
-      id: "opqrstTime",
-      name: "OPQRST â€” Time of Onset",
-      points: 1,
-      pass: opqrst.components.time
-    },
-
-    {
-      id: "sample",
-      name: "Complete SAMPLE history",
-      points: 6,
-      pass: sample.complete
-    },
-
-    {
-      id: "bloodPressure",
-      name: "Blood pressure",
-      points: 1,
-      pass: includesAny(text, [
-        "blood pressure obtained",
-        "check blood pressure",
-        "obtain blood pressure",
-        "what is the blood pressure",
-        "what is the bp"
-      ])
-    },
-
-    {
-      id: "pulse",
-      name: "Pulse",
-      points: 1,
-      pass: includesAny(text, [
-        "pulse assessed",
-        "check the pulse",
-        "heart rate",
-        "radial pulse"
-      ])
-    },
-
-    {
-      id: "respiratoryRate",
-      name: "Respiratory rate",
-      points: 1,
-      pass: respiratoryRateDetermined
-    },
-
-    {
-      id: "spo2",
-      name: "Oxygen saturation",
-      points: 1,
-      pass: includesAny(text, [
-        "oxygen saturation obtained",
-        "oxygen saturation",
-        "spo2",
-        "pulse oximetry",
-        "pulse ox"
-      ])
-    },
-
-    {
-      id: "secondaryAssessment",
-      name: "Secondary assessment",
-      points: 3,
-      pass: includesAny(text, [
-        "secondary assessment performed",
-        "secondary assessment",
-        "secondary survey",
-        "focused physical exam",
-        "focused physical examination",
-        "focused exam",
-        "focused examination",
-        "focused assessment",
-        "focused patient assessment",
-        "focused medical assessment",
-        "focused trauma assessment",
-        "focused respiratory assessment",
-        "focused chest assessment",
-        "focused chest exam",
-        "focused chest examination",
-        "focused lung exam",
-        "focused pulmonary exam",
-        "focused cardiovascular exam",
-        "focused abdominal exam",
-        "focused neurological exam",
-        "head to toe assessment",
-        "head to toe examination",
-        "head to toe exam",
-        "head to toe survey",
-        "detailed physical exam",
-        "detailed physical examination",
-        "examine and palpate her chest",
-        "examine and palpate his chest",
-        "examine and palpate the chest",
-        "examine and palpate the patients chest",
-        "examine and palpate the patient s chest",
-        "inspect and palpate her chest",
-        "inspect and palpate his chest",
-        "inspect and palpate the chest",
-        "inspect and palpate the patients chest",
-        "inspect and palpate the patient s chest"
-      ])
-    },
-
-    {
-      id: "treatment",
-      name: "Appropriate treatment",
-      points: 3,
-      pass: includesAny(text, [
-        "aspirin administered or considered",
-        "administer aspirin",
-        "give aspirin",
-        "nitroglycerin assisted or considered",
-        "assist with nitroglycerin",
-        "oral glucose",
-        "administer glucose",
-        "oxygen administered when indicated",
-        "cardiac rhythm assessed",
-        "obtain a 12 lead",
-        "oxygen administered",
-        "oxygen applied",
-        "oxygen provided",
-        "oxygen given",
-        "supplemental oxygen administered",
-        "supplemental oxygen applied",
-        "administer oxygen",
-        "give oxygen",
-        "apply oxygen",
-        "provide oxygen",
-        "start oxygen",
-        "started oxygen",
-        "start her on oxygen",
-        "start him on oxygen",
-        "place her on oxygen",
-        "place him on oxygen",
-        "oxygen therapy initiated",
-        "oxygen therapy started",
-        "o2 administered",
-        "o2 applied",
-        "administer o2",
-        "give o2",
-        "apply o2",
-        "start o2",
-        "non rebreather applied",
-        "nonrebreather applied",
-        "apply a non rebreather",
-        "apply a nonrebreather",
-        "place a non rebreather",
-        "place a nonrebreather",
-        "start her on a non rebreather",
-        "start him on a non rebreather",
-        "start the patient on a non rebreather",
-        "oxygen via non rebreather",
-        "oxygen by non rebreather",
-        "oxygen via nonrebreather",
-        "oxygen via nrb",
-        "nrb applied",
-        "nasal cannula applied",
-        "apply a nasal cannula",
-        "oxygen via nasal cannula",
-        "oxygen by nasal cannula",
-        "increase oxygen",
-        "increase the oxygen",
-        "increased oxygen",
-        "increase her oxygen",
-        "increase his oxygen",
-        "oxygen increased",
-        "titrate oxygen",
-        "oxygen titrated",
-        "titrate the oxygen",
-        "continuing the oxygen",
-        "continue oxygen",
-        "continue the oxygen",
-        "oxygen continued",
-        "15 liters of oxygen",
-        "15 litres of oxygen",
-        "oxygen at 15 liters",
-        "oxygen at 15 litres",
-        "ventilations assisted",
-        "assist ventilations",
-        "assisted ventilations",
-        "bag valve mask ventilation",
-        "bvm ventilation",
-        "ventilate with a bvm",
-        "aspirin administered",
-        "aspirin given",
-        "administered aspirin",
-        "nitroglycerin assisted",
-        "assist with prescribed nitroglycerin",
-        "assisted with nitroglycerin",
-        "oral glucose administered",
-        "oral glucose given",
-        "assist with the mdi",
-        "assist the patient with the mdi",
-        "assist the patient in using the mdi",
-        "assist the patient for using the mdi",
-        "mdi assisted",
-        "mdi assistance provided",
-        "assisted with inhaler",
-        "assist with the inhaler",
-        "assist with prescribed inhaler",
-        "bronchodilator treatment considered",
-        "epinephrine administered",
-        "epinephrine auto injector administered",
-        "naloxone administered",
-        "naloxone given",
-        "bleeding controlled",
-        "control external bleeding",
-        "direct pressure applied",
-        "tourniquet applied",
-        "aed applied",
-        "cpr initiated",
-        "cpr started"
-      ])
-    },
-
-    {
-      id: "additionalResources",
-      name: "Requests additional resources",
-      points: 1,
-      pass: studentRequestedResources(body)
-    },
-
-    {
-      id: "transport",
-      name: "Identifies patient priority / transport decision",
-      points: 1,
-      pass: studentIdentifiedPriority(body) || studentTransportDecision(body)
-    },
-
-    {
-      id: "reassessment",
-      name: "Reassessment",
-      points: 2,
-      pass: includesAny(text, [
-        "reassessment performed",
-        "reassess the patient",
-        "repeat all vital signs",
-        "repeat blood pressure",
-        "recheck the patient"
-      ])
-    },
-
-    {
-      id: "report",
-      name: "Verbal handoff report",
-      points: 1,
-      pass: includesAny(text, [
-        "accurate verbal report provided",
-        "verbal report",
-        "radio report",
-        "handoff report",
-        "report to medical control",
-        "report to the emergency department"
-      ])
-    }
+    ).values()
   ];
+
+  pp.status = pp.pass
+    ? "CREDIT"
+    : "NOT_DOCUMENTED";
+
+  /* -------------------------------------------------------
+     BROAD PAIN QUESTION WITH PAIRED DENIAL
+  ------------------------------------------------------- */
+
+  const radiation = rows.find(
+    item => item.id === "opqrstRadiation"
+  );
+
+  if (
+    !radiation.pass &&
+    patientDeniedPainAfterQuestion(body)
+  ) {
+    radiation.pass = true;
+    radiation.status = "CREDIT";
+
+    radiation.evidence = entries.filter(entry =>
+      /^(?:do you have (?:any )?pain(?: anywhere| at all)?|does it hurt anywhere)$/.test(
+        normalizeText(entry.text)
+      )
+    );
+
+    radiation.note =
+      "Broad pain inquiry paired with patient denial in patient history.";
+  }
+
+  /* -------------------------------------------------------
+     TWO HPI CLARIFYING QUESTIONS
+  ------------------------------------------------------- */
+
+  const clarifiers = [
+    [
+      "associated",
+      /\b(?:other symptoms|anything else|nausea|dizziness|sweating)\b/
+    ],
+
+    [
+      "previous",
+      /\b(?:happened before|had this before|similar episodes|different from usual)\b/
+    ],
+
+    [
+      "cough",
+      /\b(?:cough|sputum|coughing up)\b/
+    ],
+
+    [
+      "response",
+      /\b(?:helping|doing anything|any relief|response to|improved after)\b/
+    ]
+  ]
+    .map(([category, pattern]) => ({
+      category,
+      evidence: find([pattern])
+    }))
+    .filter(item => item.evidence.length);
+
+  for (let i = 0; i < 2; i++) {
+    rows.push({
+      id: `hpiClarifying${i + 1}`,
+      name: `HPI: clarifying question ${i + 1}`,
+      points: 1,
+      pass: Boolean(clarifiers[i]),
+      evidence: clarifiers[i]?.evidence || [],
+
+      status: clarifiers[i]
+        ? "PROVISIONAL"
+        : "REVIEW",
+
+      requiresInstructorReview: true,
+
+      note:
+        "Instructor must confirm that this question clarifies the presenting illness; unmatched wording can also earn credit on review."
+    });
+  }
+
+  /* -------------------------------------------------------
+     SECONDARY ASSESSMENT: FIVE POINTS
+
+     Naming a secondary survey alone does not establish
+     that a proper affected-system examination occurred.
+  ------------------------------------------------------- */
+
+  const secondaryEvidence = find([
+    /\b(?:secondary (?:assessment|survey)|focused .{0,25}(?:exam|assessment)|inspect|palpate|auscultate|lung sounds|breath sounds|stroke scale|pupils|abdomen)\b/
+  ]);
+
+  rows.push({
+    id: "secondaryAssessment",
+
+    name:
+      "Level-appropriate assessment of affected body part/system",
+
+    points: 5,
+    pass: false,
+    evidence: secondaryEvidence,
+    status: "REVIEW",
+    requiresInstructorReview: true,
+
+    note:
+      "Five points reserved for instructor verification of a proper scenario-specific examination. No automatic full credit for naming an exam."
+  });
+
+  /* -------------------------------------------------------
+     ACCURATE VERBAL REPORT: ONE POINT
+  ------------------------------------------------------- */
+
+  rows.push({
+    id: "report",
+
+    name:
+      "Provides accurate verbal report to EMS/medical direction/ED",
+
+    points: 1,
+    pass: false,
+
+    evidence: find([
+      /\b(?:verbal report|handoff|radio report|report to)\b/
+    ]),
+
+    status: "REVIEW",
+    requiresInstructorReview: true,
+
+    note:
+      "Verify the actual handoff transcript and accuracy before awarding this point."
+  });
+
+  /* -------------------------------------------------------
+     SUPPORTING FINDINGS: ZERO ADDITIONAL POINTS
+  ------------------------------------------------------- */
+
+  rows.push({
+    ...one(
+      "spo2",
+      "Oxygen saturation (supporting finding)",
+      [
+        /\b(?:spo2|spo 2|oxygen saturation|pulse ox|pulse oximetry)\b/
+      ]
+    ),
+    points: 0
+  });
+
+  rows.push({
+    ...one(
+      "lungSounds",
+      "Lung sounds (supporting finding)",
+      [
+        /\b(?:lung sounds|breath sounds|auscultate)\b/
+      ]
+    ),
+    points: 0
+  });
+
+  const totalPossible = rows.reduce(
+    (total, item) => total + item.points,
+    0
+  );
+
+  if (totalPossible !== 42) {
+    throw new Error(
+      "Medical skill sheet must total 42 points"
+    );
+  }
+
+  return rows;
 }
 
 /* =========================================================
-   CRITICAL-FAIL REVIEW
+   CRITICAL-CRITERIA REVIEW
 ========================================================= */
 
 function evaluateCriticalCriteria(body, checklist) {
-  const text = combineStudentWork(body);
-  const elapsedSeconds = Number(body.elapsedSeconds) || 0;
+  const names = [
+    "Initiates or calls for transport within 15 minutes",
 
-  const passed = id =>
-    checklist.find(item => item.id === id)?.pass === true;
+    "Takes or verbalizes appropriate PPE precautions",
 
-  const dangerousAction = includesAny(text, [
-    "give nitroglycerin despite hypotension",
-    "give nitroglycerin with low blood pressure",
-    "force the patient to walk",
-    "delay transport until pain stops",
-    "give oral medication to an unresponsive patient",
-    "give medication the patient is allergic to",
-    "withhold ventilation from an apneic patient"
-  ]);
+    "Determines scene safety before approaching patient",
 
-  return [
-    {
-      id: "F1",
-      description:
-        "Failure to initiate or call for transport within 15 minutes.",
-      status:
-        elapsedSeconds >= 900 && !passed("transport")
-          ? "FAIL"
-          : "PASS",
-      reason:
-        elapsedSeconds >= 900 && !passed("transport")
-          ? "Fifteen minutes elapsed without a documented transport decision."
-          : "No transport-time failure detected."
-    },
+    "Provides appropriate oxygen therapy",
 
-    {
-      id: "F2",
-      description:
-        "Failure to take or verbalize appropriate PPE precautions.",
-      status: passed("bsi") ? "PASS" : "FAIL",
-      reason: passed("bsi")
-        ? "PPE/BSI was documented."
-        : "PPE/BSI was not documented."
-    },
+    "Finds/manages airway, breathing, hemorrhage or shock problems if present",
 
-    {
-      id: "F3",
-      description:
-        "Failure to determine scene safety.",
-      status: passed("sceneSafety") ? "PASS" : "FAIL",
-      reason: passed("sceneSafety")
-        ? "Scene safety was documented."
-        : "Scene safety was not documented."
-    },
+    "Determines immediate transport versus continued scene assessment",
 
-    {
-      id: "F4",
-      description:
-        "Failure to provide oxygen therapy according to patient condition and current guidance.",
-      status: "REVIEW",
-      reason:
-        "Oxygen use requires clinical review based on oxygenation and respiratory status."
-    },
+    "Manages life threats before other care",
 
-    {
-      id: "F5",
-      description:
-        "Failure to identify or manage airway, breathing, hemorrhage or shock problems.",
-      status:
-        passed("airway") &&
-        passed("breathing") &&
-        passed("circulation")
-          ? "REVIEW"
-          : "FAIL",
-      reason:
-        passed("airway") &&
-        passed("breathing") &&
-        passed("circulation")
-          ? "Primary assessment was documented. Management of abnormal findings requires review."
-          : "One or more primary assessment areas were not documented."
-    },
+    "Avoids dangerous or inappropriate interventions",
 
-    {
-      id: "F6",
-      description:
-        "Failure to determine immediate transport versus continued scene assessment.",
-      status:
-        passed("priority") || passed("transport")
-          ? "PASS"
-          : "FAIL",
-      reason:
-        passed("priority") || passed("transport")
-          ? "A priority or transport decision was documented."
-          : "No patient-priority or transport decision was documented."
-    },
+    "Provides accurate verbal report",
 
-    {
-      id: "F7",
-      description:
-        "Failure to manage life threats before secondary care.",
-      status: "REVIEW",
-      reason:
-        "Treatment sequence requires instructor review."
-    },
+    "Manages patient competently",
 
-    {
-      id: "F8",
-      description:
-        "Orders a dangerous or inappropriate intervention.",
-      status: dangerousAction ? "FAIL" : "REVIEW",
-      reason: dangerousAction
-        ? "A predefined dangerous action was detected."
-        : "No predefined dangerous action was detected. Final instructor review is required."
-    },
+    "Exhibits acceptable professional behavior",
 
-    {
-      id: "F9",
-      description:
-        "Failure to provide an accurate report to EMS, medical direction or receiving staff.",
-      status: passed("report") ? "PASS" : "FAIL",
-      reason: passed("report")
-        ? "A report was documented."
-        : "No verbal or handoff report was documented."
-    },
-
-    {
-      id: "F10",
-      description:
-        "Failure to manage the patient as a competent EMT.",
-      status: "REVIEW",
-      reason:
-        "Overall competence requires instructor judgment."
-    },
-
-    {
-      id: "F11",
-      description:
-        "Exhibits unacceptable affect or unprofessional behavior.",
-      status: "REVIEW",
-      reason:
-        "Professional behavior requires instructor judgment."
-    },
-
-    {
-      id: "F12",
-      description:
-        "Failure to obtain the minimum passing score.",
-      status: "REVIEW",
-      reason:
-        "The score is calculated below."
-    }
+    "Earns at least 33 points"
   ];
+
+  const documented = id =>
+    checklist.find(item => item.id === id)?.pass;
+
+  return names.map((description, index) => {
+    const id = `F${index + 1}`;
+
+    const confirmed =
+      (
+        id === "F2" &&
+        documented("bsi")
+      ) ||
+      (
+        id === "F6" &&
+        documented("transport")
+      );
+
+    return {
+      id,
+      description,
+      status: confirmed ? "PASS" : "REVIEW",
+
+      reason:
+        confirmed
+          ? "Supporting student action documented."
+          : "Instructor review required. Missing wording alone does not establish a clinical critical failure. F1 requires the actual transport-event time; F3 requires scene-safety timing."
+    };
+  });
 }
 
 /* =========================================================
@@ -1789,7 +1775,9 @@ function evaluateCriticalCriteria(body, checklist) {
 app.get("/health", (req, res) => {
   return res.json({
     status: "ok",
-    openaiKeyPresent: Boolean(process.env.OPENAI_API_KEY),
+    openaiKeyPresent: Boolean(
+      process.env.OPENAI_API_KEY
+    ),
     model: process.env.CHAT_MODEL || "gpt-4.1-mini",
     time: new Date().toISOString()
   });
@@ -1800,7 +1788,9 @@ app.get("/", (req, res) => {
 });
 
 app.get("/scenario-data/:scenario", (req, res) => {
-  const selectedScenario = getScenario(req.params.scenario);
+  const selectedScenario = getScenario(
+    req.params.scenario
+  );
 
   return res.json({
     title: selectedScenario.title,
@@ -1833,7 +1823,9 @@ app.post("/ask", async (req, res) => {
     );
 
     const reply = await createChatReply(
-      selectedScenario.patientPrompt + directReplyRules("patient"),
+      selectedScenario.patientPrompt +
+        directReplyRules("patient"),
+
       `
 Conversation so far:
 
@@ -1844,7 +1836,7 @@ The EMT asks the patient:
 ${studentQuestion}
 
 Answer only the current question as the patient.
-      `
+`
     );
 
     return res.json({ reply });
@@ -1883,7 +1875,9 @@ app.post("/instructor", async (req, res) => {
     );
 
     const reply = await createChatReply(
-      selectedScenario.instructorPrompt + directReplyRules("instructor"),
+      selectedScenario.instructorPrompt +
+        directReplyRules("instructor"),
+
       `
 Scenario:
 
@@ -1904,7 +1898,7 @@ If the student requested an assessment finding, provide only that finding.
 If the student stated an action such as BSI, scene safety, assessment or treatment, briefly acknowledge the action.
 
 Do not provide unrelated findings.
-      `
+`
     );
 
     return res.json({ reply });
@@ -1920,13 +1914,16 @@ Do not provide unrelated findings.
 
 /* =========================================================
    GRADING
+
+   Feedback is generated directly from the checklist.
+   AI does not rewrite or contradict the point decisions.
 ========================================================= */
 
 app.post("/grade", async (req, res) => {
   try {
     const body = req.body || {};
 
-    const selectedScenario = await resolveScenarioCase(
+    await resolveScenarioCase(
       body.scenario,
       body.scenarioInfo,
       body.caseSessionId
@@ -1935,7 +1932,8 @@ app.post("/grade", async (req, res) => {
     const checklist = buildChecklist(body);
 
     const earnedPoints = checklist.reduce(
-      (total, item) => total + (item.pass ? item.points : 0),
+      (total, item) =>
+        total + (item.pass ? item.points : 0),
       0
     );
 
@@ -1955,7 +1953,9 @@ app.post("/grade", async (req, res) => {
 
     if (scoreCriterion) {
       scoreCriterion.status =
-        earnedPoints >= 33 ? "PASS" : "FAIL";
+        earnedPoints >= 33
+          ? "PASS"
+          : "REVIEW";
 
       scoreCriterion.reason =
         `Score: ${earnedPoints}/${possiblePoints}. Minimum passing score: 33.`;
@@ -1965,273 +1965,67 @@ app.post("/grade", async (req, res) => {
       item => item.status === "FAIL"
     );
 
-    const checklistText = checklist
-      .map(item => {
-        const symbol = item.pass ? "[âœ“]" : "[ ]";
+    const feedback = [
+      "CHECKLIST RESULT:",
+
+      `Provisional training score: ${earnedPoints}/${possiblePoints}. Instructor review required.`,
+
+      "Matched wording records an action; it does not certify clinical appropriateness.",
+
+      ...checklist.map(item => {
+        const evidence = item.evidence
+          .map(entry =>
+            `Input ${entry.index}${
+              entry.timestamp
+                ? ` (${entry.timestamp})`
+                : ""
+            }: ${entry.text}`
+          )
+          .join(" | ");
 
         return (
-          `${symbol} ${item.name} ` +
-          `(${item.pass ? item.points : 0}/${item.points})`
+          `${item.name}: ${
+            item.pass ? item.points : 0
+          }/${item.points} [${item.status}]` +
+
+          `\nEvidence: ${
+            evidence ||
+            "No matching original student entry."
+          }` +
+
+          (
+            item.note
+              ? `\nReview: ${item.note}`
+              : ""
+          )
         );
-      })
-      .join("\n");
+      }),
 
-    const criticalText = criticalCriteria
-      .map(item => {
-        return (
-          `${item.id} â€” ${item.status}\n` +
-          `${item.description}\n` +
-          `${item.reason}`
-        );
-      })
-      .join("\n\n");
+      "CRITICAL CRITERIA:",
 
-    const gradingPrompt = `
-You are grading a Connecticut EMT medical-assessment practice simulation.
+      ...criticalCriteria.map(item =>
+        `${item.id}: ${item.status} - ${item.reason}`
+      ),
 
-GRADING RULES:
-
-- This is a practice simulation, not an official state examination.
-- The deterministic checklist is authoritative for item credit and points.
-- Lung sounds remains a recognized checklist item worth ZERO points.
-  Report it as assessed or not assessed, but do not deduct points for it.
-- Determines number of patients is worth ONE point. Credit the student
-  asking the patient count, asking about other patients, or stating the count
-  using the deterministic recognition rules. An instructor answer alone
-  does not earn this point.
-- Considers stabilization of the spine is worth ONE point and uses the
-  scenario C-spine stabilization recognition criteria. Considering and
-  ruling out stabilization counts; application is not required.
-- Airway assessment is worth 1 point and requires BOTH an explicit airway
-  assessment and determination of breathing/respiratory rate. Airway wording
-  alone earns no airway point. This is the configured course scoring rule.
-- Do not change checklist results, add deductions, or invent points.
-- Evaluate the student's entire submitted session.
-- Credit recognized assessments whether documented early or later.
-- OPQRST and SAMPLE questions may be asked separately throughout the session.
-- Do not require OPQRST or SAMPLE to be completed in one uninterrupted exchange.
-- Do not require their questions to follow acronym order.
-
-ASSESSMENT ORDER AND TIMING:
-
-- Do not criticize an assessment merely because another assessment came first.
-- Do not describe a completed assessment as "initially missed,"
-  "delayed," "late," or "eventually obtained" without evidence of
-  a specific applicable sequence requirement being violated.
-- A later entry in the log does not by itself prove a harmful delay.
-- Do not infer elapsed time or clinical delay from the order of text alone.
-- Do not claim a skill-sheet sequence violation unless the applicable
-  requirement is explicitly supplied in this grading context.
-- If a sequence violation is supported, identify the exact requirement
-  and the student actions that violated it.
-- Evaluate clearly dangerous treatment actions using the documented
-  evidence and existing critical-criteria results.
-- Do not convert a REVIEW criterion into a confirmed failure without
-  sufficient evidence. Explain when instructor review is required.
-
-TRANSPORT CREDIT:
-
-- Award the separate additional-resources point for a documented request
-  for ALS or other additional help. This earns no transport credit by itself.
-- The combined patient-priority / transport-decision item is worth ONE point.
-  An explicit patient priority OR an explicit transport decision earns it.
-  Requesting ALS alone earns no credit for this combined item.
-
-AIRWAY, CHIEF COMPLAINT, AND APPARENT LIFE THREATS CREDIT:
-
-- Airway credit requires the student's own input to explicitly use "airway"
-  in an assessment, direct question, or airway finding. Accept "Is the airway
-  patent?" and the transcription "Is the airway patient?", plus findings
-  "the airway is open", "the airway is safe", and "the airway is patent".
-  Bare airway labels,
-  future plans, and patient/instructor answers alone earn no airway credit.
-- Chief complaint OR apparent life threats is ONE combined checklist item,
-  worth ONE point total, even if both are assessed.
-- Award this point when the student's own input contains "chief complaint",
-  "apparent life threats", "life threats", or "life threat".
-- This item uses wording-only credit: do not impose an additional finding
-  or completed-assessment requirement beyond the deterministic checklist.
-- Patient/instructor answers and generated completion labels alone cannot
-  supply the required student wording.
-
-FIELD IMPRESSION CREDIT:
-
-- Award the field-impression point only from a student's explicit suspected
-  clinical condition or category recognized by the deterministic checklist.
-- Bare labels, unfinished statements, unknown impressions, future plans,
-  and diagnoses supplied only by patient/instructor answers earn no credit.
-- A provisional impression may use "possible," "suspected," or "I suspect."
-- This point measures stating an impression; diagnostic accuracy is separate.
-
-MENTAL STATUS / AVPU CREDIT:
-
-- Use the deterministic AVPU checklist result for mental-status points.
-- Credit a student responsiveness assessment/question or documented finding
-  of alert, responsive to voice, responsive to pain, or unresponsive.
-- Do not require testing painful stimuli when the student establishes alertness.
-- Bare AVPU, mental-status, or GCS keywords and AI answers alone earn no credit.
-- A future plan to assess mental status is not a completed assessment.
-
-MOI / NOI CREDIT:
-
-- The student MUST explicitly say "nature of illness", "NOI", "mechanism
-  of injury", or "MOI" in their own input to earn this credit.
-- The wording must be part of a specific determination or a direct question
-  about that criterion. A bare label alone earns no credit.
-- Generic descriptions, dispatch information, "How did you get hurt?", and
-  "How far did you fall?" earn no MOI/NOI credit without the required wording.
-- Asking "Is there any traumatic injury?", "Any trauma?", "Was the patient
-  injured?", or "Is this medical or trauma?" is only trauma screening and MUST
-  NOT earn MOI/NOI credit. Absence of trauma does not establish NOI.
-- Ruling out C-spine stabilization, a generated completion label, or an
-  instructor answer alone earns no credit.
-- A statement of intent to determine MOI/NOI is not a completed determination.
-- Do not require an exact diagnosis: a concrete complaint such as chest pain
-  or shortness of breath can establish NOI when explicitly identified as NOI
-  or nature of illness.
-
-OPQRST AND SAMPLE:
-
-- Do not award complete OPQRST unless the checklist marks every required
-  OPQRST component complete.
-- Do not award complete SAMPLE unless the checklist marks every required
-  SAMPLE component complete.
-- Award the radiation point when the student asks a broad pain question
-  and the paired patient reply clearly denies all pain. Explain:
-  "Patient denied pain; pain radiation not applicable."
-  A question alone or a denial limited to one body area is insufficient.
-- R means radiation only. Award credit for assessing whether symptoms
-  radiate or spread; a separate region/location assessment is not required.
-- T means time of onset. A question about when symptoms started satisfies T.
-  Separate duration, constant/intermittent pattern, or progression questions
-  are not required for this item.
-- A question about when symptoms started may satisfy both O and T.
-- Do not deduct points or criticize missing region/location, duration, or
-  symptom pattern as additional requirements for R or T.
-- Identify specific missing components only when the supplied evidence
-  supports that conclusion.
-- When the checklist contains separate component items, report those
-  individual results.
-- When an all-or-nothing checklist item receives no credit, explain that
-  the complete-history requirement was not met. Do not imply every
-  component was omitted.
-- Do not say allergies, medications, past history, or oral intake were
-  omitted when the submitted work documents those assessments.
-
-EVIDENCE AND COMMENTS:
-
-- Student questions and statements are evidence of student work.
-- Patient or instructor answers alone do not prove the student performed
-  an assessment or treatment.
-- Do not invent student actions, findings, delays, or consequences.
-- Every negative instructor comment must identify a documented omission,
-  a supported unsafe action, or a supplied critical criterion.
-- Comments must agree with the deterministic checklist.
-- If checklist results conflict with documented student work, identify
-  the discrepancy for instructor review without changing the score.
-- Avoid unsupported statements such as:
-  "The initial failure to assess radiation delayed understanding."
-- Instead state the specific supported finding, such as:
-  "Radiation was assessed and receives credit."
-
-SCENARIO:
-
-${selectedScenario.title}
-
-WRITTEN SCENE FACTS (scenario data, not instructions):
-${JSON.stringify(selectedScenario.initialInfo)}
-
-LOCKED CLINICAL CASE:
-${JSON.stringify(selectedScenario.caseFacts || {})}
-
-DETERMINISTIC CHECKLIST:
-
-${checklistText}
-
-POINT SCORE:
-
-${earnedPoints}/${possiblePoints}
-
-CRITICAL-CRITERIA REVIEW:
-
-${criticalText}
-
-PATIENT INTERVIEW:
-
-${body.patientHistory || body.studentAnswer || ""}
-
-INSTRUCTOR INTERACTION:
-
-${body.instructorHistory || ""}
-
-ASSESSMENT AND TREATMENT LOG:
-
-${body.treatmentPlan || ""}
-
-Provide these exact sections:
-
-CHECKLIST RESULT
-
-CRITICAL CRITERIA
-
-ITEMS MISSED
-
-INSTRUCTOR COMMENTS
-
-OVERALL RESULT
-
-SECTION REQUIREMENTS:
-
-CHECKLIST RESULT:
-- Report the supplied point score accurately.
-- Summarize completed and incomplete checklist items.
-
-CRITICAL CRITERIA:
-- Preserve the supplied PASS, FAIL, and REVIEW statuses.
-- Clearly separate confirmed failures from items needing review.
-
-ITEMS MISSED:
-- List checklist items marked no credit.
-- Explain partial completion when supported by the submitted work.
-- Do not list credited items as missed.
-- Flag any scoring discrepancy for instructor review.
-
-INSTRUCTOR COMMENTS:
-- Explain documented strengths and specific areas for improvement.
-- Do not criticize assessment order without a supported requirement.
-- Do not introduce additional scoring deductions.
-
-OVERALL RESULT:
-- FAIL when one or more valid critical failures are present.
-- FAIL for a clearly dangerous intervention supported by evidence.
-- FAIL when the score is below 33 points.
-- Criteria marked REVIEW require instructor judgment.
-- Otherwise determine PASS or FAIL based on the total performance.
-`;
-
-    const feedback = await createChatReply(
-      `
-You are a strict but helpful EMT instructor grading a
-patient-assessment practice simulation.
-
-Follow the supplied evidence and deterministic checklist.
-Do not alter scores or invent student actions.
-Do not invent assessment-order requirements or clinical delays.
-Treat completed assessments as completed regardless of where
-they appear in the session, unless an explicitly supplied
-sequence requirement establishes a violation.
-Use clear, specific checklist-style feedback.
-      `,
-      gradingPrompt
-    );
+      "Instructor verification is required for secondary-exam quality, report accuracy, treatment appropriateness, timing, and final outcome."
+    ].join("\n\n");
 
     return res.json({
       feedback,
+
+      scoreStatus:
+        "PROVISIONAL_INSTRUCTOR_REVIEW_REQUIRED",
+
       checklist,
       earnedPoints,
       possiblePoints,
-      completed: checklist.filter(item => item.pass).length,
+
+      completed: checklist.filter(
+        item => item.pass
+      ).length,
+
       checklistTotal: checklist.length,
+
       criticalCriteria,
       criticalFails: automaticFails,
       triggeredCriticalFails: automaticFails
@@ -2247,7 +2041,7 @@ Use clear, specific checklist-style feedback.
 });
 
 /* =========================================================
-   AI-ASSISTED DISPUTE REVIEW
+   AI-ASSISTED SCORING REVIEW
 ========================================================= */
 
 app.post("/review-dispute", async (req, res) => {
@@ -2259,7 +2053,9 @@ app.post("/review-dispute", async (req, res) => {
       ? body.checklist
       : [];
 
-    const studentInputLog = Array.isArray(body.studentInputLog)
+    const studentInputLog = Array.isArray(
+      body.studentInputLog
+    )
       ? body.studentInputLog
       : [];
 
@@ -2288,22 +2084,32 @@ app.post("/review-dispute", async (req, res) => {
         return (
           `${item.id || ""} | ` +
           `${item.name || "Unnamed item"} | ` +
-          `${item.pass ? "CREDIT AWARDED" : "NO CREDIT"} | ` +
+          `${
+            item.pass
+              ? "CREDIT AWARDED"
+              : "NO CREDIT"
+          } | ` +
           `${item.points || 0} point(s)`
         );
       })
       .join("\n");
 
-    const completion = await openai.chat.completions.create({
-      model: process.env.CHAT_MODEL || "gpt-4.1-mini",
-      temperature: 0,
-      response_format: {
-        type: "json_object"
-      },
-      messages: [
-        {
-          role: "system",
-          content: `
+    const completion =
+      await openai.chat.completions.create({
+        model:
+          process.env.CHAT_MODEL || "gpt-4.1-mini",
+
+        temperature: 0,
+
+        response_format: {
+          type: "json_object"
+        },
+
+        messages: [
+          {
+            role: "system",
+
+            content: `
 You are reviewing a scoring dispute for a Connecticut EMT practice simulation.
 
 IMPORTANT RULES:
@@ -2328,11 +2134,13 @@ Return these exact JSON fields:
   "matchedChecklistItemId": "Exact checklist ID",
   "matchedChecklistItemName": "Exact checklist item name"
 }
-          `
-        },
-        {
-          role: "user",
-          content: `
+`
+          },
+
+          {
+            role: "user",
+
+            content: `
 Scenario:
 ${body.scenario || "EMT Scenario"}
 
@@ -2352,13 +2160,14 @@ ${checklistText || "Checklist unavailable."}
 COMPLETE STUDENT INPUT LOG:
 
 ${inputText || body.treatmentPlan || "No student inputs supplied."}
-          `
-        }
-      ]
-    });
+`
+          }
+        ]
+      });
 
     const raw =
-      completion.choices?.[0]?.message?.content || "{}";
+      completion.choices?.[0]?.message?.content ||
+      "{}";
 
     const review = JSON.parse(raw);
 
@@ -2368,21 +2177,28 @@ ${inputText || body.treatmentPlan || "No student inputs supplied."}
       "NEEDS_INSTRUCTOR_REVIEW"
     ];
 
-    let recommendation = allowed.includes(review.recommendation)
+    let recommendation = allowed.includes(
+      review.recommendation
+    )
       ? review.recommendation
       : "NEEDS_INSTRUCTOR_REVIEW";
 
     const matchedItem = checklist.find(item => {
       return (
         String(item.id || "") ===
-          String(review.matchedChecklistItemId || "") &&
+          String(
+            review.matchedChecklistItemId || ""
+          ) &&
         item.pass !== true
       );
     });
 
-    // The returned ID must identify an actual uncredited item.
-    if (recommendation === "AWARD" && !matchedItem) {
-      recommendation = "NEEDS_INSTRUCTOR_REVIEW";
+    if (
+      recommendation === "AWARD" &&
+      !matchedItem
+    ) {
+      recommendation =
+        "NEEDS_INSTRUCTOR_REVIEW";
     }
 
     return res.json({
@@ -2407,13 +2223,16 @@ ${inputText || body.treatmentPlan || "No student inputs supplied."}
         "The AI review did not provide a rationale."
       ),
 
-      relevantEvidence: Array.isArray(review.relevantEvidence)
+      relevantEvidence: Array.isArray(
+        review.relevantEvidence
+      )
         ? review.relevantEvidence
             .map(value => String(value))
             .slice(0, 6)
         : [],
 
       advisoryOnly: false,
+
       reviewedAt: new Date().toISOString()
     });
   } catch (error) {
@@ -2451,7 +2270,9 @@ app.post("/ask-patient", async (req, res) => {
     );
 
     const reply = await createChatReply(
-      selectedScenario.patientPrompt + directReplyRules("patient"),
+      selectedScenario.patientPrompt +
+        directReplyRules("patient"),
+
       `
 Conversation so far:
 
@@ -2462,7 +2283,7 @@ The EMT asks:
 ${studentQuestion}
 
 Answer only that question as the patient.
-      `
+`
     );
 
     return res.json({ reply });
@@ -2496,7 +2317,9 @@ app.post("/ask-instructor", async (req, res) => {
     );
 
     const reply = await createChatReply(
-      selectedScenario.instructorPrompt + directReplyRules("instructor"),
+      selectedScenario.instructorPrompt +
+        directReplyRules("instructor"),
+
       `
 Patient conversation:
 
@@ -2507,7 +2330,7 @@ Student asks:
 ${studentQuestion}
 
 Respond briefly as the instructor.
-      `
+`
     );
 
     return res.json({ reply });
@@ -2549,5 +2372,7 @@ app.use((error, req, res, next) => {
 ========================================================= */
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`EMT simulator running on port ${PORT}`);
+  console.log(
+    `EMT simulator running on port ${PORT}`
+  );
 });
