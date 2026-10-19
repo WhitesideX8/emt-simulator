@@ -2105,68 +2105,159 @@ Do not provide unrelated findings.
   }
 });
 
+});
 /* =========================================================
    GRADING
 
-   Feedback is generated directly from the checklist.
-   AI does not rewrite or contradict the point decisions.
+   SECTION 1:
+   Assessment and treatment points: 0–42
+
+   SECTION 2:
+   Critical criteria: PASS / FAIL / REVIEW
+   Critical criteria do not change the numerical score.
 ========================================================= */
 
 app.post("/grade", async (req, res) => {
   try {
     const body = req.body || {};
 
-    await resolveScenarioCase(
-      body.scenario,
-      body.scenarioInfo,
-      body.caseSessionId
-    );
+    /* -----------------------------------------------------
+       ASSESSMENT AND TREATMENT SCORING
+    ----------------------------------------------------- */
 
     const checklist = buildChecklist(body);
 
     const earnedPoints = checklist.reduce(
       (total, item) =>
-        total + (item.pass ? item.points : 0),
+        total + (
+          item.pass
+            ? Number(item.points) || 0
+            : 0
+        ),
       0
     );
 
     const possiblePoints = checklist.reduce(
-      (total, item) => total + item.points,
+      (total, item) =>
+        total + (Number(item.points) || 0),
       0
     );
 
-    const criticalCriteria = evaluateCriticalCriteria(
-      body,
-      checklist
+    const percentage = possiblePoints > 0
+      ? Math.round(
+          earnedPoints / possiblePoints * 100
+        )
+      : 0;
+
+    const pendingScoringReview = checklist.filter(
+      item =>
+        Number(item.points) > 0 &&
+        item.requiresInstructorReview === true
     );
 
-    const scoreCriterion = criticalCriteria.find(
-      item => item.id === "F12"
-    );
+    const assessmentScore = {
+      earnedPoints,
+      possiblePoints,
+      percentage,
+      minimumPassingPoints: 33,
 
-    if (scoreCriterion) {
-      scoreCriterion.status =
+      meetsPointMinimum:
+        earnedPoints >= 33,
+
+      status:
+        pendingScoringReview.length > 0
+          ? "PROVISIONAL"
+          : "SCORED",
+
+      pendingReviewItemIds:
+        pendingScoringReview.map(item => item.id)
+    };
+
+    /* -----------------------------------------------------
+       SEPARATE CRITICAL-CRITERIA EVALUATION
+
+       This section does not modify earnedPoints.
+    ----------------------------------------------------- */
+
+    const criticalCriteria =
+      evaluateCriticalCriteria(body, checklist);
+
+    /*
+     * F12 references the numerical score.
+     * It does not deduct any additional points.
+     *
+     * A below-minimum provisional score remains REVIEW
+     * until pending scoring decisions are completed.
+     */
+    const minimumScoreCriterion =
+      criticalCriteria.find(
+        item => item.id === "F12"
+      );
+
+    if (minimumScoreCriterion) {
+      minimumScoreCriterion.status =
         earnedPoints >= 33
           ? "PASS"
-          : "REVIEW";
+          : pendingScoringReview.length > 0
+            ? "REVIEW"
+            : "FAIL";
 
-      scoreCriterion.reason =
-        `Score: ${earnedPoints}/${possiblePoints}. Minimum passing score: 33.`;
+      minimumScoreCriterion.reason =
+        earnedPoints >= 33
+          ? `The recorded score meets the 33-point minimum: ${earnedPoints}/${possiblePoints}.`
+          : pendingScoringReview.length > 0
+            ? `The provisional score is ${earnedPoints}/${possiblePoints}. Resolve pending scoring reviews before deciding whether the final score meets 33 points.`
+            : `The final recorded score is ${earnedPoints}/${possiblePoints}, below the 33-point minimum.`;
     }
 
-    const automaticFails = criticalCriteria.filter(
-      item => item.status === "FAIL"
-    );
+    const criticalFailures =
+      criticalCriteria.filter(
+        item => item.status === "FAIL"
+      );
 
-    const feedback = [
-      "CHECKLIST RESULT:",
+    const criticalReviews =
+      criticalCriteria.filter(
+        item => item.status === "REVIEW"
+      );
 
-      `Provisional training score: ${earnedPoints}/${possiblePoints}. Instructor review required.`,
+    const criticalCriteriaReview = {
+      status:
+        criticalFailures.length > 0
+          ? "FAIL"
+          : criticalReviews.length > 0
+            ? "REVIEW"
+            : "PASS",
 
-      "Matched wording records an action; it does not certify clinical appropriateness.",
+      failedIds:
+        criticalFailures.map(item => item.id),
+
+      pendingReviewIds:
+        criticalReviews.map(item => item.id),
+
+      affectsNumericalScore: false,
+
+      criteria: criticalCriteria
+    };
+
+    /* -----------------------------------------------------
+       ASSESSMENT AND TREATMENT FEEDBACK
+    ----------------------------------------------------- */
+
+    const assessmentFeedback = [
+      "ASSESSMENT AND TREATMENT SCORE:",
+
+      `Score: ${earnedPoints}/${possiblePoints} points (${percentage}%).`,
+
+      `Scoring status: ${assessmentScore.status}.`,
+
+      "Critical-criteria findings do not add or subtract points.",
 
       ...checklist.map(item => {
-        const evidence = item.evidence
+        const evidence = (
+          Array.isArray(item.evidence)
+            ? item.evidence
+            : []
+        )
           .map(entry =>
             `Input ${entry.index}${
               entry.timestamp
@@ -2192,47 +2283,78 @@ app.post("/grade", async (req, res) => {
               : ""
           )
         );
-      }),
-
-      "CRITICAL CRITERIA:",
-
-      ...criticalCriteria.map(item =>
-        `${item.id}: ${item.status} - ${item.reason}`
-      ),
-
-      "Instructor verification is required for secondary-exam quality, report accuracy, treatment appropriateness, timing, and final outcome."
+      })
     ].join("\n\n");
 
+    /* -----------------------------------------------------
+       CRITICAL-CRITERIA FEEDBACK
+    ----------------------------------------------------- */
+
+    const criticalFeedback = [
+      "CRITICAL CRITERIA — SEPARATE EVALUATION:",
+
+      `Critical-criteria status: ${criticalCriteriaReview.status}.`,
+
+      "No numerical points are awarded or deducted in this section.",
+
+      ...criticalCriteria.map(item =>
+        `${item.id}: ${item.status}` +
+        `\n${item.description}` +
+        `\nReason: ${item.reason}`
+      )
+    ].join("\n\n");
+
+    /*
+     * Compatibility:
+     * Existing feedback.html can display both sections
+     * using its current feedback field.
+     */
+    const feedback =
+      assessmentFeedback +
+      "\n\n" +
+      criticalFeedback;
+
     return res.json({
+      /* Separate results */
+      assessmentScore,
+      criticalCriteriaReview,
+
+      /* Separate display text */
+      assessmentFeedback,
+      criticalFeedback,
+
+      /* Existing feedback.html compatibility */
       feedback,
-
-      scoreStatus:
-        "PROVISIONAL_INSTRUCTOR_REVIEW_REQUIRED",
-
       checklist,
       earnedPoints,
       possiblePoints,
 
+      scoreStatus:
+        assessmentScore.status,
+
       completed: checklist.filter(
-        item => item.pass
+        item =>
+          Number(item.points) > 0 &&
+          item.pass
       ).length,
 
-      checklistTotal: checklist.length,
+      checklistTotal: checklist.filter(
+        item => Number(item.points) > 0
+      ).length,
 
       criticalCriteria,
-      criticalFails: automaticFails,
-      triggeredCriticalFails: automaticFails
+      criticalFails: criticalFailures,
+      triggeredCriticalFails: criticalFailures
     });
   } catch (error) {
     console.error("GRADING ERROR:", error);
 
     return res.status(500).json({
       feedback:
-        "Grading server error. Check the Render logs and OPENAI_API_KEY."
+        "Grading server error. Check the Render logs."
     });
   }
 });
-
 /* =========================================================
    AI-ASSISTED SCORING REVIEW
 ========================================================= */
