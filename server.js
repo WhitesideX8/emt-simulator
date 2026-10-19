@@ -2041,7 +2041,6 @@ Answer only the current question as the patient.
         "Server error contacting the AI patient. Check the Render logs and OPENAI_API_KEY."
     });
   }
-});
 
 /* =========================================================
    ASK INSTRUCTOR
