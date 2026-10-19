@@ -686,6 +686,29 @@ body {
 .container > section.combined-workspace,
 .container > section.recorded-column {
   margin-top: 400px !important;
+} 
+/* Center the image above both lower containers. */
+.scenario-image {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin: 20px auto 0;
+  text-align: center;
+}
+
+.scenario-image img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 350px;
+  margin: 0 auto;
+  border-radius: 8px;
+}
+
+/* Replace the previous 400px empty space. */
+.container > section.combined-workspace,
+.container > section.recorded-column {
+  margin-top: 25px !important;
 }    
   </style>
 </head>
@@ -706,6 +729,13 @@ body {
     <h2>Scenario Information</h2>
 
     <div id="scenarioInfo" class="box">You are dispatched to the home of a 67-year-old female who is complaining of SOB. Upon arrival you find her alone , sitting in a living room chair.</div>
+   
+    <div class="scenario-image">
+  <img
+    src="/Breathless%20Woman%20in%20a%20Living%20Room.png"
+    alt="Woman with shortness of breath sitting in a living room"
+  />
+</div>
 
     <section class="scenario-workspace combined-workspace">
       <div class="recorder-column">
