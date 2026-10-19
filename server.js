@@ -900,12 +900,12 @@ function studentAssessedRadiation(body = {}) {
 // or a direct question within the same sentence.
 function studentDeterminedMoiNoi(body = {}) {
   return studentRadiationEvidence(body)
+    // Repair a voice-transcription period after "is" or "was".
+    .replace(
+      /(\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\s+(?:is|was))\s*\.+\s*(?=\S)/gi,
+      "$1 "
+    )
     .split(/[.!?;\r\n]+/)
-    .some(line => {
-      const text = normalizeText(
-        line.replace(/\(\s*(?:noi|moi)\s*\)/gi, " ")
-      );
-
       const requiredWording =
         /\b(?:nature of (?:the )?illness|noi|mechanism of (?:the )?injury|moi)\b/;
 
