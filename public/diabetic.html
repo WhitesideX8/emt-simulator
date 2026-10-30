@@ -645,12 +645,88 @@
       width: 100%;
       box-sizing: border-box;
     }
-  </style>
+    .navigation {
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  z-index: 1000;
+}
+
+body {
+  padding-bottom: 65px;
+}
+/* Place both containers on the same row. */
+.container {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 24px;
+  align-items: start;
+}
+
+.container > h2,
+.container > #scenarioInfo {
+  grid-column: 1 / -1;
+}
+
+.container > .combined-workspace,
+.container > .recorded-column {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 200px 0 0;
+  padding: 8px;
+}
+
+/* Stack the containers on smaller screens. */
+@media (max-width: 750px) {
+  .container {
+    grid-template-columns: minmax(0, 1fr);
+  }
+} 
+.container > section.combined-workspace,
+.container > section.recorded-column {
+  margin-top: 400px !important;
+} 
+/* Center the image above both lower containers. */
+.scenario-image {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin: 20px auto 0;
+  text-align: center;
+}
+
+.scenario-image img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 350px;
+  margin: 0 auto;
+  border-radius: 8px;
+}
+
+/* Replace the previous 400px empty space. */
+.container > section.combined-workspace,
+    
+.container > section.recorded-column {
+  margin-top: 25px !important;
+}
+.combined-workspace .patient-entry-row #actionEntry {
+  background: rgba(255, 255, 255, 0.55) !important;
+  color: #000;
+}
+#scenarioInfo {
+  background: rgba(255, 255, 255, 0.55);
+  color: #000;
+}    
+  
+/* Keep the image container available without showing a broken image. */
+.scenario-image:empty { display: none; }
+</style>
 </head>
 
 <body>
   <div class="container">
-    <h1>Patient Simulation</h1>
 
     <div class="navigation">
       <button
@@ -662,9 +738,12 @@
       </button>
     </div>
 
-    <h2>Scenario Information</h2>
+    <h1>Scenario Information</h1>
 
     <div id="scenarioInfo" class="box">You are dispatched to a residence for a 45-year-old male with an altered mental status.</div>
+   
+    <!-- Image container: add a diabetic patient image here when available. -->
+    <div class="scenario-image" id="diabeticImageContainer"></div>
 
     <section class="scenario-workspace combined-workspace">
       <div class="recorder-column">
