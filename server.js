@@ -2077,6 +2077,50 @@ Answer only the current question as the patient.
   }); 
 
 /* =========================================================
+   ASK SPOUSE (STROKE SCENARIO ONLY)
+========================================================= */
+app.post("/ask-spouse", async (req, res) => {
+  try {
+    const { studentQuestion = "", history = "", scenario = "" } = req.body || {};
+    if (normalizeScenarioName(scenario) !== "stroke") {
+      return res.status(400).json({ reply: "Spouse is available only in the stroke scenario." });
+    }
+    if (!String(studentQuestion).trim()) {
+      return res.status(400).json({ reply: "No question for the spouse was provided." });
+    }
+    const selectedScenario = await resolveScenarioCase(
+      scenario, req.body?.scenarioInfo, req.body?.caseSessionId
+    );
+    const reply = await createChatReply(
+      `You are the wife of the 72-year-old male stroke patient in an EMT training scenario.
+You are present beside your husband. You are concerned but can speak normally.
+Answer ONLY the student's current question, in first person as the wife, briefly and naturally.
+You may report only information you personally witnessed or reliably know from the locked written scenario.
+Your husband has right-sided weakness and severe difficulty speaking. Do not imitate his garbled speech.
+Do not invent medication lists, allergies, medical history, exact times, prior events, or assessment findings.
+If you do not know a requested detail, say "I don't know" or "I'm not sure."
+Do not provide equipment readings, diagnoses, coaching, or instructor findings.
+Do not volunteer unrelated history or symptoms.
+
+${selectedScenario.patientPrompt}
+
+IMPORTANT: The instructions above describe the PATIENT, not your speaking style. You are the WIFE and speak clearly.`,
+      `Previous conversation:
+${history}
+
+EMT asks the wife:
+${studentQuestion}
+
+Reply as the wife only.`
+    );
+    return res.json({ reply });
+  } catch (error) {
+    console.error("ASK SPOUSE ERROR:", error);
+    return res.status(500).json({ reply: "Spouse server error. Check Render logs." });
+  }
+});
+
+/* =========================================================
    ASK INSTRUCTOR
 ========================================================= */
 
