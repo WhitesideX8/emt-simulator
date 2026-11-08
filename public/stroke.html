@@ -91,6 +91,10 @@
       background: #087f23;
     }
 
+    .spouse-btn {
+      background: #366a80;
+    }
+
     .instructor-btn {
       background: #663399;
     }
@@ -566,14 +570,16 @@
       gap: 8px;
     }
     .patient-side-controls,
-    .instructor-side-controls {
+    .instructor-side-controls,
+    .spouse-side-controls {
       display: grid;
       grid-template-columns: auto 1fr;
       gap: 6px;
       align-items: start;
     }
     .patient-side-controls button,
-    .instructor-side-controls button {
+    .instructor-side-controls button,
+    .spouse-side-controls button {
       margin: 0;
       text-decoration: underline;
       text-underline-offset: 3px;
@@ -737,7 +743,7 @@ body {
 
     <h1>Scenario Information</h1>
 
-    <div id="scenarioInfo" class="box">You are dispatched to a residence for a 72 with reported new onset of confusion and weakness. Dispatch reports pouse on scene</div>
+    <div id="scenarioInfo" class="box">You are dispatched to a residence for a 72-year-old patient with altered mental status, right-sided weakness, and slurred speech. His wife is present beside him and can answer questions about what she witnessed.</div>
 
     <!-- Stroke image: add an image filename inside public/ when available. -->
     <div class="scenario-image" id="strokeImageContainer">
@@ -765,6 +771,10 @@ body {
               >
                 Patient
               </button>
+            </div>
+            <div class="spouse-side-controls">
+              <button id="spouseVoiceButton" class="voice-btn" type="button" onclick="speakSpouseEntry()">Voice</button>
+              <button id="spouseButton" class="spouse-btn" type="button" onclick="askSpouseTyped()">Spouse</button>
             </div>
             <div class="instructor-side-controls">
               <button
@@ -1010,7 +1020,8 @@ body {
       buttonId,
       recordWhenFinished = false,
       sendToInstructor = false,
-      recordAssessment = false
+      recordAssessment = false,
+      sendToSpouse = false
     ) {
       if (!SpeechRecognition) {
         alert(
@@ -1036,6 +1047,7 @@ body {
       const recognition = new SpeechRecognition();
       recognition.submitToInstructor = sendToInstructor;
       recognition.recordAssessment = recordAssessment;
+      recognition.submitToSpouse = sendToSpouse;
 
       const existingText = textBox.value.trim();
       let heardSpeech = false;
@@ -1056,7 +1068,9 @@ body {
 
         voiceEntryRecorded = true;
 
-        if (recognition.submitToInstructor) {
+        if (recognition.submitToSpouse) {
+          askSpouseTyped();
+        } else if (recognition.submitToInstructor) {
           askInstructorTyped();
         } else if (recognition.recordAssessment) {
           recordAction("voice assessment/treatment");
@@ -1097,7 +1111,9 @@ body {
 
         if (recordWhenFinished) {
           document.getElementById("recordStatus").innerText =
-            sendToInstructor
+            sendToSpouse
+              ? "Listening. Press Stop Voice to send your question to the spouse."
+              : sendToInstructor
               ? "Listening. Press Stop Voice to send your question to the instructor."
               : recordAssessment
                 ? "Listening. Press Stop Voice to record your assessment or treatment."
@@ -2790,6 +2806,10 @@ body {
       toggleVoiceInput("actionEntry", "actionVoiceButton", true);
     }
 
+    function speakSpouseEntry() {
+      toggleVoiceInput("actionEntry", "spouseVoiceButton", true, false, false, true);
+    }
+
     function speakInstructorEntry() {
       toggleVoiceInput("actionEntry", "instructorVoiceButton", true, true);
     }
@@ -2819,6 +2839,7 @@ body {
         "Ask the Patient question"
       );
 
+      document.querySelector("#patientResponseArea .response-label").textContent = "Patient Response";
       responseBox.innerText = "Contacting patient...";
       scheduleResponseHide("patientResponse", "patientResponseArea");
 
@@ -2875,6 +2896,57 @@ body {
       } finally {
         patientButton.disabled = false;
         scheduleResponseHide("patientResponse", "patientResponseArea");
+      }
+    }
+
+    async function askSpouseTyped() {
+      const questionBox = document.getElementById("actionEntry");
+      const responseBox = document.getElementById("patientResponse");
+      const responseArea = document.getElementById("patientResponseArea");
+      const responseLabel = responseArea.querySelector(".response-label");
+      const spouseButton = document.getElementById("spouseButton");
+      const question = questionBox.value.trim();
+      if (!question) {
+        responseLabel.textContent = "Spouse Response";
+        responseArea.hidden = false;
+        responseBox.textContent = "Type a question for the spouse first.";
+        scheduleResponseHide("patientResponse", "patientResponseArea");
+        questionBox.focus();
+        return;
+      }
+      responseLabel.textContent = "Spouse Response";
+      responseArea.hidden = false;
+      responseBox.textContent = "Contacting spouse...";
+      document.getElementById("recordStatus").textContent = "Spouse question submitted...";
+      recordStudentInput("Ask the Spouse", question);
+      const questionSkills = detectAndRecordAssessments(question, "Ask the Spouse question");
+      spouseButton.disabled = true;
+      try {
+        const response = await fetch("/ask-spouse", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            studentQuestion: question,
+            history: patientHistory,
+            caseSessionId,
+            scenarioInfo: currentWrittenScene(),
+            scenario
+          })
+        });
+        const data = await readJsonResponse(response);
+        const reply = data.reply || data.answer || "The spouse did not respond.";
+        patientHistory += `Student to spouse: ${question}\nSpouse: ${reply}\n\n`;
+        showRecordedStatus(questionSkills, "the spouse");
+        responseBox.textContent = reply;
+        scheduleResponseHide("patientResponse", "patientResponseArea");
+        questionBox.value = "";
+        questionBox.focus();
+      } catch (error) {
+        console.error("Spouse request error:", error);
+        responseBox.textContent = "Error contacting spouse server.\n\n" + error.message;
+        scheduleResponseHide("patientResponse", "patientResponseArea");
+      } finally {
+        spouseButton.disabled = false;
       }
     }
 
@@ -3319,6 +3391,7 @@ body {
         area.hidden ||
         !text ||
         text === "Contacting patient..." ||
+        text === "Contacting spouse..." ||
         text === "Contacting instructor..." ||
         text === "Patient response will appear here." ||
         text === "Instructor answer will appear here."
