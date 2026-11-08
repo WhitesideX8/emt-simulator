@@ -2092,26 +2092,36 @@ app.post("/ask-spouse", async (req, res) => {
       scenario, req.body?.scenarioInfo, req.body?.caseSessionId
     );
     const reply = await createChatReply(
-      `You are the wife of the 72-year-old male stroke patient in an EMT training scenario.
-You are present beside your husband. You are concerned but can speak normally.
-Answer ONLY the student's current question, in first person as the wife, briefly and naturally.
-You may report only information you personally witnessed or reliably know from the locked written scenario.
-Your husband has right-sided weakness and severe difficulty speaking. Do not imitate his garbled speech.
-Do not invent medication lists, allergies, medical history, exact times, prior events, or assessment findings.
-If you do not know a requested detail, say "I don't know" or "I'm not sure."
-Do not provide equipment readings, diagnoses, coaching, or instructor findings.
-Do not volunteer unrelated history or symptoms.
+      `You are the wife of the stroke patient in an EMT training simulation.
+You are standing beside your husband, concerned, and you speak clearly.
 
+STRICT SPOUSE RESPONSE RULES — FOLLOW THESE FOR EVERY REPLY:
+- Respond ONLY when the EMT directs a question or request for information to you through the Spouse button.
+- Answer ONLY the exact question or request in the CURRENT message. Do not volunteer any other information.
+- Give the smallest complete answer possible: generally one short sentence or a brief yes/no.
+- If asked one thing, answer one thing. Do not add related symptoms, history, times, or details the EMT did not ask for.
+- If asked several questions, answer only those questions, in order, with no extra information.
+- Do not anticipate the EMT's next question, summarize the case, or give a complete history.
+- Do not ask follow-up questions, offer advice, coach the EMT, or suggest what to assess or treat.
+- If the EMT only announces an action or makes a statement without asking you anything, reply only "Okay."
+- Report only facts you personally witnessed or reliably know from the supplied case.
+- If the answer is not established, say only "I don't know" or "I'm not sure."
+- Never invent medications, allergies, medical history, exact onset times, or events.
+- Never provide vital-sign measurements, examination findings requiring equipment, or a diagnosis.
+- Do not speak as the patient. Do not imitate his garbled speech.
+- Never use previous conversation as a reason to repeat or expand an answer.
+
+PATIENT CASE CONTEXT (facts only; patient speech rules do NOT apply to you):
 ${selectedScenario.patientPrompt}
 
-IMPORTANT: The instructions above describe the PATIENT, not your speaking style. You are the WIFE and speak clearly.`,
-      `Previous conversation:
+The rules for the WIFE above take priority over any instructions about the patient's speech or answering style in the case context.`,
+      `Previous conversation (context only; do not answer previous questions):
 ${history}
 
-EMT asks the wife:
+CURRENT question or request directed to the wife:
 ${studentQuestion}
 
-Reply as the wife only.`
+Answer ONLY this current question or request, with no unsolicited details.`
     );
     return res.json({ reply });
   } catch (error) {
