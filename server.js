@@ -1077,14 +1077,41 @@ function sheetEntries(body = {}) {
 }
 
 /* =========================================================
-   42-POINT MEDICAL CHECKLIST
+   SIGNS AND SYMPTOMS DOCUMENTATION
+
+   Credit requires the student to explicitly document at least
+   one concrete sign or symptom after a signs/symptoms label.
+   Questions, headings, and generic diagnostic labels do not count.
+========================================================= */
+
+function studentListedSignsOrSymptoms(body = {}) {
+  const findings = /\b(?:chest pain|chest pressure|pressure in (?:the |his |her )?chest|shortness of breath|difficulty breathing|dyspnea|wheez(?:e|es|ing)|cough(?:ing)?|sputum|nausea|vomit(?:ing)?|diaphor(?:esis|etic)|sweat(?:ing|y)|pale|pallor|clammy|cool skin|weakness|weak|fatigue|shak(?:y|iness|ing)|confus(?:ed|ion)|altered mental status|facial droop|drooping face|arm drift|slurred speech|aphasia|dysphasia|difficulty speaking|trouble speaking|word finding difficulty|dizziness|dizzy|headache|vision loss|blurred vision|visual disturbance|unsteady gait|loss of balance|numbness|tingling|abdominal pain|back pain|jaw pain|arm pain|syncope|faint(?:ing|ed)?|seizure|fever|rash|hives|swelling|cyanosis|blue lips|rapid breathing|labored breathing|shallow breathing|irregular breathing|tachypnea|bradypnea|tachycardia|bradycardia|hypotension|hypertension|hypoxia|low oxygen saturation|low blood sugar|hypoglycemia|high blood sugar|hyperglycemia|bleeding|hemorrhage|deformity|tenderness|pain|discomfort)\b/i;
+
+  return sheetEntries(body).some(entry => {
+    const text = normalizeText(entry.text);
+    const label = text.match(/\b(?:signs?(?: and symptoms?)?|symptoms?(?: and signs?)?)\b/);
+    if (!label) return false;
+
+    const after = text.slice(label.index + label[0].length).trim();
+    if (!after || /^(?:of|for|associated with)\s+(?:stroke|heart attack|mi|acs|copd|diabetes|hypoglycemia|illness|injury)\b/.test(after)) return false;
+    if (/^(?:do|does|did|are|is|can|could|what|which|any|ask|check|assess|evaluate|determine|identify|look for|obtain|review|inquire)\b/.test(after)) return false;
+    if (/\b(?:will|going to|plan to|need to|should|did not|do not|dont|unable to)\b/.test(text.slice(0, label.index))) return false;
+
+    // Require documentation rather than an inquiry or a bare label.
+    if (/[?]/.test(entry.text)) return false;
+    return findings.test(after);
+  });
+}
+
+/* =========================================================
+   43-POINT MEDICAL CHECKLIST
 
    PPE and scene size-up:       6
    Impression / LOC / CC:       3
    Airway, breathing, oxygen:   3
    Circulation:                 3
    Priority / transport:        1
-   HPI:                         8
+   HPI:                         9
    Past medical history:        5
    Secondary assessment:        5
    Vital signs:                 4
@@ -1093,7 +1120,7 @@ function sheetEntries(body = {}) {
    Reassessment:                1
    Verbal report:               1
 
-   TOTAL:                      42
+   TOTAL:                      43
 ========================================================= */
 
 function buildChecklist(body = {}) {
@@ -1346,6 +1373,12 @@ function buildChecklist(body = {}) {
       b =>
         studentIdentifiedPriority(b) ||
         studentTransportDecision(b)
+    ),
+
+    helper(
+      "signsSymptoms",
+      "HPI: identifies specific signs and/or symptoms",
+      studentListedSignsOrSymptoms
     ),
 
     one(
@@ -1732,9 +1765,9 @@ function buildChecklist(body = {}) {
     0
   );
 
-  if (totalPossible !== 42) {
+  if (totalPossible !== 43) {
     throw new Error(
-      "Medical skill sheet must total 42 points"
+      "Medical checklist must total 43 points"
     );
   }
 
