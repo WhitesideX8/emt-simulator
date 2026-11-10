@@ -299,7 +299,9 @@ Wheezing.
 Productive cough.
 
 Inhaler:
-Used twice with little relief.
+Used twice before EMS arrival with little relief.
+If the EMT assists with another prescribed inhaler use, breathing improves only slightly.
+After that assistance, say breathing is a little easier but still difficult.
 
 Chest pain:
 Denied.
@@ -346,6 +348,14 @@ Blood pressure:
 
 Oxygen saturation:
 88 percent on room air.
+
+AFTER EMT ASSISTS WITH PRESCRIBED INHALER:
+Respiratory rate: 26 breaths/minute.
+Oxygen saturation: 90 percent on room air immediately after assistance.
+On subsequent SpO2 reassessment: 93 percent on room air.
+Breathing: Still labored, slightly improved.
+Lung sounds: Persistent bilateral wheezing, slightly diminished.
+Provide updated findings only after assistance and only when requested.
 `
   },
 
@@ -565,6 +575,59 @@ function includesAny(text, phrases) {
     const normalizedPhrase = normalizeText(phrase);
     return normalizedText.includes(normalizedPhrase);
   });
+}
+
+/* =========================================================
+   SOB INHALER RESPONSE - TRAINING SIMULATION
+   Detect a documented completed inhaler assist, not a question,
+   future plan, or medication history. The student history must
+   be included with subsequent requests for the state to persist.
+========================================================= */
+function sobInhalerAssisted(history = "", currentAction = "") {
+  const entries = `${history}\n${currentAction}`.split(/\r?\n/);
+  return entries.some(line => {
+    const text = normalizeText(line);
+    if (!/\b(?:inhaler|mdi|albuterol)\b/.test(text)) return false;
+    if (/\b(?:will|would|going to|plan to|planning to|should|can i|may i|do you|did you|has she|have you|not|never|refused|declined|unable to)\b/.test(text)) return false;
+    return /\b(?:assisted|assist patient with|assist her with|assist with|administered|administer|gave|given|used inhaler|uses inhaler|helped her use|help patient use|helped patient use)\b/.test(text);
+  });
+}
+
+function sobSpo2Reassessed(history = "", currentAction = "") {
+  // Only count an explicit repeat check after inhaler assistance.
+  // Check the current request or previous student actions after the assist.
+  const entries = `${history}\n${currentAction}`.split(/\r?\n/);
+  const assistIndex = entries.findIndex(line => sobInhalerAssisted("", line));
+  if (assistIndex < 0) return false;
+  return entries.slice(assistIndex + 1).some(line => {
+    const text = normalizeText(line);
+    if (/^(?:patient|instructor)\s/.test(text)) return false;
+    return /\b(?:reassess|recheck|repeat|check again|check|measure|obtain|what is|whats|monitor)\b/.test(text) &&
+      /\b(?:spo2|spo 2|oxygen saturation|pulse ox|pulse oximetry|saturation|vital signs|vitals)\b/.test(text);
+  });
+}
+
+function sobResponseRules(scenario, history, currentAction) {
+  if (normalizeScenarioName(scenario) !== "sob" ||
+      !sobInhalerAssisted(history, currentAction)) return "";
+  const repeatSpo2 = sobSpo2Reassessed(history, currentAction);
+  return `
+SOB POST-INHALER STATE (SIMULATION OVERRIDE):
+The student has assisted with the patient's prescribed inhaler.
+The patient has improved SLIGHTLY, not completely.
+- Patient reports: "A little easier... still hard to breathe."
+- Respiratory rate: 26 breaths/minute (previously 28).
+- Oxygen saturation: ${repeatSpo2 ? "93%" : "90%"} on room air (baseline 88%).
+- After a student explicitly reassesses SpO2 following inhaler assistance, saturation rises to 93% and stays there for later checks. Before that reassessment, report 90%.
+- Breathing remains labored, but slightly less so.
+- Bilateral wheezing persists, slightly reduced.
+- Patient is still sitting upright and speaking in short phrases.
+Answer ONLY the current question or acknowledge the completed action.
+If the current message reports inhaler assistance, patient may say
+"That helped a little... still hard to breathe."
+Do not volunteer vital signs to the patient; only instructor may provide them
+when explicitly asked. This post-treatment state supersedes baseline findings. On explicit SpO2 reassessment, report 93%, not 90%.
+`;
 }
 
 /* =========================================================
@@ -2091,7 +2154,8 @@ app.post("/ask", async (req, res) => {
 
     const reply = await createChatReply(
       selectedScenario.patientPrompt +
-        directReplyRules("patient"),
+        directReplyRules("patient") +
+        sobResponseRules(scenario, history, studentQuestion),
 
       `
 Conversation so far:
@@ -2197,7 +2261,8 @@ app.post("/instructor", async (req, res) => {
 
     const reply = await createChatReply(
       selectedScenario.instructorPrompt +
-        directReplyRules("instructor"),
+        directReplyRules("instructor") +
+        sobResponseRules(scenario, history, studentQuestion),
 
       `
 Scenario:
@@ -2713,7 +2778,8 @@ app.post("/ask-patient", async (req, res) => {
 
     const reply = await createChatReply(
       selectedScenario.patientPrompt +
-        directReplyRules("patient"),
+        directReplyRules("patient") +
+        sobResponseRules(scenario, history, studentQuestion),
 
       `
 Conversation so far:
@@ -2760,7 +2826,8 @@ app.post("/ask-instructor", async (req, res) => {
 
     const reply = await createChatReply(
       selectedScenario.instructorPrompt +
-        directReplyRules("instructor"),
+        directReplyRules("instructor") +
+        sobResponseRules(scenario, history, studentQuestion),
 
       `
 Patient conversation:
