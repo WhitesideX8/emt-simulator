@@ -830,27 +830,31 @@ function studentAssessedRadiation(body = {}) {
 ========================================================= */
 
 function studentDeterminedMoiNoi(body = {}) {
-  // Recognize explicit MOI/NOI wording without requiring a diagnosis
-  // or a specific sentence structure. Use original student entries only.
-  return studentRadiationEvidence(body)
-    .replace(/\bm\s*[.\-]\s*o\s*[.\-]\s*i\b\.?/gi, " MOI ")
-    .replace(/\bn\s*[.\-]\s*o\s*[.\-]\s*i\b\.?/gi, " NOI ")
-    .split(/[.!?;\r\n]+/)
-    .some(line => {
-      const text = normalizeText(line);
-      const requiredWording =
-        /\b(?:nature of (?:the |this |the patient s |this patient s )?illness|mechanism of (?:the |this |the patient s |this patient s )?injury|illness nature|injury mechanism|moi|noi|m o i|n o i)\b/;
+  // Credit ONLY when the student explicitly uses one of these terms:
+  // "nature of illness", "NOI", "mechanism of injury", or "MOI".
+  // Symptoms, diagnoses, or descriptions alone do not earn credit.
+  // Only original student-authored entries are evaluated.
+  const requiredTerm = /\b(?:nature of illness|mechanism of injury|noi|moi)\b/i;
 
-      if (!requiredWording.test(text)) return false;
+  return sheetEntries(body).some(entry => {
+    const raw = String(entry.text || "").trim();
+    if (!raw) return false;
 
-      // Explicitly unassessed or unknown MOI/NOI does not earn credit.
-      if (
-        /\b(?:did not|do not|cannot|can t|cant|unable to|have not|haven t|havent)\b.{0,40}\b(?:determine|identify|establish|assess)\b/.test(text) ||
-        /\b(?:unknown|unclear|not known|not sure|not determined|not identified|not assessed)\b/.test(text)
-      ) return false;
+    // Never use patient, instructor, or spouse responses as evidence.
+    if (/^(?:patient|instructor|spouse|wife|husband)\s*:/i.test(raw)) return false;
+    if (/\n\s*(?:patient|instructor|spouse|wife|husband)\s*:/i.test(raw)) return false;
 
+    // Check each student statement independently.
+    return raw.split(/[.!?;\r\n]+/).some(part => {
+      const text = normalizeText(part);
+      if (!requiredTerm.test(text)) return false;
+
+      // No credit for explicitly denying or failing to determine it.
+      if (/\b(?:did not|do not|dont|cannot|cant|unable to|have not|havent|will not|wont|not going to)\b.{0,45}\b(?:determine|identify|establish|assess|state)\b/.test(text)) return false;
+      if (/\b(?:unknown|unclear|not known|not sure|not determined|not identified|not assessed)\b/.test(text)) return false;
       return true;
     });
+  });
 }
 
 /* =========================================================
