@@ -1002,57 +1002,23 @@ function studentTransportDecision(body = {}) {
 ========================================================= */
 
 function studentAssessedAvpu(body = {}) {
-  return studentRadiationEvidence(body)
-    .split(/\r?\n/)
-    .some(line => {
-      const text = normalizeText(line);
-
-      if (
-        /\b(?:did not|do not|cannot|cant|unable to|have not|havent)\b.{0,35}\b(?:assess|check|determine|evaluate)\b/.test(
-          text
-        ) ||
-        /\b(?:will|going to|plan to|need to)\b.{0,30}\b(?:assess|check|determine|evaluate)\b/.test(
-          text
-        ) ||
-        /\b(?:not assessed|not checked|avpu unknown|avpu is unknown)\b/.test(
-          text
-        )
-      ) {
-        return false;
-      }
-
-      return [
-        /\b(?:assessed|checked|evaluated|determined)\b.{0,35}\b(?:avpu|responsiveness|level of consciousness|mental status)\b/,
-
-        /\b(?:avpu|responsiveness|level of consciousness|mental status)\b.{0,15}\b(?:assessed|checked|evaluated|determined)\b/,
-
-        /\b(?:assess|check|evaluate|determine)\b.{0,35}\b(?:avpu|responsiveness)\b/,
-
-        /\b(?:what is|whats)\b.{0,25}\b(?:avpu|level of consciousness|mental status|responsiveness)\b/,
-
-        /\b(?:is|does)\b.{0,25}\b(?:patient|she|he)\b.{0,20}\b(?:alert|responsive|respond|unresponsive|unconscious)\b/,
-
-        /\b(?:patient|she|he)\b.{0,25}\b(?:is|appears|seems|remains|was)\b.{0,15}\b(?:alert|unresponsive|unconscious)\b/,
-
-        /\b(?:patient|she|he)\b.{0,20}\b(?:responds|responsive|responding|response)\b.{0,20}\b(?:voice|verbal|pain|painful)\b/,
-
-        /\b(?:patient|she|he)\b.{0,20}\b(?:does not|doesnt|no)\b.{0,15}\b(?:respond|response)\b/,
-
-        /\b(?:does|will|can)\b.{0,25}\b(?:patient|she|he)\b.{0,15}\brespond\b.{0,20}\b(?:voice|verbal|pain|painful)\b/,
-
-        /\b(?:check|assess|test|checked|assessed|tested)\b.{0,25}\b(?:response|responsiveness)\b.{0,20}\b(?:voice|verbal|pain|painful)\b/,
-
-        /\bavpu\s+(?:is |of |equals |level |score )?(?:a|v|p|u|alert|verbal|pain|unresponsive)\b/,
-
-        /\b(?:alert and oriented|a and o|a o)\s*(?:x\s*[1-4])?\b/,
-
-        /\b(?:can you|please)\s+(?:open your eyes|squeeze my hand)\b/,
-
-        /\b(?:do you|can you tell me if you)\s+know where you are\b/,
-
-        /\b(?:check|assess|test|checked|assessed|tested)\b.{0,25}\b(?:orientation to|oriented to)\b/
-      ].some(pattern => pattern.test(text));
-    });
+  // Grade the student's own assessment, NEVER a patient/instructor reply.
+  return sheetEntries(body).some(entry => {
+    const raw = String(entry.text || '').trim();
+    if (!raw) return false;
+    const t = normalizeText(raw);
+    if (/\b(?:did not|do not|cannot|cant|unable to|have not|havent|not assessed|not checked|unknown)\b/.test(t)) return false;
+    if (/\b(?:will|going to|plan to|need to|should|would)\b.{0,35}\b(?:assess|check|determine|evaluate|test)\b/.test(t)) return false;
+    // Explicitly stated LOC/AVPU finding or documented assessment.
+    if (/\b(?:avpu|level of consciousness|loc|mental status|responsiveness)\b/.test(t) &&
+        /\b(?:assess|assessed|check|checked|evaluate|evaluated|determine|determined|alert|verbal|pain|unresponsive|responsive|oriented|confused)\b/.test(t)) return true;
+    if (/\b(?:patient|he|she)\b.{0,25}\b(?:is|appears|responds|responsive|unresponsive|alert|oriented|confused)\b/.test(t)) return true;
+    if (/\b(?:alert and oriented|a and o|avpu is|responds to verbal|responds to pain)\b/.test(t)) return true;
+    // Asking an orientation or response-to-stimulus question IS a student assessment.
+    if (/\b(?:can you|please)\s+(?:open your eyes|squeeze my hand)\b/.test(t)) return true;
+    if (/\b(?:where are we|where are you|what is your name|what year is it|what day is it|do you know where you are)\b/.test(t)) return true;
+    return false;
+  });
 }
 
 /* =========================================================
@@ -1109,50 +1075,32 @@ function studentStatedFieldImpression(body = {}) {
 ========================================================= */
 
 function sheetEntries(body = {}) {
-  let entries = Array.isArray(body.studentInputLog)
-    ? body.studentInputLog.map((entry, index) => ({
-        index: index + 1,
+  const log = Array.isArray(body.studentInputLog) ? body.studentInputLog : [];
+  let entries = log.map((item, index) => {
+    const role = typeof item === 'object' && item !== null
+      ? String(item.role || item.speaker || item.source || '').toLowerCase()
+      : '';
+    if (role && !/^(?:student|emt|student to patient|student to instructor|assessment|treatment)$/.test(role)) return null;
+    const original = typeof item === 'string' ? item : String(item?.text || '');
+    // A pasted exchange may contain both the student and the reply.
+    // Never allow patient, spouse, or instructor text into scoring evidence.
+    const first = original.split(/\r?\n\s*(?:patient|instructor|spouse|wife|husband)\s*:/i)[0];
+    if (/^\s*(?:patient|instructor|spouse|wife|husband)\s*:/i.test(first)) return null;
+    const clean = first.replace(/^\s*Student(?: to (?:instructor|patient))?\s*:\s*/i, '').trim();
+    return clean ? { index: index + 1, text: clean, timestamp: item?.timestamp ?? item?.time ?? null } : null;
+  }).filter(Boolean);
 
-        text:
-          typeof entry === "string"
-            ? entry
-            : String(entry?.text || ""),
-
-        timestamp:
-          typeof entry === "object"
-            ? entry?.timestamp ?? entry?.time ?? null
-            : null
-      }))
-    : [];
-
-  if (!entries.some(entry => entry.text.trim())) {
-    const history = [
-      body.studentAnswer,
-      body.patientHistory,
-      body.instructorHistory
-    ]
-      .filter(Boolean)
-      .join("\n");
-
-    entries = history
-      .split(/\r?\n/)
-      .filter(line =>
-        /^\s*Student(?: to (?:instructor|patient))?\s*:/i.test(
-          line
-        )
-      )
+  if (!entries.length) {
+    const history = [body.studentAnswer, body.patientHistory, body.instructorHistory]
+      .filter(Boolean).join('\n');
+    entries = history.split(/\r?\n/)
+      .filter(line => /^\s*Student(?: to (?:instructor|patient))?\s*:/i.test(line))
       .map((line, index) => ({
-        index: index + 1,
-        timestamp: null,
-
-        text: line.replace(
-          /^\s*Student(?: to (?:instructor|patient))?\s*:\s*/i,
-          ""
-        )
-      }));
+        index: index + 1, timestamp: null,
+        text: line.replace(/^\s*Student(?: to (?:instructor|patient))?\s*:\s*/i, '').trim()
+      })).filter(entry => entry.text);
   }
-
-  return entries.filter(entry => entry.text.trim());
+  return entries;
 }
 
 /* =========================================================
