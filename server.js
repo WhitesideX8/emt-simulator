@@ -1176,6 +1176,29 @@ function studentListedSignsOrSymptoms(body = {}) {
 }
 
 /* =========================================================
+   GENERAL IMPRESSION RECOGNITION
+   Award credit for "general impression", "initial impression",
+   "sick", or "not sick" in the student's own assessment.
+   "Not sick" is an affirmative impression, not a denial of an action.
+========================================================= */
+function studentVerbalizedGeneralImpression(body = {}) {
+  return sheetEntries(body).some(entry => {
+    const raw = String(entry.text || "").trim();
+    if (!raw || raw.includes("?")) return false;
+    if (/^(?:patient|instructor|spouse|wife|husband)\s*:/i.test(raw)) return false;
+    if (/\n\s*(?:patient|instructor|spouse|wife|husband)\s*:/i.test(raw)) return false;
+    const text = normalizeText(raw);
+    if (/\b(?:did not|do not|dont|didnt|will not|wont|not going to|unable to|have not|havent|forgot to)\b.{0,45}\b(?:assess|determine|verbalize|state|give|form)\b/.test(text)) return false;
+    if (/\b(?:will|going to|plan to|need to|should|would)\b.{0,35}\b(?:assess|determine|verbalize|state|give|form)\b/.test(text)) return false;
+    if (/\b(?:general|initial) impression\b/.test(text)) return true;
+    // A stated sick/not-sick classification earns general-impression credit.
+    // Merely asking whether the patient is sick does not.
+    if (/\b(?:is|are|does|do|would|can|should)\s+(?:the\s+)?(?:patient|she|he|they)\s+(?:appear\s+|look\s+)?(?:sick|not sick)\b/.test(text)) return false;
+    return /\bnot sick\b|\bsick\b/.test(text);
+  });
+}
+
+/* =========================================================
    43-POINT MEDICAL CHECKLIST
 
    PPE and scene size-up:       6
@@ -1319,12 +1342,10 @@ function buildChecklist(body = {}) {
       studentConsideredSpine
     ),
 
-    one(
+    helper(
       "generalImpression",
       "Verbalizes general impression",
-      [
-        /\b(?:general|initial) impression\b/
-      ]
+      studentVerbalizedGeneralImpression
     ),
 
     helper(
