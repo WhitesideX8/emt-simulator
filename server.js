@@ -1148,29 +1148,26 @@ function sheetEntries(body = {}) {
 ========================================================= */
 
 function studentListedSignsOrSymptoms(body = {}) {
-  // Award credit ONLY for an affirmative, explicit student list.
-  // Do not award credit for merely naming the category, asking a
-  // question, promising to assess, or quoting a diagnosis.
-  const findings = /\b(?:chest pain|chest pressure|pressure in (?:the |his |her )?chest|shortness of breath|difficulty breathing|dyspnea|wheez(?:e|es|ing)|cough(?:ing)?|sputum|nausea|vomit(?:ing)?|diaphor(?:esis|etic)|sweat(?:ing|y)|pale|pallor|clammy|cool skin|weakness|weak|fatigue|shak(?:y|iness|ing)|confus(?:ed|ion)|altered mental status|facial droop|drooping face|arm drift|slurred speech|aphasia|dysphasia|difficulty speaking|trouble speaking|word finding difficulty|dizziness|dizzy|headache|vision loss|blurred vision|visual disturbance|unsteady gait|loss of balance|numbness|tingling|abdominal pain|back pain|jaw pain|arm pain|syncope|faint(?:ing|ed)?|seizure|fever|rash|hives|swelling|cyanosis|blue lips|rapid breathing|labored breathing|shallow breathing|irregular breathing|tachypnea|bradypnea|tachycardia|bradycardia|hypotension|hypertension|hypoxia|low oxygen saturation|low blood sugar|hypoglycemia|high blood sugar|hyperglycemia|bleeding|hemorrhage|deformity|tenderness|pain|discomfort)\b/i;
+  // Only original student-authored statements are eligible.
+  // Patient and instructor replies never count as recognition.
+  const findings = /\b(?:chest pain|chest pressure|shortness of breath|difficulty breathing|dyspnea|wheez(?:e|es|ing)|cough(?:ing)?|sputum|nausea|vomit(?:ing)?|diaphor(?:esis|etic)|sweat(?:ing|y)|pale|pallor|clammy|cool skin|weakness|weak|fatigue|shak(?:y|iness|ing)|confus(?:ed|ion)|altered mental status|facial droop|drooping face|arm drift|slurred speech|aphasia|dysphasia|difficulty speaking|trouble speaking|dizziness|dizzy|headache|vision loss|blurred vision|unsteady gait|loss of balance|numbness|tingling|abdominal pain|back pain|jaw pain|arm pain|syncope|faint(?:ing|ed)?|seizure|fever|rash|hives|swelling|cyanosis|blue lips|rapid breathing|labored breathing|shallow breathing|tachypnea|bradypnea|tachycardia|bradycardia|hypotension|hypertension|hypoxia|low oxygen saturation|hypoglycemia|hyperglycemia|bleeding|hemorrhage|deformity|tenderness|pain|discomfort)\b/i;
 
   return sheetEntries(body).some(entry => {
-    const raw = String(entry.text || "");
-    const text = normalizeText(raw);
+    const raw = String(entry.text || "").trim();
+    if (!raw || raw.includes("?")) return false;
+    // Reject replies or transcript content inadvertently passed as student input.
+    if (/^(?:patient|instructor|spouse|wife|husband)\s*:/i.test(raw)) return false;
+    if (/\n\s*(?:patient|instructor|spouse|wife|husband)\s*:/i.test(raw)) return false;
+    // Do not count requests, plans, or a mere category heading.
+    if (/\b(?:will|going to|plan to|need to|want to|should|would|ask|asking|check|checking|assess|assessing|evaluate|evaluating|look for|looking for|inquire|inquiring|rule out)\b/i.test(raw)) return false;
 
-    // The label must introduce an actual documented list, not merely
-    // appear somewhere in a longer statement or instruction.
-    const match = raw.match(/\b(?:signs?\s*(?:and|&)\s*symptoms?|symptoms?\s*(?:and|&)\s*signs?|signs?|symptoms?)\b\s*(?::|[-–—]|\b(?:include|includes|are|is|noted|observed|identified)\b)\s*(.+)/i);
-    if (!match) return false;
-    const list = match[1].trim();
-    if (!list || /\?/.test(raw)) return false;
-
-    // Exclude requests, planned assessments and negative/unknown lists.
-    if (/\b(?:will|going to|plan to|need to|should|would|want to|ask|asking|check|checking|assess|assessing|evaluate|evaluating|determine|determining|identify|identifying|look for|looking for|inquire|inquiring|rule out|did not|do not|dont|unable to)\b/i.test(raw.slice(0, match.index))) return false;
-    if (/^(?:none|unknown|not known|not assessed|not documented|not provided|no findings|n\/?a|of|for|associated with)\b/i.test(list)) return false;
-    if (/\b(?:assess|check|evaluate|determine|identify|look for|ask about|inquire about|rule out)\b/i.test(list)) return false;
-
-    // Require an actual clinical finding AFTER the label and delimiter.
-    return findings.test(list);
+    // Require an explicit recognition statement, followed by actual findings.
+    const recognition = raw.match(/\b(?:signs?\s*(?:and|&)\s*symptoms?|symptoms?\s*(?:and|&)\s*signs?|signs?|symptoms?)\b\s*(?::|[-–—]|\b(?:include|includes|are|is|noted|observed|identified|recognized)\b)\s*(.+)/i)
+      || raw.match(/\b(?:i\s+(?:recognize|identify|identified|note|noted|observe|observed|document|documented)|(?:my|the)\s+(?:recognized|identified|observed|documented))\b.{0,40}\b(?:signs?\s*(?:and|&)\s*symptoms?|symptoms?)\b\s*(?:as|are|include|:|[-–—])\s*(.+)/i);
+    if (!recognition) return false;
+    const stated = recognition[1].trim();
+    if (/^(?:none|unknown|not known|not assessed|not documented|not provided|no findings|n\/?a)\b/i.test(stated)) return false;
+    return findings.test(stated);
   });
 }
 
