@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+d<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -90,6 +90,8 @@
     .record-btn {
       background: #087f23;
     }
+
+    .spouse-btn { background: #366a80; }
 
     .instructor-btn {
       background: #663399;
@@ -248,6 +250,7 @@
     }
 
     #patientResponse,
+    #spouseResponse,
     #instructorResponse {
       min-height: 85px;
       max-height: 140px;
@@ -566,14 +569,16 @@
       gap: 8px;
     }
     .patient-side-controls,
-    .instructor-side-controls {
+    .instructor-side-controls,
+    .spouse-side-controls {
       display: grid;
       grid-template-columns: auto 1fr;
       gap: 6px;
       align-items: start;
     }
     .patient-side-controls button,
-    .instructor-side-controls button {
+    .instructor-side-controls button,
+    .spouse-side-controls button {
       margin: 0;
       text-decoration: underline;
       text-underline-offset: 3px;
@@ -633,6 +638,7 @@
     }
     .shared-responses > [hidden] { display: none; }
 
+    .shared-responses > #spouseResponseArea,
     .shared-responses > #patientResponseArea,
     .shared-responses > #instructorResponseArea {
       align-self: flex-start;
@@ -641,6 +647,7 @@
       box-sizing: border-box;
     }
     #patientResponse,
+    #spouseResponse,
     #instructorResponse {
       width: 100%;
       box-sizing: border-box;
@@ -740,7 +747,7 @@ body {
 
     <h1>Scenario Information</h1>
 
-    <div id="scenarioInfo" class="box">You are dispatched to a residence for a 45-year-old male with an altered mental status.</div>
+    <div id="scenarioInfo" class="box">You are dispatched to a park for a 45-year-old male with altered mental status. His wife is seated beside him and reports that he suddenly became confused, pale, and sweaty. She is available to answer questions about what she witnessed and his medical history.</div>
    
     <!-- Image container: add a diabetic patient image here when available. -->
     <div class="scenario-image" id="diabeticImageContainer">
@@ -771,6 +778,10 @@ body {
               >
                 Patient
               </button>
+            </div>
+            <div class="spouse-side-controls">
+              <button id="spouseVoiceButton" class="voice-btn" type="button" onclick="speakSpouseEntry()">Voice</button>
+              <button id="spouseButton" class="spouse-btn" type="button" onclick="askSpouseTyped()">Spouse</button>
             </div>
             <div class="instructor-side-controls">
               <button
@@ -806,6 +817,10 @@ body {
             <div id="patientResponse" class="box">Patient response will appear here.</div>
           </div>
 
+          <div id="spouseResponseArea" hidden>
+            <div class="response-label">Spouse Response</div>
+            <div id="spouseResponse" class="box"></div>
+          </div>
           <div id="instructorResponseArea" hidden>
             <div class="response-label">Instructor Response</div>
             <div id="instructorResponse" class="box">Instructor answer will appear here.</div>
@@ -859,6 +874,7 @@ body {
   <script>
     let patientHistory = "";
     let instructorHistory = "";
+    let spouseHistory = "";
     let assessmentLog = [];
     let lastRecordedAction = "";
     let instructorRequestPending = false;
@@ -885,6 +901,9 @@ body {
         writtenScene: currentWrittenScene(),
         patientHistory,
         instructorHistory,
+        spouseHistory,
+        spouseResponse: document.getElementById("spouseResponse").textContent,
+        spouseResponseVisible: !document.getElementById("spouseResponseArea").hidden,
         assessmentLog,
         lastRecordedAction,
         studentInputLog,
@@ -923,6 +942,9 @@ body {
 
         patientHistory = state.patientHistory || "";
         instructorHistory = state.instructorHistory || "";
+        spouseHistory = state.spouseHistory || "";
+        document.getElementById("spouseResponse").textContent = state.spouseResponse || "";
+        document.getElementById("spouseResponseArea").hidden = !state.spouseResponseVisible;
 
         assessmentLog = Array.isArray(state.assessmentLog)
           ? state.assessmentLog
@@ -1047,6 +1069,7 @@ body {
       const recognition = new SpeechRecognition();
       recognition.submitToInstructor = sendToInstructor;
       recognition.recordAssessment = recordAssessment;
+      recognition.sendToSpouse = sendToSpouse;
 
       const existingText = textBox.value.trim();
       let heardSpeech = false;
@@ -1067,7 +1090,9 @@ body {
 
         voiceEntryRecorded = true;
 
-        if (recognition.submitToInstructor) {
+        if (recognition.sendToSpouse) {
+          askSpouseTyped();
+        } else if (recognition.submitToInstructor) {
           askInstructorTyped();
         } else if (recognition.recordAssessment) {
           recordAction("voice assessment/treatment");
@@ -2293,6 +2318,52 @@ function includesAny(text, phrases) {
       toggleVoiceInput("actionEntry", "assessmentVoiceButton", true, false, true);
     }
 
+    function speakSpouseEntry() {
+      toggleVoiceInput("actionEntry", "spouseVoiceButton", true, false, false, true);
+    }
+
+    async function askSpouseTyped() {
+      const input = document.getElementById("actionEntry");
+      const question = input.value.trim();
+      const output = document.getElementById("spouseResponse");
+      const area = document.getElementById("spouseResponseArea");
+      const button = document.getElementById("spouseButton");
+      if (!question) { input.focus(); return; }
+      area.hidden = false;
+      output.textContent = "Contacting spouse...";
+      button.disabled = true;
+      recordStudentInput("Ask the Spouse", question);
+      // Spouse responses are collateral history, not student-performed assessments.
+      // Do not pass spouse answers through detectAndRecordAssessments.
+      try {
+        const response = await fetch("/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            scenario,
+            role: "spouse",
+            respondent: "spouse",
+            studentQuestion: question,
+            history: spouseHistory,
+            caseSessionId,
+            spouseInstructions: "Respond ONLY as the patient's wife. Answer only the specific question asked. You are at a park with your 45-year-old husband, who became confused, pale and sweaty. Do not invent measurements, treatment findings, or facts you could not know."
+          })
+        });
+        const data = await readJsonResponse(response);
+        if (!response.ok) throw new Error(data.error || "Spouse request failed");
+        const reply = data.reply || data.answer || "I don't know.";
+        spouseHistory += `Student: ${question}\nSpouse: ${reply}\n\n`;
+        output.textContent = reply;
+        input.value = "";
+      } catch (error) {
+        output.textContent = "Could not contact spouse: " + error.message;
+      } finally {
+        button.disabled = false;
+        saveScenarioState();
+        input.focus();
+      }
+    }
+
     async function askPatientTyped() {
       const questionBox = document.getElementById("actionEntry");
       const responseBox = document.getElementById("patientResponse");
@@ -2721,9 +2792,13 @@ function includesAny(text, phrases) {
 
       document.getElementById("patientResponseArea").hidden = true;
       document.getElementById("instructorResponseArea").hidden = true;
+      document.getElementById("spouseResponseArea").hidden = true;
 
       patientHistory = "";
       instructorHistory = "";
+      spouseHistory = "";
+      document.getElementById("spouseResponseArea").hidden = true;
+      document.getElementById("spouseResponse").textContent = "";
       assessmentLog = [];
       lastRecordedAction = "";
       studentInputLog = [];
