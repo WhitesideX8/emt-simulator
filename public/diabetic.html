@@ -1943,7 +1943,7 @@ function studentDeterminedMoiNoi(body = {}) {
       }
 
       const illness =
-        /\b(?:shortness of breath|sob|difficulty breathing|breathing (?:problem|problems|difficulty|difficulties)|respiratory (?:distress|emergency)|chest pain|chest discomfort|cardiac complaint|stroke|seizure|altered mental status|hypoglycemia|hyperglycemia|diabetic emergency|allergic reaction|anaphylaxis|overdose|poisoning|abdominal pain|syncope|fainting|medical (?:call|illness|emergency|complaint)|non traumatic illness)\b/;
+        /\b(?:dizziness|weakness|dizzy|lightheadedness|light headedness|shortness of breath|sob|difficulty breathing|breathing (?:problem|problems|difficulty|difficulties)|respiratory (?:distress|emergency)|chest pain|chest discomfort|cardiac complaint|stroke|seizure|altered mental status|hypoglycemia|hyperglycemia|diabetic emergency|allergic reaction|anaphylaxis|overdose|poisoning|abdominal pain|syncope|fainting|medical (?:call|illness|emergency|complaint)|non traumatic illness)\b/;
 
       const mechanism =
         /\b(?:fall|fell|motor vehicle (?:collision|crash|accident)|mvc|mva|car (?:crash|accident)|collision|pedestrian struck|struck by|assault|gunshot|stabbing|penetrating injury|blunt trauma|burn|explosion|crush injury|sports injury|drowning)\b/;
@@ -2153,7 +2153,7 @@ function includesAny(text, phrases) {
         );
 
         const evidence = {
-          studentInputLog: [...studentInputLog, { text }],
+          studentInputLog: [...studentInputLog, { type: "Assessment / Treatment", text }],
           patientHistory
         };
         let matched = keywordMatched || patternMatched;
