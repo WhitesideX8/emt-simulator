@@ -747,7 +747,7 @@ body {
 
     <h1>Scenario Information</h1>
 
-    <div id="scenarioInfo" class="box">You are dispatched to a city park for a 45 year old male, reported sudden onset of dizziness and weakness. Upon arrival you find the patient sitting park bench with spouse at his side.
+    <div id="scenarioInfo" class="box">You are dispatched to a city park for a 45 year old male, reported dizziness and weakness that began 15 minutes ago while walking in the park. Upon arrival you find the patient sitting on a park bench with his spouse at his side.
       .</div>
    
     <!-- Image container: add a diabetic patient image here when available. -->
@@ -2356,7 +2356,7 @@ function includesAny(text, phrases) {
             studentQuestion: question,
             history: spouseHistory,
             caseSessionId,
-            spouseInstructions: "Respond ONLY as the patient's wife. Answer only the specific question asked. You are at a park with your 45-year-old husband, who became confused, pale and sweaty. Do not invent measurements, treatment findings, or facts you could not know."
+            spouseInstructions: "Respond ONLY as the patient's wife. Answer only the specific question asked. You are at a park with your 45-year-old husband, whose dizziness and weakness began 15 minutes ago while walking in the park and who became confused, pale and sweaty. If asked about onset, say 15 minutes ago; if asked what he was doing, say walking in the park. Do not invent measurements, treatment findings, or facts you could not know."
           })
         });
         const data = await readJsonResponse(response);
@@ -2411,7 +2411,11 @@ function includesAny(text, phrases) {
           body: JSON.stringify({
             studentQuestion: question,
             history: patientHistory,
-            scenario
+            scenario,
+            caseSessionId,
+            writtenScene: currentWrittenScene(),
+            scenarioInformation: currentWrittenScene(),
+            patientInstructions: "Symptoms began 15 minutes ago while walking in the park. Answer onset and activity questions with these facts, and answer only what is asked."
           })
         });
 
