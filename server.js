@@ -3,6 +3,7 @@ import { installSimulatorLogin } from "./simulator-auth.js";
 import express from "express";
 import path from "path";
 import OpenAI from "openai";
+
 import { fileURLToPath } from "url";
 
 /* =========================================================
@@ -1452,6 +1453,8 @@ function buildChecklist(body = {}) {
         /\bskin\b.{0,35}\b(?:color|colour|temperature|condition|moisture|signs|warm|cool|dry|clammy)\b/,
 
         /\b(?:assess|check|inspect)\w*\b.{0,30}\bskin\b/
+         
+       /\bskin condition\b/
       ]
     ),
 
