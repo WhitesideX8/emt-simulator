@@ -750,6 +750,53 @@ body {
     <div id="scenarioInfo" class="box">You are dispatched to a city park for a 45 year old male, reported dizziness and weakness that began 15 minutes ago while walking in the park. Upon arrival you find the patient sitting on a park bench with his spouse at his side.
       .</div>
    
+
+    <!-- EDIT PATIENT ANSWERS HERE. Unknown facts are deliberately left blank. -->
+    <script id="patientFacts" type="application/json">
+{
+  "patient": {
+    "age": "45", "sex": "male", "location": "park bench in a city park",
+    "chiefComplaint": "Dizziness and weakness", "speech": "Mildly confused; short, realistic answers"
+  },
+  "opqrst": {
+    "onset": "15 minutes ago",
+    "provocation": "Symptoms began while walking in the park",
+    "quality": "Dizzy, weak and shaky",
+    "radiation": "Not applicable; no pain specified",
+    "severity": "Not established",
+    "time": "Symptoms began 15 minutes ago"
+  },
+  "sample": {
+    "signsSymptoms": "Dizziness, weakness, shakiness, sweating and confusion",
+    "allergies": "No known drug allergies",
+    "medications": "Insulin",
+    "medicalHistory": "Diabetes",
+    "lastOralIntake": "Has not eaten today",
+    "events": "Took usual insulin dose, skipped breakfast, and was walking in the park when symptoms began"
+  },
+  "vitalSigns": {
+    "bloodPressure": "138/82 mmHg", "pulse": "110 beats/minute, regular",
+    "respirations": "18 breaths/minute, normal depth, regular rhythm",
+    "spo2": "97% on room air", "bloodGlucose": "42 mg/dL"
+  },
+  "assessmentFindings": {
+    "generalImpression": "Pale, diaphoretic, confused male sitting on a park bench",
+    "mentalStatus": "Responds to verbal stimuli, confused about time and events",
+    "airway": "Patent", "breathing": "Adequate",
+    "lungSounds": "Clear and equal bilaterally",
+    "skin": "Pale, cool and diaphoretic", "pupils": "Equal and reactive"
+  },
+  "spouseKnowledge": {
+    "relationship": "Wife of the patient",
+    "onset": "About 15 minutes ago",
+    "activity": "Walking in the park",
+    "observations": "He became dizzy, weak, confused and sweaty",
+    "medicalHistory": "Diabetes", "medications": "Insulin"
+  },
+  "treatmentResponses": {}
+}
+    </script>
+
     <!-- Image container: add a diabetic patient image here when available. -->
     <div class="scenario-image" id="diabeticImageContainer">
       <img
@@ -890,6 +937,10 @@ body {
     function currentWrittenScene() {
       return document.getElementById("scenarioInfo").textContent.replace(/\s+/g, " ").trim();
     }
+    function currentPatientFacts() {
+      try { return JSON.parse(document.getElementById("patientFacts").textContent); }
+      catch (error) { console.error("Invalid patientFacts JSON:", error); return {}; }
+    }
     let caseSessionId = newCaseSessionId();
     let scenarioStartTime = Date.now();
 
@@ -900,6 +951,7 @@ body {
       const state = {
         caseSessionId,
         writtenScene: currentWrittenScene(),
+        patientFactsSnapshot: JSON.stringify(currentPatientFacts()),
         patientHistory,
         instructorHistory,
         spouseHistory,
@@ -934,7 +986,7 @@ body {
 
       try {
         const state = JSON.parse(savedState);
-        if (!state.caseSessionId || state.writtenScene !== currentWrittenScene()) {
+        if (!state.caseSessionId || state.writtenScene !== currentWrittenScene() || (state.patientFactsSnapshot && state.patientFactsSnapshot !== JSON.stringify(currentPatientFacts()))) {
           sessionStorage.removeItem(SCENARIO_STATE_KEY);
           return false;
         }
@@ -2356,7 +2408,8 @@ function includesAny(text, phrases) {
             studentQuestion: question,
             history: spouseHistory,
             caseSessionId,
-            spouseInstructions: "Respond ONLY as the patient's wife. Answer only the specific question asked. You are at a park with your 45-year-old husband, whose dizziness and weakness began 15 minutes ago while walking in the park and who became confused, pale and sweaty. If asked about onset, say 15 minutes ago; if asked what he was doing, say walking in the park. Do not invent measurements, treatment findings, or facts you could not know."
+            scenarioInfo: currentWrittenScene(),
+            patientFacts: currentPatientFacts()
           })
         });
         const data = await readJsonResponse(response);
@@ -2415,7 +2468,8 @@ function includesAny(text, phrases) {
             caseSessionId,
             writtenScene: currentWrittenScene(),
             scenarioInformation: currentWrittenScene(),
-            patientInstructions: "Symptoms began 15 minutes ago while walking in the park. Answer onset and activity questions with these facts, and answer only what is asked."
+            scenarioInfo: currentWrittenScene(),
+            patientFacts: currentPatientFacts()
           })
         });
 
@@ -2502,7 +2556,10 @@ function includesAny(text, phrases) {
             studentQuestion: question,
             question,
             history: patientHistory,
-            scenario
+            scenario,
+            caseSessionId,
+            scenarioInfo: currentWrittenScene(),
+            patientFacts: currentPatientFacts()
           })
         });
 
