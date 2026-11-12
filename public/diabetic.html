@@ -864,6 +864,16 @@ body {
     let instructorRequestPending = false;
     let studentInputLog = [];
     let completedSkills = new Set();
+    function newCaseSessionId() {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return window.crypto.randomUUID();
+      }
+      return "case_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+    }
+    function currentWrittenScene() {
+      return document.getElementById("scenarioInfo").textContent.replace(/\s+/g, " ").trim();
+    }
+    let caseSessionId = newCaseSessionId();
     let scenarioStartTime = Date.now();
 
     const scenario = "diabetic";
@@ -871,6 +881,8 @@ body {
 
     function saveScenarioState() {
       const state = {
+        caseSessionId,
+        writtenScene: currentWrittenScene(),
         patientHistory,
         instructorHistory,
         assessmentLog,
@@ -902,6 +914,12 @@ body {
 
       try {
         const state = JSON.parse(savedState);
+        if (!state.caseSessionId || state.writtenScene !== currentWrittenScene()) {
+          sessionStorage.removeItem(SCENARIO_STATE_KEY);
+          return false;
+        }
+        caseSessionId = state.caseSessionId;
+
 
         patientHistory = state.patientHistory || "";
         instructorHistory = state.instructorHistory || "";
@@ -2710,6 +2728,7 @@ function includesAny(text, phrases) {
       lastRecordedAction = "";
       studentInputLog = [];
       completedSkills = new Set();
+      caseSessionId = newCaseSessionId();
       scenarioStartTime = Date.now();
 
       sessionStorage.removeItem("emtGradingResults");
