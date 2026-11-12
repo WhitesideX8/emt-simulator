@@ -2554,9 +2554,9 @@ function includesAny(text, phrases) {
             "Ask the Instructor exchange"
           );
 
-          statusBox.textContent = skills.length
-            ? "Instructor answered. Recorded: " + skills.join(", ")
-            : "Instructor answered.";
+          // The recognized assessments appear in the Recorded Assessments
+          // and Treatments box; do not duplicate them in the status line.
+          statusBox.textContent = "";
 
           saveScenarioState();
         } catch (recordingError) {
