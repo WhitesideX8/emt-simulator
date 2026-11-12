@@ -991,20 +991,20 @@ body {
         document.getElementById("completedAssessments").innerText =
           state.completedAssessments || "";
 
-        if (instructorHistory.trim()) {
-          detectAndRecordAssessments(
-            instructorHistory,
-            "saved instructor exchange"
-          );
-        }
+        // Do not grade saved instructor replies.
 
         const retiredLabels = ["Rapid transport or ALS considered", "ALS requested", "Patient priority identified", "Treatment and transport decision made", "Rapid transport initiated", "Chief complaint identified", "Mental status assessed", "C-spine stabilization considered", "Number of patients determined", "Need for additional resources considered"];
         for (const label of retiredLabels) {
           completedSkills.delete(label);
           assessmentLog = assessmentLog.filter(entry => !String(entry).startsWith(label + " - recognized through"));
         }
+        // Rebuild skills from original student actions only, never patient replies.
+        completedSkills.delete("Signs and symptoms assessed");
+        assessmentLog = assessmentLog.filter(entry => !String(entry).startsWith("Signs and symptoms assessed - recognized through"));
         for (const entry of studentInputLog) {
-          detectAndRecordAssessments(typeof entry === "string" ? entry : String(entry.text || ""), "saved student input");
+          const entryText = typeof entry === "string" ? entry : String(entry.text || "");
+          const entryType = typeof entry === "string" ? "Assessment / Treatment" : String(entry.type || "");
+          detectAndRecordAssessments(entryText, entryType === "Assessment / Treatment" ? "manual entry" : "saved question");
         }
         updateCompletedAssessmentsDisplay();
         return true;
@@ -2157,7 +2157,15 @@ function includesAny(text, phrases) {
           patientHistory
         };
         let matched = keywordMatched || patternMatched;
-        if (item.skill === "Determines chief complaint or apparent life threats") {
+        if (item.skill === "Signs and symptoms assessed") {
+          // Only explicit student documentation via Assessment/Treatment earns this item.
+          // Questions and patient/spouse/instructor answers never count.
+          const isAssessmentEntry = /^(?:manual entry|voice assessment\/treatment|assessment\/treatment)$/i.test(String(source).trim());
+          const explicitlyIdentified = /\b(?:signs?\s*(?:and|&)\s*symptoms?|symptoms?|signs?)\s*(?:are|include|noted|identified|observed|recognized|:|-)/i.test(text)
+            || /\b(?:recogniz(?:e|ed)|identif(?:y|ied)|document(?:ed)?|observ(?:e|ed))\b.{0,35}\b(?:signs?|symptoms?)\b/i.test(text);
+          const listedFindings = /\b(?:dizz(?:y|iness)|weak(?:ness)?|pale|pallor|diaphoretic|sweat(?:ing|y)?|clammy|confus(?:ed|ion)|nausea|vomit(?:ing)?|shak(?:y|ing)|tremor|altered mental status|headache|letharg(?:y|ic)|unresponsive|shortness of breath|difficulty breathing|tachycardia|blurred vision|hunger)\b/i.test(text);
+          matched = isAssessmentEntry && explicitlyIdentified && listedFindings;
+        } else if (item.skill === "Determines chief complaint or apparent life threats") {
           matched = /\b(?:chief complaint|(?:apparent )?life threats?)\b/.test(normalizeText(studentRadiationEvidence(evidence)));
         } else if (item.skill === "Determines the mechanism of injury/nature of illness") {
           matched = studentDeterminedMoiNoi(evidence);
@@ -2415,10 +2423,8 @@ function includesAny(text, phrases) {
         patientHistory += `Student to patient: ${question}\n`;
         patientHistory += `Patient: ${patientReply}\n\n`;
 
-        const responseSkills = detectAndRecordAssessments(
-          `${question}\n${patientReply}`,
-          "Ask the Patient interview"
-        );
+        // Patient replies are information only; never use them for skill credit.
+        const responseSkills = [];
 
         const recordedSkills = Array.from(
           new Set([...questionSkills, ...responseSkills])
@@ -2550,8 +2556,8 @@ function includesAny(text, phrases) {
 
         try {
           const skills = detectAndRecordAssessments(
-            question + "\n" + instructorReply,
-            "Ask the Instructor exchange"
+            question,
+            "Ask the Instructor question"
           );
 
           // The recognized assessments appear in the Recorded Assessments
