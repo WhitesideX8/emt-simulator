@@ -928,22 +928,8 @@ body {
       try { return JSON.parse(document.getElementById("patientFacts").textContent); }
       catch (error) { console.error("Invalid patientFacts JSON:", error); return {}; }
     }
-    // Build only the student-visible dispatch information from editable Patient Facts.
-    // Do not expose OPQRST, SAMPLE, vital signs, or assessment findings here.
-    function updateScenarioInformation() {
-      const facts = currentPatientFacts();
-      const patient = facts.patient || {};
-      const age = String(patient.age || "adult").trim();
-      const sex = String(patient.sex || "patient").trim();
-      const dispatchLocation = String(patient.dispatchLocation || "a residence").trim();
-      const complaint = String(patient.chiefComplaint || "a medical complaint").trim();
-      const patientLocation = String(patient.location || "at the scene").trim();
-      const sceneText = `You are dispatched to ${dispatchLocation} for a ${age}-year-old ${sex} complaining of ${complaint}. You find the patient ${patientLocation}.`;
-      document.getElementById("scenarioInfo").textContent = sceneText;
-    }
-
-    // Run before session restoration and before any requests are sent to server.js.
-    updateScenarioInformation();
+    // Scenario Information is displayed exactly as authored in the HTML.
+    // Patient Facts remain separate and are sent to server.js.
 
     let caseSessionId = newCaseSessionId();
     let scenarioStartTime = Date.now();
