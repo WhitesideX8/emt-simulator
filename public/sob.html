@@ -739,6 +739,54 @@ body {
 
     <div id="scenarioInfo" class="box">You are dispatched to the home of a 67-year-old female complaining of shortness of breath. Upon arrival you find her alone, sitting in a living room chair.</div>
    
+
+    <!-- EDIT PATIENT ANSWERS HERE. Replace "Not yet established" with your scenario facts. -->
+    <script id="patientFacts" type="application/json">
+{
+  "patient": {
+    "age": "67",
+    "sex": "female",
+    "location": "sitting in a living room chair at home, alone",
+    "chiefComplaint": "Shortness of breath",
+    "speech": "Speaks in short phrases because of breathlessness"
+  },
+  "opqrst": {
+    "onset": "Not yet established; edit to specify",
+    "provocation": "Not yet established; edit to specify",
+    "quality": "Difficulty catching her breath",
+    "radiation": "No radiating pain established",
+    "severity": "Not yet established; edit to specify",
+    "time": "Not yet established; edit to specify"
+  },
+  "sample": {
+    "signsSymptoms": "Shortness of breath; additional symptoms not yet established",
+    "allergies": "Not yet established",
+    "medications": "Not yet established",
+    "medicalHistory": "Not yet established",
+    "lastOralIntake": "Not yet established",
+    "events": "At home sitting in a chair when EMS arrived; preceding events not established"
+  },
+  "vitalSigns": {
+    "bloodPressure": "Not yet established",
+    "pulse": "Not yet established",
+    "respirations": "Not yet established",
+    "spo2": "Not yet established",
+    "bloodGlucose": "Not yet established"
+  },
+  "assessmentFindings": {
+    "generalImpression": "67-year-old woman seated in a living room chair with shortness of breath",
+    "mentalStatus": "Not yet established",
+    "airway": "Not yet established",
+    "breathing": "Shortness of breath; rate, depth, and effort not yet established",
+    "lungSounds": "Not yet established",
+    "skin": "Not yet established",
+    "pupils": "Not yet established"
+  },
+  "spouseKnowledge": {},
+  "treatmentResponses": {}
+}
+    </script>
+
     <div class="scenario-image">
   <img
     src="/Breathless%20Woman%20in%20a%20Living%20Room.png"
@@ -869,6 +917,10 @@ body {
     function currentWrittenScene() {
       return document.getElementById("scenarioInfo").textContent.replace(/\s+/g, " ").trim();
     }
+    function currentPatientFacts() {
+      try { return JSON.parse(document.getElementById("patientFacts").textContent); }
+      catch (error) { console.error("Invalid patientFacts JSON:", error); return {}; }
+    }
     let caseSessionId = newCaseSessionId();
     let scenarioStartTime = Date.now();
 
@@ -879,6 +931,7 @@ body {
       const state = {
         caseSessionId,
         writtenScene: currentWrittenScene(),
+        patientFactsSnapshot: JSON.stringify(currentPatientFacts()),
         patientHistory,
         instructorHistory,
         assessmentLog,
@@ -910,7 +963,7 @@ body {
 
       try {
         const state = JSON.parse(savedState);
-        if (!state.caseSessionId || state.writtenScene !== currentWrittenScene()) {
+        if (!state.caseSessionId || state.writtenScene !== currentWrittenScene() || (state.patientFactsSnapshot && state.patientFactsSnapshot !== JSON.stringify(currentPatientFacts()))) {
           sessionStorage.removeItem(SCENARIO_STATE_KEY);
           return false;
         }
@@ -2719,6 +2772,7 @@ body {
             history: patientHistory,
             caseSessionId,
             scenarioInfo: currentWrittenScene(),
+            patientFacts: currentPatientFacts(),
             scenario
           })
         });
@@ -2813,6 +2867,7 @@ body {
             history: patientHistory,
             caseSessionId,
             scenarioInfo: currentWrittenScene(),
+            patientFacts: currentPatientFacts(),
             scenario
           })
         });
