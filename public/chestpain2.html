@@ -738,6 +738,60 @@ body {
     <h1>Scenario Information</h1>
 
     <div id="scenarioInfo" class="box">You are dispatched to a home for a 65-year-old male experiencing chest pain.</div>
+
+    <!-- EDIT PATIENT ANSWERS HERE. These facts are sent to the shared server.js. -->
+    <script id="patientFacts" type="application/json">
+{
+  "patient": {
+    "age": "65",
+    "sex": "male",
+    "location": "sitting upright at home",
+    "chiefComplaint": "Heavy pressure in the center of the chest",
+    "speech": "Anxious; able to speak in full sentences"
+  },
+  "opqrst": {
+    "onset": "Approximately 20 minutes ago",
+    "provocation": "Began while carrying groceries; worse with walking or exertion, slightly better sitting still",
+    "quality": "Heavy pressure, like someone sitting on my chest",
+    "radiation": "Left arm and jaw",
+    "severity": "8 out of 10",
+    "time": "Constant since onset"
+  },
+  "sample": {
+    "signsSymptoms": "Chest pressure, shortness of breath, nausea, sweating and weakness",
+    "allergies": "Penicillin",
+    "medications": "Lisinopril and atorvastatin",
+    "medicalHistory": "Hypertension and high cholesterol; no previous heart attacks or cardiac surgery",
+    "lastOralIntake": "Breakfast at approximately 7:00 AM",
+    "events": "Carrying groceries into the house when chest pressure began"
+  },
+  "vitalSigns": {
+    "bloodPressure": "168/96 mmHg",
+    "pulse": "104 beats/minute, regular and strong at radial artery",
+    "respirations": "22 breaths/minute, regular rhythm and adequate depth",
+    "spo2": "94% on room air",
+    "bloodGlucose": "118 mg/dL"
+  },
+  "assessmentFindings": {
+    "generalImpression": "Anxious adult male sitting upright, pale and diaphoretic",
+    "mentalStatus": "Alert and oriented to person, place, time and event",
+    "airway": "Patent",
+    "breathing": "Mildly labored, speaks in full sentences",
+    "lungSounds": "Clear and equal bilaterally",
+    "skin": "Pale, cool and diaphoretic",
+    "pupils": "Equal and reactive",
+    "cardiacMonitor": "Sinus tachycardia",
+    "twelveLeadECG": "Findings concerning for an inferior STEMI",
+    "trauma": "No signs of trauma"
+  },
+  "spouseKnowledge": {},
+  "treatmentResponses": {
+    "aspirinBeforeEMS": "No aspirin taken today",
+    "prescribedNitroglycerin": "Does not have prescribed nitroglycerin"
+  }
+}
+    </script>
+
    
     <div class="scenario-image">
   <img
@@ -869,6 +923,10 @@ body {
     function currentWrittenScene() {
       return document.getElementById("scenarioInfo").textContent.replace(/\s+/g, " ").trim();
     }
+    function currentPatientFacts() {
+      try { return JSON.parse(document.getElementById("patientFacts").textContent); }
+      catch (error) { console.error("Invalid patientFacts JSON:", error); return {}; }
+    }
     let caseSessionId = newCaseSessionId();
     let scenarioStartTime = Date.now();
 
@@ -879,6 +937,7 @@ body {
       const state = {
         caseSessionId,
         writtenScene: currentWrittenScene(),
+        patientFactsSnapshot: JSON.stringify(currentPatientFacts()),
         patientHistory,
         instructorHistory,
         assessmentLog,
@@ -910,7 +969,7 @@ body {
 
       try {
         const state = JSON.parse(savedState);
-        if (!state.caseSessionId || state.writtenScene !== currentWrittenScene()) {
+        if (!state.caseSessionId || state.writtenScene !== currentWrittenScene() || (state.patientFactsSnapshot && state.patientFactsSnapshot !== JSON.stringify(currentPatientFacts()))) {
           sessionStorage.removeItem(SCENARIO_STATE_KEY);
           return false;
         }
@@ -2719,6 +2778,7 @@ body {
             history: patientHistory,
             caseSessionId,
             scenarioInfo: currentWrittenScene(),
+            patientFacts: currentPatientFacts(),
             scenario
           })
         });
@@ -2813,6 +2873,7 @@ body {
             history: patientHistory,
             caseSessionId,
             scenarioInfo: currentWrittenScene(),
+            patientFacts: currentPatientFacts(),
             scenario
           })
         });
