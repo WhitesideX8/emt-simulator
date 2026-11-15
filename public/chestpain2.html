@@ -2619,42 +2619,17 @@ h1 {
     }
 
     function detectAndRecordAssessments(text, source) {
-      const normalizedText = normalizeText(text);
-      const newlyRecorded = [];
-
-      assessmentMap.forEach(item => {
-        const keywordMatched = (item.keywords || []).some(keyword =>
-          phraseMatches(normalizedText, keyword)
-        );
-
-        const patternMatched = (item.patterns || []).some(pattern =>
-          pattern.test(normalizedText)
-        );
-
-        const matched = EMTAssessmentRecognition.matchSkill({
-          item, text, source, keywordMatched, patternMatched,
-          fallback: () => item.skill === "Signs and symptoms assessed"
+      return EMTAssessmentRecognition.detectAndRecord({
+        text, source, assessmentMap, normalizeText, phraseMatches,
+        completedSkills, assessmentLog,
+        onMatch: (item, { keywordMatched, patternMatched }) =>
+          item.skill === "Signs and symptoms assessed"
             ? studentRecognizedSignsSymptoms(text, source)
             : item.skill === "Determines the mechanism of injury/nature of illness"
               ? studentExplicitlyAssessedMoiNoi(text, source)
-              : keywordMatched || patternMatched
-        });
-
-        if (matched && !completedSkills.has(item.skill)) {
-          completedSkills.add(item.skill);
-
-          assessmentLog.push(
-            `${item.skill} - recognized through ${source}`
-          );
-
-          newlyRecorded.push(item.skill);
-        }
+              : keywordMatched || patternMatched,
+        updateCompleteHistorySkills, updateCompletedAssessmentsDisplay
       });
-
-      updateCompleteHistorySkills();
-      updateCompletedAssessmentsDisplay();
-
-      return newlyRecorded;
     }
 
     function getHistoryComponentStatus() {

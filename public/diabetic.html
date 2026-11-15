@@ -2193,18 +2193,10 @@ function includesAny(text, phrases) {
 }
 
     function detectAndRecordAssessments(text, source) {
-      const normalizedText = normalizeText(text);
-      const newlyRecorded = [];
-
-      assessmentMap.forEach(item => {
-        const keywordMatched = (item.keywords || []).some(keyword =>
-          phraseMatches(normalizedText, keyword)
-        );
-
-        const patternMatched = (item.patterns || []).some(pattern =>
-          pattern.test(normalizedText)
-        );
-
+      return EMTAssessmentRecognition.detectAndRecord({
+        text, source, assessmentMap, normalizeText, phraseMatches,
+        completedSkills, assessmentLog,
+        onMatch: (item, { keywordMatched, patternMatched }) => {
         const evidence = {
           studentInputLog: [...studentInputLog, { type: "Assessment / Treatment", text }],
           patientHistory
@@ -2236,27 +2228,11 @@ function includesAny(text, phrases) {
           ]);
         }
 
-        matched = EMTAssessmentRecognition.matchSkill({
-          item, text, source, keywordMatched, patternMatched, fallback: () => matched
-        });
-
-        if (matched && !completedSkills.has(item.skill)) {
-          completedSkills.add(item.skill);
-
-          assessmentLog.push(
-            `${item.skill} - recognized through ${source}`
-          );
-
-          newlyRecorded.push(item.skill);
-        }
+          return matched;
+        },
+        updateCompleteHistorySkills, updateCompletedAssessmentsDisplay
       });
-
-      updateCompleteHistorySkills();
-      updateCompletedAssessmentsDisplay();
-
-      return newlyRecorded;
     }
-
 
     function getHistoryComponentStatus() {
       const opqrst = {
