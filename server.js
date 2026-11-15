@@ -868,7 +868,7 @@ function studentAssessedRadiation(body = {}) {
 
       /\bwhere does\b.{0,35}\b(?:pain|discomfort|it)\b.{0,20}\bgo\b/,
 
-      /\b(?:does|did) it go anywhere else\b/,
+      /\b(?:does|did) (?:it|the pain|your pain|the discomfort) (?:move|go|travel|spread|radiate) (?:to )?anywhere(?: else)?\b/,
 
       /\bwhere else do you feel\b/,
 
