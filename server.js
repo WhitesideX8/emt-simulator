@@ -1360,23 +1360,33 @@ function buildChecklist(body = {}) {
       ]
     ),
 
-    one(
-      "airway",
-      "Airway and breathing assessment (1/3)",
-      [
+    // Combined airway/breathing point: both components must be documented.
+    // Separate student entries count; patient/instructor replies are excluded
+    // by sheetEntries(). A breathing-only entry cannot earn this point.
+    (() => {
+      const airwayEvidence = find([
         /\bairway\b.{0,45}\b(?:patent|open|clear|safe|unobstructed|assess|check|obstruct)\w*\b/,
-
         /\b(?:assess|check|evaluate|inspect|examine|maintain|open|clear|manage)\w*\b.{0,40}\bairway\b/,
-
         /\b(?:patent|open|clear|safe|unobstructed|obstructed|blocked|compromised)\b.{0,25}\bairway\b/,
-
-        /\bairway\b.{0,40}\b(?:patency|obstruction|blockage|compromised|intact|protected)\b/,
-
-        /\b(?:what|how)\b.{0,25}\bairway\b/,
-
-        /\bairway\b.{0,25}\b(?:status|condition)\b/
-      ]
-    ),
+        /\bairway\b.{0,40}\b(?:patency|obstruction|blockage|compromised|intact|protected|status|condition)\b/,
+        /\b(?:what|how|is)\b.{0,25}\bairway\b/
+      ]);
+      const breathingEvidence = find([
+        /\b(?:assess|check|evaluate|inspect|examine|observe|count|measure|monitor|reassess)\w*\b.{0,45}\b(?:breathing|respirations?|respiratory (?:rate|effort|depth|quality|pattern))\b/,
+        /\b(?:breathing|respirations?|respiratory)\b.{0,45}\b(?:rate|depth|effort|quality|pattern|regularity|work|labored|unlabored|shallow|rapid|slow|adequate|inadequate)\b/,
+        /\b(?:rate|depth|effort|quality|pattern|work)\b.{0,30}\b(?:of )?(?:breathing|respirations?)\b/,
+        /\b(?:how|what)\b.{0,35}\b(?:breathing|respirations?|ventilation)\b/,
+        /\b(?:assess|check|evaluate|observe)\w*\b.{0,35}\b(?:chest rise|chest expansion|chest movement)\b/
+      ]);
+      const pass = airwayEvidence.length > 0 && breathingEvidence.length > 0;
+      return {
+        id: "airway",
+        name: "Airway and breathing assessment (1/3)",
+        points: 1,
+        pass,
+        evidence: pass ? [...new Set([...airwayEvidence, ...breathingEvidence])] : []
+      };
+    })(),
 
     one(
       "breathing",
