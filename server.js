@@ -1528,9 +1528,12 @@ function buildChecklist(body = {}) {
       "opqrstProvocation",
       "HPI: provocation/palliation",
       [
-        /\b(?:better|relieve|relieves|alleviate|alleviates)\b.*\b(?:worse|aggravate|aggravates)\b/,
-
-        /\b(?:worse|aggravate|aggravates)\b.*\b(?:better|relieve|relieves|alleviate|alleviates)\b/
+        // A specific question about what changes, provokes, or relieves pain earns credit.
+        /\b(?:pain|discomfort|symptoms?|it)\b.{0,55}\b(?:change|changes|worse|better|increase|decrease|aggravate|relieve|alleviate|improve|reproduce|trigger)\w*\b/,
+        /\b(?:what|does anything|is there anything)\b.{0,65}\b(?:make|makes|cause|causes|trigger|relieve|improve|worsen|aggravate)\w*\b.{0,45}\b(?:pain|discomfort|symptoms?|it)\b/,
+        /\b(?:palpat\w*|press\w*|touch\w*|movement|moving|breathing|deep breath|exertion|walking|position|rest)\b.{0,55}\b(?:pain|discomfort|symptoms?|worse|better|change|changes|reproduce)\w*\b/,
+        /\b(?:pain|discomfort|symptoms?)\b.{0,55}\b(?:palpat\w*|press\w*|touch\w*|movement|moving|breathing|deep breath|exertion|walking|position|rest)\b/,
+        /\b(?:provocation|palliation|provoking factors|relieving factors)\b/
       ]
     ),
 
@@ -1712,35 +1715,11 @@ function buildChecklist(body = {}) {
   }
 
   /* -------------------------------------------------------
-     PROVOCATION AND PALLIATION MAY BE SEPARATE ENTRIES
+     PROVOCATION/PALLIATION: ONE QUALIFYING STUDENT ASSESSMENT
+     IS SUFFICIENT. The checklist row above already captures
+     questions about palpation, movement, worsening, and relief.
+     Do not override its result by requiring both worse AND better.
   ------------------------------------------------------- */
-
-  const worse = find([
-    /\b(?:worse|aggravate|aggravates)\b/
-  ]);
-
-  const better = find([
-    /\b(?:better|relieve|relieves|alleviate|alleviates)\b/
-  ]);
-
-  const pp = rows.find(
-    item => item.id === "opqrstProvocation"
-  );
-
-  pp.pass = worse.length > 0 && better.length > 0;
-
-  pp.evidence = [
-    ...new Map(
-      [...worse, ...better].map(entry => [
-        entry.index,
-        entry
-      ])
-    ).values()
-  ];
-
-  pp.status = pp.pass
-    ? "CREDIT"
-    : "NOT_DOCUMENTED";
 
   /* -------------------------------------------------------
      BROAD PAIN QUESTION WITH PAIRED DENIAL
