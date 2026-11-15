@@ -2602,6 +2602,24 @@ h1 {
       return /\b(?:chest pain|chest pressure|shortness of breath|difficulty breathing|dyspnea|wheez\w*|cough\w*|nausea|vomit\w*|diaphor\w*|sweat\w*|pale|pallor|clammy|weakness|weak|shak\w*|confus\w*|facial droop|arm drift|slurred speech|aphasia|dysphasia|dizziness|dizzy|headache|numbness|tingling|pain|discomfort|hypoglycemia|hyperglycemia|hypoxia|bleeding|cyanosis|rash|fever|tachycardia|tachypnea|labored breathing)\b/i.test(stated);
     }
 
+    // MOI/NOI: explicit student assessment or determination only.
+    // Merely asking the patient what happened does not count.
+    function studentExplicitlyAssessedMoiNoi(raw, source = "") {
+      if (/saved instructor exchange|patient response|instructor response|spouse response/i.test(source)) return false;
+      const statement = String(raw || "").trim();
+      if (!statement || /\?/.test(statement)) return false;
+      if (/^(?:patient|instructor|spouse|wife|husband)\s*:/i.test(statement)) return false;
+      return statement.split(/[.!;\r\n]+/).some(part => {
+        const text = normalizeText(part);
+        const term = /\b(?:nature of illness|mechanism of injury|noi|moi)\b/;
+        if (!term.test(text)) return false;
+        if (/\b(?:did not|do not|dont|cannot|cant|unable to|have not|havent|will not|wont|not going to|not assessed|not determined|unknown|unclear)\b/.test(text)) return false;
+        // An explicit action/intent, or an identified NOI/MOI finding.
+        return /\b(?:assess|assessing|assessed|determine|determining|determined|identify|identifying|identified|evaluate|evaluating|evaluated|establish|establishing|established|check|checking|checked|consider|considering|considered)\b/.test(text) ||
+          /\b(?:nature of illness|mechanism of injury|noi|moi)\s+(?:is|was|appears to be|identified as)\s+\S+/.test(text);
+      });
+    }
+
     function detectAndRecordAssessments(text, source) {
       const normalizedText = normalizeText(text);
       const newlyRecorded = [];
@@ -2617,7 +2635,9 @@ h1 {
 
         const matched = item.skill === "Signs and symptoms assessed"
           ? studentRecognizedSignsSymptoms(text, source)
-          : keywordMatched || patternMatched;
+          : item.skill === "Determines the mechanism of injury/nature of illness"
+            ? studentExplicitlyAssessedMoiNoi(text, source)
+            : keywordMatched || patternMatched;
 
         if (matched && !completedSkills.has(item.skill)) {
           completedSkills.add(item.skill);
