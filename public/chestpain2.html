@@ -1728,12 +1728,9 @@ h1 {
       },
 {
         skill: "Chief complaint identified",
-        keywords: [
-          "what is your chief complaint", "what is bothering you", "why did you call ems",
-          "what is wrong today", "chief complaint is", "complains of", "c o chest pain",
-"what is your chief complaint", "what is bothering you", "why did you call ems",
-        "what is wrong today", "chief complaint is", "complains of", "c o chest pain"
-        ]
+        // Only explicit student use of the words "chief complaint" counts.
+        keywords: ["chief complaint"],
+        patterns: [/\bchief\s+complaint\b/]
       },
 {
         skill: "Signs and symptoms assessed",
