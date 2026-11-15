@@ -1355,8 +1355,9 @@ function buildChecklist(body = {}) {
       "chiefComplaint",
       "Determines chief complaint/apparent life threats",
       [
-        /\bchief complaint\b/,
-        /\b(?:apparent )?life threats?\b/
+        // Chief-complaint credit requires these exact words in a student entry.
+        // Mentioning symptoms or apparent life threats alone does not earn this point.
+        /\bchief\s+complaint\b/
       ]
     ),
 
