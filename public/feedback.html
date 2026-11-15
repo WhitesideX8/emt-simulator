@@ -788,31 +788,12 @@
       const note=document.createElement("tr");const n=document.createElement("td");n.colSpan=3;
       n.textContent="This is the layout of the supplied skills sheet. Points and statuses come from the existing server report; missing mappings require review. The server-reported total controls (the supplied paper form shows 42 possible points).";
       note.appendChild(n);body.appendChild(note);
-      const bar=document.createElement("tr");bar.className="section-bar";
-      const b=document.createElement("td");b.colSpan=3;b.textContent="CRITICAL CRITERIA – SEPARATE EVALUATION";bar.appendChild(b);body.appendChild(bar);
-      const criteria=[
-        "Failure to initiate or call for transport within 15 minutes",
-        "Failure to take or verbalize appropriate PPE precautions",
-        "Failure to determine scene safety before approaching patient",
-        "Failure to provide oxygen therapy in line with AHA guidelines",
-        "Failure to find or manage airway, breathing, hemorrhage or shock problems, if present",
-        "Failure to differentiate immediate transport from continued scene care",
-        "Failure to manage life threats before other care",
-        "Orders a dangerous or inappropriate intervention",
-        "Failure to provide accurate report to arriving EMS/medical direction/ED",
-        "Failure to manage the patient as a competent EMT*",
-        "Exhibits unacceptable affect with patient or other personnel*",
-        "Failure to earn minimum of 33 points"
-      ];
-      criteria.forEach((label,i)=>{
-        const code="F"+(i+1);const rx=new RegExp("^"+code+":\\s*(PASS|FAIL|REVIEW)","i");
-        const hit=lines.find(l=>rx.test(l));
-        const status=hit?hit.match(rx)[1].toUpperCase():"REVIEW";
-        row([code+"  "+label,"—",status],"critical");
-      });
-      const foot=document.createElement("tr");const f=document.createElement("td");f.colSpan=3;
-      f.textContent="* Critical criteria require immediate Chief Examiner notification. Critical criteria are not added to the numerical score. Examiner must document rationale for any checked critical item.";
-      foot.appendChild(f);body.appendChild(foot);
+      const notice=document.createElement("tr");
+      const noticeCell=document.createElement("td");
+      noticeCell.colSpan=3;
+      noticeCell.textContent="Please review Critical Criteria list";
+      notice.appendChild(noticeCell);
+      body.appendChild(notice);
       root.appendChild(table);
     }
 
