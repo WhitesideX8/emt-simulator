@@ -1429,16 +1429,41 @@ function buildChecklist(body = {}) {
       true
     ),
 
-    one(
-      "oxygenTherapy",
-      "Appropriate oxygen therapy (1/3)",
-      [
-        /\b(?:oxygen|o2|non rebreather|nonrebreather|nasal cannula|nrb|spo2)\b.{0,45}\b(?:apply|administer|give|titrate|withhold|not indicated|not needed|liters|litres|percent)\b/,
+    (() => {
+      // Chest-pain scenario-specific credit: explicitly administer 2-4 L/min
+      // oxygen via nasal cannula. Other oxygen statements retain review status.
+      const base = one(
+        "oxygenTherapy",
+        "Appropriate oxygen therapy (1/3)",
+        [
+          /\b(?:oxygen|o2|non rebreather|nonrebreather|nasal cannula|nrb|spo2)\b.{0,45}\b(?:apply|administer|give|titrate|withhold|not indicated|not needed|liters|litres|percent)\b/,
+          /\b(?:apply|administer|give|provide|place|start|titrate)\w*\b.{0,55}\b(?:oxygen|o2|non rebreather|nonrebreather|nasal cannula|nrb)\b/
+        ],
+        true
+      );
+      if (normalizeScenarioName(body.scenario) !== "chestPain") return base;
 
-        /\b(?:apply|administer|give|provide|place|start|titrate)\w*\b.{0,55}\b(?:oxygen|o2|non rebreather|nonrebreather|nasal cannula|nrb)\b/
-      ],
-      true
-    ),
+      const eligible = normalized.filter(entry => {
+        const t = entry.normalized;
+        if (denied.test(t) || /\b(?:did you|have you|do you|should i|can i|may i|what if)\b/.test(t)) return false;
+        if (!/\b(?:administer|administering|give|giving|apply|applying|provide|providing|start|starting|place|placing|put|putting|deliver|delivering)\b/.test(t)) return false;
+        if (!/\b(?:nasal cannula|nc)\b/.test(t)) return false;
+        if (!/\b(?:oxygen|o2|02)\b/.test(t)) return false;
+        // Accept 2, 3, or 4 L, including "2 to 4 L" or "2-4 liters".
+        return /\b(?:[234]|2\s+(?:to|through|or)\s+4)\s*(?:l|lpm|l min|liters?|litres?)\b/.test(t);
+      });
+      if (eligible.length) {
+        return {
+          ...base,
+          pass: true,
+          evidence: eligible,
+          status: "CREDIT",
+          requiresInstructorReview: false,
+          note: "Chest-pain scenario: 2-4 L/min oxygen by nasal cannula documented."
+        };
+      }
+      return base;
+    })(),
 
     one(
       "circulation",
