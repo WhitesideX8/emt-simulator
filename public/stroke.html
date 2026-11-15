@@ -861,7 +861,8 @@ body {
     </section>
   </div>
 
-  <script>
+  <script src="/assessment-recognition.js"></script>
+<script>
     let patientHistory = "";
     let instructorHistory = "";
     let assessmentLog = [];
@@ -2669,7 +2670,9 @@ body {
           pattern.test(normalizedText)
         );
 
-        const matched = keywordMatched || patternMatched;
+        const matched = EMTAssessmentRecognition.matchSkill({
+          item, text, source, keywordMatched, patternMatched
+        });
 
         if (matched && !completedSkills.has(item.skill)) {
           completedSkills.add(item.skill);

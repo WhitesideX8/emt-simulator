@@ -741,7 +741,8 @@ body {
    
 
     <!-- EDIT PATIENT ANSWERS HERE. Replace "Not yet established" with your scenario facts. -->
-    <script id="patientFacts" type="application/json">
+    <script src="/assessment-recognition.js"></script>
+<script id="patientFacts" type="application/json">
 {
   "patient": {
     "age": "67",
@@ -2586,7 +2587,9 @@ body {
           pattern.test(normalizedText)
         );
 
-        const matched = keywordMatched || patternMatched;
+        const matched = EMTAssessmentRecognition.matchSkill({
+          item, text, source, keywordMatched, patternMatched
+        });
 
         if (matched && !completedSkills.has(item.skill)) {
           completedSkills.add(item.skill);

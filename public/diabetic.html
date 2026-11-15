@@ -752,7 +752,8 @@ body {
    
 
     <!-- EDIT PATIENT ANSWERS HERE. Unknown facts are deliberately left blank. -->
-    <script id="patientFacts" type="application/json">
+    <script src="/assessment-recognition.js"></script>
+<script id="patientFacts" type="application/json">
 {
   "patient": {
     "age": "45", "sex": "male", "location": "park bench in a city park",
@@ -2234,6 +2235,10 @@ function includesAny(text, phrases) {
             "respiratory rate obtained", "respiratory rate", "respiration rate", "breathing rate", "rate depth and quality"
           ]);
         }
+
+        matched = EMTAssessmentRecognition.matchSkill({
+          item, text, source, keywordMatched, patternMatched, fallback: () => matched
+        });
 
         if (matched && !completedSkills.has(item.skill)) {
           completedSkills.add(item.skill);
