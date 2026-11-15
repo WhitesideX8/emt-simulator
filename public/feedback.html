@@ -290,6 +290,25 @@
         break-inside: avoid;
       }
     }
+
+    /* Medical psychomotor skills sheet: follows supplied 2019-11-27 layout */
+    #medicalSkillsSheet { overflow-x:auto; margin:12px 0; }
+    .medical-form { width:100%; border-collapse:collapse; font-size:12px; color:#111; background:#fff; }
+    .medical-form th,.medical-form td { border-bottom:1px solid #555; padding:4px 6px; vertical-align:top; }
+    .medical-form .form-title { text-align:center; font-size:16px; font-weight:bold; padding:12px 4px; }
+    .medical-form .section-bar td { background:#c9c9c9; font-weight:bold; border:1px solid #555; }
+    .medical-form .criterion { width:72%; }
+    .medical-form .numeric { width:14%; text-align:center; border-left:1px solid #555; }
+    .medical-form .earned { width:14%; text-align:center; border-left:1px solid #555; border-right:1px solid #555; font-weight:bold; }
+    .medical-form .status-note { display:block; color:#555; font-weight:normal; font-size:10px; }
+    .medical-form .form-footer td { border-top:2px solid #111; font-weight:bold; }
+    .medical-form .critical td { font-size:11px; }
+    .medical-form .critical-code { width:50px; white-space:nowrap; font-weight:bold; }
+    .medical-form .metadata td { border:1px solid #777; }
+    .grading-evidence { margin-top:16px; }
+    .grading-evidence summary { cursor:pointer; font-weight:bold; }
+    .grading-evidence #feedback { white-space:pre-wrap; margin-top:12px; font-size:13px; }
+    @media print { .medical-form { font-size:10px; } .medical-form tr { break-inside:avoid; } .grading-evidence { display:none; } }
   </style>
 </head>
 
@@ -312,7 +331,8 @@
     <div class="section">
       <h2>Evaluation</h2>
       <div id="scoreSummary"></div>
-      <div id="feedback"></div>
+      <div id="medicalSkillsSheet"></div>
+      <details class="grading-evidence"><summary>Detailed scoring evidence and instructor review</summary><div id="feedback"></div></details>
     </div>
 
     <div class="section" id="verbalReportSection">
@@ -647,6 +667,153 @@
         cleanedFeedback ||
         "No additional grading feedback available."
       );
+    }
+
+
+    /* Display only: scoring remains authoritative in server.js.
+       Unmatched rows are marked REVIEW, never silently assigned zero. */
+    const medicalSheetGroups = [
+      ["SCENE SIZE-UP", [
+        ["Takes or verbalizes appropriate PPE precautions",1,"ppe"],
+        ["Determines the scene/situation is safe",1,"scene"],
+        ["Determines the mechanism of injury/nature of illness",1,"moi"],
+        ["Determines the number of patients",1,"patients"],
+        ["Requests additional EMS assistance if necessary",1,"assistance"],
+        ["Considers stabilization of the spine",1,"spine"]
+      ]],
+      ["PRIMARY SURVEY – RESUSCITATION", [
+        ["Verbalizes the general impression of the patient",1,"impression"],
+        ["Determines responsiveness/level of consciousness",1,"loc"],
+        ["Determines chief complaint/apparent life-threats",1,"chief"],
+        ["Assesses airway and breathing – Assessment",1,"airway"],
+        ["Assures adequate ventilation",1,"ventilation"],
+        ["Appropriate oxygen therapy",1,"oxygen"],
+        ["Assesses circulation – Pulse",1,"circpulse"],
+        ["Assesses circulation – Skin",1,"skin"],
+        ["Assesses circulation – Major bleeding",1,"bleeding"],
+        ["Identifies patient priority and makes treatment/transport decision",1,"transport"]
+      ]],
+      ["HISTORY TAKING – HPI", [
+        ["Onset",1,"onset"],["Provocation / palliation",1,"provocation"],
+        ["Quality",1,"quality"],["Radiation",1,"radiation"],
+        ["Severity",1,"severity"],["Time",1,"time"],
+        ["Clarifying question 1",1,"clarify1"],["Clarifying question 2",1,"clarify2"]
+      ]],
+      ["PAST MEDICAL HISTORY (PMH)", [
+        ["Allergies",1,"allergies"],["Medications",1,"medications"],
+        ["Past pertinent history",1,"history"],["Last oral intake",1,"oral"],
+        ["Events leading to illness",1,"events"]
+      ]],
+      ["SECONDARY ASSESSMENT", [
+        ["Level-appropriate assessment of affected body part/system",5,"secondary"]
+      ]],
+      ["VITAL SIGNS", [
+        ["Blood pressure",1,"bp"],["Pulse",1,"vitalpulse"],
+        ["Respiratory rate",1,"rr"],["Respiratory quality",1,"rq"],
+        ["States field impression",1,"field"],["Interventions & treatment",1,"interventions"]
+      ]],
+      ["REASSESSMENT", [
+        ["Demonstrates how and when to reassess",1,"reassess"],
+        ["Provides accurate verbal report to EMS/medical direction/ED",1,"report"]
+      ]]
+    ];
+    const medicalMatch = {
+      ppe:/^Takes or verbalizes appropriate PPE precautions:/i,
+      scene:/^Determines scene\/situation is safe:/i,
+      moi:/^Determines mechanism of injury\/nature of illness:/i,
+      patients:/^Determines number of patients:/i,
+      assistance:/^Requests additional EMS assistance if necessary:/i,
+      spine:/^Considers stabilization of spine:/i,
+      impression:/^Verbalizes general impression:/i,
+      loc:/^Determines responsiveness\/level of consciousness:/i,
+      chief:/^Determines chief complaint\/apparent life threats:/i,
+      airway:/^Airway and breathing assessment/i,
+      ventilation:/^Assures adequate ventilation/i,
+      oxygen:/^Appropriate oxygen therapy/i,
+      circpulse:/^Circulation: assesses pulse:/i,
+      skin:/^Circulation: assesses skin:/i,
+      bleeding:/^Circulation: assesses major bleeding:/i,
+      transport:/^Identifies patient priority and treatment\/transport decision:/i,
+      onset:/^HPI: onset:/i, provocation:/^HPI: provocation\/palliation:/i,
+      quality:/^HPI: quality:/i, radiation:/^HPI: radiation:/i,
+      severity:/^HPI: severity:/i, time:/^HPI: time /i,
+      clarify1:/^HPI: clarifying question 1:/i,
+      clarify2:/^HPI: clarifying question 2:/i,
+      allergies:/^PMH: allergies:/i, medications:/^PMH: medications:/i,
+      history:/^PMH: past pertinent history:/i,
+      oral:/^PMH: last oral intake:/i, events:/^PMH: events leading to illness:/i,
+      secondary:/^Level-appropriate assessment of affected body part\/system:/i,
+      bp:/^Vital signs: blood pressure:/i, vitalpulse:/^Vital signs: pulse:/i,
+      rr:/^Vital signs: respiratory rate:/i, rq:/^Vital signs: respiratory quality:/i,
+      field:/^States field impression:/i,
+      interventions:/^Interventions and treatment:/i,
+      reassess:/^Demonstrates how and when to reassess:/i,
+      report:/^Provides accurate verbal report to EMS\/medical direction\/ED:/i
+    };
+    function renderMedicalSheet(data) {
+      const root = getElement("medicalSkillsSheet");
+      root.replaceChildren();
+      const table = document.createElement("table");
+      table.className = "medical-form";
+      const body = document.createElement("tbody");
+      table.appendChild(body);
+      const row = (values, cls="") => {
+        const tr=document.createElement("tr"); if(cls) tr.className=cls;
+        values.forEach((v,i)=>{const td=document.createElement("td");td.textContent=v;
+          if(i===0)td.className="criterion"; else td.className=i===1?"numeric":"earned";
+          tr.appendChild(td);});body.appendChild(tr);return tr;
+      };
+      let tr=document.createElement("tr");let td=document.createElement("td");
+      td.colSpan=3;td.className="form-title";td.textContent="PATIENT ASSESSMENT/MANAGEMENT – MEDICAL";
+      tr.appendChild(td);body.appendChild(tr);
+      tr=row(["Candidate: "+(data.studentName||sessionStorage.getItem("emtStudentName")||"Not entered"),
+        "Scenario: "+(data.scenario||"EMT Scenario"),"Examiner: __________"],"metadata");
+      tr=row(["Date: "+new Date().toLocaleDateString(),"Points Possible","Points Awarded"]);
+      const lines=String(data.feedback||"").split(/\r?\n/).map(s=>s.trim());
+      let matched=0;
+      medicalSheetGroups.forEach(([heading,items])=>{
+        const bar=document.createElement("tr");bar.className="section-bar";
+        const c=document.createElement("td");c.colSpan=3;c.textContent=heading;bar.appendChild(c);body.appendChild(bar);
+        items.forEach(([label,max,key])=>{
+          const pattern=medicalMatch[key];const line=pattern&&lines.find(l=>pattern.test(l));
+          const score=line&&line.match(/:\s*(\d+)\s*\/\s*(\d+)/);
+          const status=line&&line.match(/\[([^\]]+)\]/);
+          const tr=row([label,String(max),score?score[1]:"—"]);
+          if(line){matched++;if(status){const note=document.createElement("small");note.className="status-note";note.textContent=status[1].replaceAll("_"," ");tr.cells[2].appendChild(note);}}
+          else {const note=document.createElement("small");note.className="status-note";note.textContent="Review / not mapped";tr.cells[2].appendChild(note);}
+        });
+      });
+      const final=row(["SERVER-REPORTED TOTAL",String(Number.isFinite(Number(data.possiblePoints))?data.possiblePoints:"—"),
+        String(Number.isFinite(Number(data.earnedPoints))?data.earnedPoints:"—")],"form-footer");
+      const note=document.createElement("tr");const n=document.createElement("td");n.colSpan=3;
+      n.textContent="This is the layout of the supplied skills sheet. Points and statuses come from the existing server report; missing mappings require review. The server-reported total controls (the supplied paper form shows 42 possible points).";
+      note.appendChild(n);body.appendChild(note);
+      const bar=document.createElement("tr");bar.className="section-bar";
+      const b=document.createElement("td");b.colSpan=3;b.textContent="CRITICAL CRITERIA – SEPARATE EVALUATION";bar.appendChild(b);body.appendChild(bar);
+      const criteria=[
+        "Failure to initiate or call for transport within 15 minutes",
+        "Failure to take or verbalize appropriate PPE precautions",
+        "Failure to determine scene safety before approaching patient",
+        "Failure to provide oxygen therapy in line with AHA guidelines",
+        "Failure to find or manage airway, breathing, hemorrhage or shock problems, if present",
+        "Failure to differentiate immediate transport from continued scene care",
+        "Failure to manage life threats before other care",
+        "Orders a dangerous or inappropriate intervention",
+        "Failure to provide accurate report to arriving EMS/medical direction/ED",
+        "Failure to manage the patient as a competent EMT*",
+        "Exhibits unacceptable affect with patient or other personnel*",
+        "Failure to earn minimum of 33 points"
+      ];
+      criteria.forEach((label,i)=>{
+        const code="F"+(i+1);const rx=new RegExp("^"+code+":\\s*(PASS|FAIL|REVIEW)","i");
+        const hit=lines.find(l=>rx.test(l));
+        const status=hit?hit.match(rx)[1].toUpperCase():"REVIEW";
+        row([code+"  "+label,"—",status],"critical");
+      });
+      const foot=document.createElement("tr");const f=document.createElement("td");f.colSpan=3;
+      f.textContent="* Critical criteria require immediate Chief Examiner notification. Critical criteria are not added to the numerical score. Examiner must document rationale for any checked critical item.";
+      foot.appendChild(f);body.appendChild(foot);
+      root.appendChild(table);
     }
 
     function renderDisputes() {
@@ -989,6 +1156,7 @@
           "No Scenario Results";
 
         renderScore({});
+        renderMedicalSheet({});
 
         getElement("feedback").textContent =
           "No grading information was found. Please complete a scenario first.";
@@ -1021,6 +1189,7 @@
           gradingData.treatmentPlan || "No treatment plan entered.";
 
         renderScore(gradingData);
+        renderMedicalSheet(gradingData);
 
         getElement("feedback").textContent =
           removePassFailResult(
@@ -1037,6 +1206,7 @@
           "Invalid Scenario Results";
 
         renderScore({});
+        renderMedicalSheet({});
 
         getElement("feedback").textContent =
           "The saved grading information could not be read.";
