@@ -1399,6 +1399,12 @@ function buildChecklist(body = {}) {
 
         /\b(?:assist|assisted|assisting|provide|providing|start)\b.{0,50}\b(?:ventilations|bvm|bag valve mask)\b/,
 
+        // Explicit student assessment of ventilation adequacy, including
+        // "assess adequate ventilations" and "ventilations are inadequate".
+        /\b(?:assess|assessed|assessing|check|checked|checking|evaluate|evaluated|evaluating|determine|determined|determining|verify|verified|verifying)\b.{0,45}\b(?:adequate|inadequate|effective|ineffective|sufficient|insufficient)\b.{0,25}\b(?:ventilations?|breathing|respirations?)\b/,
+        /\b(?:assess|assessed|assessing|check|checked|checking|evaluate|evaluated|evaluating|determine|determined|determining|verify|verified|verifying)\b.{0,45}\b(?:ventilations?|breathing|respirations?)\b.{0,25}\b(?:adequacy|adequate|inadequate|effective|ineffective|sufficient|insufficient)\b/,
+        /\b(?:ventilations?|breathing|respirations?)\b.{0,25}\b(?:are|is|were|was|appear|appears|seem|seems)\s+(?:adequate|inadequate|effective|ineffective|sufficient|insufficient)\b/,
+
         // Recognize ventilation findings and support in either word order.
         /\b(?:breathes?|breathing|ventilates?|ventilating|ventilations?|respirations?)\b.{0,30}\b(?:adequately|effectively|normally|sufficient|sufficiently|adequate|effective|normal|unlabored)\b/,
 
