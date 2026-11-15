@@ -765,7 +765,8 @@ h1 {
       Upon arrival you find him sitting in a living room chair.</div>
 
     <!-- EDIT PATIENT ANSWERS HERE. These facts are sent to the shared server.js. -->
-    <script id="patientFacts" type="application/json">
+    <script src="/assessment-recognition.js"></script>
+<script id="patientFacts" type="application/json">
 {
   "patient": {
     "age": "65",
@@ -2630,11 +2631,14 @@ h1 {
           pattern.test(normalizedText)
         );
 
-        const matched = item.skill === "Signs and symptoms assessed"
-          ? studentRecognizedSignsSymptoms(text, source)
-          : item.skill === "Determines the mechanism of injury/nature of illness"
-            ? studentExplicitlyAssessedMoiNoi(text, source)
-            : keywordMatched || patternMatched;
+        const matched = EMTAssessmentRecognition.matchSkill({
+          item, text, source, keywordMatched, patternMatched,
+          fallback: () => item.skill === "Signs and symptoms assessed"
+            ? studentRecognizedSignsSymptoms(text, source)
+            : item.skill === "Determines the mechanism of injury/nature of illness"
+              ? studentExplicitlyAssessedMoiNoi(text, source)
+              : keywordMatched || patternMatched
+        });
 
         if (matched && !completedSkills.has(item.skill)) {
           completedSkills.add(item.skill);
