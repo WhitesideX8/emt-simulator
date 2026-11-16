@@ -888,19 +888,26 @@ function studentAssessedRadiation(body = {}) {
 ========================================================= */
 
 function studentDeterminedMoiNoi(body = {}) {
-  // Only an explicit student classification earns credit. Questions and
-  // statements of intent never count, even if they contain MOI or NOI.
-  const noi = /\b(?:nature of illness|noi)\s+(?:is|was|appears to be|identified as|determined as)\s+(?:a |an |the )?(?:medical|respiratory|shortness of breath|difficulty breathing|dyspnea|copd|asthma|cardiac|chest pain|stroke|diabetic|hypoglycemia|illness|breathing)\b/;
-  const moi = /\b(?:mechanism of injury|moi)\s+(?:is|was|appears to be|identified as|determined as)\s+(?:a |an |the )?(?:fall|collision|crash|accident|assault|blunt trauma|penetrating trauma|motor vehicle collision|mvc|injury|trauma)\b/;
+  // Credit an affirmative student classification of the call as NOI or MOI.
+  // A specific diagnosis or injury mechanism is NOT required.
+  // Questions, plans to assess, and replies from others are not evidence.
+  const classification = /\b(?:nature of illness|mechanism of injury|noi|moi)\b/;
   return sheetEntries(body).some(entry => {
     const raw = String(entry.text || "").trim();
     if (!raw || raw.includes("?")) return false;
     if (/^(?:patient|instructor|spouse|wife|husband)\s*:/i.test(raw)) return false;
     return raw.split(/[.!;\r\n]+/).some(part => {
       const t = normalizeText(part);
+      if (!classification.test(t)) return false;
       if (/^(?:is|are|was|were|what|which|who|how|why|when|where|do|does|did|can|could|would|should|has|have)\b/.test(t)) return false;
-      if (/\b(?:will|going to|plan to|need to|should|would|not determined|undetermined|unknown|unclear|did not|do not|dont|cannot|cant|unable to)\b/.test(t)) return false;
-      return noi.test(t) || moi.test(t);
+      if (/\b(?:will|going to|plan to|planning to|need to|should|would|want to|trying to|attempt to|not determined|undetermined|unknown|unclear|did not|do not|dont|cannot|cant|unable to)\b/.test(t)) return false;
+      if (/\b(?:assess|assessing|check|checking|determine|determining|evaluate|evaluating|identify|identifying|ask|asking)\b/.test(t) &&
+          !/\b(?:is|was|identified as|determined as|classified as)\b/.test(t)) return false;
+      // Explicit classification: "This is NOI", "The nature of illness is...",
+      // "I identify this as MOI", "This is a nature of illness".
+      return /\b(?:nature of illness|mechanism of injury|noi|moi)\s+(?:is|was|appears to be|identified as|determined as|classified as)\b/.test(t) ||
+        /\b(?:this|it|the call|the situation|the patient|my assessment)\s+(?:is|was|appears to be|would be)\s+(?:a |an )?(?:nature of illness|mechanism of injury|noi|moi)\b/.test(t) ||
+        /\b(?:identify|identified|classify|classified|determine|determined|recognize|recognized)\s+(?:this|it|the call|the situation|the patient)\s+as\s+(?:a |an )?(?:nature of illness|mechanism of injury|noi|moi)\b/.test(t);
     });
   });
 }
