@@ -888,20 +888,19 @@ function studentAssessedRadiation(body = {}) {
 ========================================================= */
 
 function studentDeterminedMoiNoi(body = {}) {
-  // Credit for an explicit student statement assessing/determining MOI/NOI,
-  // even without naming the illness or injury. Never credit vague interview
-  // questions, bare labels, negated statements, or non-student replies.
-  const term = /\b(?:nature of illness|mechanism of injury|noi|moi)\b/;
+  // Only an explicit student classification earns credit. Questions and
+  // statements of intent never count, even if they contain MOI or NOI.
+  const noi = /\b(?:nature of illness|noi)\s+(?:is|was|appears to be|identified as|determined as)\s+(?:a |an |the )?(?:medical|respiratory|shortness of breath|difficulty breathing|dyspnea|copd|asthma|cardiac|chest pain|stroke|diabetic|hypoglycemia|illness|breathing)\b/;
+  const moi = /\b(?:mechanism of injury|moi)\s+(?:is|was|appears to be|identified as|determined as)\s+(?:a |an |the )?(?:fall|collision|crash|accident|assault|blunt trauma|penetrating trauma|motor vehicle collision|mvc|injury|trauma)\b/;
   return sheetEntries(body).some(entry => {
     const raw = String(entry.text || "").trim();
-    if (!raw || /\?/.test(raw)) return false;
+    if (!raw || raw.includes("?")) return false;
     if (/^(?:patient|instructor|spouse|wife|husband)\s*:/i.test(raw)) return false;
     return raw.split(/[.!;\r\n]+/).some(part => {
-      const text = normalizeText(part);
-      if (!term.test(text)) return false;
-      if (/\b(?:did not|do not|dont|cannot|cant|unable to|have not|havent|will not|wont|not going to|not assessed|not determined|unknown|unclear)\b/.test(text)) return false;
-      return /\b(?:assess|assessing|assessed|determine|determining|determined|identify|identifying|identified|evaluate|evaluating|evaluated|establish|establishing|established|check|checking|checked|consider|considering|considered)\b/.test(text) ||
-        /\b(?:nature of illness|mechanism of injury|noi|moi)\s+(?:is|was|appears to be|identified as)\s+\S+/.test(text);
+      const t = normalizeText(part);
+      if (/^(?:is|are|was|were|what|which|who|how|why|when|where|do|does|did|can|could|would|should|has|have)\b/.test(t)) return false;
+      if (/\b(?:will|going to|plan to|need to|should|would|not determined|undetermined|unknown|unclear|did not|do not|dont|cannot|cant|unable to)\b/.test(t)) return false;
+      return noi.test(t) || moi.test(t);
     });
   });
 }
