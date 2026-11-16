@@ -2568,18 +2568,24 @@ body {
     // MOI/NOI: explicit student assessment or determination only.
     // Merely asking the patient what happened does not count.
     function studentExplicitlyAssessedMoiNoi(raw, source = "") {
-      if (/saved instructor exchange|patient response|instructor response|spouse response/i.test(source)) return false;
+      // Questions to the instructor/patient do not establish an NOI/MOI.
+      // Credit requires a student's own stated classification, not a question
+      // about whether trauma occurred or an intention to assess later.
+      if (/instructor|patient|spouse|question|response/i.test(source)) return false;
       const statement = String(raw || "").trim();
       if (!statement || /\?/.test(statement)) return false;
       if (/^(?:patient|instructor|spouse|wife|husband)\s*:/i.test(statement)) return false;
       return statement.split(/[.!;\r\n]+/).some(part => {
         const text = normalizeText(part);
-        const term = /\b(?:nature of illness|mechanism of injury|noi|moi)\b/;
-        if (!term.test(text)) return false;
-        if (/\b(?:did not|do not|dont|cannot|cant|unable to|have not|havent|will not|wont|not going to|not assessed|not determined|unknown|unclear)\b/.test(text)) return false;
-        // An explicit action/intent, or an identified NOI/MOI finding.
-        return /\b(?:assess|assessing|assessed|determine|determining|determined|identify|identifying|identified|evaluate|evaluating|evaluated|establish|establishing|established|check|checking|checked|consider|considering|considered)\b/.test(text) ||
-          /\b(?:nature of illness|mechanism of injury|noi|moi)\s+(?:is|was|appears to be|identified as)\s+\S+/.test(text);
+        if (/\b(?:not determined|undetermined|unknown|unclear|need to determine|will determine|going to determine|assess for|checking for)\b/.test(text)) return false;
+        // The student must identify the type of call AND explicitly name NOI/MOI.
+        const noi = /\b(?:nature of illness|noi)\b/.test(text) &&
+          (/\b(?:nature of illness|noi)\s+(?:is|was|appears to be|identified as|determined as)\s+(?:a |an |the )?(?:medical|respiratory|shortness of breath|difficulty breathing|dyspnea|illness|cardiac|asthma|copd|breathing)/.test(text) ||
+           /\b(?:medical|respiratory|shortness of breath|difficulty breathing|dyspnea|illness|cardiac|asthma|copd)\b.*\b(?:nature of illness|noi)\b/.test(text));
+        const moi = /\b(?:mechanism of injury|moi)\b/.test(text) &&
+          (/\b(?:mechanism of injury|moi)\s+(?:is|was|appears to be|identified as|determined as)\s+(?:a |an |the )?(?:trauma|fall|collision|crash|accident|assault|blunt|penetrating|injury|motor vehicle|mvc)/.test(text) ||
+           /\b(?:trauma|fall|collision|crash|accident|assault|blunt|penetrating|injury|motor vehicle|mvc)\b.*\b(?:mechanism of injury|moi)\b/.test(text));
+        return noi || moi;
       });
     }
 
