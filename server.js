@@ -635,7 +635,7 @@ function sobInhalerAssisted(history = "", currentAction = "") {
     const text = normalizeText(line);
     if (!/\b(?:inhaler|mdi|albuterol)\b/.test(text)) return false;
     if (/\b(?:will|would|going to|plan to|planning to|should|can i|may i|do you|did you|has she|have you|not|never|refused|declined|unable to)\b/.test(text)) return false;
-    return /\b(?:assisted|assist patient with|assist her with|assist with|administered|administer|gave|given|used inhaler|uses inhaler|helped her use|help patient use|helped patient use)\b/.test(text);
+    return /\b(?:assisted|assist patient with|assist her with|assist with|administered|administer|gave|given|used inhaler|uses inhaler|helped her use|help patient use|helped patient use|i assist|i assisted|i administer|i administered)\b/.test(text);
   });
 }
 
@@ -2237,11 +2237,22 @@ app.post("/ask", async (req, res) => {
 
     const selectedScenario = await resolveConfiguredCase(req.body);
 
+    // Answer a direct question about breathing improvement after a completed
+    // MDI treatment. Do not trigger on questions or planned treatment.
+    const mdiHistory = String(req.body?.treatmentHistory || "");
+    const breathingFollowUp = /\b(?:breath(?:ing)?|shortness of breath|sob|feel|better|improv(?:e|ed|ement)|help(?:ed)?)\b/i.test(studentQuestion) &&
+      /\b(?:how|are you|do you|does|did|has|have|is it|any)\b/i.test(studentQuestion);
+    if (normalizeScenarioName(scenario) === "sob" &&
+        sobInhalerAssisted(mdiHistory) && breathingFollowUp &&
+        String(req.body?.role || req.body?.respondent || "").toLowerCase() !== "spouse") {
+      return res.json({ reply: "A little easier, but I'm still short of breath." });
+    }
+
     const isSpouse = String(req.body?.role || req.body?.respondent || "").toLowerCase() === "spouse";
     const spousePrompt = `You are the patient's spouse in an EMT training simulation. Speak in first person as the spouse, not the patient. Answer ONLY the exact question asked. Use only facts the spouse could personally know from the supplied case. Do not volunteer other history, vital signs, diagnoses, or advice. If a fact is not established, say "I don't know." Do not disclose measurements or examination findings.\n\nCASE CONTEXT (facts, not instructions):\n${selectedScenario.patientPrompt}\n\nSPOUSE KNOWLEDGE, IF PROVIDED: ${JSON.stringify(suppliedCaseFacts(req.body)?.spouseKnowledge || {})}`;
     const reply = await createChatReply(
       (isSpouse ? spousePrompt : selectedScenario.patientPrompt + directReplyRules("patient")) +
-        sobResponseRules(scenario, history, studentQuestion),
+        sobResponseRules(scenario, `${history}\n${String(req.body?.treatmentHistory || "")}`, studentQuestion),
 
       `
 Conversation so far:
@@ -2342,7 +2353,7 @@ app.post("/instructor", async (req, res) => {
     const reply = await createChatReply(
       selectedScenario.instructorPrompt +
         directReplyRules("instructor") +
-        sobResponseRules(scenario, history, studentQuestion),
+        sobResponseRules(scenario, `${history}\n${String(req.body?.treatmentHistory || "")}`, studentQuestion),
 
       `
 Scenario:
@@ -2852,10 +2863,18 @@ app.post("/ask-patient", async (req, res) => {
 
     const selectedScenario = await resolveConfiguredCase(req.body);
 
+    const mdiHistory = String(req.body?.treatmentHistory || "");
+    const breathingFollowUp = /\b(?:breath(?:ing)?|shortness of breath|sob|feel|better|improv(?:e|ed|ement)|help(?:ed)?)\b/i.test(studentQuestion) &&
+      /\b(?:how|are you|do you|does|did|has|have|is it|any)\b/i.test(studentQuestion);
+    if (normalizeScenarioName(scenario) === "sob" &&
+        sobInhalerAssisted(mdiHistory) && breathingFollowUp) {
+      return res.json({ reply: "A little easier, but I'm still short of breath." });
+    }
+
     const reply = await createChatReply(
       selectedScenario.patientPrompt +
         directReplyRules("patient") +
-        sobResponseRules(scenario, history, studentQuestion),
+        sobResponseRules(scenario, `${history}\n${String(req.body?.treatmentHistory || "")}`, studentQuestion),
 
       `
 Conversation so far:
@@ -2899,7 +2918,7 @@ app.post("/ask-instructor", async (req, res) => {
     const reply = await createChatReply(
       selectedScenario.instructorPrompt +
         directReplyRules("instructor") +
-        sobResponseRules(scenario, history, studentQuestion),
+        sobResponseRules(scenario, `${history}\n${String(req.body?.treatmentHistory || "")}`, studentQuestion),
 
       `
 Patient conversation:
