@@ -2774,6 +2774,7 @@ body {
           body: JSON.stringify({
             studentQuestion: question,
             history: patientHistory,
+            treatmentHistory: assessmentLog.join("\n"),
             caseSessionId,
             scenarioInfo: currentWrittenScene(),
             patientFacts: currentPatientFacts(),
@@ -2867,6 +2868,7 @@ body {
             studentQuestion: question,
             question,
             history: patientHistory,
+            treatmentHistory: assessmentLog.join("\n"),
             caseSessionId,
             scenarioInfo: currentWrittenScene(),
             patientFacts: currentPatientFacts(),
