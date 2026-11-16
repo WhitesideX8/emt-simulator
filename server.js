@@ -664,8 +664,20 @@ function sobNasalCannulaApplied(history = "", currentAction = "") {
   });
 }
 
+function sobNrbApplied(history = "", currentAction = "") {
+  const lines = `${history}\n${currentAction}`.split(/\r?\n/);
+  return lines.some(line => {
+    if (/^\s*(?:patient|instructor|spouse|wife)\s*:/i.test(line)) return false;
+    const t = normalizeText(line.replace(/^\s*student(?: to (?:patient|instructor))?\s*:/i, ""));
+    if (!/\b(?:nrb|non rebreather|nonrebreather|non rebreathing mask)\b/.test(t)) return false;
+    if (/\b(?:will|would|going to|plan to|planning to|should|can i|may i|do you|did you|have you|not|never|refused|declined)\b/.test(t)) return false;
+    return /\b(?:apply|applied|place|placed|administer|administered|give|gave|start|started|put|oxygen via|oxygen by|o2 via|o2 by)\b/.test(t);
+  });
+}
+
 function sobResponseRules(scenario, history, currentAction) {
   if (normalizeScenarioName(scenario) !== "sob") return "";
+  const nrbApplied = sobNrbApplied(history, currentAction);
   const cannulaApplied = sobNasalCannulaApplied(history, currentAction);
   const inhalerAssisted = sobInhalerAssisted(history, currentAction);
   const cannulaRules = cannulaApplied ? `
@@ -676,16 +688,24 @@ SOB NASAL CANNULA RESPONSE (AUTHORITATIVE SIMULATION RULE):
 - Do not attribute any improvement to the nasal cannula. If a separate prescribed inhaler was also assisted, use the established post-inhaler findings for that intervention only.
 - Only report measurements when the instructor is specifically asked; the patient must not state measured vital signs.
 ` : "";
-  if (!inhalerAssisted) return cannulaRules;
+  const nrbRules = nrbApplied ? `
+SOB NON-REBREATHER (NRB) RESPONSE — AUTHORITATIVE OVERRIDE:
+- The student has actually applied NRB oxygen; do not trigger this for a question or proposed action.
+- When SpO2 is checked after NRB administration, report 95% (baseline 88%).
+- This NRB SpO2 value takes precedence over the nasal cannula and MDI oxygen saturation values, including on reassessment.
+- Oxygen via NRB does not by itself resolve the patient's wheezing or breathing difficulty.
+- Only the instructor provides measured SpO2 when requested; the patient may still say breathing is difficult.
+` : "";
+  if (!inhalerAssisted) return cannulaRules + nrbRules;
   const repeatSpo2 = sobSpo2Reassessed(history, currentAction);
-  return cannulaRules + `
+  return cannulaRules + nrbRules + `
 SOB POST-INHALER STATE (SIMULATION OVERRIDE):
 The student has assisted with the patient's prescribed inhaler.
 The patient has improved SLIGHTLY, not completely.
 - Patient reports: "A little easier... still hard to breathe."
 - Respiratory rate: 26 breaths/minute (previously 28).
-- Oxygen saturation: ${repeatSpo2 ? "93%" : "90%"} on room air (baseline 88%).
-- After a student explicitly reassesses SpO2 following inhaler assistance, saturation rises to 93% and stays there for later checks. Before that reassessment, report 90%.
+- Oxygen saturation: ${nrbApplied ? "95% after NRB oxygen" : (repeatSpo2 ? "93%" : "90%") + " after MDI without NRB"} (baseline 88%).
+- Without NRB, SpO2 rises to 93% after an explicit post-MDI reassessment; otherwise 90%. If NRB is applied, report 95% instead.
 - Breathing remains labored, but slightly less so.
 - Bilateral wheezing persists, slightly reduced.
 - Patient is still sitting upright and speaking in short phrases.
@@ -693,7 +713,7 @@ Answer ONLY the current question or acknowledge the completed action.
 If the current message reports inhaler assistance, patient may say
 "That helped a little... still hard to breathe."
 Do not volunteer vital signs to the patient; only instructor may provide them
-when explicitly asked. This post-treatment state supersedes baseline findings. On explicit SpO2 reassessment, report 93%, not 90%.
+when explicitly asked. This post-treatment state supersedes baseline findings. On explicit SpO2 reassessment, report 95% if NRB is applied; otherwise 93% after MDI.
 `;
 }
 
