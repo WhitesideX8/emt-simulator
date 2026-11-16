@@ -1694,39 +1694,16 @@ body {
       },
 {
         skill: "Chief complaint identified",
-        keywords: [
-          "what is your chief complaint", "what is bothering you", "why did you call ems",
-          "what is wrong today", "chief complaint is", "complains of", "c o chest pain",
-"what is your chief complaint", "what is bothering you", "why did you call ems",
-        "what is wrong today", "chief complaint is", "complains of", "c o chest pain"
-        ]
+        // Only explicit student use of the words "chief complaint" counts.
+        keywords: ["chief complaint"],
+        patterns: [/\bchief\s+complaint\b/]
       },
 {
         skill: "Signs and symptoms assessed",
-        keywords: [
-          "what symptoms are you having", "what signs and symptoms", "how are you feeling",
-          "what are you experiencing", "associated symptoms", "other symptoms",
-          "tell me what you are feeling", "what else are you feeling", "any other complaints",
-          "any other discomfort", "are you short of breath", "any trouble breathing",
-          "are you nauseated", "have you vomited", "are you dizzy", "did you pass out",
-          "patient reports", "patient complains of", "denies other symptoms",
-          "signs symptoms", "sample signs and symptoms", "sampl signs and symptoms",
-"what symptoms are you having", "what signs and symptoms", "how are you feeling",
-        "what are you experiencing", "associated symptoms", "other symptoms",
-        "tell me what you are feeling", "what else are you feeling", "any other complaints",
-        "any other discomfort", "are you short of breath", "any trouble breathing",
-        "are you nauseated", "have you vomited", "are you dizzy", "did you pass out",
-        "patient reports", "patient complains of", "denies other symptoms",
-        "signs symptoms", "sample signs and symptoms", "sampl signs and symptoms"
-        ],
-        patterns: [
-          /\b(what|which|any)\b.*\b(symptoms?|complaints?|problems?|discomfort)\b/,
-          /\b(how|what)\b.*\b(feel|feeling|experiencing)\b/,
-          /\b(short of breath|difficulty breathing|nausea|vomiting|dizzy|dizziness|syncope|sweating|diaphoretic)\b/,
-/\b(what|which|any)\b.*\b(symptoms?|complaints?|problems?|discomfort)\b/,
-        /\b(how|what)\b.*\b(feel|feeling|experiencing)\b/,
-        /\b(short of breath|difficulty breathing|nausea|vomiting|dizzy|dizziness|syncope|sweating|diaphoretic)\b/
-        ]
+        // Credit only for a student-authored recognition statement that
+        // explicitly names at least one actual sign or symptom.
+        keywords: [],
+        patterns: []
       },
 {
         skill: "Allergies assessed",
@@ -2574,11 +2551,48 @@ body {
       return words.every(word => normalizedText.includes(word));
     }
 
+    function studentRecognizedSignsSymptoms(text, source) {
+      // Never use patient/instructor replies or interview questions as proof
+      // that the student identified signs and symptoms.
+      if (/Ask the Patient|Ask the Instructor|saved instructor/i.test(source)) return false;
+      const raw = String(text || "").trim();
+      if (!raw || raw.includes("?")) return false;
+      if (/\b(?:will|going to|plan to|need to|should|would|ask|asking|check|checking|assess|assessing|evaluate|evaluating|look for|looking for)\b/i.test(raw)) return false;
+      const match = raw.match(/\b(?:signs?\s*(?:and|&)\s*symptoms?|symptoms?\s*(?:and|&)\s*signs?|signs?|symptoms?)\b\s*(?::|[-–—]|\b(?:include|includes|are|is|noted|observed|identified|recognized)\b)\s*(.+)/i);
+      if (!match) return false;
+      const stated = match[1];
+      if (/^(?:none|unknown|not known|not assessed|not documented|no findings)\b/i.test(stated.trim())) return false;
+      return /\b(?:chest pain|chest pressure|shortness of breath|difficulty breathing|dyspnea|wheez\w*|cough\w*|nausea|vomit\w*|diaphor\w*|sweat\w*|pale|pallor|clammy|weakness|weak|shak\w*|confus\w*|facial droop|arm drift|slurred speech|aphasia|dysphasia|dizziness|dizzy|headache|numbness|tingling|pain|discomfort|hypoglycemia|hyperglycemia|hypoxia|bleeding|cyanosis|rash|fever|tachycardia|tachypnea|labored breathing)\b/i.test(stated);
+    }
+
+    // MOI/NOI: explicit student assessment or determination only.
+    // Merely asking the patient what happened does not count.
+    function studentExplicitlyAssessedMoiNoi(raw, source = "") {
+      if (/saved instructor exchange|patient response|instructor response|spouse response/i.test(source)) return false;
+      const statement = String(raw || "").trim();
+      if (!statement || /\?/.test(statement)) return false;
+      if (/^(?:patient|instructor|spouse|wife|husband)\s*:/i.test(statement)) return false;
+      return statement.split(/[.!;\r\n]+/).some(part => {
+        const text = normalizeText(part);
+        const term = /\b(?:nature of illness|mechanism of injury|noi|moi)\b/;
+        if (!term.test(text)) return false;
+        if (/\b(?:did not|do not|dont|cannot|cant|unable to|have not|havent|will not|wont|not going to|not assessed|not determined|unknown|unclear)\b/.test(text)) return false;
+        // An explicit action/intent, or an identified NOI/MOI finding.
+        return /\b(?:assess|assessing|assessed|determine|determining|determined|identify|identifying|identified|evaluate|evaluating|evaluated|establish|establishing|established|check|checking|checked|consider|considering|considered)\b/.test(text) ||
+          /\b(?:nature of illness|mechanism of injury|noi|moi)\s+(?:is|was|appears to be|identified as)\s+\S+/.test(text);
+      });
+    }
+
     function detectAndRecordAssessments(text, source) {
       return EMTAssessmentRecognition.detectAndRecord({
         text, source, assessmentMap, normalizeText, phraseMatches,
         completedSkills, assessmentLog,
-        
+        onMatch: (item, { keywordMatched, patternMatched }) =>
+          item.skill === "Signs and symptoms assessed"
+            ? studentRecognizedSignsSymptoms(text, source)
+            : item.skill === "Determines the mechanism of injury/nature of illness"
+              ? studentExplicitlyAssessedMoiNoi(text, source)
+              : keywordMatched || patternMatched,
         updateCompleteHistorySkills, updateCompletedAssessmentsDisplay
       });
     }
@@ -2763,10 +2777,8 @@ body {
         patientHistory += `Student to patient: ${question}\n`;
         patientHistory += `Patient: ${patientReply}\n\n`;
 
-        const responseSkills = detectAndRecordAssessments(
-          `${question}\n${patientReply}`,
-          "Ask the Patient interview"
-        );
+        // Patient replies are case data, never student assessment evidence.
+        const responseSkills = [];
 
         const recordedSkills = Array.from(
           new Set([...questionSkills, ...responseSkills])
@@ -2904,9 +2916,11 @@ body {
         }
 
         try {
+          // Only the student's question may trigger an assessment; never
+          // grade the instructor's answer as a student action.
           const skills = detectAndRecordAssessments(
-            question + "\n" + instructorReply,
-            "Ask the Instructor exchange"
+            question,
+            "Ask the Instructor question"
           );
 
           statusBox.textContent = skills.length
