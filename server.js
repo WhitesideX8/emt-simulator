@@ -653,11 +653,32 @@ function sobSpo2Reassessed(history = "", currentAction = "") {
   });
 }
 
+function sobNasalCannulaApplied(history = "", currentAction = "") {
+  const lines = `${history}\n${currentAction}`.split(/\r?\n/);
+  return lines.some(line => {
+    if (/^\s*(?:patient|instructor|spouse|wife)\s*:/i.test(line)) return false;
+    const t = normalizeText(line.replace(/^\s*student(?: to (?:patient|instructor))?\s*:/i, ""));
+    if (!/\b(?:nasal cannula|nc)\b/.test(t)) return false;
+    if (/\b(?:will|would|going to|plan to|should|can i|do you|did you|not|never|refused|declined)\b/.test(t)) return false;
+    return /\b(?:apply|applied|place|placed|administer|administered|give|gave|start|started|put|oxygen at|o2 at)\b/.test(t);
+  });
+}
+
 function sobResponseRules(scenario, history, currentAction) {
-  if (normalizeScenarioName(scenario) !== "sob" ||
-      !sobInhalerAssisted(history, currentAction)) return "";
+  if (normalizeScenarioName(scenario) !== "sob") return "";
+  const cannulaApplied = sobNasalCannulaApplied(history, currentAction);
+  const inhalerAssisted = sobInhalerAssisted(history, currentAction);
+  const cannulaRules = cannulaApplied ? `
+SOB NASAL CANNULA RESPONSE (AUTHORITATIVE SIMULATION RULE):
+- Nasal cannula oxygen causes NO improvement in this patient's shortness of breath, respiratory effort, or wheezing.
+- The patient says "No, it hasn't helped. I'm still short of breath" if asked whether the nasal cannula helped.
+- If only nasal cannula oxygen has been applied, respiratory rate remains 28/min, SpO2 remains 88%, and breathing remains labored with bilateral wheezing, even on reassessment.
+- Do not attribute any improvement to the nasal cannula. If a separate prescribed inhaler was also assisted, use the established post-inhaler findings for that intervention only.
+- Only report measurements when the instructor is specifically asked; the patient must not state measured vital signs.
+` : "";
+  if (!inhalerAssisted) return cannulaRules;
   const repeatSpo2 = sobSpo2Reassessed(history, currentAction);
-  return `
+  return cannulaRules + `
 SOB POST-INHALER STATE (SIMULATION OVERRIDE):
 The student has assisted with the patient's prescribed inhaler.
 The patient has improved SLIGHTLY, not completely.
