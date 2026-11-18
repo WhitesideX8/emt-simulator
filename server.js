@@ -840,7 +840,7 @@ function studentRadiationEvidence(body = {}) {
 
 function patientDeniedPainAfterQuestion(body = {}) {
   const history = String(
-    body.patientHistory || body.studentAnswer || ""
+    body.patientHistory || ""
   );
 
   const exchanges = [
@@ -890,10 +890,6 @@ function patientDeniedPainAfterQuestion(body = {}) {
 }
 
 function studentAssessedRadiation(body = {}) {
-  if (patientDeniedPainAfterQuestion(body)) {
-    return true;
-  }
-
   const lines = studentRadiationEvidence(body)
     .split(/\r?\n/);
 
@@ -902,6 +898,9 @@ function studentAssessedRadiation(body = {}) {
 
     return [
       /\b(?:opqrst |oprst )?(?:radiation|region and radiation|location and radiation) assessed\b/,
+      /\b(?:radiation|radiating)\b.{0,55}\b(?:not applicable|n a|not relevant|no pain|denies pain)\b/,
+      /\b(?:not applicable|n a)\b.{0,55}\b(?:radiation|radiating)\b/,
+      /\b(?:no pain|denies pain|pain free)\b.{0,55}\b(?:radiation|radiating)\b.{0,30}\b(?:not applicable|n a|not relevant)\b/,
 
       /\b(?:assess|check|evaluate|ask about|determine)\b.{0,50}\b(?:radiation|radiating|whether.{0,20}(?:spreads|travels))\b/,
 
@@ -1610,11 +1609,17 @@ function buildChecklist(body = {}) {
       ]
     ),
 
-    helper(
-      "opqrstRadiation",
-      "HPI: radiation",
-      studentAssessedRadiation
-    ),
+    (() => {
+      const item = helper("opqrstRadiation", "HPI: radiation", studentAssessedRadiation);
+      // A negative patient pain response alone does not establish that the
+      // student assessed radiation. Flag it for instructor review instead.
+      if (!item.pass && patientDeniedPainAfterQuestion(body)) {
+        item.status = "REVIEW";
+        item.requiresInstructorReview = true;
+        item.note = "Patient denied pain after the student's question. Review whether the student recognized that radiation was not applicable or separately assessed whether discomfort travels. Do not award automatically from the patient reply.";
+      }
+      return item;
+    })(),
 
     one(
       "opqrstSeverity",
