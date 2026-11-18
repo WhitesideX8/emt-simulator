@@ -1298,9 +1298,9 @@ function buildChecklist(body = {}) {
       status:
         evidence.length
           ? clinicalReview
-            ? "PROVISIONAL"
+            ? "REVIEW"
             : "CREDIT"
-          : "NOT_DOCUMENTED",
+          : "REVIEW",
 
       requiresInstructorReview: clinicalReview,
 
@@ -1336,7 +1336,7 @@ function buildChecklist(body = {}) {
       status:
         evidence.length
           ? "CREDIT"
-          : "NOT_DOCUMENTED",
+          : "REVIEW",
 
       requiresInstructorReview: false
     };
@@ -1838,7 +1838,7 @@ function buildChecklist(body = {}) {
       evidence: clarifiers[i]?.evidence || [],
 
       status: clarifiers[i]
-        ? "PROVISIONAL"
+        ? "REVIEW"
         : "REVIEW",
 
       requiresInstructorReview: true,
@@ -2454,7 +2454,7 @@ app.post("/grade", async (req, res) => {
 
       status:
         pendingScoringReview.length > 0
-          ? "PROVISIONAL"
+          ? "REVIEW"
           : "SCORED",
 
       pendingReviewItemIds:
@@ -2474,7 +2474,7 @@ app.post("/grade", async (req, res) => {
      * F12 references the numerical score.
      * It does not deduct any additional points.
      *
-     * A below-minimum provisional score remains REVIEW
+     * A below-minimum score with pending review remains REVIEW
      * until pending scoring decisions are completed.
      */
     const minimumScoreCriterion =
@@ -2494,7 +2494,7 @@ app.post("/grade", async (req, res) => {
         earnedPoints >= 33
           ? `The recorded score meets the 33-point minimum: ${earnedPoints}/${possiblePoints}.`
           : pendingScoringReview.length > 0
-            ? `The provisional score is ${earnedPoints}/${possiblePoints}. Resolve pending scoring reviews before deciding whether the final score meets 33 points.`
+            ? `The current score is ${earnedPoints}/${possiblePoints}. Resolve pending scoring reviews before deciding whether the final score meets 33 points.`
             : `The final recorded score is ${earnedPoints}/${possiblePoints}, below the 33-point minimum.`;
     }
 
