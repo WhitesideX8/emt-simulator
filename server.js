@@ -1298,7 +1298,7 @@ function buildChecklist(body = {}) {
       status:
         evidence.length
           ? clinicalReview
-            ? "REVIEW"
+            ? "CREDIT — REVIEW"
             : "CREDIT"
           : "REVIEW",
 
@@ -1838,13 +1838,13 @@ function buildChecklist(body = {}) {
       evidence: clarifiers[i]?.evidence || [],
 
       status: clarifiers[i]
-        ? "REVIEW"
+        ? "CREDIT — REVIEW"
         : "REVIEW",
 
       requiresInstructorReview: true,
 
       note:
-        "Instructor must confirm that this question clarifies the presenting illness; unmatched wording can also earn credit on review."
+        "Matched question earns a point; instructor should review its relevance to the presenting illness."
     });
   }
 
@@ -1866,13 +1866,13 @@ function buildChecklist(body = {}) {
       "Level-appropriate assessment of affected body part/system",
 
     points: 5,
-    pass: false,
+    pass: secondaryEvidence.length > 0,
     evidence: secondaryEvidence,
-    status: "REVIEW",
+    status: secondaryEvidence.length ? "CREDIT — REVIEW" : "REVIEW",
     requiresInstructorReview: true,
 
     note:
-      "Five points reserved for instructor verification of a proper scenario-specific examination. No automatic full credit for naming an exam."
+      "Matched examination wording earns points pending instructor review of examination quality and completeness."
   });
 
   /* -------------------------------------------------------
@@ -1896,8 +1896,16 @@ function buildChecklist(body = {}) {
     requiresInstructorReview: true,
 
     note:
-      "Verify the actual handoff transcript and accuracy before awarding this point."
+      "Point awarded when report wording is documented; instructor should review handoff accuracy."
   });
+
+  // Award the verbal-report point when a student documents a report,
+  // while keeping it flagged for instructor verification.
+  const verbalReport = rows.find(item => item.id === "report");
+  if (verbalReport && verbalReport.evidence.length) {
+    verbalReport.pass = true;
+    verbalReport.status = "CREDIT — REVIEW";
+  }
 
   /* -------------------------------------------------------
      SUPPORTING FINDINGS: ZERO ADDITIONAL POINTS
