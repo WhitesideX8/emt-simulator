@@ -305,10 +305,7 @@
     .medical-form .critical td { font-size:11px; }
     .medical-form .critical-code { width:50px; white-space:nowrap; font-weight:bold; }
     .medical-form .metadata td { border:1px solid #777; }
-    .grading-evidence { margin-top:16px; }
-    .grading-evidence summary { cursor:pointer; font-weight:bold; }
-    .grading-evidence #feedback { white-space:pre-wrap; margin-top:12px; font-size:13px; }
-    @media print { .medical-form { font-size:10px; } .medical-form tr { break-inside:avoid; } .grading-evidence { display:none; } }
+    @media print { .medical-form { font-size:10px; } .medical-form tr { break-inside:avoid; } }
   </style>
 </head>
 
@@ -332,7 +329,6 @@
       <h2>Evaluation</h2>
       <div id="scoreSummary"></div>
       <div id="medicalSkillsSheet"></div>
-      <details class="grading-evidence"><summary>Detailed scoring evidence and instructor review</summary><div id="feedback"></div></details>
     </div>
 
     <div class="section" id="verbalReportSection">
@@ -616,6 +612,22 @@
       return retainedLines.join("\n").trim();
     }
 
+    // Hide the critical-failure/critical-criteria category from the report.
+    // This is display-only; server scoring is not changed.
+    function removeCriticalFailureCategory(feedback) {
+      const lines = String(feedback || "").split(/\r?\n/);
+      const start = lines.findIndex(line =>
+        /^\s*(?:#{1,6}\s*)?(?:critical\s+(?:criteria|failures?|failure\s+category))(?:\s*[—–-]\s*separate\s+evaluation)?\s*:?\s*$/i.test(line.trim())
+      );
+      if (start < 0) {
+        return lines.filter(line =>
+          !/^\s*(?:critical[- ]criteria status|critical failure(?: status)?)\s*:/i.test(line)
+        ).join("\n");
+      }
+      // The server appends this section after assessment feedback.
+      return lines.slice(0, start).join("\n").trimEnd();
+    }
+
     function removePassFailResult(feedback) {
       if (!feedback) {
         return "No grading feedback available.";
@@ -783,17 +795,9 @@
           else {const note=document.createElement("small");note.className="status-note";note.textContent="Review / not mapped";tr.cells[2].appendChild(note);}
         });
       });
-      const final=row(["SERVER-REPORTED TOTAL",String(Number.isFinite(Number(data.possiblePoints))?data.possiblePoints:"—"),
-        String(Number.isFinite(Number(data.earnedPoints))?data.earnedPoints:"—")],"form-footer");
       const note=document.createElement("tr");const n=document.createElement("td");n.colSpan=3;
-      n.textContent="This is the layout of the supplied skills sheet. Points and statuses come from the existing server report; missing mappings require review. The server-reported total controls (the supplied paper form shows 42 possible points).";
+      n.textContent="This is the layout of the supplied skills sheet. Points and statuses come from the existing server report; missing mappings require review. ";
       note.appendChild(n);body.appendChild(note);
-      const notice=document.createElement("tr");
-      const noticeCell=document.createElement("td");
-      noticeCell.colSpan=3;
-      noticeCell.textContent="Please review Critical Criteria list";
-      notice.appendChild(noticeCell);
-      body.appendChild(notice);
       root.appendChild(table);
     }
 
@@ -1139,9 +1143,6 @@
         renderScore({});
         renderMedicalSheet({});
 
-        getElement("feedback").textContent =
-          "No grading information was found. Please complete a scenario first.";
-
         renderVerbalReport({});
         renderStudentInputs({});
         renderDisputes();
@@ -1172,11 +1173,6 @@
         renderScore(gradingData);
         renderMedicalSheet(gradingData);
 
-        getElement("feedback").textContent =
-          removePassFailResult(
-            removeInstructorComments(gradingData.feedback)
-          );
-
         renderVerbalReport(gradingData);
         renderStudentInputs(gradingData);
         renderDisputes();
@@ -1188,9 +1184,6 @@
 
         renderScore({});
         renderMedicalSheet({});
-
-        getElement("feedback").textContent =
-          "The saved grading information could not be read.";
 
         renderVerbalReport({});
         renderStudentInputs({});
