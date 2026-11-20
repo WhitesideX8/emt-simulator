@@ -3380,7 +3380,7 @@ h1 {
 
     window.addEventListener("resize", alignSharedTextareaWithButtons);
 
-    // Hide each response five seconds after its output appears.
+    // Hide each patient, friend, or instructor response eight seconds after its output appears.
     const responseHideTimers = new Map();
 
     function scheduleResponseHide(responseId, areaId) {
@@ -3416,7 +3416,7 @@ h1 {
               error
             );
           }
-        }, 5000)
+        }, 8000)
       );
     }
 
