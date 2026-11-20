@@ -822,7 +822,7 @@ h1 {
   "spouseKnowledge": {
     "role": "Friend at scene, not spouse",
     "friendStatement": "I found him barely breathing on the floor about ten minutes ago. I think he may have used an opioid. I called 911.",
-    "knownHistory": "Possible prior opioid use; no known trauma; no other reliable history"
+    "knownHistory": "Friend knows the patient socially and suspects prior opioid use; did not witness ingestion, onset, or a fall; does not know allergies, daily medications, or other medical history"
   },
   "treatmentResponses": {
     "oxygenAlone": "Oxygen by nasal cannula alone does not correct the inadequate ventilation or promptly restore consciousness.",
@@ -2749,41 +2749,65 @@ h1 {
         `${newSkills.length} assessments automatically recorded.`;
     }
 
-    // Friend only provides information available to the witness in patientFacts.
-    // Friend answers are not assessment evidence or automatic scoring credit.
+    // The Friend is a scene witness who knows the patient socially.
+    // Only answer the question asked. Do not invent clinical findings or
+    // claim to have witnessed drug ingestion when it was not witnessed.
+    // Witness answers are never treated as student assessment evidence.
+    function getFriendWitnessReply(question) {
+      const q = String(question || "").toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+      const has = pattern => pattern.test(q);
+      if (has(/\b(name|who is he|who are you|relationship|know him|your friend)\b/))
+        return "He's my friend. I know him, but I'm not a family member.";
+      if (has(/\b(age|how old|birthday)\b/))
+        return "He's 25 years old.";
+      if (has(/\b(what happened|tell me what|tell me everything|start from|describe what|why did you call|why 911)\b/))
+        return "I found him lying on the bedroom floor about ten minutes ago. He wasn't answering me and was barely breathing, so I called 911. I'm worried he may have used an opioid, but I didn't see him take anything.";
+      if (has(/\b(when|how long|what time|last seen|how many minutes|how long ago)\b/))
+        return "I found him like this about ten minutes ago. I don't know exactly when it started or when he was last acting normally.";
+      if (has(/\b(where|location|found him|find him|position)\b/))
+        return "I found him lying on the floor of the bedroom.";
+      if (has(/\b(see him take|watch him|witness|saw him|did he take|did he use|what did he take|how much|dose|how many pills|when did he use|needle|syringe|paraphernalia|drug|opioid|opiate|heroin|fentanyl|overdose|substance|alcohol|drink|smoke|snort|inject)\b/))
+        return "I think he may have used an opioid. I know he's possibly used opioids before, but I didn't see him take anything today. I don't know what he took, how much, or when.";
+      if (has(/\b(breath|respirat|snor|gasp|airway|cyanosis|blue|lips|color)\b/))
+        return "When I found him, he was breathing very slowly and shallowly. His lips looked bluish.";
+      if (has(/\b(conscious|unconscious|awake|alert|responsive|respond|talk|speaking|mental status|avpu|gcs|wake him|shake him)\b/))
+        return "He wasn't answering me when I tried to talk to him. I couldn't get him to wake up.";
+      if (has(/\b(seizure|convuls|shaking)\b/))
+        return "I didn't see him have a seizure. I found him already on the floor.";
+      if (has(/\b(fall|fell|injur|trauma|hit his head|head injury|accident|bleeding|fight)\b/))
+        return "I didn't see him fall or get injured. I don't know how he ended up on the floor.";
+      if (has(/\b(history|medical problem|medical condition|illness|disease|diabetes|heart problem|asthma|prior overdose|overdosed before|used before)\b/))
+        return "I know he may have used opioids before, but I don't know of any diagnosed medical conditions or previous overdoses.";
+      if (has(/\b(medication|medicine|prescription|meds|naloxone|narcan)\b/))
+        return "I don't know what medications he takes or whether he has naloxone.";
+      if (has(/\b(allerg|reaction)\b/))
+        return "I don't know whether he has any allergies.";
+      if (has(/\b(eat|food|meal|lunch|drink water|last oral|last intake)\b/))
+        return "I don't know when he last ate or drank.";
+      if (has(/\b(cpr|chest compressions|rescue breath|first aid|help him|what did you do|anything done|treatment)\b/))
+        return "I tried talking to him and waking him up, then called 911. I haven't given him any medication or treatment.";
+      if (has(/\b(911|ambulance|ems|call for help)\b/))
+        return "I called 911 when I found him barely breathing and not answering me.";
+      if (has(/\b(normal|acting strange|different|before this|earlier today|last normal)\b/))
+        return "I don't know exactly when he was last acting normally. I found him already like this.";
+      if (has(/\b(pulse|blood pressure|spo2|oxygen saturation|blood sugar|glucose|pupils|temperature|vital signs)\b/))
+        return "I haven't checked any vital signs. You'll need to assess him.";
+      return "I'm not sure about that. I found him on the bedroom floor, barely breathing, and called 911.";
+    }
+
     function submitFriendEntry() {
       const questionBox = document.getElementById("actionEntry");
       const question = questionBox.value.trim();
       if (!question) { questionBox.focus(); return; }
-      const facts = currentPatientFacts();
-      const witness = facts.spouseKnowledge || {};
-      const q = question.toLowerCase();
-      let reply;
-      if (/when|how long|time|found|last seen/.test(q)) {
-        reply = "I found him on the floor about ten minutes ago, barely breathing.";
-      } else if (/what happened|what did you see|why.*call|911|tell me/.test(q)) {
-        reply = witness.friendStatement || "I found him on the floor and called 911.";
-      } else if (/drug|opioid|opiate|heroin|fentanyl|overdos|take|use|substance/.test(q)) {
-        reply = "I think he may have used an opioid, but I don't know exactly what or how much.";
-      } else if (/trauma|injur|fall|hit|head|accident/.test(q)) {
-        reply = "I don't know of any injury or trauma.";
-      } else if (/breath|respirat|conscious|awake|responsive|talk|pulse/.test(q)) {
-        reply = "He was barely breathing and wouldn't answer me when I found him.";
-      } else if (/history|medical|condition|before|previous/.test(q)) {
-        reply = witness.knownHistory || "I don't know his medical history.";
-      } else if (/allerg|medication|prescri|last ate|last meal|food/.test(q)) {
-        reply = "I don't know that information.";
-      } else {
-        reply = "I'm sorry, I don't know. I found him on the floor and called 911.";
-      }
+      const reply = getFriendWitnessReply(question);
       recordStudentInput("Ask the Friend", question);
+      // The student's question can be assessed, but the friend's reply cannot.
       const skills = detectAndRecordAssessments(question, "Ask the Friend question");
       showRecordedStatus(skills, "the friend");
       friendHistory += `Student to friend: ${question}\nFriend: ${reply}\n\n`;
       const area = document.getElementById("friendResponseArea");
       document.getElementById("friendResponse").innerText = reply;
       area.hidden = false;
-      // Match the five-second auto-hide behavior of other response boxes.
       scheduleResponseHide("friendResponse", "friendResponseArea");
       questionBox.value = "";
       questionBox.focus();
