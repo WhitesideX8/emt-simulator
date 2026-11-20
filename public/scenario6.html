@@ -570,17 +570,15 @@
       gap: 8px;
     }
     .patient-side-controls,
+    .friend-side-controls,
     .instructor-side-controls {
       display: grid;
       grid-template-columns: auto 1fr;
       gap: 6px;
       align-items: start;
     }
-    .patient-side-controls #friendButton {
-      grid-column: 2;
-      grid-row: 2;
-    }
     .patient-side-controls button,
+    .friend-side-controls button,
     .instructor-side-controls button {
       margin: 0;
       text-decoration: underline;
@@ -865,6 +863,9 @@ h1 {
               >
                 Patient
               </button>
+            </div>
+            <div class="friend-side-controls">
+              <button id="friendVoiceButton" class="voice-btn" type="button" onclick="speakFriendEntry()">Voice</button>
               <button id="friendButton" class="friend-btn" type="button" onclick="submitFriendEntry()">Friend</button>
             </div>
             <div class="instructor-side-controls">
@@ -996,8 +997,6 @@ h1 {
         completedSkills: Array.from(completedSkills),
         scenarioStartTime,
         actionEntry: document.getElementById("actionEntry").value,
-        friendResponseVisible: !document.getElementById("friendResponseArea").hidden,
-        friendResponse: document.getElementById("friendResponse").textContent,
         patientResponseVisible:
           !document.getElementById("patientResponseArea").hidden,
         instructorResponseVisible:
@@ -1061,8 +1060,6 @@ h1 {
           (state.instructorResponse || "Instructor answer will appear here.")
             .replace(/^Question: [^\n]*\n\n(?:Instructor: )?/, "");
 
-        document.getElementById("friendResponse").innerText = state.friendResponse || "";
-        document.getElementById("friendResponseArea").hidden = !state.friendResponseVisible;
 
         document.getElementById("patientResponseArea").hidden =
           !(state.patientResponseVisible ?? (
@@ -1127,7 +1124,8 @@ h1 {
       buttonId,
       recordWhenFinished = false,
       sendToInstructor = false,
-      recordAssessment = false
+      recordAssessment = false,
+      sendToFriend = false
     ) {
       if (!SpeechRecognition) {
         alert(
@@ -1153,6 +1151,7 @@ h1 {
       const recognition = new SpeechRecognition();
       recognition.submitToInstructor = sendToInstructor;
       recognition.recordAssessment = recordAssessment;
+      recognition.submitToFriend = sendToFriend;
 
       const existingText = textBox.value.trim();
       let heardSpeech = false;
@@ -1173,7 +1172,9 @@ h1 {
 
         voiceEntryRecorded = true;
 
-        if (recognition.submitToInstructor) {
+        if (recognition.submitToFriend) {
+          submitFriendEntry();
+        } else if (recognition.submitToInstructor) {
           askInstructorTyped();
         } else if (recognition.recordAssessment) {
           recordAction("voice assessment/treatment");
@@ -2795,23 +2796,42 @@ h1 {
       return "I'm not sure about that. I found him on the bedroom floor, barely breathing, and called 911.";
     }
 
+    function speakFriendEntry() {
+      toggleVoiceInput("actionEntry", "friendVoiceButton", true, false, false, true);
+    }
+
+    // Same shared response display and question workflow as stroke.html spouse.
     function submitFriendEntry() {
       const questionBox = document.getElementById("actionEntry");
+      const responseBox = document.getElementById("patientResponse");
+      const responseArea = document.getElementById("patientResponseArea");
+      const responseLabel = responseArea.querySelector(".response-label");
+      const friendButton = document.getElementById("friendButton");
       const question = questionBox.value.trim();
-      if (!question) { questionBox.focus(); return; }
-      const reply = getFriendWitnessReply(question);
-      recordStudentInput("Ask the Friend", question);
-      // The student's question can be assessed, but the friend's reply cannot.
-      const skills = detectAndRecordAssessments(question, "Ask the Friend question");
-      showRecordedStatus(skills, "the friend");
-      friendHistory += `Student to friend: ${question}\nFriend: ${reply}\n\n`;
-      const area = document.getElementById("friendResponseArea");
-      document.getElementById("friendResponse").innerText = reply;
-      area.hidden = false;
-      scheduleResponseHide("friendResponse", "friendResponseArea");
-      questionBox.value = "";
-      questionBox.focus();
-      saveScenarioState();
+      responseLabel.textContent = "Friend Response";
+      responseArea.hidden = false;
+      if (!question) {
+        responseBox.textContent = "Type a question for the friend first.";
+        scheduleResponseHide("patientResponse", "patientResponseArea");
+        questionBox.focus();
+        return;
+      }
+      friendButton.disabled = true;
+      try {
+        const reply = getFriendWitnessReply(question);
+        recordStudentInput("Ask the Friend", question);
+        // Witness statements are not evidence of student assessments.
+        const skills = detectAndRecordAssessments(question, "Ask the Friend question");
+        friendHistory += `Student to friend: ${question}\nFriend: ${reply}\n\n`;
+        showRecordedStatus(skills, "the friend");
+        responseBox.textContent = reply;
+        questionBox.value = "";
+        questionBox.focus();
+        saveScenarioState();
+      } finally {
+        friendButton.disabled = false;
+        scheduleResponseHide("patientResponse", "patientResponseArea");
+      }
     }
 
     function submitPatientEntry() {
@@ -2851,6 +2871,7 @@ h1 {
     }
 
     async function askPatientTyped() {
+      document.querySelector("#patientResponseArea .response-label").textContent = "Patient Response";
       const questionBox = document.getElementById("actionEntry");
       const responseBox = document.getElementById("patientResponse");
       const patientButton = document.getElementById("patientButton");
@@ -3291,8 +3312,6 @@ h1 {
       stopVoiceInput();
 
       document.getElementById("patientResponseArea").hidden = true;
-      document.getElementById("friendResponseArea").hidden = true;
-      document.getElementById("friendResponse").innerText = "";
       document.getElementById("instructorResponseArea").hidden = true;
 
       patientHistory = "";
