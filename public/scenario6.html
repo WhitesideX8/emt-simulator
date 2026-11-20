@@ -91,6 +91,10 @@
       background: #087f23;
     }
 
+    .friend-btn {
+      background: #176b87;
+    }
+
     .instructor-btn {
       background: #663399;
     }
@@ -572,6 +576,10 @@
       gap: 6px;
       align-items: start;
     }
+    .patient-side-controls #friendButton {
+      grid-column: 2;
+      grid-row: 2;
+    }
     .patient-side-controls button,
     .instructor-side-controls button {
       margin: 0;
@@ -857,6 +865,7 @@ h1 {
               >
                 Patient
               </button>
+              <button id="friendButton" class="friend-btn" type="button" onclick="submitFriendEntry()">Friend</button>
             </div>
             <div class="instructor-side-controls">
               <button
@@ -944,6 +953,7 @@ h1 {
 
   <script>
     let patientHistory = "";
+    let friendHistory = "";
     let instructorHistory = "";
     let assessmentLog = [];
     let lastRecordedAction = "";
@@ -978,6 +988,7 @@ h1 {
         writtenScene: currentWrittenScene(),
         patientFactsSnapshot: JSON.stringify(currentPatientFacts()),
         patientHistory,
+        friendHistory,
         instructorHistory,
         assessmentLog,
         lastRecordedAction,
@@ -985,6 +996,8 @@ h1 {
         completedSkills: Array.from(completedSkills),
         scenarioStartTime,
         actionEntry: document.getElementById("actionEntry").value,
+        friendResponseVisible: !document.getElementById("friendResponseArea").hidden,
+        friendResponse: document.getElementById("friendResponse").textContent,
         patientResponseVisible:
           !document.getElementById("patientResponseArea").hidden,
         instructorResponseVisible:
@@ -1015,6 +1028,7 @@ h1 {
         caseSessionId = state.caseSessionId;
 
         patientHistory = state.patientHistory || "";
+        friendHistory = state.friendHistory || "";
         instructorHistory = state.instructorHistory || "";
 
         assessmentLog = Array.isArray(state.assessmentLog)
@@ -1046,6 +1060,9 @@ h1 {
         document.getElementById("instructorResponse").innerText =
           (state.instructorResponse || "Instructor answer will appear here.")
             .replace(/^Question: [^\n]*\n\n(?:Instructor: )?/, "");
+
+        document.getElementById("friendResponse").innerText = state.friendResponse || "";
+        document.getElementById("friendResponseArea").hidden = !state.friendResponseVisible;
 
         document.getElementById("patientResponseArea").hidden =
           !(state.patientResponseVisible ?? (
@@ -2732,6 +2749,47 @@ h1 {
         `${newSkills.length} assessments automatically recorded.`;
     }
 
+    // Friend only provides information available to the witness in patientFacts.
+    // Friend answers are not assessment evidence or automatic scoring credit.
+    function submitFriendEntry() {
+      const questionBox = document.getElementById("actionEntry");
+      const question = questionBox.value.trim();
+      if (!question) { questionBox.focus(); return; }
+      const facts = currentPatientFacts();
+      const witness = facts.spouseKnowledge || {};
+      const q = question.toLowerCase();
+      let reply;
+      if (/when|how long|time|found|last seen/.test(q)) {
+        reply = "I found him on the floor about ten minutes ago, barely breathing.";
+      } else if (/what happened|what did you see|why.*call|911|tell me/.test(q)) {
+        reply = witness.friendStatement || "I found him on the floor and called 911.";
+      } else if (/drug|opioid|opiate|heroin|fentanyl|overdos|take|use|substance/.test(q)) {
+        reply = "I think he may have used an opioid, but I don't know exactly what or how much.";
+      } else if (/trauma|injur|fall|hit|head|accident/.test(q)) {
+        reply = "I don't know of any injury or trauma.";
+      } else if (/breath|respirat|conscious|awake|responsive|talk|pulse/.test(q)) {
+        reply = "He was barely breathing and wouldn't answer me when I found him.";
+      } else if (/history|medical|condition|before|previous/.test(q)) {
+        reply = witness.knownHistory || "I don't know his medical history.";
+      } else if (/allerg|medication|prescri|last ate|last meal|food/.test(q)) {
+        reply = "I don't know that information.";
+      } else {
+        reply = "I'm sorry, I don't know. I found him on the floor and called 911.";
+      }
+      recordStudentInput("Ask the Friend", question);
+      const skills = detectAndRecordAssessments(question, "Ask the Friend question");
+      showRecordedStatus(skills, "the friend");
+      friendHistory += `Student to friend: ${question}\nFriend: ${reply}\n\n`;
+      const area = document.getElementById("friendResponseArea");
+      document.getElementById("friendResponse").innerText = reply;
+      area.hidden = false;
+      // Match the five-second auto-hide behavior of other response boxes.
+      scheduleResponseHide("friendResponse", "friendResponseArea");
+      questionBox.value = "";
+      questionBox.focus();
+      saveScenarioState();
+    }
+
     function submitPatientEntry() {
       return askPatientTyped();
     }
@@ -3209,9 +3267,12 @@ h1 {
       stopVoiceInput();
 
       document.getElementById("patientResponseArea").hidden = true;
+      document.getElementById("friendResponseArea").hidden = true;
+      document.getElementById("friendResponse").innerText = "";
       document.getElementById("instructorResponseArea").hidden = true;
 
       patientHistory = "";
+      friendHistory = "";
       instructorHistory = "";
       assessmentLog = [];
       lastRecordedAction = "";
