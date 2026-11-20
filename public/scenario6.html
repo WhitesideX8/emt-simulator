@@ -2757,42 +2757,45 @@ h1 {
     function getFriendWitnessReply(question) {
       const q = String(question || "").toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
       const has = pattern => pattern.test(q);
+      // Answer the particular question, without volunteering an overdose theory.
+      if (has(/\b(what is happening|what s happening|what is going on|what s going on|what is the problem|why are we here)\b/))
+        return "I found him on the floor. He wasn't responding when I spoke to him, and he was barely breathing.";
       if (has(/\b(name|who is he|who are you|relationship|know him|your friend)\b/))
-        return "He's my friend. I know him, but I'm not a family member.";
+        return "He's my friend. I'm not a family member.";
       if (has(/\b(age|how old|birthday)\b/))
         return "He's 25 years old.";
       if (has(/\b(what happened|tell me what|tell me everything|start from|describe what|why did you call|why 911)\b/))
-        return "I found him lying on the bedroom floor about ten minutes ago. He wasn't answering me and was barely breathing, so I called 911. I'm worried he may have used an opioid, but I didn't see him take anything.";
+        return "I found him on the bedroom floor about ten minutes ago. He didn't answer when I spoke to him, and he was barely breathing. I called 911.";
+      if (has(/\b(see him take|watch him|witness|saw him|did he take|did he use|what did he take|how much|dose|how many pills|when did he use|needle|syringe|paraphernalia|drug|opioid|opiate|heroin|fentanyl|overdose|substance|alcohol|smoke|snort|inject)\b/))
+        return "I know he may have used opioids in the past, but I didn't see him take anything today. I don't know what he took, if anything.";
       if (has(/\b(when|how long|what time|last seen|how many minutes|how long ago)\b/))
-        return "I found him like this about ten minutes ago. I don't know exactly when it started or when he was last acting normally.";
+        return "I found him about ten minutes ago. I don't know when this started.";
       if (has(/\b(where|location|found him|find him|position)\b/))
-        return "I found him lying on the floor of the bedroom.";
-      if (has(/\b(see him take|watch him|witness|saw him|did he take|did he use|what did he take|how much|dose|how many pills|when did he use|needle|syringe|paraphernalia|drug|opioid|opiate|heroin|fentanyl|overdose|substance|alcohol|drink|smoke|snort|inject)\b/))
-        return "I think he may have used an opioid. I know he's possibly used opioids before, but I didn't see him take anything today. I don't know what he took, how much, or when.";
+        return "I found him lying on the bedroom floor.";
       if (has(/\b(breath|respirat|snor|gasp|airway|cyanosis|blue|lips|color)\b/))
-        return "When I found him, he was breathing very slowly and shallowly. His lips looked bluish.";
+        return "He was breathing very slowly and shallowly. His lips looked blue.";
       if (has(/\b(conscious|unconscious|awake|alert|responsive|respond|talk|speaking|mental status|avpu|gcs|wake him|shake him)\b/))
-        return "He wasn't answering me when I tried to talk to him. I couldn't get him to wake up.";
+        return "He didn't answer when I talked to him. I couldn't wake him up.";
       if (has(/\b(seizure|convuls|shaking)\b/))
-        return "I didn't see him have a seizure. I found him already on the floor.";
+        return "I didn't see a seizure. He was already on the floor when I found him.";
       if (has(/\b(fall|fell|injur|trauma|hit his head|head injury|accident|bleeding|fight)\b/))
-        return "I didn't see him fall or get injured. I don't know how he ended up on the floor.";
+        return "I didn't see him fall or get hurt.";
       if (has(/\b(history|medical problem|medical condition|illness|disease|diabetes|heart problem|asthma|prior overdose|overdosed before|used before)\b/))
-        return "I know he may have used opioids before, but I don't know of any diagnosed medical conditions or previous overdoses.";
+        return "I don't know of any diagnosed medical conditions.";
       if (has(/\b(medication|medicine|prescription|meds|naloxone|narcan)\b/))
-        return "I don't know what medications he takes or whether he has naloxone.";
+        return "I don't know what prescribed medications he takes.";
       if (has(/\b(allerg|reaction)\b/))
         return "I don't know whether he has any allergies.";
       if (has(/\b(eat|food|meal|lunch|drink water|last oral|last intake)\b/))
         return "I don't know when he last ate or drank.";
       if (has(/\b(cpr|chest compressions|rescue breath|first aid|help him|what did you do|anything done|treatment)\b/))
-        return "I tried talking to him and waking him up, then called 911. I haven't given him any medication or treatment.";
+        return "I tried to wake him and then called 911. I haven't given any treatment.";
       if (has(/\b(911|ambulance|ems|call for help)\b/))
-        return "I called 911 when I found him barely breathing and not answering me.";
+        return "I called 911 when I found him unresponsive and barely breathing.";
       if (has(/\b(normal|acting strange|different|before this|earlier today|last normal)\b/))
-        return "I don't know exactly when he was last acting normally. I found him already like this.";
+        return "I don't know when he was last acting normally.";
       if (has(/\b(pulse|blood pressure|spo2|oxygen saturation|blood sugar|glucose|pupils|temperature|vital signs)\b/))
-        return "I haven't checked any vital signs. You'll need to assess him.";
+        return "I haven't checked that.";
       return "I don't know the answer to that.";
     }
 
